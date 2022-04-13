@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: DH-CONNECTIVITY-MANAGER
+  profiles:
+    active: local
+
+logging:
+  config: classpath:config/log4j2.xml
+
+server:
+  port : 8888
+
+    
+### 개발서버    
+--- 
+spring:
+  profiles: local
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_ID} 
+    password: ${DATASOURCE_PW}     
+eureka:
+  client:
+    enabled: false
+flume:
+  home: /opt/flume
+  conf: ${flume.home}/conf/
+  log: /opt/logs/
+  schemaServer: http://133.186.162.236:9876/schemas
+

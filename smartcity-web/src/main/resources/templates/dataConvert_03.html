@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sd="http://www.thymeleaf.org/spring-data" layout:decorator="layout/main" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">3단계 - 반복 호출 설정</title>
+</head>
+
+<div class="container" layout:fragment="content">
+        <h3 class="content__title">3/4 단계 - 반복 호출 설정</h3>  
+
+        <form>
+          <fieldset>
+            <legend>데이터모델 변환</legend>
+            <section class="section">
+              <div class="section__header">
+                <h4 class="section__title">데이터모델 변환 기본 정보</h4>
+              </div>
+              <div class="section__content">
+                <table class="table--column" id="dataModelTopInfo">
+                  <caption>테이블 제목</caption>
+                  <colgroup>
+                    <col style="width:200px">
+                    <col style="width:200px">
+                    <col style="width:200px">
+                    <col style="width:200px">
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>Instance ID</th>
+                      <th>Instance 명</th>
+                      <th>원천 데이터 모델</th>
+                      <th>표준 데이터 모델</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </fieldset>
+        </form>
+
+        <br>
+
+        <div style="font-size:12px; color:#999; border: 1px #555; background-color:#fff; width:150px; height:36px; line-height:36px; text-align:center; display:inline-block">원천 데이터 모델 선택</div>
+        <div style="font-size:12px; color:#999; border: 1px #555; background-color:#fff; width:150px; height:36px; line-height:36px; text-align:center; display:inline-block">표준 데이터 모델 선택</div>
+        <div style="font-size:12px; color:#fff; border: 1px #ddd; background-color:#0996a5; width:150px; height:36px; line-height:36px; text-align:center; display:inline-block">반복 호출 설정</div>
+        <div style="font-size:12px; color:#999; border: 1px #555; background-color:#fff; width:150px; height:36px; line-height:36px; text-align:center; display:inline-block">변환 클래스 작성</div>
+
+        <div style="border: 1px solid #ddd; padding-right:5px; padding-left:5px; padding-bottom:10px">
+        
+        <form>
+             <fieldset >
+              <legend>반복 호출에 사용될 항목 선택</legend>
+                <section class="section">
+                 <div class="section__header" >
+                    <h4 class="section__title">반복 호출에 사용될 항목 선택</h4>
+                </div>
+                <div class="section__content">
+                  <table class="table--column instanceList" id="instanceList" style="width:100%; overflow:auto">
+                    <caption>테이블 제목</caption>
+                    <colgroup>
+                      <col style="width:40px">
+                      <col style="width:60px">
+                      <col style="width:120px">
+                      <col style="width:150px">
+                      <col style="width:auto">
+                      <col style="width:150px">                    
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th>선택</th>
+                        <th>필수여부</th>
+                        <th>값 유형</th>
+                        <th>항목명(key)</th>
+                        <th>항목값(value)</th>
+                        <th>항목설명</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+                
+                <div class="button__group" style="font-size:12px">
+                                선택한 항목에 대하여&nbsp; <input class="input__number" id="repeatNum" type="number" min="1" max="5" value="1" style="width:30px">
+                    <span class="input__number-group">
+                      <button class="input__number-button button__number--up" type="button" title="증가"><span class="hidden">증가</span></button>
+                      <button class="input__number-button button__number--down" type="button" title="감소"><span class="hidden">감소</span></button>
+                    </span>  
+                                개의 반복 설정을 <button class="button__outline w-68" onclick="addRepeatNum()" onfocus="this.blur()" type="button">추가</button>
+                </div>
+                
+                <div id="keyValueRow" style="display:none">
+                  <table>
+                    <tr class="keyValueClass" style="height:34px">
+                      <td>
+                        <input type="checkbox" name="chk_info" class="input__checkbox" id="chk_info" value="del"><label class="label__checkbox" for="chk_info" >
+                        <input name="display_seq" type="hidden">
+                        <input name="setup_method" type="hidden">
+                      </td>
+                      <td><input name="essential_yn" type="text" class="input__text" readonly style="text-align:center;text-indent:0px"></td>
+                      <td><input name="value_type" type="text" class="input__text" readonly style="text-align:center;text-indent:0px"></td>                      
+                      <td><input name="key" type="text" class="input__text"></td>
+                      <td>
+                        <input name="value" type="text" class="input__text">
+                        <textarea name="textarea_value" class="textarea" style="height: 30px; display: none" readonly></textarea>
+                        <select label="항목값(value)" class="select select--full"  name="select_value" style="display: none">
+                          <option value="">선택</option>
+                        </select>
+                      </td>
+                      <td><input name="item_described" type="text" readonly class="input__text"></td>
+                    </tr>
+                  </table>        
+                </div>
+                </section>
+                
+              <div id="repeatHere"></div>
+              <div id="repeatDiv" style="display:none">
+                <section class="section">
+                <div class="section__header" >
+                    <h4 class="section__title">[<span></span>] 번째 반복 항목 작성</h4>
+                </div>
+                <div class="section__content">
+                  <table class="table--column instanceList" >
+                    <caption>테이블 제목</caption>
+                    <colgroup>
+                      <col width="60px">
+                      <col width="120px">
+                      <col width="150px">
+                      <col width="*">
+                      <col width="150px">                    
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th>필수여부</th>
+                        <th>값 유형</th>
+                        <th>항목명(key)</th>
+                        <th>항목값(value)</th>
+                        <th>항목설명</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+            </fieldset>
+        </form>
+
+        <div class="button__group">
+          <button class="button__outline w-140" type="button" onclick = "javascript:fn_goNext();" style="background-color:white">저장하고 다음단계로</button>
+          <button class="button__outline w-94" type="button" onclick = "javascript:fn_goNext();">다음단계로</button>
+        </div>
+      </div>
+
+
+      <div id="keyValueRow2" style="display:none">
+        <table>
+          <tr class="keyValueClass" style="height:34px">
+            <td>
+              <input name="essential_yn" type="text" class="input__text" readonly style="text-align:center;text-indent:0px">
+              <input name="display_seq" type="hidden">
+              <input name="setup_method" type="hidden">
+            </td>
+            <td><input name="value_type" type="text" class="input__text" readonly style="text-align:center;text-indent:0px"></td>                      
+            <td><input name="key" type="text" class="input__text" readonly></td>
+            <td>
+                <input name="value" type="text" class="input__text">
+                <textarea name="textarea_value" class="textarea" style="height: 30px; display: none" readonly></textarea>
+                <select label="항목값(value)" class="select select--full"  name="select_value" style="display: none">
+                  <option value="">선택</option>
+                </select>
+            </td>
+            <td><input name="item_described" type="text" readonly class="input__text"></td>
+          </tr>
+        </table>        
+      </div>
+
+  
+<script type="text/javascript" th:inline="javascript">
+/*<![CDATA[*/
+var insId = /*[[ ${insId} ]]*/;
+
+var id = /*[[ ${id} ]]*/;
+/*]]>*/
+</script>
+  
+<script type="text/javascript">
+
+  $(document).ready(function() {
+    dataModel_info();
+  });
+  
+  function dataModel_info(){
+    var url = "/conv/"+insId+"/dataModel_Topinfo";
+    cmUtl.exeAjax("GET", url, null, "_cbAfterdataModel_info");
+  }
+  
+  function _cbAfterdataModel_info(data){
+    console.log(data);
+    var agentUrl = "/agentDetail/" + data.agent_id;
+    var adapterUrl = "/instanceDetail/" + data.adapter_id;
+    setNavi("Agent 관리```/agentList/","Agent 목록```/agentList/","Agent 상세```"+ agentUrl,"Instance 관리```"+ adapterUrl,"데이터모델 변환 관리");
+    
+    var str_ob_datamodel = "";
+    var str_st_datamodel = "";
+    
+    if(data.ob_datamodel_id != null && data.ob_datamodel_id != ""){
+      str_ob_datamodel = ' ('+ data.ob_datamodel_id +')';
+    }
+    if(data.st_datamodel_id != null && data.st_datamodel_id != ""){
+      str_st_datamodel = ' ('+ data.st_datamodel_id +')';
+    }
+    
+    var html = '';
+      html += '<tr>';
+      html += '<td>'+data.instance_id+'</td>';
+      html += '<td>'+data.instance_nm+'</td>';
+      html += '<td>'+data.ob_datamodel_nm + str_ob_datamodel +'</td>';
+      html += '<td>'+data.st_datamodel_nm + str_st_datamodel +'</td>';
+      html += '</tr>';
+    $("#dataModelTopInfo > tbody").append(html);
+    
+    var param = "/instanceControl/" + insId + "/insDetail/";    
+    cmUtl.exeAjax("GET", param, null, "_cbAfterInsSelect");
+  } 
+
+  function _cbAfterInsSelect(data){
+    $("#instance_id").val(data.instance_id); 
+    $("#instance_nm").val(data.instance_nm);    
+    $("#adapter_type").val(data.adapter_type_id).prop("selected", true);
+    
+    $("#obModel").val(data.ob_datamodel_id).prop("selected", true);
+    $("#stModel").val(data.st_datamodel_id).prop("selected", true);
+    
+    $("#adapter_type").attr("disabled", true);
+    $('input:radio[name=img_yn]:input[value=' + data.image_extra_use_yn + ']').prop("checked", true);
+    $('input:radio[name=video_yn]:input[value=' + data.video_extra_use_yn + ']').prop("checked", true);
+    $('input:radio[name=datamodel_yn]:input[value=' + data.datamodel_conv_div + ']').prop("checked", true);
+    $('input:radio[name=use_yn]:input[value=' + data.use_yn + ']').prop("checked", true);
+    $("#etc_note").val(data.etc_note);
+    if("Y" == data.datamodel_conv_div){
+      $("#transModelDiv").show();
+    } else if ("N" == data.datamodel_conv_div){
+      $("#transModelDiv").hide();
+    } else {
+      $("#transModelDiv").hide();
+      $("input:radio[name=datamodel_yn]").prop("checked", false);
+    }
+    var ins_id = data.instance_id;
+    var param = "/instanceControl/" + ins_id + "/insItem/";
+    
+    cmUtl.exeAjax("GET", param, null, "_cbAfterInsItemSelect"); 
+  }
+  
+  function _cbAfterInsItemSelect(data){
+    
+    $("#instanceList > tbody > tr").remove();
+    $("#inst_form").show();    
+    if(data.length > 0){
+      cmUtl.showEmptyLine("instanceList", false);
+      for(var i=0; i<data.length; i++){
+        if (data[i].change_able_yn == "Y"){
+          tmpIns = $('#inst_form').children().clone();
+          if(data[i].item != ""){      
+            var tmpObj = $("#keyValueRow").find("tr:first").clone();
+            var chk_id = "chk_info"+i;
+            tmpObj.find("[name=chk_info]").prop("id", chk_id );
+            tmpObj.find("label[for=chk_info]").prop("for", chk_id );
+            $(tmpObj).find("input[name=display_seq]").val(i+1);
+            $(tmpObj).find("input[name=setup_method]").val(data[i].setup_method);
+            $(tmpObj).find("input[name=essential_yn]").val(data[i].essential_yn);
+            $(tmpObj).find("input[name=value_type]").val(data[i].value_type);
+            $(tmpObj).find("input[name=item_described]").val(data[i].item_described);
+            $(tmpObj).find("input[name=change_able_yn]").val(data[i].change_able_yn);
+            $(tmpObj).find("input[name=key]").val(data[i].item);
+            if(data[i].keyvaluetype == 1){
+              $(tmpObj).find("input[name=key]").attr("readonly",true); 
+            }
+            
+            console.log($(tmpIns).find('.instanceList'));
+            $("#instanceList > tbody:last").append($(tmpObj));
+//             if("Y" == data[i].essential_yn){
+//               $("#"+chk_id).attr("disabled", true);
+//             }
+            $(tmpObj).find("input[name=key]").attr("required", true);
+            $(tmpObj).find("input[name=value]").attr("required", true);
+            
+            if("N" == data[i].change_able_yn){
+              $(tmpObj).find("input[name=value]").attr("readonly",true);
+            } else {
+              $(tmpObj).find("input[name=value]").attr("readonly",false);
+            }
+            if("I1201" == data[i].setup_method){
+              $(tmpObj).find("input[name=value]").attr("type", "text");
+              $(tmpObj).find("input[name=value]").attr("required", true);
+              $(tmpObj).find("[name=textarea_value]").attr("required", false);
+              $(tmpObj).find("[name=textarea_value]").hide();
+              $(tmpObj).find("select[name=select_value]").attr("required", false);
+              $(tmpObj).find("select[name=select_value]").hide();
+              $(tmpObj).find("input[name=value]").val(data[i].value);
+            } else if("I1202" == data[i].setup_method){
+              $(tmpObj).find("input[name=value]").attr("type", "hidden");
+              $(tmpObj).find("input[name=value]").attr("required", false);
+              $(tmpObj).find("[name=textarea_value]").attr("required", true);
+              $(tmpObj).find("[name=textarea_value]").show();
+              $(tmpObj).find("select[name=select_value]").attr("required", false);
+              $(tmpObj).find("select[name=select_value]").hide();
+              $(tmpObj).find("[name=textarea_value]").attr("onclick", "layer_popup('layer',this);");
+              $(tmpObj).find("[name=textarea_value]").text(data[i].value);
+            } else if("I1203" == data[i].setup_method){
+              $(tmpObj).find("input[name=value]").attr("type", "hidden");
+              $(tmpObj).find("input[name=value]").attr("required", false);
+              $(tmpObj).find("[name=textarea_value]").attr("required", false);
+              $(tmpObj).find("[name=textarea_value]").hide();
+              $(tmpObj).find("select[name=select_value]").attr("required", true);
+              $(tmpObj).find("select[name=select_value]").show();
+              var setupArray = data[i].select_value.split('|');
+              for(var j=0;j<setupArray.length;j++){
+                $(tmpObj).find("select[name=select_value]").append('<option value="' + setupArray[j] + '">' + setupArray[j] + '</option');
+              }
+              $(tmpObj).find("select[name='select_value']").val(data[i].value).prop("selected", true); 
+            }
+          }
+        }
+      }      
+    }
+    $("#instanceList").procEmptyLine(); // 검색 된 데이터가 없을 경우
+  }
+  
+  $(window).resize(function (){
+    var newWidth = $("#instanceList").width() -520;
+    $("#instanceList").css("display", "block");
+    $("#instanceList").height("170px");
+    $("#instanceList > colgroup").children().eq(4).width(newWidth);
+  })
+
+  function fn_chgChk(obj){
+    //$(".input__checkbox").prop("checked", false);
+    //$(obj).prop("checked", true);
+  }
+  
+  function addRepeatNum() {
+    var repeatNum = $("#repeatNum").val();
+    for (var i=0; i<repeatNum; i++){
+      var tmpIns = $('#repeatDiv').children().clone();
+      tmpIns.find("span").html($("#repeatHere").find("span").length+1);
+      
+      $("#instanceList input:checkbox:checked").each(function (index, obj) {
+        var tmpObj = $("#keyValueRow2").find("tr:first").clone();
+        $(tmpObj).find("input[name=essential_yn]").val($(this).parent().parent().find("input[name=essential_yn]").val());
+        $(tmpObj).find("input[name=value_type]").val($(this).parent().parent().find("input[name=value_type]").val());
+        $(tmpObj).find("input[name=key]").val($(this).parent().parent().find("input[name=key]").val());
+        $(tmpObj).find("input[name=item_described]").val($(this).parent().parent().find("input[name=item_described]").val());
+        
+        var setupMethod = $(this).parent().parent().find("input[name=setup_method]").val();
+        
+        if("I1201" == setupMethod){
+          $(tmpObj).find("input[name=value]").attr("type", "text");
+          $(tmpObj).find("input[name=value]").attr("required", true);
+          $(tmpObj).find("[name=textarea_value]").attr("required", false);
+          $(tmpObj).find("[name=textarea_value]").hide();
+          $(tmpObj).find("select[name=select_value]").attr("required", false);
+          $(tmpObj).find("select[name=select_value]").hide();
+          $(tmpObj).find("input[name=value]").val($(this).parent().parent().find("input[name=value]").val());
+        } else if("I1202" == setupMethod){
+          $(tmpObj).find("input[name=value]").attr("type", "hidden");
+          $(tmpObj).find("input[name=value]").attr("required", false);
+          $(tmpObj).find("[name=textarea_value]").attr("required", true);
+          $(tmpObj).find("[name=textarea_value]").show();
+          $(tmpObj).find("select[name=select_value]").attr("required", false);
+          $(tmpObj).find("select[name=select_value]").hide();
+          $(tmpObj).find("[name=textarea_value]").attr("onclick", "layer_popup('layer',this);");
+          $(tmpObj).find("[name=textarea_value]").text($(this).parent().parent().find("input[name=value]").val());
+        } else if("I1203" == setupMethod){
+          $(tmpObj).find("input[name=value]").attr("type", "hidden");
+          $(tmpObj).find("input[name=value]").attr("required", false);
+          $(tmpObj).find("[name=textarea_value]").attr("required", false);
+          $(tmpObj).find("[name=textarea_value]").hide();
+          $(tmpObj).find("select[name=select_value]").attr("required", true);
+          $(tmpObj).find("select[name=select_value]").show();
+          var setupArray = data[i].select_value.split('|');
+          for(var j=0;j<setupArray.length;j++){
+            $(tmpObj).find("select[name=select_value]").append('<option value="' + setupArray[j] + '">' + setupArray[j] + '</option');
+          }
+          $(tmpObj).find("select[name='select_value']").val($(this).parent().parent().find("input[name=value]").val()).prop("selected", true); 
+        }
+        tmpIns.find("table > tbody:last").append($(tmpObj));
+      }); 
+      $("#repeatHere").append($(tmpIns));      
+    }
+    
+    var newWidth = $("#instanceList").width() -520;
+    $("#instanceList").css("display", "block");
+    $("#instanceList").height("170px");
+    $("#instanceList > colgroup").children().eq(4).width(newWidth);
+  }
+  
+  function fn_goNext(){
+    location.href = "/conv/dataConvert_04/"+id+"/"+insId+"/"
+  }
+  
+</script>
+  
+</div>
+</html>

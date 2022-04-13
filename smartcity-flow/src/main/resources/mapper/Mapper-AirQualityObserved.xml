@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AirQualityObserved">
+
+  <update id="upsertFull" parameterType="map" timeout="360">
+    WITH upsert AS (
+    UPDATE smart_city.air_quality_observed
+    SET
+      modified_at = #{modifiedAt}
+      <if test="location4326 != null">
+        ,LOCATION_4326 = ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326)
+        ,LOCATION_3857 = ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326), 3857)
+      </if>
+      <if test="locationObservedAt != null">,LOCATION_OBSERVED_AT = #{locationObservedAt, typeHandler=com.cityhub.typehandler.TimeStampTypeHandler}::TIMESTAMP WITHOUT TIME ZONE</if>
+      <if test="owner != null">,OWNER = #{owner}</if>
+      <if test="addressCountry != null">,ADDRESS_COUNTRY = #{addressCountry}</if>
+      <if test="addressLocality != null">,ADDRESS_LOCALITY = #{addressLocality}</if>
+      <if test="addressRegion != null">,ADDRESS_REGION = #{addressRegion}</if>
+      <if test="streetAddress != null">,STREET_ADDRESS = #{streetAddress}</if>
+      <if test="addressTown != null">,ADDRESS_TOWN = #{addressTown}</if>
+      <if test="so2 != null">,SO2 = #{so2}</if>
+      <if test="co != null">,CO = #{co}</if>
+      <if test="o3 != null">,O3 = #{o3}</if>
+      <if test="no2 != null">,NO2 = #{no2}</if>
+      <if test="pm10 != null">,PM10 = #{pm10}</if>
+      <if test="pm25 != null">,PM25 = #{pm25}</if>
+      <if test="airObservedAt != null">,AIR_OBSERVED_AT = #{airObservedAt , typeHandler=com.cityhub.typehandler.TimeStampTypeHandler}::TIMESTAMP WITHOUT TIME ZONE</if>
+      <if test="totalIndex != null">,TOTAL_INDEX = #{totalIndex}</if>
+      <if test="totalCategory != null">,TOTAL_CATEGORY = #{totalCategory}</if>
+      <if test="so2Category != null">,SO2_CATEGORY = #{so2Category}</if>
+      <if test="coCategory != null">,CO_CATEGORY = #{coCategory}</if>
+      <if test="o3Category != null">,O3_CATEGORY = #{o3Category}</if>
+      <if test="no2Category != null">,NO2_CATEGORY = #{no2Category}</if>
+      <if test="pm10Category != null">,PM10_CATEGORY = #{pm10Category}</if>
+      <if test="pm25Category != null">,PM25_CATEGORY = #{pm25Category}</if>
+      <if test="airIndexObservedAt != null">,AIR_INDEX_OBSERVED_AT = #{airIndexObservedAt , typeHandler=com.cityhub.typehandler.TimeStampTypeHandler}::TIMESTAMP WITHOUT TIME ZONE</if>
+      <if test="indexRef != null">,INDEX_REF = #{indexRef}</if>
+    WHERE id = #{id}
+    RETURNING *
+    ) INSERT INTO smart_city.air_quality_observed (
+      ID
+      ,CREATED_AT
+      ,MODIFIED_AT
+      ,LOCATION_4326
+      ,LOCATION_3857
+      <if test="locationObservedAt != null">,LOCATION_OBSERVED_AT</if>
+      <if test="owner != null">,OWNER</if>    
+      <if test="addressCountry != null">,ADDRESS_COUNTRY</if>
+      <if test="addressLocality != null">,ADDRESS_LOCALITY</if>
+      <if test="addressRegion != null">,ADDRESS_REGION</if>
+      <if test="streetAddress != null">,STREET_ADDRESS</if>
+      <if test="addressTown != null">,ADDRESS_TOWN</if>
+      <if test="so2 != null">,SO2</if>
+      <if test="co != null">,CO</if>
+      <if test="o3 != null">,O3</if>
+      <if test="no2 != null">,NO2</if>
+      <if test="pm10 != null">,PM10</if>
+      <if test="pm25 != null">,PM25</if>
+      <if test="airObservedAt != null">,AIR_OBSERVED_AT</if>
+      <if test="totalIndex != null">,TOTAL_INDEX</if>
+      <if test="totalCategory != null">,TOTAL_CATEGORY</if>
+      <if test="so2Category != null">,SO2_CATEGORY</if>
+      <if test="coCategory != null">,CO_CATEGORY</if>
+      <if test="o3Category != null">,O3_CATEGORY</if>
+      <if test="no2Category != null">,NO2_CATEGORY</if>
+      <if test="pm10Category != null">,PM10_CATEGORY</if>
+      <if test="pm25Category != null">,PM25_CATEGORY</if>
+      <if test="airIndexObservedAt != null">,AIR_INDEX_OBSERVED_AT</if>
+      <if test="indexRef != null">,INDEX_REF</if>
+    )
+    SELECT
+      #{id}
+      ,#{createdAt}
+      ,#{modifiedAt}
+      ,ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326)
+      ,ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326), 3857)
+      <if test="locationObservedAt != null">,#{locationObservedAt, typeHandler=com.cityhub.typehandler.TimeStampTypeHandler}::TIMESTAMP WITHOUT TIME ZONE</if>
+      <if test="owner != null">,#{owner}</if>
+      <if test="addressCountry != null">,#{addressCountry}</if>
+      <if test="addressLocality != null">,#{addressLocality}</if>
+      <if test="addressRegion != null">,#{addressRegion}</if>
+      <if test="streetAddress != null">,#{streetAddress}</if>
+      <if test="addressTown != null">,#{addressTown}</if>
+      <if test="so2 != null">,#{so2}</if>
+      <if test="co != null">,#{co}</if>
+      <if test="o3 != null">,#{o3}</if>
+      <if test="no2 != null">,#{no2}</if>
+      <if test="pm10 != null">,#{pm10}</if>
+      <if test="pm25 != null">,#{pm25}</if>
+      <if test="airObservedAt != null">,#{airObservedAt, typeHandler=com.cityhub.typehandler.TimeStampTypeHandler}::TIMESTAMP WITHOUT TIME ZONE</if>
+      <if test="totalIndex != null">,#{totalIndex}</if>
+      <if test="totalCategory != null">,#{totalCategory}</if>
+      <if test="so2Category != null">,#{so2Category}</if>
+      <if test="coCategory != null">,#{coCategory}</if>
+      <if test="o3Category != null">,#{o3Category}</if>
+      <if test="no2Category != null">,#{no2Category}</if>
+      <if test="pm10Category != null">,#{pm10Category}</if>
+      <if test="pm25Category != null">,#{pm25Category}</if>
+      <if test="airIndexObservedAt != null">,#{airIndexObservedAt, typeHandler=com.cityhub.typehandler.TimeStampTypeHandler}::TIMESTAMP WITHOUT TIME ZONE</if>
+      <if test="indexRef != null">,#{indexRef}</if>
+    WHERE NOT EXISTS (SELECT * FROM upsert)
+  </update>
+
+
+  <insert id="insertHist" parameterType="map" timeout="360">
+    INSERT INTO smart_city.air_quality_observed_hist (
+      id
+      ,modified_at
+      ,operation
+      ,location_4326
+      ,location_3857
+      <if test="locationObservedAt != null">,location_observed_at</if>
+      <if test="owner != null">,owner</if>
+      <if test="addressCountry != null">,address_country</if>
+      <if test="addressLocality != null">,address_locality</if>
+      <if test="addressRegion != null">,address_region</if>
+      <if test="streetAddress != null">,street_address</if>
+      <if test="addressTown != null">,address_town</if>
+      <if test="so2 != null">,so2</if>
+      <if test="co != null">,co</if>
+      <if test="o3 != null">,o3</if>
+      <if test="no2 != null">,no2</if>
+      <if test="pm10 != null">,pm10</if>
+      <if test="pm25 != null">,pm25</if>
+      <if test="airObservedAt != null">,air_observed_at</if>
+      <if test="totalIndex != null">,total_index</if>
+      <if test="totalCategory != null">,total_category</if>
+      <if test="so2Category != null">,so2_category</if>
+      <if test="coCategory != null">,co_category</if>
+      <if test="o3Category != null">,o3_category</if>
+      <if test="no2Category != null">,no2_category</if>
+      <if test="pm10Category != null">,pm10_category</if>
+      <if test="pm25Category != null">,pm25_category</if>
+      <if test="airIndexObservedAt != null">,air_index_observed_at</if>
+      <if test="indexRef != null">,index_ref</if>
+    ) VALUES (
+      #{id}
+      ,#{modifiedAt}
+      ,#{operation}
+      ,ST_GeomFromGeoJSON(#{location4326})
+      ,ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326), 3857)
+      <if test="locationObservedAt != null">,#{locationObservedAt, typeHandler=com.cityhub.typehandler.TimeStampTypeHandler}::TIMESTAMP WITHOUT TIME ZONE</if>
+      <if test="owner != null">,#{owner}</if>
+      <if test="addressCountry != null">,#{addressCountry}</if>
+      <if test="addressLocality != null">,#{addressLocality}</if>
+      <if test="addressRegion != null">,#{addressRegion}</if>
+      <if test="streetAddress != null">,#{streetAddress}</if>
+      <if test="addressTown != null">,#{addressTown}</if>
+      <if test="so2 != null">,#{so2}</if>
+      <if test="co != null">,#{co}</if>
+      <if test="o3 != null">,#{o3}</if>
+      <if test="no2 != null">,#{no2}</if>
+      <if test="pm10 != null">,#{pm10}</if>
+      <if test="pm25 != null">,#{pm25}</if>
+      <if test="airObservedAt != null">,#{airObservedAt, typeHandler=com.cityhub.typehandler.TimeStampTypeHandler}::TIMESTAMP WITHOUT TIME ZONE</if>
+      <if test="totalIndex != null">,#{totalIndex}</if>
+      <if test="totalCategory != null">,#{totalCategory}</if>
+      <if test="so2Category != null">,#{so2Category}</if>
+      <if test="coCategory != null">,#{coCategory}</if>
+      <if test="o3Category != null">,#{o3Category}</if>
+      <if test="no2Category != null">,#{no2Category}</if>
+      <if test="pm10Category != null">,#{pm10Category}</if>
+      <if test="pm25Category != null">,#{pm25Category}</if>
+      <if test="airIndexObservedAt != null">,#{airIndexObservedAt, typeHandler=com.cityhub.typehandler.TimeStampTypeHandler}::TIMESTAMP WITHOUT TIME ZONE</if>
+      <if test="indexRef != null">,#{indexRef}</if>
+    )
+  </insert>
+
+
+
+</mapper>

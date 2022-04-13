@@ -1,0 +1,132 @@
+spring:
+  application:
+    name: DH-CONNECTIVITY
+  profiles:
+    active: local # 기본 환경 선택
+  thymeleaf:
+    prefix: classpath:templates/
+    check-template-location: true
+    suffix: .html
+    mode: HTML
+    cache: false
+  #mvc.throw-exception-if-no-handler-found: true
+  #resources.add-mappings: false
+
+gateway: 
+  yn: N
+  url: http://13.124.164.104:8080
+#http://13.124.164.104:8080
+#http://10.0.0.254:8080
+
+ingest:
+  server: http://192.168.1.192:8084/entityOperations/upsert
+  yn: Y
+
+
+hdfs:
+  server: hdfs://192.168.1.182:8020
+  yn: false
+
+#1핵심 3핵심 구분에 따른 메뉴 표기에 따라 해당 핵심 구분을해줘야함  
+core:
+  type: 1
+
+server:
+  port: 8080
+
+logging:
+  config: classpath:config/log4j2.xml
+
+# mybatis info
+mybatis: 
+  type-aliases-package: com.cityhub.web
+  configuration:
+    callSettersOnNulls: true
+    
+
+# auth info
+auth.yn: Y
+authEndpoint : http://203.253.128.181:30084/oauth2.0/authorize
+responseType : code  
+tokenEndpoint: http://203.253.128.181:30084/oauth2.0/token
+userId: cityhub03
+userPassword: cityhub03!
+publicKeyEndPoint: http://203.253.128.181:30084/security/publickey
+getInfoEndPoint: http://203.253.128.181:30084/security/users/cityhub03
+logoutEndPoint: http://203.253.128.181:30084/security/logout
+redirectUri: http://222.107.32.38:18080
+clientId: ne5EhxiRYBtfFBIjKcOC  
+clientSecret: LzJY7pTTLVGN8PQRAdo78qmjPQHjG1FF  
+grantType: 
+  auth: authorization_code
+  client: client_credentials
+  password: password
+  refresh: refresh_token
+
+
+
+
+# 로컬운용
+---
+spring:
+  profiles: local 
+  datasource:
+    url: jdbc:postgresql://192.168.1.204:5432/postgres
+    username: postgres 
+    password: pine1234!@#$
+    driver-class-name: org.postgresql.Driver
+daemon:
+  daemonSrv: http://192.168.1.181:8888
+  configUrl: ${daemon.daemonSrv}/exec/config
+  agentUrl: ${daemon.daemonSrv}/exec/agent
+  logUrl: ${daemon.daemonSrv}/exec/logger
+  compileUrl: ${daemon.daemonSrv}/exec/compile
+  schemaServer: http://192.168.1.192:8083/datamodels
+eureka:
+  client:
+    enabled: false  
+
+# 개발
+---
+spring:
+  profiles: dev 
+  datasource:
+    url: jdbc:postgresql://192.168.1.192:5432/postgres
+    username: postgres
+    password: pine1234!@#$
+    driver-class-name: org.postgresql.Driver
+daemon:
+  daemonSrv: http://192.168.1.192:8888
+  configUrl: ${daemon.daemonSrv}/exec/config
+  agentUrl: ${daemon.daemonSrv}/exec/agent
+  logUrl: ${daemon.daemonSrv}/exec/logger
+  compileUrl: ${daemon.daemonSrv}/exec/compile
+  schemaServer: http://192.168.1.192:8083/datamodels
+eureka:
+  client:
+    enabled: false  
+
+# 클라우드
+---
+spring:
+  profiles: cloud
+  datasource:
+    url: jdbc:postgresql://192.168.1.192:5432/postgres
+    username: postgres
+    password: pine1234!@#$
+    driver-class-name: org.postgresql.Driver
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://133.186.162.81:8888/eureka, http://133.186.162.82:8888/eureka, http://133.186.162.83:8888/eureka
+daemon:
+  daemonSrv: http://133.186.162.229:8888
+  configUrl: ${daemon.daemonSrv}/exec/config
+  agentUrl: ${daemon.daemonSrv}/exec/agent
+  logUrl: ${daemon.daemonSrv}/exec/logger
+  compileUrl: ${daemon.daemonSrv}/exec/compile
+  schemaServer: http://192.168.1.192:8083/datamodels   

@@ -1,0 +1,35 @@
+{
+   "@context": [
+      "http://uri.etsi.org/ngsi-ld/core-context.jsonld",
+      "http://cityhub.kr/ngsi-ld/airquality.jsonld"
+   ],
+   "id": null,
+   "type": "HealthWeatherIndex",
+   "location": {
+      "type": "GeoProperty",
+      "value": {
+         "type": "Point",
+         "coordinates": null
+      },
+      "observedAt": null
+   },
+   "address": {
+      "type": "Property",
+      "value": {
+         "addressCountry": null,
+         "addressRegion": null,
+         "addressLocality": null,
+         "streetAddress": null,
+         "addressTown": null
+      }
+   },
+
+   "asthmaIndex": null,
+   "strokeIndex": null,
+   "foodpoisonIndex": null,
+   "oakpollenriskIndex": null,
+   "pinepollenriskIndex": null,
+   "weedspollenriskIndex": null,
+   "coldIndex": null,
+   "skindiseaseIndex": null,
+}

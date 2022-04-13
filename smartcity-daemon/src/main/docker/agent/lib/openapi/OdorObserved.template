@@ -1,0 +1,55 @@
+{
+   "@context": [
+      "http://uri.etsi.org/ngsi-ld/core-context.jsonld",
+      "http://cityhub.kr/ngsi-ld/weather.jsonld"
+   ],
+   "id": null,
+   "type": "WeatherObserved",
+   "location": {
+      "type": "GeoProperty",
+      "value": {
+         "type": "Point",
+         "coordinates": null
+      },
+      "observedAt": null
+   },
+   "address": {
+      "type": "Property",
+      "value": {
+         "addressCountry": null,
+          "streetAddress": null,
+          "addressLocality": null,
+          "addressRegion": null,
+          "addressTown": null
+      }
+   },
+   "h2s": {
+      "type": "Property",
+      "value": ""
+   },
+   "nh3": {
+      "type": "Property",
+      "value": ""
+   },
+   "ou": {
+      "type": "Property",
+      "value": ""
+   },
+   "refDevice": {
+      "type": "Property",
+      "value": ""
+   },
+   "source": {
+      "type": "Property",
+      "value": ""
+   },
+   "tod": {
+      "type": "Property",
+      "value": ""
+   },
+   "voc": {
+      "type": "Property",
+      "value": ""
+   }
+
+}

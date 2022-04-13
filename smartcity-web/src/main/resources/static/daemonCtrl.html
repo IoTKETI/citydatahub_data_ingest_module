@@ -1,0 +1,114 @@
+<html>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<head>
+<title></title>
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<style type="text/css">
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#header {
+  position: fixed;
+  top: 0;
+  left: 50px;
+  width: 100%;
+  height: 10%;
+}
+
+#console {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 90%;
+  background-color: black;
+  color: white;
+  font-size: 15px;
+}
+
+</style>
+<script type="text/javascript">
+  var consoleLog;
+
+  $(document).ready(function() {
+    consoleLog = $('#console');
+
+    $('#startDaemon').on('click', function() {
+      var form = {
+          "id" : "에이전트id"
+        };
+      $.ajax({
+        method : 'post',
+        url : '/agent/start', // #### Caution: The name of the source file
+        contentType : "application/json",
+        dataType : 'json',
+        data : JSON.stringify(form),
+        success : function(data) {
+          logdata = data;
+          
+          consoleLog.val(consoleLog.val() + JSON.stringify(logdata) + "\n");
+          consoleLog.scrollTop(consoleLog.prop('scrollHeight'));
+
+          
+        }
+      });
+    });
+    $('#stopDaemon').on('click', function() {
+      var form = {
+          "id" : "에이전트id"
+        };
+      $.ajax({
+        method : 'post',
+        url : '/agent/stop', // #### Caution: The name of the source file
+        contentType : "application/json",
+        dataType : 'json',
+        data : JSON.stringify(form),
+        success : function(data) {
+          logdata = data;
+          
+          consoleLog.val(consoleLog.val() + JSON.stringify(logdata) + "\n");
+          consoleLog.scrollTop(consoleLog.prop('scrollHeight'));
+
+          
+        }
+      });
+    });
+    $('#restartDaemon').on('click', function() {
+      var form = {
+          "id" : "에이전트id"
+        };
+      $.ajax({
+        method : 'post',
+        url : '/agent/restart', // #### Caution: The name of the source file
+        contentType : "application/json",
+        dataType : 'json',
+        data : JSON.stringify(form),
+        success : function(data) {
+          logdata = data;
+          
+          consoleLog.val(consoleLog.val() + JSON.stringify(logdata) + "\n");
+          consoleLog.scrollTop(consoleLog.prop('scrollHeight'));
+
+          
+        }
+      });      
+    });
+
+  });
+</script>
+</head>
+<body>
+  <div id="header">
+    <h2>데몬서버 관리</h2>
+    
+    <input id="startDaemon" type="button" value="start" />&nbsp;&nbsp;&nbsp; 
+    <input id="stopDaemon" type="button" value="stop" />&nbsp;&nbsp;&nbsp; 
+    <input id="restartDaemon" type="button" value="restart" />&nbsp;&nbsp;&nbsp;
+
+
+  </div>
+  <textarea id="console"></textarea>
+</body>
+</html>

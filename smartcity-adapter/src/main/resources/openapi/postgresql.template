@@ -1,0 +1,16 @@
+{
+   "@context": [
+      "http://uri.etsi.org/ngsi-ld/core-context.jsonld",
+      "http://cityhub.kr/ngsi-ld/postgresql.jsonld"
+   ],
+   "id": null,
+   "type": "postgresql",
+   "ob_datamodel_id": {
+      "type": "Property",
+      "value": null
+   },
+   "ob_datamodel_nm": {
+      "type": "Property",
+      "value": null
+   }
+}

@@ -1,0 +1,58 @@
+{
+  "@context": [
+    "http://uri.etsi.org/ngsi-ld/core-context.jsonld",
+    "http://datahub.kr/bankdailyindex.jsonld"
+  ],
+  "id": "8800000000000000000",
+  "type": "BankDailyIndex",
+  "location": {
+    "type": "GeoProperty",
+    "value": {
+      "type": "Point",
+      "coordinates": [
+        127.1293735,
+        37.4114423
+      ]
+    }
+  },
+  "CD91": {
+    "type": "Property",
+    "value": "-",
+    "observedAt": "-"
+  },
+  "KTB3": {
+    "type": "Property",
+    "value": "-",
+    "observedAt": "-"
+  },
+  "CB3": {
+    "type": "Property",
+    "value": "-",
+    "observedAt": "-"
+  },
+  "wonDollar": {
+    "type": "Property",
+    "value": "-",
+    "observedAt": "-"
+  },
+  "wonYuan": {
+    "type": "Property",
+    "value": "-",
+    "observedAt": "-"
+  },
+  "yenDollar": {
+    "type": "Property",
+    "value": "-",
+    "observedAt": "-"
+  },
+  "KOSPI": {
+    "type": "Property",
+    "value": "-",
+    "observedAt": "-"
+  },
+  "KOSDAQ": {
+    "type": "Property",
+    "value": "-",
+    "observedAt": "-"
+  }
+}

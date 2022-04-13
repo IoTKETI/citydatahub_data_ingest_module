@@ -1,0 +1,35 @@
+{
+   "@context": [
+      "http://uri.etsi.org/ngsi-ld/core-context.jsonld",
+      "http://cityhub.kr/ngsi-ld/u-cityplatform.jsonld"
+   ],
+   "id": "urn:datahub:UCityPlatformEvent:4010000.112UC001",
+   "type": "UCityPlatformEvent",
+   "location": {
+      "type": "GeoProperty",
+      "value": {
+         "type": "Point",
+         "coordinates": [
+            126.7327753,
+            37.3726657
+         ]
+      }
+   },
+   "address": {
+      "type": "Property",
+      "value": {
+         "addressCountry": null,
+         "addressRegion": null,
+         "addressLocality": null,
+         "streetAddress": null,
+         "addressTown": null
+      }
+   },
+   "eventType": null,
+   "eventName": null,
+   "grade": null,
+   "status": null,
+   "content": null,   
+   "generatedAt": null,   
+   "finishedAt": null
+}

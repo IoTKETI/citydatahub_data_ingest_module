@@ -1,0 +1,52 @@
+{
+   "@context": [
+      "http://uri.etsi.org/ngsi-ld/core-context.jsonld",
+      "http://cityhub.kr/ngsi-ld/parking.jsonld"
+   ],
+   "id": null,
+   "type": "ParkingSpot",
+   "name": {
+      "type": "Property",
+      "value": null
+   },
+   "location": {
+      "type": "GeoProperty",
+      "value": {
+         "type": "Point",
+         "coordinates": null
+      }
+   },
+   "address": {
+      "type": "Property",
+      "value": {
+         "addressCountry": null,
+         "addressRegion": null,
+         "addressLocality": null,
+         "streetAddress": null,
+         "addressTown": null
+      }
+   },
+   "category": {
+      "type": "Property",
+      "value": [
+         "forDisabled"
+      ]
+   },
+   "width": {
+      "type": "Property",
+      "value": 2.5
+   },
+   "length": {
+      "type": "Property",
+      "value": 5.1
+   },
+   "status": {
+      "type": "Property",
+      "value": "free",
+      "observedAt": "2018-11-15T20:09:55,000Z"
+   },
+   "refParkingLot": {
+      "type": "Property",
+      "value": "urn:ngsi-ld:OffStreetParking:5038"
+   }
+}

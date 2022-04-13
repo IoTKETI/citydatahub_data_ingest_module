@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.postgresql">
+  
+  <insert id="insertQuery" parameterType="map"  timeout="360">
+  insert into #{tableName} (
+    id, name,contents
+  ) values (
+    #{id}, #{name}, #{contents}
+  ) 
+  </insert>
+
+  <select id="selectFirst" resultType="map"  timeout="360">
+  SELECT seq, id, name, contents, regdt, dou, big, fl, inte, ti, ti2, te, nu, ch   
+  FROM test 
+  </select>
+  
+
+</mapper>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sd="http://www.thymeleaf.org/spring-data" layout:decorator="layout/popup" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">모니터링</title>
+</head>
+<body>
+  <div class="container" layout:fragment="content">
+
+    <div class="modal__header">
+      <h4 class="modal__title">팝업창제목</h4>
+    </div>
+    <div class="modal__body">
+      <div class="section">
+      
+      
+        <!-- 내용  -->        
+        <div class="section__header">
+          <h4 class="section__title" id="item_nm"></h4>
+          <div class="button__group">
+            <button id="apply" class="button__outline button__modal--close" type="button">적용</button>
+          </div>
+        </div>
+        <div class="section__content">
+        </div>
+        <div class="section__content">
+          <table class="table--column table--view">
+            <caption>테이블 제목</caption>
+            <colgroup>
+              <col style="width: 100%">
+            </colgroup>
+            <thead>
+            </thead>
+            <tbody>
+              <tr>
+                <td><textarea style="width: 98%;height:300px"  class="console textarea" id="tailConsole" th:text="${result.item_value}"></textarea></td>
+                <td><input type="hidden" id="page_title" th:value="${result.item_nm}" > <input type="hidden" id="seq" th:value="${result.item_seq}" > </td>  
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+
+        <!-- // 내용  -->
+
+      </div>
+    </div>
+    <div class="modal__footer">
+      <!-- <button class="button__primary" type="button">검색</button> -->
+      <button class="button__secondary button__modal--close" type="button">닫기</button>
+    </div>
+
+<script th:inline="javascript">
+
+var endPoint = 0;
+var tailFlag = false;
+var tailConsoleLog;
+var runningFlag;
+var timer
+
+  $(document).ready(function() {
+    var item_nm = $("#page_title").val();    
+    $("#item_nm").text("[ "+item_nm + " ] 항목 값 설정");
+    $(".button__modal--close").click(function(data) {
+      var data = {"value": $("#tailConsole").val(), "seq":$("#seq").val()};
+      console.log(data);
+      $("#divLayerPopup").empty();
+      clearTimeout(timer);
+      if ( _cbFunc != "" ) {
+        try { eval( _cbFunc+"(data)" ); } catch(e){}
+      }
+    });
+  });
+
+
+ 
+
+
+  
+</script>
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sd="http://www.thymeleaf.org/spring-data" layout:decorator="layout/main" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">모니터링</title>
+<script type="text/javascript" th:inline="javascript">
+/*<![CDATA[*/
+var adapter_id = /*[[ ${adtId} ]]*/;
+/*]]>*/
+
+var select_adapter_id = "";
+var select_status = "";
+function layer_popup(el, adapter_id, status){
+  select_adapter_id = adapter_id;
+  select_status = status;
+  $('#select_adapter_id').html(select_adapter_id);
+  
+  if(select_status == "Stop"){
+    $("#startDaemon").show();
+    $("#stopDaemon").hide();
+    $("#restartDaemon").hide();
+  }else if(select_status == "Running"){
+    $("#startDaemon").hide();
+    $("#stopDaemon").show();
+    $("#restartDaemon").show();
+  }
+  
+  var $el = $('#'+el);        //레이어의 id를 $el 변수에 저장
+  var isDim = $el.prev().hasClass('dimBg');   //dimmed 레이어를 감지하기 위한 boolean 변수
+
+  isDim ? $('.dim-layer').fadeIn() : $el.fadeIn();
+
+  var $elWidth = ~~($el.outerWidth()),
+      $elHeight = ~~($el.outerHeight()),
+      docWidth = $(document).width(),
+      docHeight = $(document).height();
+
+  // 화면의 중앙에 레이어를 띄운다.
+  if ($elHeight < docHeight || $elWidth < docWidth) {
+      $el.css({
+          marginTop: -$elHeight /2,
+          marginLeft: -$elWidth/2 + 125
+      })
+  } else {
+      $el.css({top: 0, left: 0});
+  }
+  
+  
+  $("#pop-conts").load("daemonCtrl.html");
+  
+  
+  $el.find('.btn-layerClose').click(function(){
+    isDim ? $('.dim-layer').fadeOut() : $el.fadeOut(); // 닫기 버튼을 클릭하면 레이어가 닫힌다.
+    return false;
+  });
+  
+  $('.layer .dimBg').click(function(){
+      $('.dim-layer').fadeOut();
+      return false;
+  });
+  
+  $( "#startTail" ).trigger( "click" );
+}
+</script>
+</head>
+<body>
+  <div class="container" layout:fragment="content">
+    <h3 class="content__title">모니터링</h3>
+
+
+    <section class="section">
+      <div class="section__header">
+        <h4 class="section__title">Adapter 상세정보</h4>
+      </div>
+      <div class="section__content">
+        <table class="table--row table--view">
+          <caption>테이블 제목</caption>
+          <colgroup>
+            <col style="width: 150px">
+            <col style="width: auto">
+            <col style="width: 150px">
+            <col style="width: auto">
+          </colgroup>
+          <tbody>
+            <tr>
+              <th>Adapter ID</th>
+              <td th:text="${adapter_id}"></td>
+              <th>Adapter 명</th>
+              <td th:text="${adapter_nm}"></td>
+            </tr>
+            <tr>
+              <th>IP</th>
+              <td><select class="select" name="adapter_type" id="adapter_type" style="width: 300px" disabled>
+                  <option value="">선택</option>
+                  <option th:each="itemData : ${adapter_type}" th:text="${itemData.code_nm}"></option>
+              </select></td>
+              <th>상태</th>
+              <td th:text="${status}"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="button__group">
+        <!-- <button class="button__primary" type="button">수정</button><button class="button__secondary" type="button">목록</button> -->
+      </div>
+    </section>
+
+
+    <form>
+      <fieldset>
+        <legend>필드셋 제목</legend>
+        <section class="section">
+          <div class="section__header">
+            <h4 class="section__title">상세 목록</h4>
+          </div>
+          <div class="section__content">
+            <table class="table--column" id="AdtFeedback">
+              <caption>상세 목록</caption>
+              <colgroup>
+                <col style="width: 50px">
+                <col style="width: 100px">
+                <col style="width: *">
+                <col style="width: 120px">
+                <col style="width: 70px">
+                <col style="width: 50px">
+                <col style="width: 80px">
+                <col style="width: 80px">
+                <col style="width: 80px">
+                <col style="width: 80px">
+                <col style="width: 120px">
+                <col style="width: 90px">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>순번</th>
+                  <th>인스턴스 ID</th>
+                  <th>인스턴스 명</th>
+                  <th>표준데이터 모델</th>
+                  <th>원천데이터 모델</th>
+                  <th>상태<br>(사용여부)
+                  </th>
+                  <th>Messages<br>in / hour
+                  </th>
+                  <th>Messages<br>out / hour
+                  </th>
+                  <th>Bytes<br>in / hour
+                  </th>
+                  <th>Bytes<br>out / hour
+                  </th>
+                  <th>Failure Messages<br>/ hour
+                  </th>
+                  <th>상세<br>설정정보
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
+
+          </div>
+          <div class="button__group"></div>
+        </section>
+      </fieldset>
+    </form>
+
+
+    
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    search_instance_list();
+  });
+  
+  function search_instance_list() {
+    
+    var param = "/instanceListAll/"+adapter_id;
+    
+    var type = "GET";
+    $.ajax({
+      type : type,
+      contentType : "application/json",
+      url : param,
+      dataType : 'json',
+      param : {'agent_id':$("#agent_id").val()},
+      cache : false,
+      timeout : 600000,
+      success : function(data) {
+        cmUtl.showEmptyLine('AdtFeedback', false);
+        if (data.length == 0) {
+          cmUtl.showEmptyLine('AdtFeedback', true);
+        }else{
+          
+          var html = '';
+          for(var i=0; i<data.length; i++){
+            
+            html += '<tr>';
+            html += '<td>'+(i+1)+'</td>'; 
+            html += '<td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:100px;text-align:center;text-decoration:underline;color:blue;cursor:pointer" bgcolor="#ffffff">'+data[i].instance_id+'</td>';
+            html += '<td>'+data[i].instance_nm+'</td>';
+            html += '<td></td>';
+            html += '<td></td>';
+            html += '<td>'+data[i].use_yn+'</td>';
+            
+            //여기에 내용 추가
+            html += '<td></td>';
+            html += '<td></td>';
+            html += '<td></td>';
+            html += '<td></td>';
+            html += '<td></td>';
+            //여기에 내용 추가
+            
+            html += '<td><span id="Monit_'+data[i].adapter_id+'"></span></td>';
+            html += '</tr>';
+          }
+          
+          $('#AdtFeedback > tbody').append(html);
+          
+          
+          for(var i=0; i<data.length; i++){
+            var adapter_id = data[i].adapter_id;
+            var form = {
+                "id" : adapter_id
+              };
+            var status = "";
+            
+            $.ajax({
+              method : 'post',
+              url : '/agent/status', // #### Caution: The name of the source file
+              contentType : "application/json",
+              dataType : 'json',
+              data : JSON.stringify(form),
+              async: false,
+              success : function(data2) {
+                
+                if(data2.status == "running"){
+                  status = "Running";
+                }else if(data2.status == "stop"){
+                  status = "Stop";
+                }
+                $("#Status_"+adapter_id).html(status);
+                
+                if(status != ""){
+                  $("#Monit_"+adapter_id).html('<a href="#" onclick="layer_popup(\'layer2\',\''+adapter_id+'\', \''+status+'\');"><img src="/asset/images/mointering.png"></a>');  
+                }
+                
+              },
+              error : function(e) {
+                status = "상태조회실패";
+                $("#Status_"+adapter_id).html(status);
+              }
+            });
+          }
+
+          
+        }
+      },
+      error : function(e) {
+        var result = JSON.parse(e.responseText);
+        if(result.resultCode == "404"){
+          cmUtl.showEmptyLine('AdtFeedback', true);
+        }
+      }
+    });
+  }
+  
+</script>
+
+
+    <script>setNavi("Agent","Adapter");</script>
+  </div>
+</body>
+</html>

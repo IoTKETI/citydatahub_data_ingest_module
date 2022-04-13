@@ -1,0 +1,40 @@
+{
+   "@context": [
+      "http://uri.etsi.org/ngsi-ld/core-context.jsonld",
+      "http://cityhub.kr/ngsi-ld/livinglab.jsonld"
+   ],
+   "id": "urn:datahub:AirQualityMeasurement:4010000.V01O0000000",
+   "type": "AirQualityMeasurement",   
+   "createdAt": "2020-09-03T09:12:29,000+09:00",
+   "modifiedAt": "2020-09-03T09:12:29,000+09:00",
+   "location": {
+      "type": "GeoProperty",
+      "value": {
+         "type": "Point",
+         "coordinates": [
+            126.779079,
+            37.431273
+         ]
+      }
+   },
+   "address": {
+      "type": "Property",
+      "value": {
+         "addressCountry": "KR",
+         "addressRegion": "Gyeonggi-do",
+         "addressLocality": "Siheung-si",
+         "streetAddress": "384 Cheongryong Jeosuji-gil",
+         "addressTown": "Bangsan-dong"
+      }
+   },
+   "deviceType": "stationary",
+   "deviceId": "V01O0000000",
+   "pm10": 56,
+   "pm25": 12,
+   "temper": 23.5,         
+   "humid": 35,
+   "vocs": 100,
+   "tod": 5,
+   "h2s": 35.14,
+   "nh3": 58
+}

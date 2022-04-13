@@ -1,0 +1,46 @@
+{
+  "@context": [
+    "http://uri.etsi.org/ngsi-ld/core-context.jsonld",
+    "http://datahub.kr/weatherwho.jsonld"
+  ],
+  "id": "8800000000000000000",
+  "type": "WeatherWho",
+  "location": {
+    "type": "GeoProperty",
+    "value": {
+      "type": "Point",
+      "coordinates": [
+        126.7349678,
+        37.3564022
+      ]
+    }
+  },
+  "asthma": {
+    "type": "Property",
+    "value": "0"
+  },
+  "brain": {
+    "type": "Property",
+    "value": "0"
+  },
+  "skin": {
+    "type": "Property",
+    "value": "0"
+  },
+  "flowerWoody": {
+    "type": "Property",
+    "value": "0"
+  },
+  "flowerPine": {
+    "type": "Property",
+    "value": "0"
+  },
+  "flowerWeeds": {
+    "type": "Property",
+    "value": "0"
+  },
+  "infl": {
+    "type": "Property",
+    "value": "0"
+  }
+}

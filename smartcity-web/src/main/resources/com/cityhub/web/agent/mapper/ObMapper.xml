@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cityhub.web.agent.mapper.ObMapper">
+  
+  <select id="getAll" resultType="map">
+    SELECT ob_datamodel_id, ob_datamodel_nm, ob_datamodel_format, to_char(first_create_dt, 'YYYY-MM-DD HH24:MI:SS') AS first_create_dt, described,use_yn
+    FROM ob_datamodel
+    ORDER BY first_create_dt desc     
+  </select>
+  <select id="selectId" resultType="map">
+    SELECT ob_datamodel_id, ob_datamodel_nm, ob_datamodel_phy_nm, ob_datamodel_div, ob_system_nm, described, ownership, ob_datamodel_format, use_yn, first_create_dt
+           , first_create_id, last_update_dt, last_update_id
+    FROM ob_datamodel 
+    WHERE ob_datamodel_id =  #{ob_datamodel_id}
+  </select>
+  
+    <select id="searchNm"  parameterType="map" resultType="map">
+    SELECT ob_datamodel_id, ob_datamodel_nm, ob_datamodel_phy_nm, ob_datamodel_div, ob_system_nm, described, ownership, ob_datamodel_format, use_yn
+            , to_char(first_create_dt, 'yyyy-mm-dd hh24:mi:ss') as first_create_dt
+           , first_create_id, last_update_dt, last_update_id
+    FROM ob_datamodel 
+    where 1=1 
+      <if test="ob_datamodel_nm != null and ob_datamodel_nm != '' ">
+      and ob_datamodel_nm like '%'||#{ob_datamodel_nm}||'%'
+      </if>
+  </select>
+  
+
+  <select id="selectItem" resultType="map">
+    SELECT  ob_datamodel_id, ob_datamodel_seq, property_nm, property, COALESCE(property_path,'') as property_path, COALESCE(property_structure,'') as property_structure
+    , type
+    , (select code_nm from comm_code where code_id = a.type) AS type_nm
+    , option, described, first_create_dt, first_create_id, last_update_dt, last_update_id
+    FROM ob_datamodel_conf a
+    where ob_datamodel_id =  #{ob_datamodel_id}
+  </select>
+
+  <select id="isExist" resultType="boolean">
+    SELECT CASE WHEN COUNT(1) > 0 THEN TRUE ELSE FALSE END
+    FROM ob_datamodel 
+    WHERE ob_datamodel_id = #{ob_datamodel_id}
+  </select>
+  
+  <select id="isExistIns" resultType="boolean">
+    SELECT CASE WHEN COUNT(1) > 0 THEN TRUE ELSE FALSE END
+    FROM dm_transform_info 
+    WHERE ob_datamodel_id = #{ob_datamodel_id}
+  </select>
+  
+
+  <insert id="insert" parameterType="map" useGeneratedKeys="true" keyProperty="ob_datamodel_id">
+    INSERT INTO ob_datamodel (
+      ob_datamodel_id, ob_datamodel_nm, ob_datamodel_phy_nm, ob_datamodel_div, ob_system_nm, described, ownership, ob_datamodel_format
+      , use_yn, first_create_dt, first_create_id, last_update_dt, last_update_id 
+    ) VALUES (
+      #{ob_datamodel_id}, #{ob_datamodel_nm}, #{ob_datamodel_phy_nm}, #{ob_datamodel_div}, #{ob_system_nm}, #{described}, #{ownership}, #{ob_datamodel_format}
+      , #{use_yn}, now(), #{user_id}, now(), #{user_id} 
+    )
+  </insert>
+
+  <update id="update" parameterType="map" >
+    UPDATE ob_datamodel
+    SET
+      last_update_dt = now()
+      <if test="last_update_id != null and last_update_id != '' ">
+      , last_update_id  = #{last_update_id}
+      </if>
+      <if test="ob_datamodel_nm != null and ob_datamodel_nm != '' ">
+      , ob_datamodel_nm = #{ob_datamodel_nm}
+      </if>
+      , described = #{described}
+      <if test="ob_datamodel_format != null and ob_datamodel_format != '' ">
+      , ob_datamodel_format = #{ob_datamodel_format}
+      </if>
+      <if test="use_yn != null and use_yn != '' ">
+      , use_yn = #{use_yn}
+      </if>
+    WHERE ob_datamodel_id = #{ob_datamodel_id}
+  </update>
+  <delete id="deleteItem" parameterType="map">
+    DELETE FROM ob_datamodel_conf 
+    WHERE ob_datamodel_id = #{ob_datamodel_id}      
+  </delete> 
+  
+  <insert id="itemInsert" parameterType="map" useGeneratedKeys="true" keyProperty="ob_datamodel_id">
+    INSERT INTO ob_datamodel_conf(ob_datamodel_id, ob_datamodel_seq, property_nm, property, property_path, property_structure, type, option, described, first_create_dt, first_create_id, last_update_dt, last_update_id)
+    VALUES (#{ob_datamodel_id}, #{ob_datamodel_seq}, #{property_nm}, #{property}, #{property_path}, #{property_structure}, #{type}, #{option}, #{described}, now(), #{user_id}, now(), #{user_id} ) 
+  </insert>
+  
+  <delete id="deleteObDatamodel" parameterType="map">
+    DELETE FROM ob_datamodel 
+    WHERE ob_datamodel_id = #{ob_datamodel_id}      
+  </delete> 
+</mapper>

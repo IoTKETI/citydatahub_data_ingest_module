@@ -1,0 +1,41 @@
+{
+  "address": {
+    "type": "Property",
+    "value": {
+      "addressCountry": null,
+      "streetAddress": null,
+      "addressLocality": null,
+      "addressRegion": null,
+      "addressTown": null
+    }
+  },
+  "weatherPrediction": {
+    "observedAt": null,
+    "type": "Property",
+    "value": {
+      "rainfall": null,
+      "predictedAt": null,
+      "highestTemperature": null,
+      "snowfall": null,
+      "temperature": null,
+      "humidity": null,
+      "rainType": null,
+      "lowestTemperature": null,
+      "windSpeed": null,
+      "rainfallProbability": null
+    }
+  },
+  "location": {
+    "type": "GeoProperty",
+    "value": {
+      "coordinates": null,
+      "type": "Point"
+    }
+  },
+  "id": "",
+  "type": "WeatherForecast",
+  "@context": [
+    "http://uri.citydatahub.kr/ngsi-ld/v1/context.jsonld",
+    "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
+  ]
+}

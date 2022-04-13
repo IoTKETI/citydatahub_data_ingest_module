@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>원천 데이터모델 관리 - 추가 등록 / 변경 </title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="/asset/js/jquery.serialize-object.min.js"></script>
+</head>
+<div style="position:absolute;left:0px;width:250px;top:0px;height:100%;background-image:url('/asset/images/leftBG.jpg');">
+<img src="/asset/images/left01.jpg" style="margin-top:17px">
+<a href="/agentList"><img src="/asset/images/left02.jpg" style="margin-top:-4px"></a>
+<a href="/agentDetail"><img src="/asset/images/left03.jpg" style="margin-top:-4px"></a>
+<img src="/asset/images/left04.jpg" style="margin-top:-4px">
+</div>
+<div style="position:absolute;left:250px;top:0px;width:100%;height:100px;background-image:url('/asset/images/topBG.jpg');">
+<img src="/asset/images/topLeft.jpg">
+<img src="/asset/images/topRight.jpg" style="float:right;margin-right:270px;margin-top:20px">
+</div>
+<body style="margin-top:0px;margin-left:0px;padding-left:260px;padding-top:100px;background-color:#f6f6f6;">
+    <table style="width:100%">
+      <tr>
+        <td style="height:45px;Font-size:16px;Font-color:#000;font-weight:bold">원천 데이터모델 관리</td>
+      </tr>
+    </table>
+    <form id="WRITE_FORM">
+    <table style="width:100%;border:1px solid #ddd;background-color:#ffffff">
+      <tr style="height:38px">
+        <td style="Font-size:14px;Font-color:#555;font-weight:bold;padding-left:10px">원천 데이터모델 추가 등록 / 변경</td>
+        <td style="text-align:right;padding-top:4px;padding-bottom:0px"><button class="btn" id="btn-save" type="submit" style="border:0px;background-color:#ffffff" onfocus="this.blur()"><img class="btn-img" src="/asset/images/btnSave.jpg"></button></td>
+      </tr>
+    </table>
+    <table style="margin-top:1px;width:100%;border-spacing: 0px;background-color:#ffffff">
+      <tr style="height:34px;">
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:10px;width:150px" bgcolor="#fdfdfd"><label for="ob_datamodel_id">Source Model ID</label></td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:5px;;padding-right:5px">
+          <input id="ob_datamodel_id" name="ob_datamodel_id" type="text" style="box-sizing : border-box;line-height:24px;width:100%;border:1px solid #eee;;Font-size:12px;Font-color:#555" th:value="${result.ob_datamodel_id}" required>
+          <input id="db_datamodel_id" type="hidden" th:value="${result.ob_datamodel_id}">          
+        </td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:10px;width:150px" bgcolor="#fdfdfd">사용여부</td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:5px;;padding-right:5px;vertical-align:text-middle" colspan="3" label="사용여부">
+          <input type="radio" name="use_yn" value="Y" th:checked="'Y' == ${result.use_yn}" checked="checked" required ><label style="vertical-align:2px">사용</label>&nbsp;
+          <input type="radio" name="use_yn" value="N" th:checked="'N' == ${result.use_yn}" required><label style="vertical-align:2px">사용안함</label>
+        </td>        
+      </tr>
+      <tr style="height:34px;">
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:10px;width:150px" bgcolor="#fdfdfd"><label for="ob_datamodel_nm">Source Model 명</label></td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:5px;;padding-right:5px"><input id="ob_datamodel_nm" name="ob_datamodel_nm" type="text" style="box-sizing : border-box;line-height:24px;width:100%;border:1px solid #eee;;Font-size:12px;Font-color:#555" th:value="${result.ob_datamodel_nm}" required></td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:10px;width:150px" bgcolor="#fdfdfd">비고</td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:5px;;padding-right:5px">
+          <input id="described" name="described" type="text" style="box-sizing : border-box;line-height:28px;width:100%;border:1px solid #eee;;Font-size:12px;Font-color:#555" th:value="${result.described}">
+         </td>
+      </tr>
+      <tr style="height:34px;">
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:10px;width:150px" bgcolor="#fdfdfd">데이터포맷</td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:5px;;padding-right:5px;vertical-align:text-middle" colspan="3" label="데이터포맷">
+          <input type="radio" name="ob_datamodel_format" value="json" th:checked="'json' == ${result.ob_datamodel_format}" checked="checked" required><label style="vertical-align:2px">json</label>&nbsp;
+          <input type="radio" name="ob_datamodel_format" value="xml" th:checked="'xml' == ${result.ob_datamodel_format}" required><label style="vertical-align:2px">XML</label>
+        </td>    
+      </tr>
+      <!-- 
+      <tr >
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:10px;width:150px" bgcolor="#fdfdfd">반복구문시점</td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:5px;;padding-right:5px"><input id="loop_point" name="loop_point" type="text" style="box-sizing : border-box;line-height:24px;width:100%;border:1px solid #eee;;Font-size:12px;Font-color:#555"></td>
+        <td colspan="2" style="border:1px solid #eee;Font-size:12px;">&nbsp;&nbsp;※ 마지막 반복구문 까지의 key를 ">"로 연결해서 입력</td>
+      </tr>
+       -->
+    </table>
+    </form>
+    
+    <br>
+    <table style="width:100%;border:1px solid #ddd;background-color:#ffffff">
+      <tr style="height:38px">
+        <td style="Font-size:14px;Font-color:#555;font-weight:bold;padding-left:10px" width="400px">원천 데이터모델 항목 추가 등록 / 변경 - 상세정보</td>
+        <td style="text-align:right;padding-top:4px;padding-bottom:0px;">
+          <button id="plus" class="insEtcTbl" onclick="addrow(this)" style="border:0px;background-color:#ffffff;margin-right:-10px;" onfocus="this.blur()"><img class="btn-img" src="/asset/images/btnPlus.jpg"></button>
+          <button id="minus" onclick="delrow(this)" style="border:0px;background-color:#ffffff;margin-right:0px;" onfocus="this.blur()"><img class="btn-img" src="/asset/images/btnMinus.jpg"></button>          
+        </td>
+      </tr>
+    </table>
+    
+  <table style="margin-top:1px;width:100%;border-spacing: 0px;background-color:#ffffff">
+        <tr style="height:34px">
+          <!--<td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:30px;text-align:center"><input type="checkbox" name="chkall"></td>  -->
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:30px;text-align:center" bgcolor="#fdfdfd">삭제</td>                    
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:200px;text-align:center" bgcolor="#fdfdfd">항목명(영문)</td>
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:200px;text-align:center" bgcolor="#fdfdfd">항목명(국문)</td>
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:100px;text-align:center" bgcolor="#fdfdfd">항목구분</td>
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:*;text-align:center" bgcolor="#fdfdfd">항목설명</td>
+        </tr>
+        
+        
+        
+        <tr class="keyValueClass" th:each="itemResult,index : ${itemResult}" style="height:34px">
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:50px;text-align:center" bgcolor="#fdfdfd"><input type="checkbox" name="chk_info" value="del"></td>
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:*;text-align:center" bgcolor="#fdfdfd"><input name="item_eng_nm" type="text" style="box-sizing : border-box;line-height:24px;width:100%;border:1px solid #eee;;Font-size:12px;Font-color:#555" th:value="${itemResult.property}" ></td>
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:*;text-align:center" bgcolor="#fdfdfd"><input name="item_nm" type="text" style="box-sizing : border-box;line-height:24px;width:100%;border:1px solid #eee;;Font-size:12px;Font-color:#555" th:value="${itemResult.property_nm}" ></td>
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:*;text-align:center" bgcolor="#fdfdfd"><input name="item_gubn" type="text" style="box-sizing : border-box;line-height:24px;width:100%;border:1px solid #eee;;Font-size:12px;Font-color:#555" th:value="${itemResult.type}" ></td>
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:*;text-align:center" bgcolor="#fdfdfd"><input name="item_description" type="text" style="box-sizing : border-box;line-height:24px;width:100%;border:1px solid #eee;;Font-size:12px;Font-color:#555" th:value="${itemResult.described}"></td>
+      </tr>
+      
+      
+        <tr style="height:34px" class="emptyInsEtc">
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;text-align:center" bgcolor="ffffff" colspan=5>등록된 추가 옵션이 없습니다.</td>
+        </tr>
+  </table>
+  <span id="ObdmFeedback"></span>
+
+<br>
+      <div id="addObItem" style="margin-top:10px">
+      </div>
+    
+<br></br><br></br>
+    
+<div id="keyValueRow" style="display:none">
+  <table style="margin-top:1px;width:100%;border-spacing: 0px;">
+        <tr class="keyValueClass" style="height:34px">
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:50px;text-align:center" bgcolor="#fdfdfd"><input type="checkbox" name="chk_info" value="del"></td>         
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:*;text-align:center" bgcolor="#fdfdfd"><input name="item_eng_nm" type="text" style="box-sizing : border-box;line-height:24px;width:100%;border:1px solid #eee;;Font-size:12px;Font-color:#555" ></td>
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:*;text-align:center" bgcolor="#fdfdfd"><input name="item_nm" type="text" style="box-sizing : border-box;line-height:24px;width:100%;border:1px solid #eee;;Font-size:12px;Font-color:#555" ></td>
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:*;text-align:center" bgcolor="#fdfdfd"><input name="item_gubn" type="text" style="box-sizing : border-box;line-height:24px;width:100%;border:1px solid #eee;;Font-size:12px;Font-color:#555" ></td>
+          <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:*;text-align:center" bgcolor="#fdfdfd"><input name="item_description" type="text" style="box-sizing : border-box;line-height:24px;width:100%;border:1px solid #eee;;Font-size:12px;Font-color:#555"></td>
+        </tr>
+  </table>        
+</div>      
+<script th:inline="javascript">
+
+
+
+
+  $(document).ready(function() {
+    var db_data_id = $("#db_datamodel_id").val();
+    var item_size = $(".keyValueClass").size();
+    if(item_size > 1){
+      $('.emptyInsEtc').hide();
+    }
+    if(db_data_id != ""){
+      $("#ob_datamodel_id").attr("disabled",true);
+    }else{
+
+    }
+    
+
+    $(document).on('click', '#btn-save',function(e) {
+      e.preventDefault(); 
+      e.stopPropagation(); 
+      
+      var data = $("#WRITE_FORM").serializeObject();  
+      console.log(data);
+      
+      var $b = $("*"); 
+      var $t, t; 
+      var result = true; 
+      
+
+      $b.find("input[type=radio]").each(function(i) {
+        $t = jQuery(this);
+        if($t.prop("required") ) {
+          if ($("input:radio[name="+$t.attr("name")+"]:checked").length < 1 ) {
+            alert($t.parent().attr("label")+"은(는) 필수 선택입니다."); 
+            return false;
+          }
+        }
+      });
+      
+      
+      $b.find("input[type=text]").each(function(i) {
+      
+        if($t.prop("required") ) {
+          if(!jQuery.trim($t.val())) { 
+            //t = $(this).attr('name');
+            t = jQuery("label[for='"+$t.attr("id")+"']").text();
+            result = false; 
+            $t.focus(); 
+            alert(t+"은(는) 필수 입력입니다."); 
+            return false; 
+          }  
+        } 
+        
+      }); 
+      
+      //fire_ajax_submit();
+      return;
+    }); 
+   
+  });
+  
+  function addrow(tb) {
+    //alert(111);
+    $(tb).parent().parent().parent().parent().next().find('.emptyInsEtc').hide();
+    var tmpObj = $("#keyValueRow").children().children().children().clone();
+    $(tb).parent().parent().parent().parent().next().children().append($(tmpObj));
+  }
+  
+  function delrow(tb) {
+    var tmp = $(tb).parent().parent().parent().parent().next().find("input:checkbox");
+    
+    $(tmp).each(function() {
+        if ($(this).is(":checked")) {
+          $(this).parent().parent().remove();
+        }
+    });
+    
+    var tmpSize = $(tb).parent().parent().parent().parent().next().find("input:checkbox").size();
+
+    if(tmpSize < 1)
+      $(tb).parent().parent().parent().parent().next().find('.emptyInsEtc').show();
+  }
+  
+  function fire_ajax_submit() {
+    $("#btn-save").prop("disabled", true);
+    //모델항목 추가
+    var ob_id = $("#ob_datamodel_id").val();     
+    var item_size = $(".keyValueClass").size()-1;    
+    var itemsData = new Array();
+    if(item_size >0){
+      for(var i=0;i<item_size;i++){
+        var itemRowData = new Object();      
+        itemRowData.item_eng_nm = $(".keyValueClass").eq(i).find("input[name=item_eng_nm]").val();
+        itemRowData.item_nm = $(".keyValueClass").eq(i).find("input[name=item_nm]").val();
+        itemRowData.item_gubn = $(".keyValueClass").eq(i).find("input[name=item_gubn]").val();
+        itemRowData.item_description = $(".keyValueClass").eq(i).find("input[name=item_description]").val();
+        itemsData.push(itemRowData);
+      }
+    }
+    //모델항목 추가 끝
+    var param = "/obDetail";
+    
+
+    var data = {"ob_datamodel_id":ob_id,
+        "ob_datamodel_nm":$("#ob_datamodel_nm").val(),        
+        "ob_datamodel_format":$(":input:radio[name=ob_datamodel_format]:checked").val(),
+        "described":$("#described").val(),
+        "use_yn":$(":input:radio[name=use_yn]:checked").val(),
+        "itemsData":itemsData
+        };
+    
+    var type = "POST";
+    
+    if($("#db_datamodel_id").val()!=""){
+      type = "PUT";
+      param += "/"+$("#ob_datamodel_id").val();
+    }
+    $.ajax({
+      type : type,
+      contentType : "application/json",
+      url : param,
+      dataType : 'json',
+      param : {'ob_datamodel_id':$("#ob_datamodel_id").val()},
+      data : JSON.stringify(data),
+      cache : false,
+      timeout : 600000,
+      success : function(data) {
+        var json = "<h4>Ajax Response</h4><pre>"
+            + JSON.stringify(data, null, 4) + "</pre>";
+        alert("저장되었습니다.");
+        location.replace('/obDetail/'+$("#ob_datamodel_id").val());
+        $("#btn-save").prop("disabled", false);
+      },
+      error : function(e) {
+        var json = "<h4>Ajax Response</h4><pre>" + e.responseText + "</pre>";
+          var result = JSON.parse(e.responseText);
+          if(result.resultCode == "409"){
+            alert("이미 사용중인 Model ID 입니다.")
+          }
+        //$('#feedback').html(json);
+        $("#btn-save").prop("disabled", false);
+
+      }
+    });
+        
+  }
+  
+</script>      
+<br></br><br></br>
+    
+
+</body>
+
+<style type="text/css">
+* 
+.pop-layer .pop-container {
+  padding: 0px 0px;
+}
+
+.pop-layer p.ctxt {
+  color: #666;
+  line-height: 25px;
+}
+
+.pop-layer .btn-r {
+  width: 100%;
+  border-top: 1px solid #DDD;
+  text-align: right;
+}
+
+.pop-layer {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 410px;
+  height: auto;
+  background-color: #fff;
+  border: 1px solid #c6c6c6;
+  z-index: 10;
+}
+
+.dim-layer {
+  display: none;
+  position: fixed;
+  _position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+}
+
+.dim-layer .dimBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  opacity: .5;
+  filter: alpha(opacity=50);
+}
+
+.dim-layer .pop-layer {
+  display: block;
+}
+
+a.btn-layerClose {
+  display: inline-block;
+  height: 25px;
+  background-color: #3f5a9d;
+  font-size: 13px;
+  color: #fff;
+  line-height: 25px;
+}
+
+a.btn-layerClose:hover {
+  border: 0px solid #091940;
+  background-color: #1f326a;
+  color: #fff;
+}
+
+.console {
+  background-color: #999999;
+  color: white;
+  font-size: 15px;
+}
+
+#runningFlag {
+  color: red;
+}
+
+</style>
+</html>

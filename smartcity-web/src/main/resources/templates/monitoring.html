@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sd="http://www.thymeleaf.org/spring-data" layout:decorator="layout/main" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">모니터링 </title>
+
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <h3 class="content__title">Agent 운영</h3>
+    
+    <form>
+      <fieldset>
+        <legend>필드셋 제목</legend>
+        <section class="section">
+          <div class="section__header">
+            <h4 class="section__title">Agent 운영&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text__notice" style="Font-size:12px;font-weight:normal">※<b>Agent ID</b> 클릭 : 상세화면 이동</span></h4>
+          </div>
+          <div class="section__content">
+            <table class="table--column" id="Feedback">
+              <caption>Agent 운영</caption>
+              <colgroup>
+                <col style="width:50px">
+                <col style="width:150px">
+                <col style="width:*">
+<!--                 
+                <col style="width:150px">
+ -->                
+                <col style="width:100px">
+                <col style="width:100px">
+                <col style="width:100px">
+                <col style="width:130px">
+              </colgroup>
+              <thead>
+              <tr>
+                <th>순번</th>
+                <th>Agent ID</th>
+                <th>Agent 명</th>
+<!--                 
+                <th>IP / PORT</th>
+ -->                
+                <th>어댑터 수</th>
+                <th>사용여부</th>
+                <th>비고</th>
+                <th>등록일</th>
+              </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+          <div class="button__group">
+          </div>
+        </section>
+      </fieldset>
+    </form>
+    
+   <div id="FeedbackRow" style="display: none">
+      <table>
+        <tr >
+          <td ></td>
+          <td style="text-decoration:underline;color:blue;"><a href="#" ></a></td>
+          <td></td>
+<!--           
+          <td></td>
+ -->          
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+
+
+<script>
+
+function search() {
+  var url = "/monitor/agent";
+  var param ="";
+  cmUtl.exeAjax("GET", url,param, "_cbAfterSearch" );
+}
+
+function _cbAfterSearch(data){
+  cmUtl.showEmptyLine('Feedback', false);
+  if (data.length == 0) {
+    cmUtl.showEmptyLine('Feedback', true);
+  } else {
+    for (var i = 0; i < data.length; i++) {
+      var html = "<tr>";
+      html += '<td>'+(i + 1)+'</td>';
+      html += '<td style="text-decoration:underline;color:blue;"><a href="/monitor/agent/'+data[i].agent_id+'/view" >'+data[i].agent_id+'</a></td>';
+      html += '<td>'+data[i].agent_nm+'</td>';
+//      html += '<td>'+data[i].ip_addr+ ' / ' + data[i].port_number +'</td>';
+      html += '<td>'+data[i].adt_cnt+'</td>';
+      html += '<td>'+data[i].use_yn+'</td>';
+      html += '<td>'+data[i].etc_note+'</td>';
+      html += '<td>'+data[i].first_create_dt+'</td>';
+      html += "</tr>";
+            
+      $('#Feedback > tbody:last').append(html);
+    }
+  }
+}
+$(document).ready(function() {
+  search();
+});
+
+</script>
+
+
+<!-- script -->
+<script>setNavi("Agent 관리```/monitor/agent/view/","Agent 운영```/monitor/agent/view/");</script>
+<!-- //script -->
+</div>
+</body>
+</html>

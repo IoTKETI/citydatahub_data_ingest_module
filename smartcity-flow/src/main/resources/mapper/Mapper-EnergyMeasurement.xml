@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EnergyMeasurement">
+
+
+  <update id="upsertFull" parameterType="map" timeout="360">
+    WITH upsert AS (
+    UPDATE smart_city.energy_measurement
+    SET
+      modified_at = #{modifiedAt}
+      <if test="owner != null">,owner = #{owner}</if>
+      <if test="location4326 != null">,location_4326 = ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326)</if>
+      <if test="location4326 != null">,location_3857 = ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326), 3857)</if>
+      <if test="addressCountry != null">,address_country = #{addressCountry}</if>
+      <if test="addressTown != null">,address_town = #{addressTown}</if>
+      <if test="addressLocality != null">,address_locality = #{addressLocality}</if>
+      <if test="addressRegion != null">,address_region = #{addressRegion}</if>
+      <if test="streetAddress != null">,street_address = #{streetAddress}</if>
+  
+      <if test="measurementType != null">,measurementtype = #{measurementType}</if>
+      <if test="workplaceName != null">,workplacename = #{workplaceName}</if>
+      <if test="measureDay != null">,measureday = #{measureDay}</if>
+      <if test="measureTime != null">,measuretime = #{measureTime}</if>
+      <if test="sequence != null">,sequence =  #{sequence}</if>
+      <if test="measure1Hour != null">,measure1hour =  #{measure1Hour}</if>
+      <if test="measurePeak != null">,measurepeak =  #{measurePeak}</if>
+      <if test="measure1To15 != null">,measure1to15 =  #{measure1To15}</if>
+      <if test="measure16To30 != null">,measure16to30 = #{measure16To30}</if>
+      <if test="measure31To45 != null">,measure31to45 = #{measure31To45}</if>
+      <if test="measure46To0 != null">,measure46to0 = #{measure46To0}</if>
+    WHERE id = #{id}
+    RETURNING *
+    ) INSERT INTO smart_city.energy_measurement (
+      id
+      ,created_at
+      ,modified_at
+      <if test="owner != null">,owner</if>
+      <if test="location4326 != null">,location_4326</if>
+      <if test="location4326 != null">,location_3857</if>
+      <if test="addressCountry != null">,address_country</if>
+      <if test="addressTown != null">,address_town</if>
+      <if test="addressLocality != null">,address_locality</if>
+      <if test="addressRegion != null">,address_region</if>
+      <if test="streetAddress != null">,street_address</if>
+  
+      <if test="measurementType != null">,measurementtype</if>
+      <if test="workplaceName != null">,workplacename</if>
+      <if test="measureDay != null">,measureday</if>
+      <if test="measureTime != null">,measuretime</if>
+      <if test="sequence != null">,sequence</if>
+      <if test="measure1Hour != null">,measure1hour</if>
+      <if test="measurePeak != null">,measurepeak</if>
+      <if test="measure1To15 != null">,measure1to15</if>
+      <if test="measure16To30 != null">,measure16to30</if>
+      <if test="measure31To45 != null">,measure31to45</if>
+      <if test="measure46To0 != null">,measure46to0</if>
+    )
+    SELECT
+      #{id}
+      ,#{createdAt}
+      ,#{modifiedAt}
+      <if test="owner != null">,#{owner}</if>
+      <if test="location4326 != null">,ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326)</if>
+      <if test="location4326 != null">,ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326), 3857)</if>
+      <if test="addressCountry != null">,#{addressCountry}</if>
+      <if test="addressTown != null">,#{addressTown}</if>
+      <if test="addressLocality != null">,#{addressLocality}</if>
+      <if test="addressRegion != null">,#{addressRegion}</if>
+      <if test="streetAddress != null">,#{streetAddress}</if>
+  
+      <if test="measurementType != null">,#{measurementType}</if>
+      <if test="workplaceName != null">,#{workplaceName}</if>
+      <if test="measureDay != null">,#{measureDay}</if>
+      <if test="measureTime != null">,#{measureTime}</if>
+      <if test="sequence != null">,#{sequence}</if>
+      <if test="measure1Hour != null">,#{measure1Hour}</if>
+      <if test="measurePeak != null">,#{measurePeak}</if>
+      <if test="measure1To15 != null">,#{measure1To15}</if>
+      <if test="measure16To30 != null">,#{routeId}</if>
+      <if test="measure31To45 != null">,#{measure31To45}</if>
+      <if test="measure46To0 != null">,#{measure46To0}</if>
+      WHERE NOT EXISTS (SELECT * FROM upsert)
+  </update>
+
+  <insert id="insertHist" parameterType="map" timeout="360">
+    INSERT INTO smart_city.energy_measurement_hist (
+      id
+      ,modified_at
+      ,operation
+      <if test="owner != null">,owner</if>
+      <if test="location4326 != null">,location_4326</if>
+      <if test="location4326 != null">,location_3857</if>
+      <if test="addressCountry != null">,address_country</if>
+      <if test="addressLocality != null">,address_locality</if>
+      <if test="addressRegion != null">,address_region</if>
+      <if test="streetAddress != null">,street_address</if>
+      <if test="addressTown != null">,address_town</if>
+  
+      <if test="measurementType != null">,measurementtype</if>
+      <if test="workplaceName != null">,workplacename</if>
+      <if test="measureDay != null">,measureday</if>
+      <if test="measureTime != null">,measuretime</if>
+      <if test="sequence != null">,sequence</if>
+      <if test="measure1Hour != null">,measure1hour</if>
+      <if test="measurePeak != null">,measurepeak</if>
+      <if test="measure1To15 != null">,measure1to15</if>
+      <if test="measure16To30 != null">,measure16to30</if>
+      <if test="measure31To45 != null">,measure31to45</if>
+      <if test="measure46To0 != null">,measure46to0</if>
+    ) VALUES (
+      #{id}
+      ,#{modifiedAt}
+      ,#{operation, typeHandler=com.cityhub.typehandler.OperationTypeHandler}
+      <if test="owner != null">,#{owner}</if>
+      <if test="location4326 != null">,ST_GeomFromGeoJSON(#{location4326})</if>
+      <if test="location4326 != null">,ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326), 3857)</if>
+      <if test="addressCountry != null">,#{addressCountry}</if>
+      <if test="addressLocality != null">,#{addressLocality}</if>
+      <if test="addressRegion != null">,#{addressRegion}</if>
+      <if test="streetAddress != null">,#{streetAddress}</if>
+      <if test="addressTown != null">,#{addressTown}</if>
+  
+      <if test="measurementType != null">,#{measurementType}</if>
+      <if test="workplaceName != null">,#{workplaceName}</if>
+      <if test="measureDay != null">,#{measureDay}</if>
+      <if test="measureTime != null">,#{measureTime}</if>
+      <if test="sequence != null">,#{sequence}</if>
+      <if test="measure1Hour != null">,#{measure1Hour}</if>
+      <if test="measurePeak != null">,#{measurePeak}</if>
+      <if test="measure1To15 != null">,#{measure1To15}</if>
+      <if test="measure16To30 != null">,#{measure16To30}</if>
+      <if test="measure31To45 != null">,#{measure31To45}</if>
+      <if test="measure46To0 != null">,#{measure46To0}</if>
+    )
+  </insert>
+
+
+</mapper>

@@ -1,0 +1,81 @@
+spring:
+  application:
+    name: DH-CONNECTIVITY-AGENT
+  profiles:
+    active: local # 기본 환경 선택
+  thymeleaf:
+    prefix: classpath:templates/
+    check-template-location: true
+    suffix: .html
+    mode: HTML
+    cache: false
+
+gateway: 
+  yn: ${GATEWAY_USE_YN}
+  url: ${GATEWAY_URL}
+
+ingest:
+  server: ${DATACORE_URL}
+  yn: Y
+
+hdfs:
+  server: hdfs://192.168.1.182:8020
+  yn: false
+
+#1핵심 3핵심 구분에 따른 메뉴 표기에 따라 해당 핵심 구분을해줘야함  
+core:
+  type: 1
+  
+server:
+  port: 8080
+
+logging:
+  config: classpath:config/log4j2.xml
+
+# mybatis info
+mybatis: 
+  type-aliases-package: com.cityhub.web
+  configuration:
+    callSettersOnNulls: true
+
+# auth info
+authEndpoint : ${AUTH_EXTERNAL_URL}/oauth2.0/authorize
+responseType : code  
+tokenEndpoint: ${AUTH_INTERNAL_URL}/oauth2.0/token
+userId: cityhub03
+userPassword: cityhub03!
+publicKeyEndPoint: ${AUTH_EXTERNAL_URL}/security/publickey
+getInfoEndPoint: ${AUTH_EXTERNAL_URL}/security/users/cityhub03
+logoutEndPoint: ${AUTH_EXTERNAL_URL}/security/logout
+grantType: 
+  auth: authorization_code
+  client: client_credentials
+  password: password
+  refresh: refresh_token
+
+
+
+# 로컬운용
+---
+spring:
+  profiles: local 
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_ID} 
+    password: ${DATASOURCE_PW} 
+redirectUri: ${AUTH_REDIRECT_URL} 
+clientId: ${AUTH_CLIENT_ID}
+clientSecret: ${AUTH_CLIENT_SECRET}
+daemon:
+  daemonSrv: ${DAEMON_URL}
+  configUrl: ${daemon.daemonSrv}/exec/config
+  agentUrl: ${daemon.daemonSrv}/exec/agent
+  logUrl: ${daemon.daemonSrv}/exec/logger
+  compileUrl: ${daemon.daemonSrv}/exec/compile
+  schemaServer: ${SCHEMA_URL}
+auth.yn: ${AUTH_YN}
+eureka:
+  client:
+    enabled: false  
+

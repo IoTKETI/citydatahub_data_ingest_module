@@ -1,0 +1,14 @@
+/bin/
+/target/
+temp
+*.log
+smartcity-tests/target
+smartcity-cor19/target
+smartcity-cor19-consumer/target
+smartcity-n2m/target
+smartcity-consumer/target
+khnp-dt/target
+smartcity-adapter/.settings
+smartcity-core/.settings
+.settings
+smartcity-flow/target

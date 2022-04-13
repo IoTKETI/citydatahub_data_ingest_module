@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sd="http://www.thymeleaf.org/spring-data"
+	layout:decorator="layout/main"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+<title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">데이터 허브 ID 목록- 목록</title>
+</head>
+<body>
+
+	<div class="container" layout:fragment="content">
+		<h3 class="content__title">데이터 허브 ID 목록</h3>
+
+		<form>
+			<fieldset>
+				<legend>필드셋 제목</legend>
+				<section class="section">
+					<div class="section__header">
+						<h4 class="section__title">목록</h4>
+					</div>
+
+					<div class="section__content" id="gs1ModelMaster">
+						<table class="table--column" id="gs1ModelParent">
+							<caption>테이블 제목</caption>
+							<colgroup>
+								<col style="width: 40px">
+								<col style="width: 390px">
+								<col style="width: 110px">
+								<col style="width: 100px">
+								<col style="width: 100px">
+								<col style="width: 100px">
+								<col style="width: 100px">
+								<col style="width: auto">
+								<col style="width: 70px">
+								<col style="width: 100px">
+							</colgroup>
+							<thead>
+								<tr>
+									<th>선택</th>
+									<th>데이터 ID</th>
+									<th>수집 대상 플랫폼</th>
+									<th>원천 ID</th>
+									<th>데이터셋</th>
+									<th>데이터모델명</th>
+									<th>데이터모델 버전</th>
+									<th>SGLN</th>
+									<th>이동여부</th>
+									<th>사용여부</th>
+								</tr>
+							</thead>
+							<tbody>
+								
+							</tbody>
+						</table>
+					</div>
+
+					<div class="button__group">
+						<button class="button__primary" type="button" onclick="location.href = '/gs1ModelDetail'" onfocus="this.blur()">등록</button>
+		                <button class="button__primary" type="submit" id="btn-modify" onfocus="this.blur()">수정</button>
+		                <button class="button__primary" type="submit" id="btn-delete" onfocus="this.blur()">삭제</button>
+					</div>
+				</section>
+			</fieldset>
+		</form>
+		
+		<script>
+			setNavi("데이터 허브 ID 관리```/gs1Model/", "데이터 허브 ID 목록```/gs1Model/");
+		</script>
+		
+		<script th:inline="javascript">
+			var isCodeMod = false;
+			var isTypeMod = true;
+			var gs1 = '';
+			
+			$(document).ready(function() {
+				gs1ModelDataList();
+				$("#btn-delete").click(function(event) {
+			        if(!isCodeMod){
+			          if (validation("gs1ModelMaster")) {
+			            if (confirm("삭제하시겠습니까?")){
+			              event.preventDefault();
+			              gs1ModelDelete();
+			            }
+			          }  
+			        } else {
+			          if(confirm("공통코드항목에 수정된 데이터가 있습니다.\n저장하지 않은 데이터는 초기화됩니다.\n진행 하시겠습니까?")){
+			            event.preventDefault();
+			            gs1ModelDelete();
+			          } 
+			        }        
+			      });
+				
+				$("#btn-modify").click(function(event) {
+					if(!isCodeMod){
+				          if (validation("gs1ModelMaster")) {
+				            if (confirm("수정하시겠습니까?")){
+				              event.preventDefault();
+				              gs1ModelModify();
+				            }
+				          }  
+				        } else {
+				          if(confirm("공통코드항목에 수정된 데이터가 있습니다.\n저장하지 않은 데이터는 초기화됩니다.\n진행 하시겠습니까?")){
+				            event.preventDefault();
+				            gs1ModelModify();
+				          } 
+				        }        
+					});
+			});
+			
+			function gs1ModelModify(){
+				$("btn-modify").prop("disabled", true);
+				var param = "/gs1ModelModify";
+				var gs1_model_length = $("#gs1ModelParent").getLength();
+				var gs1_model_data = new Array();
+				if(gs1_model_length > 0){
+					for(var i=0; i<gs1_model_length; i++){
+						item = $("#gs1ModelParent").getRow(i);
+						
+						var gs1RowData = new Object();
+						
+						gs1RowData.urn = item.find("input[name=urn]").val();
+						gs1RowData.country = item.find("input[name=country]").val();
+						gs1RowData.municipality = item.find("input[name=municipality]").val();
+						gs1RowData.code = item.find("input[name=code]").val();
+						gs1RowData.m_category = item.find("input[name=m_category]").val();
+						gs1RowData.c_category = item.find("input[name=c_category]").val();
+						gs1RowData.s_category = item.find("input[name=s_category]").val();
+						gs1RowData.city_assets = item.find("input[name=city_assets]").val();
+						gs1RowData.c_platform = item.find("input[name=c_platform]").val();
+						gs1RowData.source_id = item.find("input[name=source_id]").val();
+						gs1RowData.data_set = item.find("input[name=data_set]").val();
+						gs1RowData.data_model = item.find("input[name=data_model]").val();
+						gs1RowData.data_version = item.find("input[name=data_version]").val();
+						gs1RowData.move = item.find("input[name=move]").val();
+						gs1RowData.use_yn = item.find("select[name=use_yn]").val();
+						
+						gs1_model_data.push(gs1RowData);
+					}
+					
+					var data = {
+							"gs1_model_data" : gs1_model_data
+					};
+					
+					cmUtl.exeAjax("POST", param, JSON.stringify(data), "_cbAfterAdtTypeModify");
+				}
+			}
+			
+			function _cbAfterAdtTypeModify(data){
+				alert("수정되었습니다.");
+				$("#btn-modify").prop("disabled", false);
+				var link = document.location.href;
+				location.replace(link);
+			}
+			
+			function gs1ModelDelete(){
+				$("#btn-delete").prop("disabled", true);
+				var param = "/gs1ModelDelete";
+				var gs1_model_length = $("#gs1ModelParent").getLength();
+				var gs1_model_data = new Array();
+				var count = 0;
+				if(gs1_model_length > 0){
+					for(var i=0; i<gs1_model_length; i++){
+						item = $("#gs1ModelParent").getRow(i);
+						if(item.find("input[name=check]").prop("checked") == false)
+							continue;
+						else
+							count ++;
+						
+						var gs1RowData = new Object();
+						gs1RowData.urn = item.find("input[name=urn]").val();
+						gs1RowData.country = item.find("input[name=country]").val();
+						gs1RowData.municipality = item.find("input[name=municipality]").val();
+						gs1RowData.code = item.find("input[name=code]").val();
+						gs1RowData.m_category = item.find("input[name=m_category]").val();
+						gs1RowData.c_category = item.find("input[name=c_category]").val();
+						gs1RowData.s_category = item.find("input[name=s_category]").val();
+						gs1RowData.city_assets = item.find("input[name=city_assets]").val();
+						gs1RowData.c_platform = item.find("input[name=c_platform]").val();
+						gs1RowData.source_id = item.find("input[name=source_id]").val();
+						gs1RowData.data_set = item.find("input[name=data_set]").val();
+						gs1RowData.data_model = item.find("input[name=data_model]").val();
+						gs1RowData.data_version = item.find("input[name=data_version]").val();
+						gs1RowData.move = item.find("input[name=move]").val();
+						
+						gs1_model_data.push(gs1RowData);
+					}
+				}
+				
+				if(count == 0){
+					alert("항목을 선택해 주세요.");
+					var link = document.location.href;
+					location.replace(link);
+				} else{
+					var data = {
+							"gs1_model_data" : gs1_model_data
+					};
+					
+					cmUtl.exeAjax("POST", param, JSON.stringify(data), "_cbAfterAdtTypeSave");
+				}
+			}
+			
+			function _cbAfterAdtTypeSave(data){
+				alert("삭제되었습니다.");
+				$("#btn-save").prop("disabled", false);
+				var link = document.location.href;
+				location.replace(link);
+			}
+			
+			function gs1ModelDataList() {
+				var url = "/gs1ModelData";
+				cmUtl.exeAjax("GET", url, null, "_cbAftergs1ModelDataList");
+			}
+			
+			function _cbAftergs1ModelDataList(data){
+				if (data.length == 0) {
+					cmUtl.showEmptyLine('gs1ModelParent', true);
+				}
+				
+				for(var i = 0; i<data.length; i++){
+					var html = '<tr>';
+
+// 					gs1 = data[i].urn + data[i].country + data[i].municipality + "." + data[i].code +data[i].m_category + data[i].c_category + data[i].s_category +"."+ data[i].city_assets;
+					gs1 = data[i].urn + data[i].country + data[i].municipality + "." + data[i].code +data[i].m_category + data[i].c_category + data[i].s_category;
+					if(data[i].city_assets != ""){
+						gs1 += "." + data[i].city_assets;
+					}
+					html += '<input name="urn" type="hidden" value="'+data[i].urn+'">'
+					html += '<input name="country" type="hidden" value="'+data[i].country+'">'
+					html += '<input name="municipality" type="hidden" value="'+data[i].municipality+'">'
+					html += '<input name="code" type="hidden" value="'+data[i].code+'">'
+					html += '<input name="m_category" type="hidden" value="'+data[i].m_category+'">'
+					html += '<input name="c_category" type="hidden" value="'+data[i].c_category+'">'
+					html += '<input name="s_category" type="hidden" value="'+data[i].s_category+'">'
+					html += '<input name="city_assets" type="hidden" value="'+data[i].city_assets+'">'
+					html += '<td><input type="checkbox" name = "check"></td>';
+					html += '<td style="text-align: left;"><input name="gs1_code" type="hidden" value="'+gs1+'"><a href="/gs1ModelDetailData/'+gs1+'">'+gs1+'</td>';
+					html += '<td><input name="c_platform" type="hidden" value="'+data[i].c_platform+'">'+data[i].c_platform+'</td>';
+					html += '<td><input name="source_id" type="hidden" value="'+data[i].source_id+'">'+data[i].source_id+'</td>';
+					html += '<td><input name="data_set" type="hidden" value="'+data[i].data_set+'">'+data[i].data_set+'</td>';
+					html += '<td><input name="data_model" type="hidden" value="'+data[i].data_model+'">'+data[i].data_model+'</td>';
+					html += '<td><input name="data_version" type="hidden" value="'+data[i].data_version+'">'+data[i].data_version+'</td>';
+					html += '<td style="text-align: left;"><input name="sgln" type="hidden" value="'+gs1+'"><a href="/gs1ModelDetailData/'+gs1+'">'+gs1+'</td>';
+					html += '<td><input name="move" type="hidden" value="'+data[i].move+'">'+data[i].move+'</td>';
+					html += '<td label="사용여부"><select class="select select--full" name="use_yn" id="use_yn_id" required><option value ="Y">사용</option><option value ="N">미사용</option></select></td>';
+					html += '</tr>';
+					
+					$('#gs1ModelParent').appendBody(html);
+					
+					$('#gs1ModelParent').getRow(i).find("select[name='use_yn']").val(data[i].use_yn).prop("selected", true);
+				}
+			}
+		</script>
+	</div>
+</body>
+</html>

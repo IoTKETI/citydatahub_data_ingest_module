@@ -1,0 +1,37 @@
+{
+   "@context": [
+      "http://uri.etsi.org/ngsi-ld/core-context.jsonld",
+      "http://cityhub.kr/ngsi-ld/trafficInformation.jsonld"
+   ],
+   "id": "urn:datahub:BusArrivalInformation:4010000.200000177.200000037.19",
+   "type": "BusArrivalInformation",
+   "createdAt": "2020-06-15T12:10:00,000+09:00",
+   "modifiedAt": "2020-06-15T12:10:00,000+09:00",
+   "location": {
+      "type": "GeoProperty",
+      "value": {
+         "type": "Point",
+         "coordinates": [
+            126.7327753,
+            37.3726657
+         ]
+      }
+   },
+   "address": {
+      "type": "Property",
+      "value": {
+         "addressCountry": "KR",
+         "addressRegion": "Gyeonggi-do",
+         "addressLocality": "Siheung-si",
+         "streetAddress": "3rd Gyeongin Expressway",
+         "addressTown": "Jeongwang-dong"
+      }
+   },   
+   "flag": "PASS",
+   "plateNo1": "경기70바1979",
+   "plateNo2": "경기70바1980",
+   "lowPlate1": "FALSE",
+   "lowPlate2": "FALSE",
+   "predictTime1": 1,
+   "predictTime2": 7
+}

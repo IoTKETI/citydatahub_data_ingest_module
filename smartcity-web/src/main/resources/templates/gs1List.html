@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sd="http://www.thymeleaf.org/spring-data"
+	layout:decorator="layout/main"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+<title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">데이터 허브 ID 관리 - 목록</title>
+</head>
+<body>
+
+	<div class="container" layout:fragment="content">
+		<h3 class="content__title">데이터 허브 ID 관리</h3>
+
+		<form>
+			<fieldset>
+				<legend>데이터 허브 ID 목록</legend>
+				<section class="section">
+					<div class="section__header">
+						<h4 class="section__title">데이터 허브 ID 목록</h4>
+					</div>
+					<div class="section__content" id="gs1listMaster">
+						<table class="table--column" id="gs1listParent">
+							<caption>테이블 제목</caption>
+							<colgroup>
+								<col style="width: 70px">
+								<col style="width: 300px">
+							</colgroup>
+							<thead>
+								<tr>
+									<th>순번</th>
+									<th>코드명</th>
+								</tr>
+							</thead>
+							<tbody>
+															
+							</tbody>
+						</table>
+					</div>
+					
+				</section>
+			</fieldset>
+		</form>
+		
+		<script>setNavi("데이터 허브 ID```/gs1List/","데이터 허브 ID 관리```/gs1List/");</script>
+		<script th:inline="javascript">
+			$(document).ready(function() {
+			      gs1DataList();
+			});
+			
+			function gs1DataList() {
+				var url = "/gs1ListData";
+				cmUtl.exeAjax("GET", url, null, "_cbAftercommDataList");
+			}
+			
+			function _cbAftercommDataList(data) {
+				if(data.length == 0){
+					cmUtl.showEmptyLine('gs1listParent', true);
+				}
+
+				for(var i = 0; i < data.length; i++){
+					var html = '<tr>';
+					var num = i+1;
+					
+					html += '<th>'+num+'</th>'
+					html += '<th><input name="id" type="hidden" value="'+data[i].code_id+'"><a href="/gs1Detail/'+data[i].code_id+'">'+data[i].code_nm+'</a></th>'
+
+					$('#gs1listParent').appendBody(html);
+				}
+			}
+		</script>
+		</div>
+</body>
+</html>

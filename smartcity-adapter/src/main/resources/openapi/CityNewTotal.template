@@ -1,0 +1,139 @@
+{
+  "id": "8800000000000000000",
+  "type": "CityNewTotal",
+  "location": {
+    "type": "GeoProperty",
+    "value": {
+      "type": "Point",
+      "coordinates": [
+        127.1293735,
+        37.4114423
+      ]
+    }
+  },
+  "event": {
+    "type": "Property",
+    "value": ""
+  },
+  "headCnt": {
+    "type": "Property",
+    "value": ""
+  },
+  "bodyCnt": {
+    "type": "Property",
+    "value": ""
+  },
+  "telegramOrder": {
+    "type": "Property",
+    "value": [
+    ]
+  },
+  "linkType": {
+    "type": "Property",
+    "value": ""
+  },
+  "sendCode": {
+    "type": "Property",
+    "value": ""
+  },
+  "receiveCode": {
+    "type": "Property",
+    "value": [
+    ]
+  },
+  "encryptYN": {
+    "type": "Property",
+    "value": [
+    ]
+  },
+  "sendType": {
+    "type": "Property",
+    "value": [
+    ]
+  },
+  "rrKey": {
+    "type": "Property",
+    "value": ""
+  },
+  "reqDate": {
+    "type": "Property",
+    "value": ""
+  },
+  "dataLen": {
+    "type": "Property",
+    "value": ""
+  },
+  "eventId": {
+    "type": "Property",
+    "value": ""
+  },
+  "eventName": {
+    "type": "Property",
+    "value": ""
+  },
+  "eventGrade": {
+    "type": "Property",
+    "value": ""
+  },
+  "eventNum": {
+    "type": "Property",
+    "value": ""
+  },
+  "progress": {
+    "type": "Property",
+    "value": ""
+  },
+  "eventPoint": {
+    "type": "Property",
+    "value": [
+    ]
+  },
+  "eventPointName": {
+    "type": "Property",
+    "value": ""
+  },
+  "eventContent": {
+    "type": "Property",
+    "value": ""
+  },
+  "eventDate": {
+    "type": "Property",
+    "value": ""
+  },
+  "progressContent": {
+    "type": "Property",
+    "value": [
+    ]
+  },
+  "progressUser": {
+    "type": "Property",
+    "value": [
+    ]
+  },
+  "progressDate": {
+    "type": "Property",
+    "value": ""
+  },
+  "endDate": {
+    "type": "Property",
+    "value": ""
+  },
+  "eventItemCnt": {
+    "type": "Property",
+    "value": ""
+  },
+  "eventItemName": {
+    "type": "Property",
+    "value": [
+    ]
+  },
+  "eventDtlCode": {
+    "type": "Property",
+    "value": ""
+  },
+  "sendHis": {
+    "type": "Property",
+    "value": [
+    ]
+  }
+}

@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WaterQualityTap">
+
+
+  <update id="upsertFull" parameterType="map" timeout="360">
+    WITH upsert AS (
+    UPDATE smart_city.water_quality_tap
+    SET
+      modified_at = #{modifiedAt}
+      <if test="owner != null">,owner = #{owner}</if>
+      <if test="location4326 != null">,location_4326 = ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326)</if>
+      <if test="location4326 != null">,location_3857 = ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326), 3857)</if>
+      <if test="addressCountry != null">,address_country = #{addressCountry}</if>
+      <if test="addressTown != null">,address_town = #{addressTown}</if>
+      <if test="addressLocality != null">,address_locality = #{addressLocality}</if>
+      <if test="addressRegion != null">,address_region = #{addressRegion}</if>
+      <if test="streetAddress != null">,street_address = #{streetAddress}</if>
+  
+      <if test="interaval != null">,interaval = #{interaval}</if>
+      <if test="taste != null">,taste = #{taste}</if>
+      <if test="odor != null">,odor = #{odor}</if>
+      <if test="chromaticity != null">,chromaticity = #{chromaticity}</if>
+      <if test="hydrogenIndex != null">,hydrogen_index = #{hydrogenIndex}</if>
+      <if test="turbidity != null">,turbidity = #{turbidity}</if>
+      <if test="residualChlorine != null">,residual_chlorine = #{residualChlorine}</if>
+      <if test="bacteria != null">,bacteria = #{bacteria}</if>
+      <if test="totalColiforms != null">,total_coliforms = #{totalColiforms}</if>
+      <if test="coliforms != null">,coliforms = #{coliforms}</if>
+      <if test="ammoniumNitrogen != null">,ammonium_nitrogen = #{ammoniumNitrogen}</if>
+      <if test="nitrateNitrogen != null">,nitrate_nitrogen = #{nitrateNitrogen}</if>
+      <if test="totalSolids != null">,total_solids = #{totalSolids}</if>
+      <if test="lead != null">,lead = #{lead}</if>
+      <if test="fluoride != null">,fluoride = #{fluoride}</if>
+      <if test="arsenic != null">,arsenic = #{arsenic}</if>
+      <if test="selenium != null">,selenium = #{selenium}</if>
+      <if test="mercury != null">,mercury = #{mercury}</if>
+      <if test="cyanide != null">,cyanide = #{cyanide}</if>
+      <if test="chrome != null">,chrome = #{chrome}</if>
+      <if test="cadmium != null">,cadmium = #{cadmium}</if>
+      <if test="boron != null">,boron = #{boron}</if>
+      <if test="phenol != null">,phenol = #{phenol}</if>
+      <if test="diazinon != null">,diazinon = #{diazinon}</if>
+      <if test="parathion != null">,parathion = #{parathion}</if>
+      <if test="fenitrothion != null">,fenitrothion = #{fenitrothion}</if>
+      <if test="carbaryl != null">,carbaryl = #{carbaryl}</if>
+      <if test="trichloroethane != null">,trichloroethane = #{trichloroethane}</if>
+      <if test="tetrachloroethylene != null">,tetrachloroethylene = #{tetrachloroethylene}</if>
+      <if test="trichloroethylene != null">,trichloroethylene = #{trichloroethylene}</if>
+      <if test="dichloromethane != null">,dichloromethane = #{dichloromethane}</if>
+      <if test="benzene != null">,benzene = #{benzene}</if>
+      <if test="toluene != null">,toluene = #{toluene}</if>
+      <if test="ethylBenzene != null">,ethyl_benzene = #{ethylBenzene}</if>
+      <if test="xylene != null">,xylene = #{xylene}</if>
+      <if test="dichloroethylene != null">,dichloroethylene = #{dichloroethylene}</if>
+      <if test="carbonTetrachloride != null">,carbon_tetrachloride = #{carbonTetrachloride}</if>
+      <if test="dibromoChloropropane != null">,dibromo_chloropropane = #{dibromoChloropropane}</if>
+      <if test="dioxan != null">,dioxan = #{dioxan}</if>
+      <if test="trihalomethane != null">,trihalomethane = #{trihalomethane}</if>
+      <if test="chloroform != null">,chloroform = #{chloroform}</if>
+      <if test="bromodichloromethane != null">,bromodichloromethane = #{bromodichloromethane}</if>
+      <if test="dibromochloromethane != null">,dibromochloromethane = #{dibromochloromethane}</if>
+      <if test="chloralHydrate != null">,chloral_hydrate = #{chloralHydrate}</if>
+      <if test="dibromoacetonitrile != null">,dibromoacetonitrile = #{dibromoacetonitrile}</if>
+      <if test="trichloroacetonitrile != null">,trichloroacetonitrile = #{trichloroacetonitrile}</if>
+      <if test="dichloroacetonitrile != null">,dichloroacetonitrile = #{dichloroacetonitrile}</if>
+      <if test="haloAceticAcid != null">,halo_acetic_acid = #{haloAceticAcid}</if>
+      <if test="formaldehyde != null">,formaldehyde = #{formaldehyde}</if>
+      <if test="hardness != null">,hardness = #{hardness}</if>
+      <if test="consumptionKMnO4 != null">,consumption_k_mn_o4 = #{consumptionKMnO4}</if>
+      <if test="cooper != null">,cooper = #{cooper}</if>
+      <if test="detergentABS != null">,detergent_a_b_s = #{detergentABS}</if>
+      <if test="zinc != null">,zinc = #{zinc}</if>
+      <if test="chloride != null">,chloride = #{chloride}</if>
+      <if test="iron != null">,iron = #{iron}</if>
+      <if test="manganese != null">,manganese = #{manganese}</if>
+      <if test="sulfate != null">,sulfate = #{sulfate}</if>
+      <if test="aluminium != null">,aluminium = #{aluminium}</if>
+
+    WHERE id = #{id}
+    RETURNING *
+    ) INSERT INTO smart_city.water_quality_tap (
+      id
+      ,created_at
+      ,modified_at
+      <if test="owner != null">,owner</if>
+      <if test="location4326 != null">,location_4326</if>
+      <if test="location4326 != null">,location_3857</if>
+      <if test="addressCountry != null">,address_country</if>
+      <if test="addressTown != null">,address_town</if>
+      <if test="addressLocality != null">,address_locality</if>
+      <if test="addressRegion != null">,address_region</if>
+      <if test="streetAddress != null">,street_address</if>
+  
+      <if test="interaval != null">,interaval</if>
+      <if test="taste != null">,taste</if>
+      <if test="odor != null">,odor</if>
+      <if test="chromaticity != null">,chromaticity</if>
+      <if test="hydrogenIndex != null">,hydrogen_index</if>
+      <if test="turbidity != null">,turbidity</if>
+      <if test="residualChlorine != null">,residual_chlorine</if>
+      <if test="bacteria != null">,bacteria</if>
+      <if test="totalColiforms != null">,total_coliforms</if>
+      <if test="coliforms != null">,coliforms</if>
+      <if test="ammoniumNitrogen != null">,ammonium_nitrogen</if>
+      <if test="nitrateNitrogen != null">,nitrate_nitrogen</if>
+      <if test="totalSolids != null">,total_solids</if>
+      <if test="lead != null">,lead</if>
+      <if test="fluoride != null">,fluoride</if>
+      <if test="arsenic != null">,arsenic</if>
+      <if test="selenium != null">,selenium</if>
+      <if test="mercury != null">,mercury</if>
+      <if test="cyanide != null">,cyanide</if>
+      <if test="chrome != null">,chrome</if>
+      <if test="cadmium != null">,cadmium</if>
+      <if test="boron != null">,boron</if>
+      <if test="phenol != null">,phenol</if>
+      <if test="diazinon != null">,diazinon</if>
+      <if test="parathion != null">,parathion</if>
+      <if test="fenitrothion != null">,fenitrothion</if>
+      <if test="carbaryl != null">,carbaryl</if>
+      <if test="trichloroethane != null">,trichloroethane</if>
+      <if test="tetrachloroethylene != null">,tetrachloroethylene</if>
+      <if test="trichloroethylene != null">,trichloroethylene</if>
+      <if test="dichloromethane != null">,dichloromethane</if>
+      <if test="benzene != null">,benzene</if>
+      <if test="toluene != null">,toluene</if>
+      <if test="ethylBenzene != null">,ethyl_benzene</if>
+      <if test="xylene != null">,xylene</if>
+      <if test="dichloroethylene != null">,dichloroethylene</if>
+      <if test="carbonTetrachloride != null">,carbon_tetrachloride</if>
+      <if test="dibromoChloropropane != null">,dibromo_chloropropane</if>
+      <if test="dioxan != null">,dioxan</if>
+      <if test="trihalomethane != null">,trihalomethane</if>
+      <if test="chloroform != null">,chloroform</if>
+      <if test="bromodichloromethane != null">,bromodichloromethane</if>
+      <if test="dibromochloromethane != null">,dibromochloromethane</if>
+      <if test="chloralHydrate != null">,chloral_hydrate</if>
+      <if test="dibromoacetonitrile != null">,dibromoacetonitrile</if>
+      <if test="trichloroacetonitrile != null">,trichloroacetonitrile</if>
+      <if test="dichloroacetonitrile != null">,dichloroacetonitrile</if>
+      <if test="haloAceticAcid != null">,halo_acetic_acid</if>
+      <if test="formaldehyde != null">,formaldehyde</if>
+      <if test="hardness != null">,hardness</if>
+      <if test="consumptionKMnO4 != null">,consumption_k_mn_o4</if>
+      <if test="cooper != null">,cooper</if>
+      <if test="detergentABS != null">,detergent_a_b_s</if>
+      <if test="zinc != null">,zinc</if>
+      <if test="chloride != null">,chloride</if>
+      <if test="iron != null">,iron</if>
+      <if test="manganese != null">,manganese</if>
+      <if test="sulfate != null">,sulfate</if>
+      <if test="aluminium != null">,aluminium</if>
+
+    )
+    SELECT
+      #{id}
+      ,#{createdAt}
+      ,#{modifiedAt}
+      <if test="owner != null">,#{owner}</if>
+      <if test="location4326 != null">,ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326)</if>
+      <if test="location4326 != null">,ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326), 3857)</if>
+      <if test="addressCountry != null">,#{addressCountry}</if>
+      <if test="addressTown != null">,#{addressTown}</if>
+      <if test="addressLocality != null">,#{addressLocality}</if>
+      <if test="addressRegion != null">,#{addressRegion}</if>
+      <if test="streetAddress != null">,#{streetAddress}</if>
+  
+      <if test="interaval != null">,#{interaval}</if>
+      <if test="taste != null">,#{taste}</if>
+      <if test="odor != null">,#{odor}</if>
+      <if test="chromaticity != null">,#{chromaticity}</if>
+      <if test="hydrogenIndex != null">,#{hydrogen_index}</if>
+      <if test="turbidity != null">,#{turbidity}</if>
+      <if test="residualChlorine != null">,#{residual_chlorine}</if>
+      <if test="bacteria != null">,#{bacteria}</if>
+      <if test="totalColiforms != null">,#{total_coliforms}</if>
+      <if test="coliforms != null">,#{coliforms}</if>
+      <if test="ammoniumNitrogen != null">,#{ammonium_nitrogen}</if>
+      <if test="nitrateNitrogen != null">,#{nitrate_nitrogen}</if>
+      <if test="totalSolids != null">,#{total_solids}</if>
+      <if test="lead != null">,#{lead}</if>
+      <if test="fluoride != null">,#{fluoride}</if>
+      <if test="arsenic != null">,#{arsenic}</if>
+      <if test="selenium != null">,#{selenium}</if>
+      <if test="mercury != null">,#{mercury}</if>
+      <if test="cyanide != null">,#{cyanide}</if>
+      <if test="chrome != null">,#{chrome}</if>
+      <if test="cadmium != null">,#{cadmium}</if>
+      <if test="boron != null">,#{boron}</if>
+      <if test="phenol != null">,#{phenol}</if>
+      <if test="diazinon != null">,#{diazinon}</if>
+      <if test="parathion != null">,#{parathion}</if>
+      <if test="fenitrothion != null">,#{fenitrothion}</if>
+      <if test="carbaryl != null">,#{carbaryl}</if>
+      <if test="trichloroethane != null">,#{trichloroethane}</if>
+      <if test="tetrachloroethylene != null">,#{tetrachloroethylene}</if>
+      <if test="trichloroethylene != null">,#{trichloroethylene}</if>
+      <if test="dichloromethane != null">,#{dichloromethane}</if>
+      <if test="benzene != null">,#{benzene}</if>
+      <if test="toluene != null">,#{toluene}</if>
+      <if test="ethylBenzene != null">,#{ethyl_benzene}</if>
+      <if test="xylene != null">,#{xylene}</if>
+      <if test="dichloroethylene != null">,#{dichloroethylene}</if>
+      <if test="carbonTetrachloride != null">,#{carbon_tetrachloride}</if>
+      <if test="dibromoChloropropane != null">,#{dibromo_chloropropane}</if>
+      <if test="dioxan != null">,#{dioxan}</if>
+      <if test="trihalomethane != null">,#{trihalomethane}</if>
+      <if test="chloroform != null">,#{chloroform}</if>
+      <if test="bromodichloromethane != null">,#{bromodichloromethane}</if>
+      <if test="dibromochloromethane != null">,#{dibromochloromethane}</if>
+      <if test="chloralHydrate != null">,#{chloral_hydrate}</if>
+      <if test="dibromoacetonitrile != null">,#{dibromoacetonitrile}</if>
+      <if test="trichloroacetonitrile != null">,#{trichloroacetonitrile}</if>
+      <if test="dichloroacetonitrile != null">,#{dichloroacetonitrile}</if>
+      <if test="haloAceticAcid != null">,#{halo_acetic_acid}</if>
+      <if test="formaldehyde != null">,#{formaldehyde}</if>
+      <if test="hardness != null">,#{hardness}</if>
+      <if test="consumptionKMnO4 != null">,#{consumption_k_mn_o4}</if>
+      <if test="cooper != null">,#{cooper}</if>
+      <if test="detergentABS != null">,#{detergent_a_b_s}</if>
+      <if test="zinc != null">,#{zinc}</if>
+      <if test="chloride != null">,#{chloride}</if>
+      <if test="iron != null">,#{iron}</if>
+      <if test="manganese != null">,#{manganese}</if>
+      <if test="sulfate != null">,#{sulfate}</if>
+      <if test="aluminium != null">,#{aluminium}</if>
+
+      WHERE NOT EXISTS (SELECT * FROM upsert)
+  </update>
+
+  <insert id="insertHist" parameterType="map" timeout="360">
+    INSERT INTO smart_city.water_quality_tap_hist (
+      id
+      ,modified_at
+      ,operation
+      <if test="owner != null">,owner</if>
+      <if test="location4326 != null">,location_4326</if>
+      <if test="location4326 != null">,location_3857</if>
+      <if test="addressCountry != null">,address_country</if>
+      <if test="addressLocality != null">,address_locality</if>
+      <if test="addressRegion != null">,address_region</if>
+      <if test="streetAddress != null">,street_address</if>
+      <if test="addressTown != null">,address_town</if>
+  
+      <if test="interaval != null">,interaval</if>
+      <if test="taste != null">,taste</if>
+      <if test="odor != null">,odor</if>
+      <if test="chromaticity != null">,chromaticity</if>
+      <if test="hydrogenIndex != null">,hydrogen_index</if>
+      <if test="turbidity != null">,turbidity</if>
+      <if test="residualChlorine != null">,residual_chlorine</if>
+      <if test="bacteria != null">,bacteria</if>
+      <if test="totalColiforms != null">,total_coliforms</if>
+      <if test="coliforms != null">,coliforms</if>
+      <if test="ammoniumNitrogen != null">,ammonium_nitrogen</if>
+      <if test="nitrateNitrogen != null">,nitrate_nitrogen</if>
+      <if test="totalSolids != null">,total_solids</if>
+      <if test="lead != null">,lead</if>
+      <if test="fluoride != null">,fluoride</if>
+      <if test="arsenic != null">,arsenic</if>
+      <if test="selenium != null">,selenium</if>
+      <if test="mercury != null">,mercury</if>
+      <if test="cyanide != null">,cyanide</if>
+      <if test="chrome != null">,chrome</if>
+      <if test="cadmium != null">,cadmium</if>
+      <if test="boron != null">,boron</if>
+      <if test="phenol != null">,phenol</if>
+      <if test="diazinon != null">,diazinon</if>
+      <if test="parathion != null">,parathion</if>
+      <if test="fenitrothion != null">,fenitrothion</if>
+      <if test="carbaryl != null">,carbaryl</if>
+      <if test="trichloroethane != null">,trichloroethane</if>
+      <if test="tetrachloroethylene != null">,tetrachloroethylene</if>
+      <if test="trichloroethylene != null">,trichloroethylene</if>
+      <if test="dichloromethane != null">,dichloromethane</if>
+      <if test="benzene != null">,benzene</if>
+      <if test="toluene != null">,toluene</if>
+      <if test="ethylBenzene != null">,ethyl_benzene</if>
+      <if test="xylene != null">,xylene</if>
+      <if test="dichloroethylene != null">,dichloroethylene</if>
+      <if test="carbonTetrachloride != null">,carbon_tetrachloride</if>
+      <if test="dibromoChloropropane != null">,dibromo_chloropropane</if>
+      <if test="dioxan != null">,dioxan</if>
+      <if test="trihalomethane != null">,trihalomethane</if>
+      <if test="chloroform != null">,chloroform</if>
+      <if test="bromodichloromethane != null">,bromodichloromethane</if>
+      <if test="dibromochloromethane != null">,dibromochloromethane</if>
+      <if test="chloralHydrate != null">,chloral_hydrate</if>
+      <if test="dibromoacetonitrile != null">,dibromoacetonitrile</if>
+      <if test="trichloroacetonitrile != null">,trichloroacetonitrile</if>
+      <if test="dichloroacetonitrile != null">,dichloroacetonitrile</if>
+      <if test="haloAceticAcid != null">,halo_acetic_acid</if>
+      <if test="formaldehyde != null">,formaldehyde</if>
+      <if test="hardness != null">,hardness</if>
+      <if test="consumptionKMnO4 != null">,consumption_k_mn_o4</if>
+      <if test="cooper != null">,cooper</if>
+      <if test="detergentABS != null">,detergent_a_b_s</if>
+      <if test="zinc != null">,zinc</if>
+      <if test="chloride != null">,chloride</if>
+      <if test="iron != null">,iron</if>
+      <if test="manganese != null">,manganese</if>
+      <if test="sulfate != null">,sulfate</if>
+      <if test="aluminium != null">,aluminium</if>
+
+    ) VALUES (
+      #{id}
+      ,#{modifiedAt}
+      ,#{operation, typeHandler=com.cityhub.typehandler.OperationTypeHandler}
+      <if test="owner != null">,#{owner}</if>
+      <if test="location4326 != null">,ST_GeomFromGeoJSON(#{location4326})</if>
+      <if test="location4326 != null">,ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326), 3857)</if>
+      <if test="addressCountry != null">,#{addressCountry}</if>
+      <if test="addressLocality != null">,#{addressLocality}</if>
+      <if test="addressRegion != null">,#{addressRegion}</if>
+      <if test="streetAddress != null">,#{streetAddress}</if>
+      <if test="addressTown != null">,#{addressTown}</if>
+  
+      <if test="interaval != null">,#{interaval}</if>
+      <if test="taste != null">,#{taste}</if>
+      <if test="odor != null">,#{odor}</if>
+      <if test="chromaticity != null">,#{chromaticity}</if>
+      <if test="hydrogenIndex != null">,#{hydrogenIndex}</if>
+      <if test="turbidity != null">,#{turbidity}</if>
+      <if test="residualChlorine != null">,#{residualChlorine}</if>
+      <if test="bacteria != null">,#{bacteria}</if>
+      <if test="totalColiforms != null">,#{totalColiforms}</if>
+      <if test="coliforms != null">,#{coliforms}</if>
+      <if test="ammoniumNitrogen != null">,#{ammoniumNitrogen}</if>
+      <if test="nitrateNitrogen != null">,#{nitrateNitrogen}</if>
+      <if test="totalSolids != null">,#{totalSolids}</if>
+      <if test="lead != null">,#{lead}</if>
+      <if test="fluoride != null">,#{fluoride}</if>
+      <if test="arsenic != null">,#{arsenic}</if>
+      <if test="selenium != null">,#{selenium}</if>
+      <if test="mercury != null">,#{mercury}</if>
+      <if test="cyanide != null">,#{cyanide}</if>
+      <if test="chrome != null">,#{chrome}</if>
+      <if test="cadmium != null">,#{cadmium}</if>
+      <if test="boron != null">,#{boron}</if>
+      <if test="phenol != null">,#{phenol}</if>
+      <if test="diazinon != null">,#{diazinon}</if>
+      <if test="parathion != null">,#{parathion}</if>
+      <if test="fenitrothion != null">,#{fenitrothion}</if>
+      <if test="carbaryl != null">,#{carbaryl}</if>
+      <if test="trichloroethane != null">,#{trichloroethane}</if>
+      <if test="tetrachloroethylene != null">,#{tetrachloroethylene}</if>
+      <if test="trichloroethylene != null">,#{trichloroethylene}</if>
+      <if test="dichloromethane != null">,#{dichloromethane}</if>
+      <if test="benzene != null">,#{benzene}</if>
+      <if test="toluene != null">,#{toluene}</if>
+      <if test="ethylBenzene != null">,#{ethylBenzene}</if>
+      <if test="xylene != null">,#{xylene}</if>
+      <if test="dichloroethylene != null">,#{dichloroethylene}</if>
+      <if test="carbonTetrachloride != null">,#{carbonTetrachloride}</if>
+      <if test="dibromoChloropropane != null">,#{dibromoChloropropane}</if>
+      <if test="dioxan != null">,#{dioxan}</if>
+      <if test="trihalomethane != null">,#{trihalomethane}</if>
+      <if test="chloroform != null">,#{chloroform}</if>
+      <if test="bromodichloromethane != null">,#{bromodichloromethane}</if>
+      <if test="dibromochloromethane != null">,#{dibromochloromethane}</if>
+      <if test="chloralHydrate != null">,#{chloralHydrate}</if>
+      <if test="dibromoacetonitrile != null">,#{dibromoacetonitrile}</if>
+      <if test="trichloroacetonitrile != null">,#{trichloroacetonitrile}</if>
+      <if test="dichloroacetonitrile != null">,#{dichloroacetonitrile}</if>
+      <if test="haloAceticAcid != null">,#{haloAceticAcid}</if>
+      <if test="formaldehyde != null">,#{formaldehyde}</if>
+      <if test="hardness != null">,#{hardness}</if>
+      <if test="consumptionKMnO4 != null">,#{consumptionKMnO4}</if>
+      <if test="cooper != null">,#{cooper}</if>
+      <if test="detergentABS != null">,#{detergentABS}</if>
+      <if test="zinc != null">,#{zinc}</if>
+      <if test="chloride != null">,#{chloride}</if>
+      <if test="iron != null">,#{iron}</if>
+      <if test="manganese != null">,#{manganese}</if>
+      <if test="sulfate != null">,#{sulfate}</if>
+      <if test="aluminium != null">,#{aluminium}</if>
+
+    )
+  </insert>
+
+
+</mapper>

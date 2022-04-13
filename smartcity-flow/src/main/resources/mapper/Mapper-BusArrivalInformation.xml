@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BusArrivalInformation">
+
+
+  <update id="upsertFull" parameterType="map" timeout="360">
+    WITH upsert AS (
+    UPDATE smart_city.bus_arrival_information
+    SET
+      modified_at = #{modifiedAt}
+      <if test="owner != null">,owner = #{owner}</if>
+      <if test="location4326 != null">,location_4326 = ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326)</if>
+      <if test="location4326 != null">,location_3857 = ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326), 3857)</if>
+      <if test="addressCountry != null">,address_country = #{addressCountry}</if>
+      <if test="addressTown != null">,address_town = #{addressTown}</if>
+      <if test="addressLocality != null">,address_locality = #{addressLocality}</if>
+      <if test="addressRegion != null">,address_region = #{addressRegion}</if>
+      <if test="streetAddress != null">,street_address = #{streetAddress}</if>
+  
+      <if test="flag != null">,flag = #{flag}</if>
+      <if test="plateNo1 != null">,plate_no1 = #{plateNo1}</if>
+      <if test="plateNo2 != null">,plate_no2 = #{plateNo2}</if>
+      <if test="lowPlate1 != null">,low_plate1 = #{lowPlate1}</if>
+      <if test="lowPlate2 != null">,low_plate2 = #{lowPlate2}</if>
+      <if test="predictTime1 != null">,predict_time1 = #{predictTime1}</if>
+      <if test="predictTime2 != null">,predict_time2 = #{predictTime2}</if>
+    WHERE id = #{id}
+    RETURNING *
+    ) INSERT INTO smart_city.bus_arrival_information (
+      id
+      ,created_at
+      ,modified_at
+      <if test="owner != null">,owner</if>
+      <if test="location4326 != null">,location_4326</if>
+      <if test="location4326 != null">,location_3857</if>
+      <if test="addressCountry != null">,address_country</if>
+      <if test="addressTown != null">,address_town</if>
+      <if test="addressLocality != null">,address_locality</if>
+      <if test="addressRegion != null">,address_region</if>
+      <if test="streetAddress != null">,street_address</if>
+  
+      <if test="flag != null">,flag</if>
+      <if test="plateNo1 != null">,plate_no1</if>
+      <if test="plateNo2 != null">,plate_no2</if>
+      <if test="lowPlate1 != null">,low_plate1</if>
+      <if test="lowPlate2 != null">,low_plate2</if>
+      <if test="predictTime1 != null">,predict_time1</if>
+      <if test="predictTime2 != null">,predict_time2</if>
+    )
+    SELECT
+      #{id}
+      ,#{createdAt}
+      ,#{modifiedAt}
+      <if test="owner != null">,#{owner}</if>
+      <if test="location4326 != null">,ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326)</if>
+      <if test="location4326 != null">,ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326), 3857)</if>
+      <if test="addressCountry != null">,#{addressCountry}</if>
+      <if test="addressTown != null">,#{addressTown}</if>
+      <if test="addressLocality != null">,#{addressLocality}</if>
+      <if test="addressRegion != null">,#{addressRegion}</if>
+      <if test="streetAddress != null">,#{streetAddress}</if>
+  
+      <if test="flag != null">,#{flag}</if>
+      <if test="plateNo1 != null">,#{plateNo1}</if>
+      <if test="plateNo2 != null">,#{plateNo2}</if>
+      <if test="lowPlate1 != null">,#{lowPlate1}</if>
+      <if test="lowPlate2 != null">,#{lowPlate2}</if>
+      <if test="predictTime1 != null">,#{predictTime1}</if>
+      <if test="predictTime2 != null">,#{predictTime2}</if>
+      WHERE NOT EXISTS (SELECT * FROM upsert)
+  </update>
+
+  <insert id="insertHist" parameterType="map" timeout="360">
+    INSERT INTO smart_city.bus_arrival_information_hist (
+      id
+      ,modified_at
+      ,operation
+      <if test="owner != null">,owner</if>
+      <if test="location4326 != null">,location_4326</if>
+      <if test="location4326 != null">,location_3857</if>
+      <if test="addressCountry != null">,address_country</if>
+      <if test="addressLocality != null">,address_locality</if>
+      <if test="addressRegion != null">,address_region</if>
+      <if test="streetAddress != null">,street_address</if>
+      <if test="addressTown != null">,address_town</if>
+  
+      <if test="flag != null">,flag</if>
+      <if test="plateNo1 != null">,plate_no1</if>
+      <if test="plateNo2 != null">,plate_no2</if>
+      <if test="lowPlate1 != null">,low_plate1</if>
+      <if test="lowPlate2 != null">,low_plate2</if>
+      <if test="predictTime1 != null">,predict_time1</if>
+      <if test="predictTime2 != null">,predict_time2</if>
+    ) VALUES (
+      #{id}
+      ,#{modifiedAt}
+      ,#{operation, typeHandler=com.cityhub.typehandler.OperationTypeHandler}
+      <if test="owner != null">,#{owner}</if>
+      <if test="location4326 != null">,ST_GeomFromGeoJSON(#{location4326})</if>
+      <if test="location4326 != null">,ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(#{location4326}), 4326), 3857)</if>
+      <if test="addressCountry != null">,#{addressCountry}</if>
+      <if test="addressLocality != null">,#{addressLocality}</if>
+      <if test="addressRegion != null">,#{addressRegion}</if>
+      <if test="streetAddress != null">,#{streetAddress}</if>
+      <if test="addressTown != null">,#{addressTown}</if>
+  
+      <if test="flag != null">,#{flag}</if>
+      <if test="plateNo1 != null">,#{plateNo1}</if>
+      <if test="plateNo2 != null">,#{plateNo2}</if>
+      <if test="lowPlate1 != null">,#{lowPlate1}</if>
+      <if test="lowPlate2 != null">,#{lowPlate2}</if>
+      <if test="predictTime1 != null">,#{predictTime1}</if>
+      <if test="predictTime2 != null">,#{predictTime2}</if>
+    )
+  </insert>
+
+
+</mapper>

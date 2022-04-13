@@ -1,0 +1,60 @@
+{
+    "@context": [
+        "http://uri.etsi.org/ngsi-ld/core-context.jsonld",
+        "http://data-hub.kr/cor19.jsonld"
+    ],
+    "id": "urn:datahub:StoreCardUsage:0000111122223333-20200210T135414",
+    "type": "StoreCardUsage",
+    "cardCompanyCode": {
+        "type": "Property",
+        "value": null
+    },
+    "cardNumber": {
+        "type": "Property",
+        "value": null
+    },
+    "transactionTime": {
+        "type": "Property",
+        "value": null
+    },
+    "storeId": {
+        "type": "Property",
+        "value": null
+    },
+    "storeRegistrationNumber": {
+        "type": "Property",
+        "value": null
+    },
+    "storeName": {
+        "type": "Property",
+        "value": null
+    },
+    "storeAddress": {
+        "type": "Property",
+        "value": null
+    },
+    "storePhoneNumber": {
+        "type": "Property",
+        "value": null
+    },
+    "charge": {
+        "type": "Property",
+        "value": null
+    },
+    "cardUserName": {
+        "type": "Property",
+        "value": null
+    },
+    "cardUserPhoneNumber": {
+        "type": "Property",
+        "value": null
+    },
+    "cardUserAddress": {
+        "type": "Property",
+        "value": null
+    },
+    "cardUserResidentRegistrationNumber": {
+        "type": "Property",
+        "value": null
+    }
+}

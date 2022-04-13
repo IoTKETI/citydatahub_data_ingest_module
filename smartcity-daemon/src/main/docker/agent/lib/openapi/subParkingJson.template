@@ -1,0 +1,13 @@
+{
+  "m2m:sub": {
+    "rn": "",
+    "enc": {
+      "net": [
+        3
+      ]
+    },
+    "nu": [
+      "mqtt://203.253.128.164:1883/SlotYatopParking?ct=json"
+    ]
+  }
+}

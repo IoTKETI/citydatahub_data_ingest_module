@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>어댑터 관리 - 목록 </title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+</head>
+<body>
+    <table style="width:100%">
+      <tr>
+        <td style="height:45px;Font-size:16px;Font-color:#000;font-weight:bold">어댑터 관리</td>
+      </tr>
+    </table>
+    <table style="width:100%;border:1px solid #ddd">
+      <tr style="height:38px">
+        <td style="Font-size:14px;Font-color:#555;font-weight:bold;padding-left:10px">어댑터 목록</td>
+        <td style="text-align:right;padding-top:2px;padding-bottom:0px">
+<!--         <button class="btn" id="btn-save" type="submit" style="border:0px;background-color:#ffffff"><img class="btn-img" src="/asset/images/btnSave.jpg"></button> -->
+        </td>
+      </tr>
+    </table>
+    <table style="margin-top:1px;width:100%;border-spacing: 0px;">
+      <tr style="height:34px">
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:50px;text-align:center" bgcolor="#fdfdfd">순번</td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:150px;text-align:center" bgcolor="#fdfdfd">Agent ID /<br>Agent 명</td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:100px;text-align:center" bgcolor="#fdfdfd">어댑터 ID</td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:*;text-align:center" bgcolor="#fdfdfd">어댑터 명</td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:100px;text-align:center" bgcolor="#fdfdfd">인스턴스 수</td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:100px;text-align:center" bgcolor="#fdfdfd">사용여부</td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:100px;text-align:center" bgcolor="#fdfdfd">등록일</td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:100px;text-align:center" bgcolor="#fdfdfd">재시작</td>
+      </tr>  
+      <tr th:each="result,index : ${result}" style="height:34px">
+        <td th:text="${index.index+1}" style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;text-align:center" bgcolor="#ffffff"></td>
+        <td th:utext="${result.agent_id}+' /&lt;br /&gt;' +${result.agent_nm}" style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;text-align:center" bgcolor="#ffffff"></td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;text-align:center" bgcolor="#ffffff">
+          <a href="/agentDetail/" th:attrappend="href=${result.agent_id}+'/'+${result.adapter_id}" th:text="${result.adapter_id}"></a>
+        </td>
+        <td th:text="${result.adapter_nm}" style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;text-align:left" bgcolor="#ffffff"></td>
+        <td th:text="${result.ins_cnt}" style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;text-align:center" bgcolor="#ffffff"></td>
+        <td th:text="${result.use_yn}" style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;text-align:center" bgcolor="#ffffff"></td>
+        <td th:text="${result.first_create_dt}" style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;text-align:center" bgcolor="#ffffff"></td>
+        <td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;text-align:center" bgcolor="#ffffff"><a href="#">재시작</a></td>
+      </tr>
+    </table>
+</body>
+</html>

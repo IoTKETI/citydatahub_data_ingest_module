@@ -1,0 +1,40 @@
+{
+	"@context": [
+		"http://uri.etsi.org/ngsi-ld/core-context.jsonld",
+		"http://data-hub.kr/card.jsonld"
+	],
+	"id": "urn:datahub:VData:dbc28900fe6c1f59c34c56a09bbf7ed97848eb26b3314289c00cbd4bac5b1bca",
+	"type": "VData",
+  "location": {
+    "type": "GeoProperty",
+    "value": {
+      "type": "Point",
+      "coordinates": [
+        127.1293735,
+        37.4114423
+      ]
+    }
+  },
+  "address": {
+    "type": "Property",
+    "value": {
+      "addressCountry": "",
+      "streetAddress": "",
+      "addressLocality": "",
+      "addressRegion": "",
+      "addressTown": ""
+    }
+  },
+  "port": {
+    "type": "Property",
+    "value": 0
+  },
+  "observedAt": {
+    "type": "Property",
+    "value": ""
+  },
+  "rawData": {
+    "type": "Property",
+    "value": ""
+  }
+}

@@ -1,0 +1,28 @@
+{
+    "@context": [
+        "http://uri.etsi.org/ngsi-ld/core-context.jsonld",
+        "http://data-hub.kr/cor19.jsonld"
+    ],
+    "id": "",
+    "type": "NetworkLocationRaw",
+    "location": {
+        "observedAt": null,
+        "type": "GeoProperty",
+        "value": {
+            "coordinates": null,
+            "type": "Point"
+        }
+    },
+    "beginTime": {
+        "type": "Property",
+        "value": null
+    },    
+    "endTime": {
+        "type": "Property",
+        "value": null
+    },
+    "personId": {
+        "type": "Property",
+        "value": null
+    }    
+}

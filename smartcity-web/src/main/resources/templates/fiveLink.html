@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sd="http://www.thymeleaf.org/spring-data" layout:decorator="layout/mainTta" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">TTA 검증기</title>
+</head>
+<body>
+  <div class="container w-half" layout:fragment="Content">
+  
+  <section class="section ">
+  <div class="section__header">
+    <h4 class="section__title">통합플랫폼</h4>
+  </div>
+  </section>
+  
+    <table class="tta-table ">
+      <colgroup>
+        <col style="width: 80px">
+        <col style="width: 100px">
+        <col style="width: 275px">
+      </colgroup>
+      <tr>
+        <td>연계 구분</td>
+        <th style="text-align: left; padding-left: 20px"><input type="radio" class="input-radio" name="linkGubn" id="linkNew" value="new" checked="checked">new</th>
+        <th style="text-align: left; padding-left: 20px"><input type="radio" class="input-radio" name="linkGubn" id="linkOld" value="old">old</th>
+      </tr>
+      <tr id="oldService" style="display: none">
+        <td>old 방식</td>
+        <th colspan="2" style="text-align: left; padding-left: 20px">
+        <input type="radio" class="input-radio" name="oldFiveLinkType" id="oldFiveLinkType1" value="image112" checked="checked">112 긴급영상 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="radio" class="input-radio" name="oldFiveLinkType" id="oldFiveLinkType2" value="qr112">112 긴급출동 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="radio" class="input-radio" name="oldFiveLinkType" id="oldFiveLinkType3" value="qr119">119 긴급출동 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="radio" class="input-radio" name="oldFiveLinkType" id="oldFiveLinkType4" value="disaster">재난상황 긴급대응 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="radio" class="input-radio" name="oldFiveLinkType" id="oldFiveLinkType5" value="weak">사회적 약자</th>
+      </tr>
+      <tr id="newService" style="">
+        <td>new 방식</td>
+        <th style="text-align: left; padding-left: 20px"><input type="radio" class="input-radio" name="newFiveLinkType" id="newFiveLinkType1" value="tp" checked="checked">통합플랫폼</th>
+        <th style="text-align: left; padding-left: 20px"><input type="radio" class="input-radio" name="newFiveLinkType" id="newFiveLinkType2" value="fclt">시설물</th>
+      </tr>
+      <tr>
+        <td>연계 방식</td>
+        <th style="text-align: left; padding-left: 20px"><input type="radio" class="input-radio" name="linkType" id="linkType1" value="owa" checked="checked">one way ack</th>
+        <th style="text-align: left; padding-left: 20px"><input type="radio" class="input-radio" name="linkType" id="linkType2" value="ow">one way</th>
+      </tr>
+      <tr>
+        <td>전송 방식</td>
+        <th style="text-align: left; padding-left: 20px"><input type="radio" class="input-radio" name="sendType" id="sendType1" value="u" checked="checked">URL</th>
+        <th style="text-align: left; padding-left: 20px"><input type="radio" class="input-radio" name="sendType" id="sendType2" value="s">socket</th>
+      </tr>
+
+    </table>
+
+    <div style="padding-top: 5px">
+      <button type="button" id="btn-search" class="button-primary">전송</button>
+    </div>
+
+    <div id="feedback"></div>
+
+    <script>
+          $(document).ready(function() {
+
+            $("#btn-search").click(function(event) {
+              event.preventDefault();
+              fire_ajax_submit();
+            });
+            $("#linkOld").click(function() {
+              oldService.style.display = "";
+              newService.style.display = "none";
+            });
+            $("#linkNew").click(function() {
+              oldService.style.display = "none";
+              newService.style.display = "";
+            });
+          });
+
+          function fire_ajax_submit() {
+
+            $("#btn-search").prop("disabled", true);
+
+            var param = "/fiveLink/?";
+            param += "&linkGubn=" + $("input:radio[name=linkGubn]:checked").val();
+            param += "&oldFiveLinkType=" + $("input:radio[name=oldFiveLinkType]:checked").val();
+            param += "&newFiveLinkType=" + $("input:radio[name=newFiveLinkType]:checked").val();
+            param += "&linkType=" + $("input:radio[name=linkType]:checked").val();
+            param += "&sendType=" + $("input:radio[name=sendType]:checked").val();
+
+            $.ajax({
+              type : "GET",
+              contentType : "application/json",
+              url : param,
+              dataType : 'json',
+              cache : false,
+              timeout : 600000,
+              success : function(data) {
+                var json = "<h4>Ajax Response</h4><pre>" + JSON.stringify(data, null, 4) + "</pre>";
+                $('#feedback').html(json);
+                $("#btn-search").prop("disabled", false);
+              },
+              error : function(e) {
+                var json = "<h4>Ajax Response</h4><pre>" + e.responseText + "</pre>";
+                $('#feedback').html(json);
+                $("#btn-search").prop("disabled", false);
+
+              }
+            });
+
+          }
+        </script>
+  </div>
+</body>
+</html>

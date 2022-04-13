@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sd="http://www.thymeleaf.org/spring-data" layout:decorator="layout/mainTta" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">검증기</title>
+</head>
+<body>
+  <div class="container w-half" layout:fragment="Content">
+
+  <section class="section ">
+    <div class="section__header ">
+      <h4 class="section__title">MQTT BROKER</h4>
+    </div>
+  </section>
+
+    <table class="tta-table ">
+      <colgroup>
+        <col style="width:80px">
+        <col style="width:350px">
+      </colgroup>
+      <tr>
+        <td>데이터 구분</td>
+        <th><select id="dataGubn" name="dataGubn" class="select">
+            <option value="parking">주차장</option>
+        </select></th>
+      </tr>
+      <tr>
+        <td>topic(fr)</td>
+        <th><input type="text" name="topic" id="topic" class="input-text" value="/oneM2M/req/Mobius2/SlotYatopParking"></th>
+      </tr>
+      <tr>
+        <td>broker</td>
+        <th><input type="text" name="broker" id="broker" class="input-text" value="tcp://192.168.1.214:1883"></th>
+      </tr>
+      <tr>
+        <td>시간 단위 설정</td>
+        <th><select id="timeGubn" name="timeGubn" class="select">
+            <option value="s">S</option>
+            <option value="m">M</option>
+            <option value="h">H</option>
+        </select></th>
+      </tr>
+      <tr>
+        <td>minimum</td>
+        <th><input type="text" name="startTime" id="startTime" class="input-text" maxlength="3"></th>
+      </tr>
+      <tr>
+        <td>maximum</td>
+        <th><input type="text" name="stopTime" id="stopTime" class="input-text" maxlength="3"></th>
+      </tr>
+
+
+    </table>
+
+    <div style="padding: 5px 0 0 0">
+      <button id="start" type="button" class="button-primary">시작</button>
+      <button id="stop" type="button" class="button-primary" style="display: none">종료</button>
+    </div>
+
+
+    <div id="feedback"></div>
+
+    <script th:inline="javascript">
+          var timer;
+          var ttaFlag = false;
+
+          $(document).ready(function() {
+
+            $("#start").on('click', function() {
+              $("#start").prop("disabled", true);
+              $("#stop").prop("disabled", false);
+              ttaFlag = true;
+              $("#start").hide();
+              $("#stop").show();
+              data_ajax_submit();
+            });
+
+            $("#stop").on('click', function() {
+              $("#stop").prop("disabled", true);
+              $("#start").prop("disabled", false);
+              ttaFlag = false;
+              $("#stop").hide();
+              $("#start").show();
+            });
+          });
+
+          function startTta() {
+            if (ttaFlag) {
+              var param = {
+                "dataGubn" : $("#dataGubn").val(),
+                "topic" : $("#topic").val(),
+                "broker" : $("#broker").val(),
+                "dataLink" : "MB"
+              };
+
+              cmUtl.exeAjax("POST", "/mqttBroker", JSON.stringify(param), "data_ajax_submit");
+            }
+          }
+
+          function data_ajax_submit(data) {
+            if (data != null) {
+              var json = "<h4>Ajax Response</h4><pre>" + JSON.stringify(data, null, 4) + "</pre>";
+              $('#feedback').html(json);
+            }
+            var ranTime = 0;
+            var sTime = 0;
+            var timeGubn = $("#timeGubn").val();
+            if (timeGubn == "s") {
+              sTime = 1000;
+            } else if (timeGubn == "m") {
+              sTime = 60000;
+            } else if (timeGubn == "h") {
+              sTime = 3600000;
+            }
+            var startTime = $("#startTime").val();
+            var stopTime = $("#stopTime").val();
+            ranTime = randomRange(startTime, stopTime) * sTime;
+            timer = setTimeout(startTta, ranTime);
+          }
+
+          function randomRange(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min)) + min; //최댓값은 제외, 최솟값은 포함
+          }
+        </script>
+  </div>
+</body>
+</html>

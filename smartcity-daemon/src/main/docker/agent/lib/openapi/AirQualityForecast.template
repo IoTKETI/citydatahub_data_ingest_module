@@ -1,0 +1,84 @@
+{
+   "@context": [
+            "http://uri.citydatahub.kr/ngsi-ld/v1/context.jsonld",
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
+   ],
+   "id": "urn:datahub:AirQualityForecast:6831",
+   "type": "AirQualityForecast",
+   "location": {
+      "type": "GeoProperty",
+      "value": {
+         "type": "Point",
+         "coordinates": [
+            127.1293735,
+            37.4114423
+         ]
+      }
+   },
+   "address": {
+      "type": "Property",
+      "value": {
+         "addressCountry": null,
+         "addressRegion": null,
+         "addressLocality": null,
+         "streetAddress": null,
+         "addressTown": null
+      }
+   },
+   "airQualityPrediction": {
+      "type": "Property",
+      "value": [
+         {
+            "so2": null,
+            "co": null,
+            "o3": null,
+            "no2": null,
+            "pm10": null,
+            "pm25": null,
+            "predictedAt": null
+         },
+         {
+            "so2": null,
+            "co": null,
+            "o3": null,
+            "no2": null,
+            "pm10": null,
+            "pm25": null,
+            "predictedAt": null
+         }
+      ],
+      "observedAt": null
+   },
+   "airQualityIndexPrediction": {
+      "type": "Property",
+      "value": [
+         {
+            "totalIndex": null,
+            "totalCategory": null,
+            "so2Category": null,
+            "coCategory": null,
+            "o3Category": null,
+            "no2Category": null,
+            "pm10Category": null,
+            "pm25Category": null,
+            "predictedAt": null
+         },
+         {
+            "totalIndex": null,
+            "totalCategory": null,
+            "so2Category": null,
+            "coCategory": null,
+            "o3Category": null,
+            "no2Category": null,
+            "pm10Category": null,
+            "pm25Category": null,
+            "predictedAt": null
+         }
+      ],
+      "observedAt": null
+   },
+   "indexRef": {
+      "type": "Property",
+      "value": null
+   }
+}   

@@ -1,0 +1,40 @@
+{
+   "@context": [
+      "http://uri.citydatahub.kr/ngsi-ld/v1/context.jsonld",
+      "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
+   ],
+   "id": null,
+   "type": "WeatherObserved",
+   "location": {
+      "type": "GeoProperty",
+      "value": {
+         "type": "Point",
+         "coordinates": null
+      },
+      "observedAt": null
+   },
+   "address": {
+      "type": "Property",
+      "value": {
+         "addressCountry": null,
+          "streetAddress": null,
+          "addressLocality": null,
+          "addressRegion": null,
+          "addressTown": null
+      }
+   },
+   "weatherObservation": {
+      "type": "Property",
+      "value": {
+         "temperature": null,
+         "windSpeed": null,
+         "humidity": null,
+         "rainfall": null,
+         "hourlyRainfall": null,
+         "rainType": null,
+         "snowfall": null,
+         "visibility": null
+      },
+      "observedAt": null
+   }
+}

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sd="http://www.thymeleaf.org/spring-data" layout:decorator="layout/mainTta" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">TTA 검증기</title>
+</head>
+<body>
+  <div class="container w-half" layout:fragment="Content">
+  
+  <section class="section ">
+  <div class="section__header">
+    <h4 class="section__title">스트레스 테스트</h4>
+  </div>
+  </section>
+  
+    <table class="tta-table ">
+      <colgroup>
+        <col style="width: 80px">
+        <col style="width: 350px">
+      </colgroup>
+      <tr>
+        <td>서비스명</td>
+        <th><select id="service" name="service" class="select">
+            <option value="weather">weather</option>
+            <option value="dust">dust</option>
+            <option value="parking">parking</option>
+            <option value="bustop">weather</option>
+            <option value="weatherforecast">dust</option>
+            <option value="dustforecast">parking</option>
+            <option value="AirQualityMeasurement">AirQualityMeasurement</option>
+        </select></th>
+      </tr>
+      <tr>
+        <td>데이터건수</td>
+        <th><input class="input-text" type="text" name="totCnt" id="totCnt" value="1"></th>
+      </tr>
+      <tr>
+        <td>날짜</td>
+        <th><input class="input-text" type="text" name="baseDate" id="baseDate" value="20180101"></th>
+      </tr>
+      <tr>
+        <td>시간</td>
+        <th><input class="input-text" type="text" name="baseTime" id="baseTime" value="0100"></th>
+      </tr>
+      <tr>
+        <td>type</td>
+        <th><select id="type" name="type" class="select">
+            <option value="u">URL</option>
+            <option value="f">파일저장</option>
+            <option value="s">소켓통신</option>
+        </select></th>
+      </tr>
+    </table>
+
+    <div style="padding-top: 5px">
+      <button type="button" id="btn-search" class="button-primary">전송</button>
+    </div>
+
+    <div id="feedback"></div>
+
+    <script>
+          $(document).ready(function() {
+
+            $("#btn-search").click(function(event) {
+              event.preventDefault();
+              fire_ajax_submit();
+            });
+          });
+
+          function fire_ajax_submit() {
+
+            var search = {}
+            search["baseDate"] = $("#baseDate").val();
+            search["baseTime"] = $("#baseTime").val();
+            search["totCnt"] = $("#totCnt").val();
+            search["type"] = $("#type").val();
+
+            $("#btn-search").prop("disabled", true);
+
+            var param = "/stress/" + $("#service").val() + "?1=1";
+            param += "&baseDate=" + $("#baseDate").val();
+            param += "&baseTime=" + $("#baseTime").val();
+            param += "&totCnt=" + $("#totCnt").val();
+            param += "&type=" + $("#type").val();
+
+            $.ajax({
+              type : "GET",
+              contentType : "application/json",
+              url : param,
+              dataType : 'json',
+              cache : false,
+              timeout : 600000,
+              success : function(data) {
+                var json = "<h4>Ajax Response</h4><pre>" + JSON.stringify(data, null, 4) + "</pre>";
+                $('#feedback').html(json);
+                $("#btn-search").prop("disabled", false);
+              },
+              error : function(e) {
+                var json = "<h4>Ajax Response</h4><pre>" + e.responseText + "</pre>";
+                $('#feedback').html(json);
+                $("#btn-search").prop("disabled", false);
+
+              }
+            });
+
+          }
+        </script>
+  </div>
+</body>
+</html>
