@@ -19,7 +19,7 @@ gateway:
 #http://10.0.0.254:8080
 
 ingest:
-  server: http://192.168.1.192:8084/entityOperations/upsert
+  server: http://192.168.1.192:8084/entityOperations/upsert?options=update
   yn: Y
 
 

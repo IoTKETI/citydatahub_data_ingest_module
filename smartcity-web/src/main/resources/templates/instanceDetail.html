@@ -9,7 +9,7 @@
 <body>
 
 <div class="container" layout:fragment="content">
-       <h3 class="content__title">Adaptor 설정</h3>
+       <h3 class="content__title">Instance 관리</h3>
 
         <form  onSubmit="return false;">
           <fieldset>
@@ -168,84 +168,12 @@
                 </section>
               </fieldset>
               
-              <div id="instance_info2">
-               <fieldset >
-                <legend>인스턴스 정보 등록/변경</legend>
-                  <section class="section">
-                   <div class="section__header" >
-                      <h4 class="section__title">인스턴스 정보 등록/변경</h4>
-                  </div>
-                  <div class="section__content">
-                    <table class="table--column instanceList" id="instanceList2" >
-                      <caption>테이블 제목</caption>
-                      <colgroup>
-                        <col style="width:40px">
-                        <col style="width:60px">
-                        <col style="width:80px">
-                        <col style="width:170px">
-                        <col style="width:60px">
-                        <col style="width:auto">
-                        <col style="width:350px">   
-                        <col style="width:40px">                 
-                      </colgroup>
-                      <thead>
-                        <tr>
-                          <th>선택</th>
-                          <th>필수여부</th>
-                          <th>값 유형</th>
-                          <th>항목명(key)</th>
-                          <th>변경여부</th>
-                          <th>항목값(value)</th>
-                          <th>항목설명</th>
-                          <th>순서</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="button__group">                
-                    <button class="button__util button__util--add material-icons" id="plus" onclick="addrow2('instanceList2')" onfocus="this.blur()" type="button">추가</button>
-                    <button class="button__util button__util--remove material-icons" id="minus" onclick="delrow2('instanceList2')" onfocus="this.blur()" type="button">삭제</button>
-					<button class="button__util" onclick="rowMoveEvent('up');">▲</button>
-					<button class="button__util" onclick="rowMoveEvent('down');">▼</button>
-                    
-                  </div>
-                  <div id="keyValueRow2" style="display:none">
-                    <table>
-                      <tr class="keyValueClass" style="height:34px">
-                        <td>
-                          <input type="checkbox" name="chk_info2" class="input__checkbox" id="chk_info2" value="del"><label class="label__checkbox" for="chk_info2" >
-                          <input name="display_seq" type="hidden">
-                          <input name="setup_method" type="hidden">
-                        </td>
-                        <td><input name="essential_yn" type="text" class="input__text" readonly style="text-align:center;text-indent:0px"></td>
-                        <td><input name="value_type" type="text" class="input__text" readonly style="text-align:center;text-indent:0px"></td>                      
-                        <td><input name="key" type="text" class="input__text"></td>
-                        <td><input name="change_able_yn" type="text" class="input__text" readonly style="text-align:center;text-indent:0px"></td>
-                        <td>
-                            <input name="value" type="text" class="input__text">
-                            <textarea name="textarea_value" class="textarea" style="height: 30px; display: none" readonly></textarea>
-                            <select label="항목값(value)" class="select select--full"  name="select_value" style="display: none">
-                              <option value="">선택</option>
-                            </select>
-                        </td>
-                        <td><input name="item_described" type="text" class="input__text"></td>
-                        <td style="display:none" id="rownumber"><input name="rownumber"></td>
-                        <td><input type="radio" class="chkRadio" name="chkRadio"></td>
-                      </tr>
-                    </table>        
-                  </div>
-                </section>
-              </fieldset>
-            </div>
-              
               <div id="instance_info">
                <fieldset >
-                <legend>데이터 메타정보 등록/변경</legend>
+                <legend>인스턴스 추가 옵션 등록 / 변경</legend>
                   <section class="section">
                    <div class="section__header" >
-                      <h4 class="section__title">데이터 메타정보 등록/변경</h4>
+                      <h4 class="section__title">인스턴스 추가 옵션 등록 / 변경</h4>
                   </div>
                   <div class="section__content">
                     <table class="table--column instanceList" id="instanceList" >
@@ -311,78 +239,6 @@
                 </section>
               </fieldset>
             </div>
-            
-<!--             <div id="instance_info2"> -->
-<!--                <fieldset > -->
-<!--                 <legend>인스턴스 추가 옵션 등록 / 변경</legend> -->
-<!--                   <section class="section"> -->
-<!--                    <div class="section__header" > -->
-<!--                       <h4 class="section__title">인스턴스 추가 옵션 등록 / 변경</h4> -->
-<!--                   </div> -->
-<!--                   <div class="section__content"> -->
-<!--                     <table class="table--column instanceList" id="instanceList2" > -->
-<!--                       <caption>테이블 제목</caption> -->
-<!--                       <colgroup> -->
-<!--                         <col style="width:40px"> -->
-<!--                         <col style="width:60px"> -->
-<!--                         <col style="width:80px"> -->
-<!--                         <col style="width:170px"> -->
-<!--                         <col style="width:60px"> -->
-<!--                         <col style="width:auto"> -->
-<!--                         <col style="width:350px">    -->
-<!--                         <col style="width:40px">                  -->
-<!--                       </colgroup> -->
-<!--                       <thead> -->
-<!--                         <tr> -->
-<!--                           <th>선택</th> -->
-<!--                           <th>필수여부</th> -->
-<!--                           <th>값 유형</th> -->
-<!--                           <th>항목명(key)</th> -->
-<!--                           <th>변경여부</th> -->
-<!--                           <th>항목값(value)</th> -->
-<!--                           <th>항목설명</th> -->
-<!--                           <th>순서</th> -->
-<!--                         </tr> -->
-<!--                       </thead> -->
-<!--                       <tbody> -->
-<!--                       </tbody> -->
-<!--                     </table> -->
-<!--                   </div> -->
-<!--                   <div class="button__group">                 -->
-<!--                     <button class="button__util button__util--add material-icons" id="plus" onclick="addrow2('instanceList2')" onfocus="this.blur()" type="button">추가</button> -->
-<!--                     <button class="button__util button__util--remove material-icons" id="minus" onclick="delrow2('instanceList2')" onfocus="this.blur()" type="button">삭제</button> -->
-<!-- 					<button class="button__util" onclick="rowMoveEvent('up');">▲</button> -->
-<!-- 					<button class="button__util" onclick="rowMoveEvent('down');">▼</button> -->
-                    
-<!--                   </div> -->
-<!--                   <div id="keyValueRow2" style="display:none"> -->
-<!--                     <table> -->
-<!--                       <tr class="keyValueClass" style="height:34px"> -->
-<!--                         <td> -->
-<!--                           <input type="checkbox" name="chk_info2" class="input__checkbox" id="chk_info2" value="del"><label class="label__checkbox" for="chk_info2" > -->
-<!--                           <input name="display_seq" type="hidden"> -->
-<!--                           <input name="setup_method" type="hidden"> -->
-<!--                         </td> -->
-<!--                         <td><input name="essential_yn" type="text" class="input__text" readonly style="text-align:center;text-indent:0px"></td> -->
-<!--                         <td><input name="value_type" type="text" class="input__text" readonly style="text-align:center;text-indent:0px"></td>                       -->
-<!--                         <td><input name="key" type="text" class="input__text"></td> -->
-<!--                         <td><input name="change_able_yn" type="text" class="input__text" readonly style="text-align:center;text-indent:0px"></td> -->
-<!--                         <td> -->
-<!--                             <input name="value" type="text" class="input__text"> -->
-<!--                             <textarea name="textarea_value" class="textarea" style="height: 30px; display: none" readonly></textarea> -->
-<!--                             <select label="항목값(value)" class="select select--full"  name="select_value" style="display: none"> -->
-<!--                               <option value="">선택</option> -->
-<!--                             </select> -->
-<!--                         </td> -->
-<!--                         <td><input name="item_described" type="text" class="input__text"></td> -->
-<!--                         <td style="display:none" id="rownumber"><input name="rownumber"></td> -->
-<!--                         <td><input type="radio" class="chkRadio" name="chkRadio"></td> -->
-<!--                       </tr> -->
-<!--                     </table>         -->
-<!--                   </div> -->
-<!--                 </section> -->
-<!--               </fieldset> -->
-<!--             </div> -->
           </div>
         </form>
         
@@ -458,7 +314,7 @@
   
   function _cbAfterinsAdpInfo(data){
     var url = "/agentDetail/" + data.agent_id;
-    setNavi("Agent 관리```/agentList/","Agent 설정```/agentList/","Agent 상세```"+url,"Adaptor 설정");
+    setNavi("Agent 관리```/agentList/","Agent 목록```/agentList/","Agent 상세```"+url,"Instance 관리");
 
     
     var row = new RowData( $("#adtInfo > tbody") );
@@ -469,8 +325,6 @@
     row.setValue("ins_cnt",data.ins_cnt);
     
     //var url = "/instanceControl/" + id + "/insList/";
-    
-    
     var url = "/agents/" + data.adapter_id + "/adaptors/"+ data.adapter_id + "/instance";
     cmUtl.exeAjaxDynamic("GET", url, " ", "", "_cbAfterinstanceControl");
   }
@@ -489,7 +343,6 @@
     }
     $("#ins_list").procEmptyLine(); // 검색 된 데이터가 없을 경우
   }
- 
   
   function yn(val){
     var rtn = "";
@@ -515,7 +368,6 @@
     $("#inst_form").show();
     $("#transModelDiv").hide();
     $("#instance_info").hide();
-    $("#instance_info2").hide();
     $("#instance_id").val("new_ins");
     $("#instance_nm").val("");
     $("#etc_note").val("");
@@ -531,16 +383,11 @@
     $("#ins_save").prop("disabled", true);
     var instanceSize = $("#instanceList > tbody > tr").length;
     
-    var instanceSize2 = $("#instanceList2 > tbody > tr").length;
-    
     var insItemsData = new Array();
-    
     for (var i = 0; i < instanceSize; i++) {
       var insItemData = new Object();
       var instancItem = $("#instanceList").getRow(i);
       var setupMethod = instancItem.find("input[name=setup_method]").val();  
-      
-      insItemData.sector = 'a';
       
       insItemData.instance_id = $("#instance_id").val();
       insItemData.item = instancItem.find("input[name=key]").val();
@@ -555,27 +402,6 @@
       
       insItemsData.push(insItemData);
     }    
-    
-    for (var i = 0; i < instanceSize2; i++) {
-        var insItemData = new Object();
-        var instancItem = $("#instanceList2").getRow(i);
-        var setupMethod = instancItem.find("input[name=setup_method]").val();  
-        
-        insItemData.sector = 'b';
-        
-        insItemData.instance_id = $("#instance_id").val();
-        insItemData.item = instancItem.find("input[name=key]").val();
-        if("I1202" == setupMethod){
-          insItemData.value = instancItem.find("[name=textarea_value]").val();
-        } else if("I1203" == setupMethod){
-          insItemData.value = instancItem.find("select[name=select_value]").val(); 
-        } else {
-          insItemData.value = instancItem.find("input[name=value]").val();
-        }      
-        insItemData.item_described = instancItem.find("input[name=item_described]").val();
-        
-        insItemsData.push(insItemData);
-      }
 
     var data = {
         "adapter_id" : $("#adapter_id").text(),
@@ -611,7 +437,6 @@
     
   function ins_detail(tb){
     $("#instance_info").show();
-    $("#instance_info2").show();
     ins_id = $(tb).text();
     
     //var param = "/instanceControl/" + ins_id + "/insDetail/";
@@ -641,13 +466,8 @@
     }
     
     var ins_id = data.instance_id;
-//     var param = "/instanceControl/" + ins_id + "/insItem/";
-//     cmUtl.exeAjax("GET", param, null, "_cbAfterInsItemSelect"); 
-    
-    var param = "/instanceControl/" + ins_id + "/insItem2/";
-    cmUtl.exeAjax("GET", param, null, "_cbAfterInsItemSelect2"); 
-    var param2= "/instanceControl/" + ins_id + "/insItem3/";
-    cmUtl.exeAjax("GET", param2, null, "_cbAfterInsItemSelect3"); 
+    var param = "/instanceControl/" + ins_id + "/insItem/";
+    cmUtl.exeAjax("GET", param, null, "_cbAfterInsItemSelect"); 
   }
   
   function _cbAfterInsItemSelect(data){
@@ -725,169 +545,14 @@
     }
   }
   
-  function _cbAfterInsItemSelect2(data){
-	    $("#instanceList > tbody > tr").remove();
-	    $("#inst_form").show();
-	      
-	    if(data.length > 0){
-	      cmUtl.showEmptyLine("instanceList", false);
-	      for(var i=0; i<data.length; i++){
-	        tmpIns = $('#inst_form').children().clone();
-	        if(data[i].item != ""){      
-	          var tmpObj = $("#keyValueRow").find("tr:first").clone();
-	          var chk_id = "chk_info"+i;
-	          tmpObj.find("[name=chk_info]").prop("id", chk_id );
-	          tmpObj.find("label[for=chk_info]").prop("for", chk_id );
-	          $(tmpObj).find("input[name=display_seq]").val(i+1);
-	          $(tmpObj).find("input[name=setup_method]").val(data[i].setup_method);
-	          $(tmpObj).find("input[name=essential_yn]").val(data[i].essential_yn);
-	          $(tmpObj).find("input[name=value_type]").val(data[i].value_type);
-	          $(tmpObj).find("input[name=item_described]").val(data[i].item_described);
-	          $(tmpObj).find("input[name=change_able_yn]").val(data[i].change_able_yn);
-	          $(tmpObj).find("input[name=key]").val(data[i].item);
-	          if(data[i].keyvaluetype == 1){
-	            $(tmpObj).find("input[name=key]").attr("readonly",true); 
-	          }
-	          
-	          //console.log($(tmpIns).find('.instanceList'));
-	          $("#instanceList > tbody:last").append($(tmpObj));
-	          if("Y" == data[i].essential_yn){
-	            $("#"+chk_id).attr("disabled", true);
-	          }
-	          $(tmpObj).find("input[name=key]").attr("required", true);
-	          $(tmpObj).find("input[name=value]").attr("required", true);
-	          
-	          if("N" == data[i].change_able_yn){
-	            $(tmpObj).find("input[name=value]").attr("readonly",true);
-	          } else {
-	            $(tmpObj).find("input[name=value]").attr("readonly",false);
-	          }
-	          if("I1201" == data[i].setup_method){
-	            $(tmpObj).find("input[name=value]").attr("type", "text");
-	            $(tmpObj).find("input[name=value]").attr("required", true);
-	            $(tmpObj).find("[name=textarea_value]").attr("required", false);
-	            $(tmpObj).find("[name=textarea_value]").hide();
-	            $(tmpObj).find("select[name=select_value]").attr("required", false);
-	            $(tmpObj).find("select[name=select_value]").hide();
-	            $(tmpObj).find("input[name=value]").val(data[i].value);
-	          } else if("I1202" == data[i].setup_method){
-	            $(tmpObj).find("input[name=value]").attr("type", "hidden");
-	            $(tmpObj).find("input[name=value]").attr("required", false);
-	            $(tmpObj).find("[name=textarea_value]").attr("required", true);
-	            $(tmpObj).find("[name=textarea_value]").show();
-	            $(tmpObj).find("select[name=select_value]").attr("required", false);
-	            $(tmpObj).find("select[name=select_value]").hide();
-	            $(tmpObj).find("[name=textarea_value]").attr("onclick", "layer_popup('layer',this);");
-	            $(tmpObj).find("[name=textarea_value]").text(data[i].value);
-	          } else if("I1203" == data[i].setup_method){
-	            $(tmpObj).find("input[name=value]").attr("type", "hidden");
-	            $(tmpObj).find("input[name=value]").attr("required", false);
-	            $(tmpObj).find("[name=textarea_value]").attr("required", false);
-	            $(tmpObj).find("[name=textarea_value]").hide();
-	            $(tmpObj).find("select[name=select_value]").attr("required", true);
-	            $(tmpObj).find("select[name=select_value]").show();
-	            var setupArray = data[i].select_value.split('|');
-	            for(var j=0;j<setupArray.length;j++){
-	              $(tmpObj).find("select[name=select_value]").append('<option value="' + setupArray[j] + '">' + setupArray[j] + '</option');
-	            }
-	            $(tmpObj).find("select[name='select_value']").val(data[i].value).prop("selected", true); 
-	          }
-	          
-	        }
-	      }      
-	    }else{
-	      cmUtl.showEmptyLine("instanceList", true);
-	    }
-	  }
-  
-  function _cbAfterInsItemSelect3(data){
-	    $("#instanceList2 > tbody > tr").remove();
-	    $("#inst_form").show();
-	      
-	    if(data.length > 0){
-	      cmUtl.showEmptyLine("instanceList2", false);
-	      for(var i=0; i<data.length; i++){
-	        //tmpIns = $('#inst_form').children().clone();
-	        if(data[i].item != ""){      
-	          var tmpObj = $("#keyValueRow2").find("tr:first").clone();
-	          var chk_id = "chk_info2"+i;
-	          tmpObj.find("[name=chk_info2]").prop("id", chk_id );
-	          tmpObj.find("label[for=chk_info2]").prop("for", chk_id );
-	          $(tmpObj).find("input[name=display_seq]").val(i+1);
-	          $(tmpObj).find("input[name=setup_method]").val(data[i].setup_method);
-	          $(tmpObj).find("input[name=essential_yn]").val(data[i].essential_yn);
-	          $(tmpObj).find("input[name=value_type]").val(data[i].value_type);
-	          $(tmpObj).find("input[name=item_described]").val(data[i].item_described);
-	          $(tmpObj).find("input[name=change_able_yn]").val(data[i].change_able_yn);
-	          $(tmpObj).find("input[name=key]").val(data[i].item);
-	          if(data[i].keyvaluetype == 1){
-	            $(tmpObj).find("input[name=key]").attr("readonly",true); 
-	          }
-	          
-	          //console.log($(tmpIns).find('.instanceList'));
-	          $("#instanceList2 > tbody:last").append($(tmpObj));
-	          if("Y" == data[i].essential_yn){
-	            $("#"+chk_id).attr("disabled", true);
-	          }
-	          $(tmpObj).find("input[name=key]").attr("required", true);
-	          $(tmpObj).find("input[name=value]").attr("required", true);
-	          
-	          if("N" == data[i].change_able_yn){
-	            $(tmpObj).find("input[name=value]").attr("readonly",true);
-	          } else {
-	            $(tmpObj).find("input[name=value]").attr("readonly",false);
-	          }
-	          if("I1201" == data[i].setup_method){
-	            $(tmpObj).find("input[name=value]").attr("type", "text");
-	            $(tmpObj).find("input[name=value]").attr("required", true);
-	            $(tmpObj).find("[name=textarea_value]").attr("required", false);
-	            $(tmpObj).find("[name=textarea_value]").hide();
-	            $(tmpObj).find("select[name=select_value]").attr("required", false);
-	            $(tmpObj).find("select[name=select_value]").hide();
-	            $(tmpObj).find("input[name=value]").val(data[i].value);
-	          } else if("I1202" == data[i].setup_method){
-	            $(tmpObj).find("input[name=value]").attr("type", "hidden");
-	            $(tmpObj).find("input[name=value]").attr("required", false);
-	            $(tmpObj).find("[name=textarea_value]").attr("required", true);
-	            $(tmpObj).find("[name=textarea_value]").show();
-	            $(tmpObj).find("select[name=select_value]").attr("required", false);
-	            $(tmpObj).find("select[name=select_value]").hide();
-	            $(tmpObj).find("[name=textarea_value]").attr("onclick", "layer_popup('layer',this);");
-	            $(tmpObj).find("[name=textarea_value]").text(data[i].value);
-	          } else if("I1203" == data[i].setup_method){
-	            $(tmpObj).find("input[name=value]").attr("type", "hidden");
-	            $(tmpObj).find("input[name=value]").attr("required", false);
-	            $(tmpObj).find("[name=textarea_value]").attr("required", false);
-	            $(tmpObj).find("[name=textarea_value]").hide();
-	            $(tmpObj).find("select[name=select_value]").attr("required", true);
-	            $(tmpObj).find("select[name=select_value]").show();
-	            var setupArray = data[i].select_value.split('|');
-	            for(var j=0;j<setupArray.length;j++){
-	              $(tmpObj).find("select[name=select_value]").append('<option value="' + setupArray[j] + '">' + setupArray[j] + '</option');
-	            }
-	            $(tmpObj).find("select[name='select_value']").val(data[i].value).prop("selected", true); 
-	          }
-	          
-	        }
-	      }      
-	    }else{
-	      cmUtl.showEmptyLine("instanceList2", true);
-	    }
-	  }
-  
   function chageAdtSelect(ad){
     
     var ad_val = $(ad).val();
     $("#instance_info").show();
-    $("#instance_info2").show();
     $("#instanceList > tbody").empty();
     
     var param = "/instanceBaseList/"+ad_val;
-//     cmUtl.exeAjax("GET", param, null, "_cbAfterInsItemSelect");
-	var param2 = "/instanceBaseList2/"+ad_val;
-	var param3 = "/instanceBaseList3/"+ad_val;
-    cmUtl.exeAjax("GET", param2, null, "_cbAfterInsItemSelect2");
-    cmUtl.exeAjax("GET", param3, null, "_cbAfterInsItemSelect3");
+    cmUtl.exeAjax("GET", param, null, "_cbAfterInsItemSelect");
   }
   
   function linechange(tb){
@@ -918,31 +583,6 @@
     var tmpSize = obj.find("input:checkbox").length;
     if (tmpSize < 1) cmUtl.showEmptyLine("instanceList", true);
   }
-  
-  function addrow2(tb) {
-	    var obj = $('#' + tb);
-	    var closest_id = $(obj).closest("table").attr("id");
-	    cmUtl.showEmptyLine("instanceList2", false);
-	    var tmpObj = $("#keyValueRow2").find("tr:first").clone();
-	    var length = obj.find("tbody > tr").length;
-	    
-	    tmpObj.find("[name=chk_info2]").prop("id", "chk_info2" + length );
-	    tmpObj.find("label").prop("for", "chk_info2" + length );
-	    tmpObj.find("[name=essential_yn]").val("N");
-	    tmpObj.find("[name=value_type]").val("사용자지정");
-	    
-	    $("#instanceList2").find('tbody:last').append(tmpObj);
-	  }
-	  
-  function delrow2(tb) {
-	    var obj = $('#' + tb);
-	    var tmp = obj.find("input:checkbox");
-	    $(tmp).each(function() {
-	      if ($(this).is(":checked")) $(this).closest('tr').remove();
-	    });
-	    var tmpSize = obj.find("input:checkbox").length;
-	    if (tmpSize < 1) cmUtl.showEmptyLine("instanceList2", true);
-	  }
   
   function clickTM(tb) {
     if($(tb).val()=="Y"){

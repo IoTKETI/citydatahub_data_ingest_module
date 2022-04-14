@@ -28,7 +28,7 @@ services:
       - AGENT_FILE=./conf/agent1st.conf
       - AGENT_CONF=./conf
       - SCHEMA_URL=http://10.0.0.36:8080/datamodels
-      - DATACORE_URL=http://10.0.0.25:8080/entityOperations/upsert
+      - DATACORE_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
 
   web:
     container_name: smartcityweb
@@ -43,7 +43,7 @@ services:
       - DATASOURCE_PW=pine1234
       - DAEMON_URL=http://smartcityingest:8888
       - SCHEMA_URL=http://10.0.0.36:8080/datamodels
-      - DATACORE_URL=http://10.0.0.25:8080/entityOperations/upsert
+      - DATACORE_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
       - GATEWAY_USE_YN=N
       - GATEWAY_URL=http://13.124.164.104:8080      
       - AUTH_YN=N
