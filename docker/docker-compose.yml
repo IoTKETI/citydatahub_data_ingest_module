@@ -24,6 +24,9 @@ services:
       - 8888:8888    
     environment:
       - TZ=Asia/Seoul
+      - DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
+      - DATASOURCE_ID=postgres
+      - DATASOURCE_PW=pine1234      
       - AGENT_NAME=agent1st
       - AGENT_FILE=./conf/agent1st.conf
       - AGENT_CONF=./conf
