@@ -1,7 +1,7 @@
 FROM openjdk:8-alpine
 MAINTAINER Yonghak An <neoshaby@gmail.com>
 
-ARG MIRROR=https://dlcdn.apache.org/flume
+ARG MIRROR=http://archive.apache.org/dist/flume
 ARG VERSION=1.9.0
 ARG BIN_VERSION=apache-flume-${VERSION}
 

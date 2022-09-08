@@ -20,9 +20,11 @@ spring:
     url: ${DATASOURCE_URL}
     username: ${DATASOURCE_ID} 
     password: ${DATASOURCE_PW}     
+    
 eureka:
   client:
     enabled: false
+    
 flume:
   home: /opt/flume
   conf: ${flume.home}/conf/

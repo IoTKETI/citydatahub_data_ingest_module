@@ -14,44 +14,19 @@ server:
 ---
 spring:
   profiles: local
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_ID} 
+    password: ${DATASOURCE_PW}
+         
 eureka:
   client:
-    enabled: false    
+    enabled: false
+        
 flume:
   home: /opt/flume
   conf: ${flume.home}/conf/
   log: /opt/logs/
   schemaServer: http://133.186.162.236:9876/schemas
     
-    
-### 개발서버    
---- 
-spring:
-  profiles: dev
-eureka:
-  client:
-    enabled: false    
-flume:
-  home: /opt/flume
-  conf: ${flume.home}/conf/
-  log: /opt/logs/
-  schemaServer: http://133.186.162.236:9876/schemas
-
-### 클라우드  
---- 
-spring:
-  profiles: cloud
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://133.186.162.81:8888/eureka, http://133.186.162.82:8888/eureka, http://133.186.162.83:8888/eureka
-flume:
-  home: /root/flume
-  conf: ${flume.home}/conf/
-  log: /root/logs/
-  schemaServer: http://133.186.162.236:9876/schemas
-  

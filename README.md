@@ -52,21 +52,16 @@ sudo yum install -y java-1.8.0-openjdk  java-1.8.0-openjdk-devel git
 ```bash
 sudo yum install -y wget
 
-wget https://dlcdn.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
+wget https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
 
-tar -xvf apache-maven-3.8.4-bin.tar.gz
-cd apache-maven-3.8.4
+tar -xvf apache-maven-3.8.6-bin.tar.gz
 
 vi ~/.bash_profile
-```
 
-```bash
 # .bash_profile에 다음 내용 삽입
-export MAVEN_HOME=~/apache-maven-3.8.4
+export MAVEN_HOME=~/apache-maven-3.8.6
 PATH=$PATH:$HOME/bin:$MAVEN_HOME/bin
-```
 
-```bash
 # source 실행
 source ~/.bash_profile
 ```
@@ -131,7 +126,7 @@ sudo chown root:docker /var/run/docker.sock
 CityDataHub-Ingest모듈을 github에서 다운받을 수 있습니다. 아래 명령어를 통해 파일을 다운로드 합니다.
 
 ```bash
-git clone https://github.com/IoTKETI/citydatahub_ingest.git ingest
+git clone https://github.com/IoTKETI/citydatahub_data_ingest_module.git ingest
 ```
 
 ### 2.2.2 build
@@ -146,9 +141,9 @@ cd ~/ingest
 mvn clean install
 
 # 빌드 후에 생성된 파일을 다음 위치로 카피
-cp -r smartcity-adapter/target/smartcity-adapter-0.9.1.jar smartcity-daemon/src/main/docker/agent/lib/
-cp -r smartcity-flow/target/smartcity-flow-0.1.0.jar smartcity-daemon/src/main/docker/agent/lib/
-cp -r smartcity-core/target/smartcity-core-0.9.1.jar smartcity-daemon/src/main/docker/agent/lib/
+yes | cp -f smartcity-adapter/target/smartcity-adapter-0.9.1.jar smartcity-daemon/src/main/docker/agent/lib/
+yes | cp -f smartcity-flow/target/smartcity-flow-0.1.0.jar smartcity-daemon/src/main/docker/agent/lib/
+yes | cp -f smartcity-core/target/smartcity-core-0.9.1.jar smartcity-daemon/src/main/docker/agent/lib/
 
 ```
 
