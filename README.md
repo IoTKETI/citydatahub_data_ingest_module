@@ -60,7 +60,7 @@ vi ~/.bash_profile
 
 # .bash_profile에 다음 내용 삽입
 export MAVEN_HOME=~/apache-maven-3.8.6
-PATH=$PATH:$HOME/bin:$MAVEN_HOME/bin
+PATH=$PATH:$MAVEN_HOME/bin
 
 # source 실행
 source ~/.bash_profile
@@ -115,8 +115,14 @@ sudo chmod +x /usr/local/bin/docker-compose
 * 만약 도커 사용 중 'permission denied' 오류가 날 경우
   
 ```bash
-sudo chmod 666 /var/run/docker.sock
-sudo chown root:docker /var/run/docker.sock
+# docker group 이 없을 경우 그룹 생성
+sudo groupadd docker
+
+# docker group에 해당 유저를 추가
+sudo usermod -aG docker $USER
+
+# 로그아웃 후 다시 로그인하거나 다음 명령어를 실행시켜야 적용이 된다
+newgrp docker
 ```
 
 ## 2.2 서비스 설치
@@ -139,11 +145,6 @@ cd ~/ingest
 
 # build 
 mvn clean install
-
-# 빌드 후에 생성된 파일을 다음 위치로 카피
-yes | cp -f smartcity-adapter/target/smartcity-adapter-0.9.1.jar smartcity-daemon/src/main/docker/agent/lib/
-yes | cp -f smartcity-flow/target/smartcity-flow-0.1.0.jar smartcity-daemon/src/main/docker/agent/lib/
-yes | cp -f smartcity-core/target/smartcity-core-0.9.1.jar smartcity-daemon/src/main/docker/agent/lib/
 
 ```
 
@@ -264,6 +265,7 @@ docker-compose down
 
 # 컨테이너 log 보기
 docker logs [container-id]
+
 ```
 
 # 4. 데이터 연계
