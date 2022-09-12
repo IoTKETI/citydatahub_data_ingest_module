@@ -1,9 +1,9 @@
 FROM openjdk:8-alpine
 MAINTAINER Yonghak An <neoshaby@gmail.com>
 
-ARG MIRROR=http://archive.apache.org/dist/flume
-ARG VERSION=1.9.0
-ARG BIN_VERSION=apache-flume-${VERSION}
+ARG FLUME_VER=1.9.0
+ARG FLUME_URL=http://archive.apache.org/dist/flume 
+ARG FLUME_BIN=apache-flume-${FLUME_VER}-bin.tar.gz
 
 RUN apk --no-cache add ca-certificates bash wget tzdata curl && \
     wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
@@ -23,28 +23,35 @@ ENV LC_ALL=ko_KR.UTF-8
 
 RUN mkdir -p /opt/flume \
   && mkdir -p /opt/logs \
+  && mkdir -p /opt/daemon \
+  && mkdir -p /opt/daemon/lib \
+  && mkdir -p /opt/daemon/config \
   && mkdir -p /opt/flume/plugins.d/agent \
-  && wget -q ${MIRROR}/${VERSION}/${BIN_VERSION}-bin.tar.gz \
-  && tar -zxvf ${BIN_VERSION}-bin.tar.gz -C /opt/flume --strip 1 \
-  && rm -rf ${BIN_VERSION}.tgz \
+  && wget -q ${FLUME_URL}/${FLUME_VER}/${FLUME_BIN} \
+  && tar -zxvf ${FLUME_BIN} -C /opt/flume --strip 1 \
+  && rm -rf ${FLUME_BIN} \
   && rm -rf /opt/flume/lib/commons-compress-1.4.1.jar
-
-VOLUME /tmp
 
 
 WORKDIR /opt/flume
 
-copy ./agent/ /opt/flume/plugins.d/agent/
-copy ./conf/ /opt/flume/conf/
+copy ./agent/ plugins.d/agent/
+copy ./conf/ conf/
+copy ./lib/ /opt/daemon/lib/
+copy ./config/ /opt/daemon/config/
 
-run chmod 777 /opt/flume/plugins.d/agent/lib/compile.sh
+add ./lib/smartcity-core-0.9.1.jar plugins.d/agent/lib/smartcity-core-0.9.1.jar
+add ./lib/smartcity-adapter-0.9.1.jar plugins.d/agent/lib/smartcity-adapter-0.9.1.jar
+add ./lib/smartcity-flow-0.1.0.jar plugins.d/agent/lib/smartcity-flow-0.1.0.jar
 
-run mkdir -p /opt/daemon
-run mkdir -p /opt/daemon/config
-ADD smartcity-daemon-0.9.0.jar /opt/daemon/app.jar
-add ./config/application.yaml /opt/daemon/config/application.yaml
-add ./config/log4j2.xml /opt/daemon/config/log4j2.xml
+run  chmod 755 plugins.d/agent/lib/compile.sh \
+  && rm -rf /opt/daemon/lib/smartcity-flow-0.1.0.jar \
+  && rm -rf /opt/daemon/lib/smartcity-adapter-0.9.1.jar
 
+
+EXPOSE 8888
+
+copy smartcity-daemon-0.9.0.jar /opt/daemon/app.jar
 
 
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-Dspring.profiles.active=local","-jar","/opt/daemon/app.jar"]

@@ -17,18 +17,16 @@ RUN /usr/glibc-compat/bin/localedef -i ko_KR -f UTF-8 ko_KR.UTF-8 && \
     echo "export LANGUAGE='ko_KR.UTF-8'" >> /etc/profile
 ENV LC_ALL=ko_KR.UTF-8
 
+run mkdir -p /opt/web \
+  && mkdir -p /opt/web/config
 
-
-VOLUME /tmp
-
-run mkdir -p /opt/web
-run mkdir -p /opt/web/config
-ADD smartcity-web-1.0.0.jar /opt/web/app.jar
-
-add ./config/application.yaml /opt/web/config/application.yaml
-add ./config/log4j2.xml /opt/web/config/log4j2.xml
+copy ./config/ /opt/web/config/
 
 workdir /opt/web
+
+EXPOSE 8080
+  
+ADD smartcity-web-1.0.0.jar /opt/web/app.jar
 
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-Dspring.profiles.active=local","-jar","/opt/web/app.jar"]
 

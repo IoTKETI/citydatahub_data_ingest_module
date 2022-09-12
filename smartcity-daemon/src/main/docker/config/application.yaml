@@ -15,12 +15,7 @@ server:
 --- 
 spring:
   profiles: local
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: ${DATASOURCE_URL}
-    username: ${DATASOURCE_ID} 
-    password: ${DATASOURCE_PW}     
-    
+
 eureka:
   client:
     enabled: false
