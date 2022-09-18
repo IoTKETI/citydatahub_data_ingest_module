@@ -79,14 +79,14 @@ public class AgentController {
 
 	public static final String FIELD_HEX = (char) 0xD1 + "";
 
-	@Value("${ingest.server}")
-	public String ingestServer;
+	@Value("${ingest.interfaceApiUrl}")
+	public String interfaceApiUrl;
 
-	@Value("${ingest.yn}")
+	@Value("${ingest.yn:N}")
 	public String ingestYn;
 
-	@Value("${daemon.schemaServer}")
-	public String daemonSchemaServer;
+	@Value("${daemon.dataModelApiUrl}")
+	public String dataModelApiUrl;
 
 	@Autowired
 	MainService svc;
@@ -678,8 +678,8 @@ public class AgentController {
 
 					bodyAgentSink.put("channel", "logCh");
 					bodyAgentSink.put("type", "com.cityhub.flow.CallRestApiSink");
-					bodyAgentSink.put("INGEST_SERVER", ingestServer);
-					bodyAgentSink.put("INGEST_YN", ingestYn);
+					bodyAgentSink.put("INGEST_API_URL", interfaceApiUrl);
+					bodyAgentSink.put("INGEST_YN", ingestYn.toUpperCase());
 
 					/*
 					if (hdfsYn == true) {
@@ -744,7 +744,7 @@ public class AgentController {
 				log.info("type : " + curMap.get("type"));
 				bodyInstance.put("type", curMap.get("type"));
 				bodyInstance.put("CONF_FILE", "openapi/" + curMap.get("instance_id") + ".conf");
-				bodyInstance.put("SCHEMA_URL", daemonSchemaServer);
+				bodyInstance.put("DATAMODEL_API_URL", dataModelApiUrl);
 				bodyInstance.put("INVOKE_CLASS", "com.cityhub.adapter.convex." + curMap.get("instance_id"));
 				for (Map<String, String> keyword : keywordInfoList) {
 					for (Map<String, String> vMp : insDetail) {
@@ -936,9 +936,9 @@ public class AgentController {
 		try {
 
 			stList = new ArrayList<>();
-			log.debug(cd.getSchemaServer() + "?level=000&name=" + param.get("search_datamodel_nm"));
+			log.debug(cd.getDataModelApiUrl() + "?level=000&name=" + param.get("search_datamodel_nm"));
 			HttpResponse resp = UrlUtil.get(
-					cd.getSchemaServer() + "?level=000&name=" + param.get("search_datamodel_nm"), "Content-type",
+					cd.getDataModelApiUrl() + "?level=000&name=" + param.get("search_datamodel_nm"), "Content-type",
 					"application/json");
 			JSONArray jsonarr = new JSONArray(resp.getPayload());
 
@@ -1316,7 +1316,7 @@ public class AgentController {
 
 		templateItem = new JSONObject();
 		if (ArrModel != null) {
-			resp = OkUrlUtil.get(daemonSchemaServer, "Accept", "application/json");
+			resp = OkUrlUtil.get(dataModelApiUrl, "Accept", "application/json");
 			log.debug("model info: {},{}", modelId, resp.getStatusCode());
 			if (resp.getStatusCode() == 200) {
 				DataModelEx dm = new DataModelEx(resp.getPayload());

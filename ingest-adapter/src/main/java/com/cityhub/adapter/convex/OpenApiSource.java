@@ -65,7 +65,7 @@ public class OpenApiSource extends AbstractPollSource {
     String confFile = context.getString("CONF_FILE", "");
     adapterType = context.getString("type", "");
 
-    schemaSrv = context.getString("SCHEMA_URL", "");
+    schemaSrv = context.getString("DATAMODEL_API_URL", "");
     ArrModel = StrUtil.strToArray(modelId, ",");
 
     if (!"".equals(confFile)) {

@@ -279,7 +279,7 @@ public class MainService {
     }
 
     if (result.get("st_datamodel_id") != null) {
-      HttpResponse resp = UrlUtil.get(cd.getSchemaServer() + "?level=000" , "Content-type", "application/json");
+      HttpResponse resp = UrlUtil.get(cd.getDataModelApiUrl() + "?level=000" , "Content-type", "application/json");
       JSONArray jsonarr = new JSONArray(resp.getPayload());
       for (int i = 0; i < jsonarr.length(); i++) {
         JSONObject jsonObject = jsonarr.getJSONObject(i);

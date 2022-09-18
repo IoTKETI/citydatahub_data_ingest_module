@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 public class AuthController {
 
-  @Value("${auth.yn}")
+  @Value("${auth.yn:N}")
   public String authYn; // 카프카 접속 URL
 
   @Value("${logoutEndPoint}")
@@ -73,7 +73,7 @@ public class AuthController {
 
   @RequestMapping("/login")
   public void moveLogin(HttpServletRequest request, HttpServletResponse response) {
-    if ("Y".equals(authYn) ) {
+    if ("Y".equalsIgnoreCase(authYn) ) {
       String tokenCheck = authService.getTokenFromCookie(request);
       try {
         if (tokenCheck == null) {

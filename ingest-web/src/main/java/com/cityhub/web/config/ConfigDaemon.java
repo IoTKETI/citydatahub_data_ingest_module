@@ -42,7 +42,7 @@ public class ConfigDaemon {
   private String logUrl;
   private String agentUrl;
   private String compileUrl;
-  private String schemaServer;
+  private String dataModelApiUrl;
   private String configUrl;
 
   public String getLogUrl() {
@@ -59,8 +59,8 @@ public class ConfigDaemon {
   }
 
 
-  public String getSchemaServer() {
-    return schemaServer;
+  public String getDataModelApiUrl() {
+    return dataModelApiUrl;
   }
 
 
@@ -89,8 +89,8 @@ public class ConfigDaemon {
     this.compileUrl = compileUrl;
   }
 
-  public void setSchemaServer(String schemaServer) {
-    this.schemaServer = schemaServer;
+  public void setDataModelApiUrl(String dataModelApiUrl) {
+    this.dataModelApiUrl = dataModelApiUrl;
   }
 
   public void setConfigUrl(String configUrl) {

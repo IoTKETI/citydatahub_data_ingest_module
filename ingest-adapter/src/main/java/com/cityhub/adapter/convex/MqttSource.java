@@ -99,7 +99,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     ArrModel = StrUtil.strToArray(modelId, ",");
 
     adapterType = context.getString("type", "");
-    schemaSrv = context.getString("SCHEMA_URL", "");
+    schemaSrv = context.getString("DATAMODEL_API_URL", "");
     datasetId = context.getString("DATASET_ID", "");
     ArrDatasetId = StrUtil.strToArray(datasetId, ",");
 

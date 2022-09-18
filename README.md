@@ -190,6 +190,8 @@ services:
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: on-failure
+    healthcheck:
+      test: "exit 0"
 
   ingestdaemon:
     container_name: ingestdaemon
@@ -197,9 +199,15 @@ services:
     hostname: ingestdaemon
     ports:
       - 8888:8888    
+    volumes:
+      -  log-data:/opt/logs  
     environment:
       - TZ=Asia/Seoul
       - DATAMODEL_API_URL=http://10.0.0.36:8080/datamodels
+      - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
+    depends_on:
+      postgres:
+        condition: service_healthy
       - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert
 
   ingestweb:
@@ -208,6 +216,8 @@ services:
     hostname: ingestweb
     ports:
       - 8080:8080
+    volumes:
+      -  log-data:/opt/logs 
     environment:
       - TZ=Asia/Seoul
       - DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
@@ -224,10 +234,15 @@ services:
       - AUTH_CLIENT_ID=V43z0o2boLrXia0E5zn6
       - AUTH_CLIENT_SECRET=YikQaYqOaHvIvOpGt42lfGvxAiJ4DsYY
       - AUTN_REDIRECT_URL=http://203.253.128.181:9208
-      
+      - EUREKA_ENABLED=false
+      - EUREKA_EUREKA_DEFAULT_ZONE=http://10.0.0.144:8888/eureka
     depends_on:
-      - postgres
-      - ingest
+      postgres:
+        condition: service_healthy
+      ingestdaemon:
+        condition: service_started
+volumes:
+  log-data:        
 ```
 
 **docker-compose.yml 변수 설정**
@@ -235,15 +250,16 @@ services:
 ![도커이미지](./images/docker-compose.png)
 
 - DATAMODEL_API_URL : City Data Hub 시스템의 데이터 모델의 스키마 서버의 주소를 설정합니다.
-- INGEST_INTERFACE_API_URL : City Data Hub 시스템의 데이터코어 서버의 주소를 설정합니다.
-- AUTH_YN : City Data Hub 시스템의 인증서버의 사용여부를 설정합니다.
+- INGEST_INTERFACE_API_USE_YN : City Data Hub 시스템의 INTERFACE API 서버의 사용여부를 설정합니다.(Y,N)
+- INGEST_INTERFACE_API_URL : City Data Hub 시스템의 INTERFACE API 서버의 주소를 설정합니다.
+- AUTH_YN : City Data Hub 시스템의 인증서버의 사용여부를 설정합니다.(Y,N)
 - AUTH_EXTERNAL_URL : City Data Hub 시스템의 인증서버 외부 URL 설정합니다.
 - AUTH_INTERNAL_URL : City Data Hub 시스템의 인증서버 내부 URL 설정합니다.
 - AUTH_CLIENT_ID : City Data Hub 시스템의 인증서버에서 등록한 클라이언트 아이디 설정합니다.
 - AUTH_CLIENT_SECRET : City Data Hub 시스템의 인증서버에서 등록한 클라이언트 시크릿키 설정합니다.
 - AUTH_REDIRECT_URL : City Data Hub 시스템의 인증서버에서 등록한 리다이렉트되는 주소 설정
-- GATEWAY_USE_YN : City Data Hub 시스템의 게이트웨이 서버의 사용여부를 설정합니다.
-- GATEWAY_URL : City Data Hub 시스템의 게이트웨이 서버의 URL 설정합니다.
+- EUREKA_ENABLED : City Data Hub 시스템의 EUREKA 서버의 사용여부를 설정합니다.(true, false)
+- EUREKA_EUREKA_DEFAULT_ZONE : City Data Hub 시스템의 EUREKA 서버의 URL 설정합니다.
 
 ### 3.2. docker-compose 실행
 

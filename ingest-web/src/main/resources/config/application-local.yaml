@@ -14,7 +14,7 @@ spring:
     driver-class-name: org.postgresql.Driver
 
 ingest:
-  server: http://192.168.1.192:8084/entityOperations/upsert?options=update
+  interfaceApiUrl: http://192.168.1.192:8084/entityOperations/upsert?options=update
   yn: Y
 
 server:
@@ -62,7 +62,7 @@ daemon:
   agentUrl: ${daemon.daemonSrv}/exec/agent
   logUrl: ${daemon.daemonSrv}/exec/logger
   compileUrl: ${daemon.daemonSrv}/exec/compile
-  schemaServer: http://192.168.1.192:8083/datamodels
+  dataModelApiUrl: http://192.168.1.192:8083/datamodels
   
 eureka:
   instance:

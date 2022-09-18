@@ -1,10 +1,10 @@
 version: '3'
   
 services:
-  postgres:
-    container_name: ingestdb
+  ingest-db:
+    container_name: ingest-db
     image: postgis/postgis:11-2.5-alpine
-    hostname: postgres
+    hostname: ingest-db
     environment:
       - TZ=Asia/Seoul
       - POSTGRES_DBNAME=postgres
@@ -18,10 +18,10 @@ services:
     healthcheck:
       test: "exit 0"
 
-  ingestdaemon:
-    container_name: ingestdaemon
+  ingest-daemon:
+    container_name: ingest-daemon
     image: pinecni/ingest-daemon:latest
-    hostname: ingestdaemon
+    hostname: ingest-daemon
     ports:
       - 8888:8888
     volumes:
@@ -31,23 +31,23 @@ services:
       - DATAMODEL_API_URL=http://10.0.0.36:8080/datamodels
       - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
     depends_on:
-      postgres:
+      ingest-db:
         condition: service_healthy
         
-  ingestweb:
-    container_name: ingestweb
+  ingest-web:
+    container_name: ingest-web
     image: pinecni/ingest-web:latest 
-    hostname: ingestweb
+    hostname: ingest-web
     ports:
       - 8080:8080
     volumes:
       -  log-data:/opt/logs        
     environment:
       - TZ=Asia/Seoul
-      - DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
+      - DATASOURCE_URL=jdbc:postgresql://ingest-db:5432/postgres
       - DATASOURCE_ID=postgres
       - DATASOURCE_PW=pine1234
-      - DAEMON_URL=http://ingestdaemon:8888
+      - DAEMON_URL=http://ingest-daemon:8888
       - DATAMODEL_API_URL=http://10.0.0.36:8080/datamodels
       - INGEST_INTERFACE_API_USE_YN=Y
       - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
@@ -60,10 +60,8 @@ services:
       - EUREKA_ENABLED=false
       - EUREKA_EUREKA_DEFAULT_ZONE=http://10.0.0.144:8888/eureka
     depends_on:
-      postgres:
+      ingest-db:
         condition: service_healthy
-      ingestdaemon:
-        condition: service_started
 
 volumes:
   log-data:

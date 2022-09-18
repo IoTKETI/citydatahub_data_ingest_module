@@ -45,13 +45,13 @@ public class CallRestApiSink extends AbstractSink implements Configurable {
   public static final int DEFAULT_MAX_BYTE_DUMP = 16;
 
   public static final String MAX_BYTES_DUMP_KEY = "maxBytesToLog";
-  private String ingestServer;
+  private String ingestApiUrl;
   private String ingestYn;
 
   @Override
   public void configure(Context context) {
-    ingestServer = context.getString("INGEST_SERVER", "");
-    ingestYn = context.getString("INGEST_YN", "N");
+    ingestApiUrl = context.getString("INGEST_API_URL", "");
+    ingestYn = context.getString("INGEST_YN", "N").toUpperCase();
     String strMaxBytes = context.getString(MAX_BYTES_DUMP_KEY);
     if (!Strings.isNullOrEmpty(strMaxBytes)) {
       try {
@@ -61,7 +61,7 @@ public class CallRestApiSink extends AbstractSink implements Configurable {
             DEFAULT_MAX_BYTE_DUMP));
       }
     }
-    logger.info("{},{}",ingestServer,ingestYn);
+    logger.info("{},{}",ingestApiUrl,ingestYn);
   }
 
   @Override
@@ -78,10 +78,10 @@ public class CallRestApiSink extends AbstractSink implements Configurable {
       if (event != null) {
         String content = new String(event.getBody(), StandardCharsets.UTF_8);
         logger.info("Logger: " + content);
-        if ("Y".equals(ingestYn)) {
+        if ("Y".equalsIgnoreCase(ingestYn)) {
           if (!"".equals(content) ) {
             if (content.startsWith("{") || content.startsWith("[")) {
-              String resultConnect = httpConnection(ingestServer, content);
+              String resultConnect = httpConnection(ingestApiUrl, content);
               logger.info("{}", resultConnect);
             }
           }

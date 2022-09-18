@@ -22,7 +22,7 @@ server:
       force: true
 
 ingest:
-  server: ${INGEST_INTERFACE_API_URL}
+  interfaceApiUrl: ${INGEST_INTERFACE_API_URL}
   yn: ${INGEST_INTERFACE_API_USE_YN}
 
 eureka:
@@ -54,13 +54,12 @@ grantType:
   refresh: refresh_token
 
 daemon:
-  schemaServer: ${DATAMODEL_API_URL}
   daemonSrv: ${DAEMON_URL}
   configUrl: ${daemon.daemonSrv}/exec/config
   agentUrl: ${daemon.daemonSrv}/exec/agent
   logUrl: ${daemon.daemonSrv}/exec/logger
   compileUrl: ${daemon.daemonSrv}/exec/compile
-
+  dataModelApiUrl: ${DATAMODEL_API_URL}
 
 
 

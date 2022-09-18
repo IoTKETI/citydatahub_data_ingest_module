@@ -82,10 +82,11 @@ public class MainController {
 
 	////////////////////////////////////////////////////////////////////////////
 
-	@Value("${ingest.server}")
-	public String ingestserver;
+  @Value("${ingest.interfaceApiUrl}")
+  public String interfaceApiUrl;
 
-	@Value("${ingest.yn}")
+
+	@Value("${ingest.yn:N}")
   public String ingestYn;
 
 	private ObjectMapper objectMapper;
@@ -441,8 +442,8 @@ public class MainController {
 				body.put("entities", entities);
 
 				bodyStr = objectMapper.writeValueAsString(body);
-				if("Y".equals(ingestYn)) {
-				  log.info("postData : " + postData(ingestserver, bodyStr));
+				if("Y".equalsIgnoreCase(ingestYn)) {
+				  log.info("postData : " + postData(interfaceApiUrl, bodyStr));
 				}
 
 			}
@@ -452,8 +453,8 @@ public class MainController {
 
 		try {
 		  String rtn = "";
-      if("Y".equals(ingestYn)) {
-        rtn = postData(ingestserver, bodyStr).toString();
+      if("Y".equalsIgnoreCase(ingestYn)) {
+        rtn = postData(interfaceApiUrl, bodyStr).toString();
       }
 
 			return new ResponseEntity<>(rtn, HttpStatus.OK);

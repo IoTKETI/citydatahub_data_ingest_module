@@ -40,7 +40,7 @@ public class WebInterceptor implements HandlerInterceptor {
   @Autowired
   private AuthService authService;
 
-  @Value("${auth.yn}")
+  @Value("${auth.yn:N}")
   private String authYn;
 
   @Value("${logoutEndPoint}")
@@ -58,7 +58,7 @@ public class WebInterceptor implements HandlerInterceptor {
         } catch (Exception e) {}
     }
 
-    if ("Y".equals(authYn)) {
+    if ("Y".equalsIgnoreCase(authYn)) {
       String code = request.getParameter("code");
       if(code!=null) {
         String token = authService.getTokenByAuthorizationCode(code);

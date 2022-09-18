@@ -317,8 +317,8 @@ public class MonitoringController {
 		try {
 
 			stList = new ArrayList<>();
-			log.debug(cd.getSchemaServer() + "?level=000&");
-			HttpResponse resp = UrlUtil.get(cd.getSchemaServer() + "?level=000", "Content-type", "application/json");
+			log.debug(cd.getDataModelApiUrl() + "?level=000&");
+			HttpResponse resp = UrlUtil.get(cd.getDataModelApiUrl() + "?level=000", "Content-type", "application/json");
 			JSONArray jsonarr = new JSONArray(resp.getPayload());
 
 			for (int i = 0; i < jsonarr.length(); i++) {
