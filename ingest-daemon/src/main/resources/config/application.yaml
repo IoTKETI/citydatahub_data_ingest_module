@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: DH-CONNECTIVITY-DAMON
+
+logging:
+  config: classpath:config/log4j2.xml
+  level:
+    root: debug
+
+server:
+  timezone: Asia/Seoul 
+  port: 8888
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+        
+flume:
+  home: /opt/flume
+  conf: /opt/flume/conf/
+  log: /opt/logs/
+    

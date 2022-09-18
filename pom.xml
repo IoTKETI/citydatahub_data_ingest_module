@@ -3,20 +3,18 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.cityhub</groupId>
-  <artifactId>smartcity</artifactId>
+  <artifactId>ingest</artifactId>
   <version>0.9.0</version>
   <packaging>pom</packaging>
-  <name>city data hub</name>
-  <description>city data hub</description>
+  <name>city data hub ingest</name>
+  <description>city data hub ingest</description>
 
   <modules>
-    <module>smartcity-core</module>
-    <module>smartcity-flow</module>
-    <module>smartcity-adapter</module>
-    <module>smartcity-daemon</module>
-    <module>smartcity-web</module>
+    <module>ingest-core</module>
+    <module>ingest-adapter</module>
+    <module>ingest-daemon</module>
+    <module>ingest-web</module>
   </modules>
-
 
   <licenses>
     <license>

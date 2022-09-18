@@ -1,0 +1,75 @@
+spring:
+  application:
+    name: DH-CONNECTIVITY
+  thymeleaf:
+    prefix: classpath:templates/
+    check-template-location: true
+    suffix: .html
+    mode: HTML
+    cache: false
+  datasource:
+    url: jdbc:postgresql://192.168.1.192:5432/postgres
+    username: postgres
+    password: pine1234!@#$
+    driver-class-name: org.postgresql.Driver
+
+ingest:
+  server: http://192.168.1.192:8084/entityOperations/upsert?options=update
+  yn: Y
+
+
+server:
+  timezone: Asia/Seoul 
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+      
+
+logging:
+  level: 
+    root: info
+  config: classpath:config/log4j2.xml
+
+# mybatis info
+mybatis: 
+  type-aliases-package: com.cityhub.web
+  configuration:
+    callSettersOnNulls: true
+    
+
+# auth info
+auth.yn: Y
+authEndpoint : http://203.253.128.181:30084/oauth2.0/authorize
+responseType : code  
+tokenEndpoint: http://203.253.128.181:30084/oauth2.0/token
+publicKeyEndPoint: http://203.253.128.181:30084/security/publickey
+getInfoEndPoint: http://203.253.128.181:30084/security/users/cityhub03
+logoutEndPoint: http://203.253.128.181:30084/security/logout
+redirectUri: http://222.107.32.38:18080
+clientId: ne5EhxiRYBtfFBIjKcOC  
+clientSecret: LzJY7pTTLVGN8PQRAdo78qmjPQHjG1FF  
+grantType: 
+  auth: authorization_code
+  client: client_credentials
+  password: password
+  refresh: refresh_token
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://133.186.162.81:8888/eureka, http://133.186.162.82:8888/eureka, http://133.186.162.83:8888/eureka
+      
+daemon:
+  daemonSrv: http://133.186.162.229:8888
+  configUrl: ${daemon.daemonSrv}/exec/config
+  agentUrl: ${daemon.daemonSrv}/exec/agent
+  logUrl: ${daemon.daemonSrv}/exec/logger
+  compileUrl: ${daemon.daemonSrv}/exec/compile
+  schemaServer: http://192.168.1.192:8083/datamodels   

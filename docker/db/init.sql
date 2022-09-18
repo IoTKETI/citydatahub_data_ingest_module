@@ -17,9 +17,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 set TIME ZONE 'Asia/Seoul';
 
--- 
--- Name: TAG_DATA_SEQ; Type: SEQUENCE; Schema: public; Owner: postgres
---
 
 --CREATE DATABASE postgres WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE 'C';
 
@@ -31,17 +28,32 @@ set TIME ZONE 'Asia/Seoul';
 
 --CREATE SCHEMA public;
 
-
---ALTER SCHEMA public OWNER TO postgres;
-
-
-
-CREATE SEQUENCE public."TAG_DATA_SEQ"
+--
+-- Name: connectivity_log; Type: TABLE; Schema: public; Owner: postgres
+--
+CREATE SEQUENCE public.seq_connectivity_log
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+CREATE SEQUENCE public.lang_data_lang_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+CREATE SEQUENCE public.api_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 
 
 --
@@ -145,18 +157,6 @@ CREATE TABLE public.agent_info (
 );
 
 
---
--- Name: api_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.api_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
 
 --
 -- Name: comm_code; Type: TABLE; Schema: public; Owner: postgres
@@ -189,15 +189,6 @@ CREATE TABLE public.comm_type (
 );
 
 
---
--- Name: connectivity_log; Type: TABLE; Schema: public; Owner: postgres
---
-CREATE SEQUENCE public.seq_connectivity_log
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
 
 CREATE TABLE public.connectivity_log (
   id int4 NOT NULL DEFAULT nextval('public.seq_connectivity_log'::regclass),
@@ -213,7 +204,6 @@ CREATE TABLE public.connectivity_log (
   first_create_dt timestamp NOT NULL,
   CONSTRAINT pk_connectivity_log_id PRIMARY KEY (id)
 );
-CREATE INDEX connectivity_log_idx1 ON public.connectivity_log USING btree (log_dt, adapter_id, step);
 
 
 --
@@ -363,61 +353,16 @@ CREATE TABLE public.keyword_info (
 );
 
 
-
---
--- Name: TABLE keyword_info; Type: COMMENT; Schema: public; Owner: postgres
---
-
 COMMENT ON TABLE public.keyword_info IS '예약어_정보';
-
-
---
--- Name: COLUMN keyword_info.item; Type: COMMENT; Schema: public; Owner: postgres
---
-
 COMMENT ON COLUMN public.keyword_info.item IS '항목';
-
-
---
--- Name: COLUMN keyword_info.item_described; Type: COMMENT; Schema: public; Owner: postgres
---
-
 COMMENT ON COLUMN public.keyword_info.item_described IS '항목_설명';
-
-
---
--- Name: COLUMN keyword_info.relation_code_id; Type: COMMENT; Schema: public; Owner: postgres
---
-
 COMMENT ON COLUMN public.keyword_info.relation_code_id IS '관련_코드_ID';
-
-
---
--- Name: COLUMN keyword_info.first_create_dt; Type: COMMENT; Schema: public; Owner: postgres
---
-
 COMMENT ON COLUMN public.keyword_info.first_create_dt IS '최초_생성일시';
-
-
---
--- Name: COLUMN keyword_info.first_create_id; Type: COMMENT; Schema: public; Owner: postgres
---
-
 COMMENT ON COLUMN public.keyword_info.first_create_id IS '최초_생성자ID';
-
-
---
--- Name: COLUMN keyword_info.last_update_dt; Type: COMMENT; Schema: public; Owner: postgres
---
-
 COMMENT ON COLUMN public.keyword_info.last_update_dt IS '최종_수정일시';
-
-
---
--- Name: COLUMN keyword_info.last_update_id; Type: COMMENT; Schema: public; Owner: postgres
---
-
 COMMENT ON COLUMN public.keyword_info.last_update_id IS '최종_수정자ID';
+
+
 
 
 --
@@ -425,35 +370,17 @@ COMMENT ON COLUMN public.keyword_info.last_update_id IS '최종_수정자ID';
 --
 
 CREATE TABLE public.lang_data (
-    lang_id integer NOT NULL,
+    lang_id integer NOT NULL DEFAULT nextval('public.lang_data_lang_id_seq'::regclass),
     lang_code character varying(2) NOT NULL,
     lang_key character varying(30) NOT NULL,
     lang_value character varying(100) NOT NULL,
     first_create_dt timestamp without time zone,
     first_create_id character varying(20),
     last_update_dt timestamp without time zone,
-    last_update_id character varying(20)
+    last_update_id character varying(20),
+    CONSTRAINT pk_lang_data PRIMARY KEY (lang_id)
 );
 
-
-
---
--- Name: lang_data_lang_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.lang_data_lang_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: lang_data_lang_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.lang_data_lang_id_seq OWNED BY public.lang_data.lang_id;
 
 
 --
@@ -498,50 +425,6 @@ CREATE TABLE public.ob_datamodel_conf (
 );
 
 
-
---
--- Name: project_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.project_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: seq_corner_radar_front_left; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.seq_corner_radar_front_left
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-
---
--- Name: tag_data_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.tag_data_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-
---
--- Name: lang_data lang_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.lang_data ALTER COLUMN lang_id SET DEFAULT nextval('public.lang_data_lang_id_seq'::regclass);
 
 --
 -- Data for Name: comm_code; Type: TABLE DATA; Schema: public; Owner: postgres
@@ -653,27 +536,6 @@ INSERT INTO public.comm_type (code_type_id, code_type_nm, use_yn, first_create_d
 INSERT INTO public.comm_type (code_type_id, code_type_nm, use_yn, first_create_dt, first_create_id, last_update_dt, last_update_id) VALUES ('I13', '사용용도', 'Y', '2019-08-26 12:21:43.89', NULL, '2021-05-25 13:47:05.978832', NULL);
 
 
---
--- Data for Name: connectivity_log; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-
-
---
--- Data for Name: dm_transform_conf; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-
-
---
--- Data for Name: dm_transform_info; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-
-
---
--- Data for Name: gs1_code; Type: TABLE DATA; Schema: public; Owner: postgres
---
 
 INSERT INTO public.gs1_code (g_code, g_code_nm, use_yn, modified_id, modified_time, creation_id, creation_time, gs_code) VALUES ('880', '대한민국', 'Y', NULL, '2021-06-10 14:12:55.968305+09', NULL, '2021-06-10 14:12:55.968305+09', 'GS102');
 INSERT INTO public.gs1_code (g_code, g_code_nm, use_yn, modified_id, modified_time, creation_id, creation_time, gs_code) VALUES ('969104', '시흥시', 'Y', NULL, '2021-06-10 14:12:55.968305+09', NULL, '2021-06-10 14:12:55.968305+09', 'GS103');
@@ -721,22 +583,6 @@ INSERT INTO public.gs1_code (g_code, g_code_nm, use_yn, modified_id, modified_ti
 INSERT INTO public.gs1_code (g_code, g_code_nm, use_yn, modified_id, modified_time, creation_id, creation_time, gs_code) VALUES ('ksy', 'ksy', 'Y', NULL, '2021-06-18 14:32:34.097729+09', NULL, '2021-06-18 14:32:34.097729+09', 'GS101');
 
 
-
-
---
--- Data for Name: instance_detail_conf; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-
-
---
--- Data for Name: instance_info; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-
---
--- Data for Name: lang_data; Type: TABLE DATA; Schema: public; Owner: postgres
---
 
 INSERT INTO public.lang_data (lang_id, lang_code, lang_key, lang_value, first_create_dt, first_create_id, last_update_dt, last_update_id) VALUES (674, 'KR', 'popupDashLog_0021', '구분', NULL, NULL, NULL, NULL);
 INSERT INTO public.lang_data (lang_id, lang_code, lang_key, lang_value, first_create_dt, first_create_id, last_update_dt, last_update_id) VALUES (675, 'KR', 'popupDashLog_0022', '시작일', NULL, NULL, NULL, NULL);
@@ -1295,82 +1141,6 @@ INSERT INTO public.lang_data (lang_id, lang_code, lang_key, lang_value, first_cr
 INSERT INTO public.lang_data (lang_id, lang_code, lang_key, lang_value, first_create_dt, first_create_id, last_update_dt, last_update_id) VALUES (525, 'KR', 'popupDashLog_0004', 'OpenAPI', NULL, NULL, NULL, NULL);
 INSERT INTO public.lang_data (lang_id, lang_code, lang_key, lang_value, first_create_dt, first_create_id, last_update_dt, last_update_id) VALUES (526, 'KR', 'popupDashLog_0005', 'OneM2M', NULL, NULL, NULL, NULL);
 
-
---
--- Data for Name: ob_datamodel; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-
-
---
--- Data for Name: ob_datamodel_conf; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-
-
---
--- Name: TAG_DATA_SEQ; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public."TAG_DATA_SEQ"', 1, false);
-
-
---
--- Name: api_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.api_seq', 1, false);
-
-
---
--- Name: lang_data_lang_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.lang_data_lang_id_seq', 787, true);
-
-
---
--- Name: project_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.project_seq', 1, false);
-
-
---
--- Name: seq_corner_radar_front_left; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.seq_corner_radar_front_left', 1, true);
-
-
---
--- Name: tag_data_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.tag_data_seq', 1, true);
-
-
---
--- Name: connectivity_log connectivity_log_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.connectivity_log
-    ADD CONSTRAINT connectivity_log_pkey PRIMARY KEY (log_dt, adapter_id, step);
-
-
---
--- Name: lang_data lang_data_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.lang_data
-    ADD CONSTRAINT lang_data_pkey PRIMARY KEY (lang_id);
-
-
-set TIME ZONE 'Asia/Seoul';
-
---
--- PostgreSQL database dump complete
---
 
 
 

@@ -2,7 +2,7 @@ version: '3'
   
 services:
   postgres:
-    container_name: smartcitydb
+    container_name: ingestdb
     image: postgis/postgis:11-2.5-alpine
     hostname: postgres
     environment:
@@ -15,40 +15,43 @@ services:
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: on-failure
+    healthcheck:
+      test: "exit 0"
 
-  ingest:
-    container_name: smartcityingest
-    image: pinecni/smartcity-daemon:latest
-    hostname: smartcityingest
+  ingestdaemon:
+    container_name: ingestdaemon
+    image: pinecni/ingest-daemon:latest
+    hostname: ingestdaemon
     ports:
-      - 8888:8888    
+      - 8888:8888
+    volumes:
+      -  log-data:/opt/logs  
     environment:
-      - TZ=Asia/Seoul    
-      - AGENT_NAME=agent1st
-      - AGENT_FILE=./conf/agent1st.conf
-      - AGENT_CONF=./conf
-      - SCHEMA_URL=http://10.0.0.36:8080/datamodels
-      - DATACORE_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
-
-  web:
-    container_name: smartcityweb
-    image: pinecni/smartcity-web:latest 
-    hostname: smartcityweb
+      - TZ=Asia/Seoul
+      - DATAMODEL_API_URL=http://10.0.0.36:8080/datamodels
+      - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
+    depends_on:
+      postgres:
+        condition: service_healthy
+        
+  ingestweb:
+    container_name: ingestweb
+    image: pinecni/ingest-web:latest 
+    hostname: ingestweb
     ports:
       - 8080:8080
+    volumes:
+      -  log-data:/opt/logs        
     environment:
       - TZ=Asia/Seoul
       - DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
       - DATASOURCE_ID=postgres
       - DATASOURCE_PW=pine1234
-      - DAEMON_URL=http://smartcityingest:8888
-      - SCHEMA_URL=http://10.0.0.36:8080/datamodels
-      - DATACORE_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
-      - GATEWAY_USE_YN=N
-      - GATEWAY_URL=http://13.124.164.104:8080      
+      - DAEMON_URL=http://ingestdaemon:8888
+      - DATAMODEL_API_URL=http://10.0.0.36:8080/datamodels
+      - INGEST_INTERFACE_API_USE_YN=Y
+      - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
       - AUTH_YN=N
-      - AUTH_USER_ID=cityhub03
-      - AUTH_USER_PASWORD=cityhub03!
       - AUTH_EXTERNAL_URL=http://203.253.128.181:30084
       - AUTH_INTERNAL_URL=http://10.0.0.237:30000
       - AUTH_CLIENT_ID=V43z0o2boLrXia0E5zn6
@@ -57,8 +60,11 @@ services:
       - EUREKA_ENABLED=false
       - EUREKA_EUREKA_DEFAULT_ZONE=http://10.0.0.144:8888/eureka
     depends_on:
-      - postgres
-      - ingest
+      postgres:
+        condition: service_healthy
+      ingestdaemon:
+        condition: service_started
 
-
+volumes:
+  log-data:
 

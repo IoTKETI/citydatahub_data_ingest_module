@@ -154,13 +154,13 @@ mvn clean install
 
 ```bash
 # 디렉토리 이동
-cd ~/ingest/smartcity-daemon
+cd ~/ingest/ingest-daemon
 
 # 데몬 이미지 만들기
 mvn package docker:build
 
 # 디렉토리 이동
-cd ~/ingest/smartcity-web
+cd ~/ingest/ingest-web
 # 웹UI 이미지 만들기
 mvn package docker:build
 ```
@@ -177,7 +177,7 @@ version: '3'
   
 services:
   postgres:
-    container_name: smartcitydb
+    container_name: ingestdb
     image: postgis/postgis:11-2.5-alpine
     hostname: postgres
     environment:
@@ -191,24 +191,21 @@ services:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: on-failure
 
-  ingest:
-    container_name: smartcityingest
-    image: pinecni/smartcity-daemon:latest
-    hostname: smartcityingest
+  ingestdaemon:
+    container_name: ingestdaemon
+    image: pinecni/ingest-daemon:latest
+    hostname: ingestdaemon
     ports:
       - 8888:8888    
     environment:
       - TZ=Asia/Seoul
-      - AGENT_NAME=agent1st
-      - AGENT_FILE=./conf/agent1st.conf
-      - AGENT_CONF=./conf
-      - SCHEMA_URL=http://10.0.0.36:8080/datamodels
-      - DATACORE_URL=http://10.0.0.25:8080/entityOperations/upsert
+      - DATAMODEL_API_URL=http://10.0.0.36:8080/datamodels
+      - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert
 
-  web:
-    container_name: smartcityweb
-    image: pinecni/smartcity-web:latest 
-    hostname: smartcityweb
+  ingestweb:
+    container_name: ingestweb
+    image: pinecni/ingest-web:latest 
+    hostname: ingestweb
     ports:
       - 8080:8080
     environment:
@@ -216,9 +213,9 @@ services:
       - DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
       - DATASOURCE_ID=postgres
       - DATASOURCE_PW=pine1234
-      - DAEMON_URL=http://smartcityingest:8888
-      - SCHEMA_URL=http://10.0.0.36:8080/datamodels
-      - DATACORE_URL=http://10.0.0.25:8080/entityOperations/upsert
+      - DAEMON_URL=http://ingestdaemon:8888
+      - DATAMODEL_API_URL=http://10.0.0.36:8080/datamodels
+      - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert
       - GATEWAY_USE_YN=N
       - GATEWAY_URL=http://13.124.164.104:8080      
       - AUTH_YN=N
@@ -237,8 +234,8 @@ services:
 
 ![도커이미지](./images/docker-compose.png)
 
-- SCHEMA_URL : City Data Hub 시스템의 데이터 모델의 스키마 서버의 주소를 설정합니다.
-- DATACORE_URL : City Data Hub 시스템의 데이터코어 서버의 주소를 설정합니다.
+- DATAMODEL_API_URL : City Data Hub 시스템의 데이터 모델의 스키마 서버의 주소를 설정합니다.
+- INGEST_INTERFACE_API_URL : City Data Hub 시스템의 데이터코어 서버의 주소를 설정합니다.
 - AUTH_YN : City Data Hub 시스템의 인증서버의 사용여부를 설정합니다.
 - AUTH_EXTERNAL_URL : City Data Hub 시스템의 인증서버 외부 URL 설정합니다.
 - AUTH_INTERNAL_URL : City Data Hub 시스템의 인증서버 내부 URL 설정합니다.
@@ -582,11 +579,11 @@ U-City Platform 중 스마트시티 통합플랫폼에서 이벤트 정보를 �
 docker images
 
 # docker images 파일로 저장
-docker save pinecni/smartcity-daemon:latest -o pinecni-smartcity-daemon.tar
-docker save pinecni/smartcity-web:latest -o pinecni-smartcity-web.tar
+docker save pinecni/ingest-daemon:latest -o pinecni-ingest-daemon.tar
+docker save pinecni/ingest-web:latest -o pinecni-ingest-web.tar
 
 # docker images 파일 -> 이미지로 로드
-docker load -i  pinecni-smartcity-daemon.tar
-docker load -i  pinecni-smartcity-web.tar
+docker load -i  pinecni-ingest-daemon.tar
+docker load -i  pinecni-ingest-web.tar
 ```
 

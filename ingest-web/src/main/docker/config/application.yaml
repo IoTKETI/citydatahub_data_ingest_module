@@ -1,0 +1,78 @@
+spring:
+  application:
+    name: DH-CONNECTIVITY-AGENT
+  thymeleaf:
+    prefix: classpath:templates/
+    check-template-location: true
+    suffix: .html
+    mode: HTML
+    cache: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_ID} 
+    password: ${DATASOURCE_PW}
+
+server:
+  timezone: ${TZ}
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+ingest:
+  server: ${INGEST_INTERFACE_API_URL}
+  yn: ${INGEST_INTERFACE_API_USE_YN}
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    enabled: ${EUREKA_ENABLED}    
+    service-url:
+      defaultZone: ${EUREKA_EUREKA_DEFAULT_ZONE}      
+
+
+# auth info
+auth.yn: ${AUTH_YN}
+authEndpoint : ${AUTH_EXTERNAL_URL}/oauth2.0/authorize
+tokenEndpoint: ${AUTH_INTERNAL_URL}/oauth2.0/token
+publicKeyEndPoint: ${AUTH_EXTERNAL_URL}/security/publickey
+getInfoEndPoint: ${AUTH_EXTERNAL_URL}/security/users/cityhub03
+logoutEndPoint: ${AUTH_EXTERNAL_URL}/security/logout
+redirectUri: ${AUTH_REDIRECT_URL} 
+clientId: ${AUTH_CLIENT_ID}
+clientSecret: ${AUTH_CLIENT_SECRET}
+responseType : code
+grantType: 
+  auth: authorization_code
+  client: client_credentials
+  password: password
+  refresh: refresh_token
+
+daemon:
+  schemaServer: ${DATAMODEL_API_URL}
+  daemonSrv: ${DAEMON_URL}
+  configUrl: ${daemon.daemonSrv}/exec/config
+  agentUrl: ${daemon.daemonSrv}/exec/agent
+  logUrl: ${daemon.daemonSrv}/exec/logger
+  compileUrl: ${daemon.daemonSrv}/exec/compile
+
+
+
+
+logging:
+  config: classpath:config/log4j2.xml
+  level:
+    root: info
+
+
+# mybatis info
+mybatis: 
+  type-aliases-package: com.cityhub.web
+  configuration:
+    callSettersOnNulls: true
+

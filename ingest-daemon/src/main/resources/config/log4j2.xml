@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="debug" monitorInterval="30">
+	<Properties>
+		<Property name="logDir">../logs</Property>
+		<Property name="logPath">${logDir}/daemon.log</Property>
+		<Property name="logRollingPath">${logDir}/daemon_%d{yyyyMMdd}.log</Property>
+		<Property name="logRollingInterval">1</Property>
+
+		<Property name="errorLogDir">${logDir}/error</Property>
+		<Property name="errorLogPath">${errorLogDir}/daemon-error.log</Property>
+		<Property name="errorLogRollingPath">${errorLogDir}/daemon-error_%d{yyyyMMdd}.log</Property>
+		<Property name="errorLogRollingInterval">1</Property>
+	</Properties>
+
+	  <Appenders>
+    <Console name="Console-Appender" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%5p] (%t) - %m%n" />
+    </Console>
+
+    <RollingFile name="rollingFileAppender" fileName="${logPath}" filePattern="${logRollingPath}">
+      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%5p] %m%n" />
+      <TimeBasedTriggeringPolicy interval="${logRollingInterval}" />
+    </RollingFile>
+
+    <RollingFile name="errorRollingFileAppender" fileName="${errorLogPath}" filePattern="${errorLogRollingPath}">
+      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%5p] %m%n" />
+      <TimeBasedTriggeringPolicy interval="${errorLogRollingInterval}" />
+      <DefaultRolloverStrategy>
+        <Delete basePath="${errorLogDir}" maxDepth="1">
+          <IfFileName glob="*.log" />
+          <IfLastModified age="30d" />
+        </Delete>
+      </DefaultRolloverStrategy>
+    </RollingFile>
+  </Appenders>
+
+  <Loggers>
+    <Root level="info" >
+      <AppenderRef ref="Console-Appender" />
+      <AppenderRef ref="rollingFileAppender" level="info"/>
+      <AppenderRef ref="errorRollingFileAppender" level="error"/>
+    </Root>
+    
+    <Logger name="com.pinecni.crawling" level="info" additivity="false">
+      <AppenderRef ref="Console-Appender" level="info"/>
+      <AppenderRef ref="rollingFileAppender" level="info"/>
+      <AppenderRef ref="errorRollingFileAppender" level="error"/>
+    </Logger>
+    
+    
+    <Logger name="jdbc.connection" level="info" additivity="false">
+      <AppenderRef ref="Console-Appender" level="info"/>
+      <AppenderRef ref="rollingFileAppender" level="info"/>
+      <AppenderRef ref="errorRollingFileAppender" level="error"/>
+    </Logger>
+    
+    
+	</Loggers>
+
+</Configuration>
