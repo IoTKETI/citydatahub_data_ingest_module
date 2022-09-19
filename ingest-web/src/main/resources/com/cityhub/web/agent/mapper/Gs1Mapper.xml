@@ -5,265 +5,265 @@
 
 <mapper namespace="com.cityhub.web.agent.mapper.Gs1Mapper">
 
-	<select id="getGs1Code" parameterType="String" resultType="map">
-		select
-			gs_code
-			, g_code_nm
-			, g_code
-			, use_yn
-		from
-			gs1_code
-		where
-			gs_code = #{gs1code}
-		order by g_code
-	</select>
-	
-	<select id="isContained" parameterType="map" resultType="Integer">
-		select
-			count(g_code)
-		from
-			gs1_code
-		where
-			g_code = #{g_code}
-		and
-			gs_code = #{gs_code}
-	</select>
-	
-	<select id="isContainedModel" parameterType="map" resultType="Integer">
-		select
-			count(gs1_code)
-		from
-			gs1_code_mapping
-		where
-			gs1_code = #{gs1_code}
-	</select>
-	
-	<insert id="insertGs1Code" parameterType="map">
-		insert into gs1_code(
-			gs_code
-			, g_code_nm
-			, g_code
-			, use_yn
-			, modified_time
-			, creation_time
-		) values (
-			#{gs_code}
-			, #{g_code_nm}
-			, #{g_code}
-			, #{use_yn}
-			, now()
-			, now()
-		)
-	</insert>
-	
-	<insert id="insertGs1model" parameterType="map">
-		insert into gs1_code_mapping(
-			 urn
-			 , country
-			 , municipality
-			 , code
-			 , m_category
-			 , c_category
-			 , s_category
-			 , city_assets
-			 , c_platform
-			 , source_id
-			 , data_set
-			 , data_model
-			 , data_version
-			 , move
-			 , modified_id
-			 , modified_time
-			 , creation_id
-			 , creation_time
-			 , use_yn
-			 , gs1_code
-		) values (
-			#{urn}
-			 , #{country}
-			 , #{municipality}
-			 , #{code}
-			 , #{m_category}
-			 , #{c_category}
-			 , #{s_category}
-			 , #{city_assets}
-			 , #{c_platform}
-			 , #{source_id}
-			 , #{data_set}
-			 , #{data_model}
-			 , #{data_version}
-			 , #{move}
-			 , 'admin'
-			 , now()
-			 , 'admin'
-			 , now()
-			 , #{use_yn}
-			 , #{gs1_code}
-		)
-	</insert>
-	
-	<update id="updateGs1Code" parameterType="map">
-		update gs1_code
-		set
-			g_code_nm = #{g_code_nm},
-			use_yn = #{use_yn},
-			modified_time = now()
-		where
-			g_code = #{g_code}
-		and
-			gs_code = #{gs_code}
-	</update>
-	
-	<update id="updateGs1Model" parameterType="map">
-		update gs1_code_mapping
-		set
-			urn = #{urn} 
-			, country = #{country}
-			, municipality = #{municipality}
-			, code = #{code}
-			, m_category = #{m_category}
-			, c_category = #{c_category}
-			, s_category = #{s_category}
-			, city_assets = #{city_assets}
-			, c_platform = #{c_platform}
-			, source_id = #{source_id}
-			, data_set = #{data_set}
-			, data_model = #{data_model}
-			, data_version = #{data_version}
-			, move = #{move}
-			, gs1_code = #{gs1_code}
-			, modified_time = now()
-		where
-			gs1_code = #{gs1_code}
-			
-	</update>
-	
-	<update id="UpdateGs1model" parameterType="map">
-		update gs1_code_mapping
-		set
-			urn = #{urn} 
-			, country = #{country}
-			, municipality = #{municipality}
-			, code = #{code}
-			, m_category = #{m_category}
-			, c_category = #{c_category}
-			, s_category = #{s_category}
-			, city_assets = #{city_assets}
-			, c_platform = #{c_platform}
-			, source_id = #{source_id}
-			, data_set = #{data_set}
-			, data_model = #{data_model}
-			, data_version = #{data_version}
-			, move = #{move}
-			, gs1_code = #{gs1_code}
-			, modified_time = now()
-		where
-			gs1_code = #{gs1_code_id}
-	</update>
-	
-	<update id="ModifyGs1Model" parameterType="map">
-		update gs1_code_mapping
-		set
-			use_yn = #{use_yn}
-		where
-			urn = #{urn} 
-			and country = #{country}
-			and municipality = #{municipality}
-			and code = #{code}
-			and m_category = #{m_category}
-			and c_category = #{c_category}
-			and s_category = #{s_category}
-			and city_assets = #{city_assets}
-			and c_platform = #{c_platform}
-			and source_id = #{source_id}
-			and data_set = #{data_set}
-			and data_model = #{data_model}
-			and data_version = #{data_version}
-			and move = #{move}
-	</update>
-	
-	<select id="getGs1ModelList" resultType="map">
-		select *
-		from
-			gs1_code_mapping
-		order by
-<!-- 			creation_time desc -->
-			gs1_code 
-	</select>
-	
-	<delete id="deleteGs1model" parameterType="map">
-		delete from gs1_code_mapping
-		where
-			urn = #{urn} 
-			and country = #{country}
-			and municipality = #{municipality}
-			and code = #{code}
-			and m_category = #{m_category}
-			and c_category = #{c_category}
-			and s_category = #{s_category}
-			and city_assets = #{city_assets}
-			and c_platform = #{c_platform}
-			and source_id = #{source_id}
-			and data_set = #{data_set}
-			and data_model = #{data_model}
-			and data_version = #{data_version}
-			and move = #{move}
-	</delete>
-	
-	<select id="getGs1ListData" resultType="map">
-		select
-			code_id
-			, code_nm
-		from comm_code
-		where
-			code_type_id = 'GS1'
-		and
-			use_yn = 'Y'
-	</select>
-	
-	<select id="getGs1Categorym" resultType = "map">
-		select distinct m, m_nm
-		from gs1_code_mapping_category
-		order by m
-	</select>
-	
-	<select id="getGs1Categorym_c" parameterType="String" resultType="map">
-		select g_code, g_code_nm
-		from gs1_code
-		where g_code like #{m}
-		order by g_code
-	</select>
-	
-	<select id="getGs1Categorym_s" parameterType="String" resultType="map">
-		select g_code, g_code_nm
-		from gs1_code
-		where g_code like #{c_nm}
-		order by g_code
-	</select>
-	
-	<select id="getgs1codecategory" parameterType="String" resultType="map">
-		select *
-		from gs1_code_mapping
-		where gs1_code = #{gs1_code_id}
-	</select>
-	
-	<select id="getcommgs1code" resultType="map">
-		select distinct(code_id), code_nm
-		from comm_code
-		where code_type_id = 'GS1'
-		order by code_id
-	</select>
-	
-	<select id="getgcodenm" parameterType="String" resultType="map">
-		select g_code, g_code_nm
-		from gs1_code
-		where gs_code=#{gs_code}
-	</select>
-	
-	<select id="findcodenm" parameterType="String" resultType="map">
-		select code_nm
-		from comm_code
-		where code_id = #{gs_code}
-	</select>
+  <select id="getGs1Code" parameterType="String" resultType="map">
+    select
+      gs_code
+      , g_code_nm
+      , g_code
+      , use_yn
+    from
+      gs1_code
+    where
+      gs_code = #{gs1code}
+    order by g_code
+  </select>
+  
+  <select id="isContained" parameterType="map" resultType="Integer">
+    select
+      count(g_code)
+    from
+      gs1_code
+    where
+      g_code = #{g_code}
+    and
+      gs_code = #{gs_code}
+  </select>
+  
+  <select id="isContainedModel" parameterType="map" resultType="Integer">
+    select
+      count(gs1_code)
+    from
+      gs1_code_mapping
+    where
+      gs1_code = #{gs1_code}
+  </select>
+  
+  <insert id="insertGs1Code" parameterType="map">
+    insert into gs1_code(
+      gs_code
+      , g_code_nm
+      , g_code
+      , use_yn
+      , modified_time
+      , creation_time
+    ) values (
+      #{gs_code}
+      , #{g_code_nm}
+      , #{g_code}
+      , #{use_yn}
+      , now()
+      , now()
+    )
+  </insert>
+  
+  <insert id="insertGs1model" parameterType="map">
+    insert into gs1_code_mapping(
+       urn
+       , country
+       , municipality
+       , code
+       , m_category
+       , c_category
+       , s_category
+       , city_assets
+       , c_platform
+       , source_id
+       , data_set
+       , data_model
+       , data_version
+       , move
+       , modified_id
+       , modified_time
+       , creation_id
+       , creation_time
+       , use_yn
+       , gs1_code
+    ) values (
+      #{urn}
+       , #{country}
+       , #{municipality}
+       , #{code}
+       , #{m_category}
+       , #{c_category}
+       , #{s_category}
+       , #{city_assets}
+       , #{c_platform}
+       , #{source_id}
+       , #{data_set}
+       , #{data_model}
+       , #{data_version}
+       , #{move}
+       , 'admin'
+       , now()
+       , 'admin'
+       , now()
+       , #{use_yn}
+       , #{gs1_code}
+    )
+  </insert>
+  
+  <update id="updateGs1Code" parameterType="map">
+    update gs1_code
+    set
+      g_code_nm = #{g_code_nm},
+      use_yn = #{use_yn},
+      modified_time = now()
+    where
+      g_code = #{g_code}
+    and
+      gs_code = #{gs_code}
+  </update>
+  
+  <update id="updateGs1Model" parameterType="map">
+    update gs1_code_mapping
+    set
+      urn = #{urn} 
+      , country = #{country}
+      , municipality = #{municipality}
+      , code = #{code}
+      , m_category = #{m_category}
+      , c_category = #{c_category}
+      , s_category = #{s_category}
+      , city_assets = #{city_assets}
+      , c_platform = #{c_platform}
+      , source_id = #{source_id}
+      , data_set = #{data_set}
+      , data_model = #{data_model}
+      , data_version = #{data_version}
+      , move = #{move}
+      , gs1_code = #{gs1_code}
+      , modified_time = now()
+    where
+      gs1_code = #{gs1_code}
+      
+  </update>
+  
+  <update id="UpdateGs1model" parameterType="map">
+    update gs1_code_mapping
+    set
+      urn = #{urn} 
+      , country = #{country}
+      , municipality = #{municipality}
+      , code = #{code}
+      , m_category = #{m_category}
+      , c_category = #{c_category}
+      , s_category = #{s_category}
+      , city_assets = #{city_assets}
+      , c_platform = #{c_platform}
+      , source_id = #{source_id}
+      , data_set = #{data_set}
+      , data_model = #{data_model}
+      , data_version = #{data_version}
+      , move = #{move}
+      , gs1_code = #{gs1_code}
+      , modified_time = now()
+    where
+      gs1_code = #{gs1_code_id}
+  </update>
+  
+  <update id="ModifyGs1Model" parameterType="map">
+    update gs1_code_mapping
+    set
+      use_yn = #{use_yn}
+    where
+      urn = #{urn} 
+      and country = #{country}
+      and municipality = #{municipality}
+      and code = #{code}
+      and m_category = #{m_category}
+      and c_category = #{c_category}
+      and s_category = #{s_category}
+      and city_assets = #{city_assets}
+      and c_platform = #{c_platform}
+      and source_id = #{source_id}
+      and data_set = #{data_set}
+      and data_model = #{data_model}
+      and data_version = #{data_version}
+      and move = #{move}
+  </update>
+  
+  <select id="getGs1ModelList" resultType="map">
+    select *
+    from
+      gs1_code_mapping
+    order by
+<!--      creation_time desc -->
+      gs1_code 
+  </select>
+  
+  <delete id="deleteGs1model" parameterType="map">
+    delete from gs1_code_mapping
+    where
+      urn = #{urn} 
+      and country = #{country}
+      and municipality = #{municipality}
+      and code = #{code}
+      and m_category = #{m_category}
+      and c_category = #{c_category}
+      and s_category = #{s_category}
+      and city_assets = #{city_assets}
+      and c_platform = #{c_platform}
+      and source_id = #{source_id}
+      and data_set = #{data_set}
+      and data_model = #{data_model}
+      and data_version = #{data_version}
+      and move = #{move}
+  </delete>
+  
+  <select id="getGs1ListData" resultType="map">
+    select
+      code_id
+      , code_nm
+    from comm_code
+    where
+      code_type_id = 'GS1'
+    and
+      use_yn = 'Y'
+  </select>
+  
+  <select id="getGs1Categorym" resultType = "map">
+    select distinct m, m_nm
+    from gs1_code_mapping_category
+    order by m
+  </select>
+  
+  <select id="getGs1Categorym_c" parameterType="String" resultType="map">
+    select g_code, g_code_nm
+    from gs1_code
+    where g_code like #{m}
+    order by g_code
+  </select>
+  
+  <select id="getGs1Categorym_s" parameterType="String" resultType="map">
+    select g_code, g_code_nm
+    from gs1_code
+    where g_code like #{c_nm}
+    order by g_code
+  </select>
+  
+  <select id="getgs1codecategory" parameterType="String" resultType="map">
+    select *
+    from gs1_code_mapping
+    where gs1_code = #{gs1_code_id}
+  </select>
+  
+  <select id="getcommgs1code" resultType="map">
+    select distinct(code_id), code_nm
+    from comm_code
+    where code_type_id = 'GS1'
+    order by code_id
+  </select>
+  
+  <select id="getgcodenm" parameterType="String" resultType="map">
+    select g_code, g_code_nm
+    from gs1_code
+    where gs_code=#{gs_code}
+  </select>
+  
+  <select id="findcodenm" parameterType="String" resultType="map">
+    select code_nm
+    from comm_code
+    where code_id = #{gs_code}
+  </select>
 
 </mapper>

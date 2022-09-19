@@ -30,20 +30,37 @@
  */
 package com.cityhub.web.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix="daemon")
-public class ConfigDaemon {
+public class ConfigEnv {
 
-//getter, setter
+  @Value("${ingest.daemonSrv}")
   private String daemonSrv;
+
+  @Value("${ingest.logUrl}")
   private String logUrl;
+
+  @Value("${ingest.agentUrl}")
   private String agentUrl;
+
+  @Value("${ingest.compileUrl}")
   private String compileUrl;
+
+  @Value("${ingest.dataModelApiUrl}")
   private String dataModelApiUrl;
+
+  @Value("${ingest.configUrl}")
   private String configUrl;
+
+  @Value("${ingest.interfaceApiUrl}")
+  private String interfaceApiUrl;
+
+
+  @Value("${ingest.interfaceApiUrlUseYn}")
+  private String interfaceApiUrlUseYn;
+
 
   public String getLogUrl() {
     return logUrl;
@@ -95,6 +112,23 @@ public class ConfigDaemon {
 
   public void setConfigUrl(String configUrl) {
     this.configUrl = configUrl;
+  }
+
+
+  public String getInterfaceApiUrl() {
+    return interfaceApiUrl;
+  }
+
+  public void setInterfaceApiUrl(String interfaceApiUrl) {
+    this.interfaceApiUrl = interfaceApiUrl;
+  }
+
+  public String getInterfaceApiUrlUseYn() {
+    return interfaceApiUrlUseYn;
+  }
+
+  public void setInterfaceApiUrlUseYn(String interfaceApiUrlUseYn) {
+    this.interfaceApiUrlUseYn = interfaceApiUrlUseYn;
   }
 
 

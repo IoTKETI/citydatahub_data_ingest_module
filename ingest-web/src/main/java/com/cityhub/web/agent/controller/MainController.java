@@ -60,7 +60,7 @@ import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.UrlUtil;
 import com.cityhub.web.agent.service.MainService;
-import com.cityhub.web.config.ConfigDaemon;
+import com.cityhub.web.config.ConfigEnv;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,7 +78,7 @@ public class MainController {
 	MainService svc;
 
 	@Autowired
-	ConfigDaemon cd;
+	ConfigEnv configEnv;
 
 	////////////////////////////////////////////////////////////////////////////
 
@@ -686,7 +686,7 @@ public class MainController {
 			body.put("preEndPoint", param.get("preEndPoint"));
 
 			Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
-			resp = UrlUtil.post(cd.getLogUrl() + "", headers, body.toString());
+			resp = UrlUtil.post(configEnv.getLogUrl() + "", headers, body.toString());
 
 		} catch (Exception e) {
 			log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -720,8 +720,8 @@ public class MainController {
 			body.put("id", param.get("id"));
 
 			Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
-			log.debug(":::::::::::::::" + cd.getAgentUrl());
-			resp = UrlUtil.post(cd.getAgentUrl() + "/start", headers, body.toString());
+			log.debug(":::::::::::::::" + configEnv.getAgentUrl());
+			resp = UrlUtil.post(configEnv.getAgentUrl() + "/start", headers, body.toString());
 			param.put("result", resp.getPayload());
 		} catch (Exception e) {
 			log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -739,7 +739,7 @@ public class MainController {
 			body.put("id", param.get("id"));
 
 			Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
-			resp = UrlUtil.post(cd.getAgentUrl() + "/stop", headers, body.toString());
+			resp = UrlUtil.post(configEnv.getAgentUrl() + "/stop", headers, body.toString());
 			param.put("result", resp.getPayload());
 		} catch (Exception e) {
 			log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -757,7 +757,7 @@ public class MainController {
 			body.put("id", param.get("id"));
 
 			Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
-			resp = UrlUtil.post(cd.getAgentUrl() + "/restart", headers, body.toString());
+			resp = UrlUtil.post(configEnv.getAgentUrl() + "/restart", headers, body.toString());
 			param.put("result", resp.getPayload());
 		} catch (Exception e) {
 			log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -774,7 +774,7 @@ public class MainController {
 			JSONObject body = new JSONObject();
 			body.put("id", param.get("id"));
 			Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
-			resp = UrlUtil.post(cd.getAgentUrl() + "/status", headers, body.toString());
+			resp = UrlUtil.post(configEnv.getAgentUrl() + "/status", headers, body.toString());
 			param.put("result", resp.getPayload());
 		} catch (Exception e) {
 			log.error("Exception : " + ExceptionUtils.getStackTrace(e));

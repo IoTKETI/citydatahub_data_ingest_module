@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.UrlUtil;
 import com.cityhub.web.agent.mapper.MainMapper;
-import com.cityhub.web.config.ConfigDaemon;
+import com.cityhub.web.config.ConfigEnv;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +41,7 @@ public class MainService {
   @Autowired
   MainMapper mapper;
   @Autowired
-  ConfigDaemon cd;
+  ConfigEnv configEnv;
 
 
   public List<Map> select_adtType() throws Exception {
@@ -279,7 +279,7 @@ public class MainService {
     }
 
     if (result.get("st_datamodel_id") != null) {
-      HttpResponse resp = UrlUtil.get(cd.getDataModelApiUrl() + "?level=000" , "Content-type", "application/json");
+      HttpResponse resp = UrlUtil.get(configEnv.getDataModelApiUrl() + "?level=000" , "Content-type", "application/json");
       JSONArray jsonarr = new JSONArray(resp.getPayload());
       for (int i = 0; i < jsonarr.length(); i++) {
         JSONObject jsonObject = jsonarr.getJSONObject(i);

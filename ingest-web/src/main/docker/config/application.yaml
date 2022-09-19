@@ -22,8 +22,15 @@ server:
       force: true
 
 ingest:
+  dataModelApiUrl: ${DATAMODEL_API_URL}
   interfaceApiUrl: ${INGEST_INTERFACE_API_URL}
-  yn: ${INGEST_INTERFACE_API_USE_YN}
+  interfaceApiUrlUseYn: ${INGEST_INTERFACE_API_USE_YN}
+  daemonSrv: ${DAEMON_URL}
+  configUrl: ${ingest.daemonSrv}/exec/config
+  agentUrl: ${ingest.daemonSrv}/exec/agent
+  logUrl: ${ingest.daemonSrv}/exec/logger
+  compileUrl: ${ingest.daemonSrv}/exec/compile
+
 
 eureka:
   instance:
@@ -53,13 +60,6 @@ grantType:
   password: password
   refresh: refresh_token
 
-daemon:
-  daemonSrv: ${DAEMON_URL}
-  configUrl: ${daemon.daemonSrv}/exec/config
-  agentUrl: ${daemon.daemonSrv}/exec/agent
-  logUrl: ${daemon.daemonSrv}/exec/logger
-  compileUrl: ${daemon.daemonSrv}/exec/compile
-  dataModelApiUrl: ${DATAMODEL_API_URL}
 
 
 

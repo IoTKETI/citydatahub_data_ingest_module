@@ -14,8 +14,14 @@ spring:
     driver-class-name: org.postgresql.Driver
 
 ingest:
+  dataModelApiUrl: http://192.168.1.192:8083/datamodels
   interfaceApiUrl: http://192.168.1.192:8084/entityOperations/upsert?options=update
-  yn: Y
+  interfaceApiUrlUseYn: Y
+  daemonSrv: http://localhost:8888
+  configUrl: ${ingest.daemonSrv}/exec/config
+  agentUrl: ${ingest.daemonSrv}/exec/agent
+  logUrl: ${ingest.daemonSrv}/exec/logger
+  compileUrl: ${ingest.daemonSrv}/exec/compile
 
 server:
   timezone: Asia/Seoul 
@@ -56,13 +62,6 @@ grantType:
   refresh: refresh_token
 
     
-daemon:
-  daemonSrv: http://localhost:8888
-  configUrl: ${daemon.daemonSrv}/exec/config
-  agentUrl: ${daemon.daemonSrv}/exec/agent
-  logUrl: ${daemon.daemonSrv}/exec/logger
-  compileUrl: ${daemon.daemonSrv}/exec/compile
-  dataModelApiUrl: http://192.168.1.192:8083/datamodels
   
 eureka:
   instance:

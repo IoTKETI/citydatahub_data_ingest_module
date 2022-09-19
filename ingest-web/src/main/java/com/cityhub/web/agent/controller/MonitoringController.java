@@ -53,7 +53,7 @@ import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.OkUrlUtil;
 import com.cityhub.utils.UrlUtil;
 import com.cityhub.web.agent.service.MonitoringService;
-import com.cityhub.web.config.ConfigDaemon;
+import com.cityhub.web.config.ConfigEnv;
 import com.google.gson.JsonObject;
 
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +68,7 @@ public class MonitoringController {
 	MonitoringService svc;
 
 	@Autowired
-	ConfigDaemon cd;
+	ConfigEnv configEnv;
 
 	@GetMapping({ "/dashView" })
 	public ModelAndView dashView(HttpServletRequest request, HttpServletResponse response) {
@@ -95,7 +95,7 @@ public class MonitoringController {
 			JsonObject rtnJob = new JsonObject();
 			rtnJob.addProperty("searchDate", result.get("last_dt").toString());
 
-			rtnMsg = httpConnection(cd.getDaemonSrv() + "/getLoggerAll", rtnJob.toString());
+			rtnMsg = httpConnection(configEnv.getDaemonSrv() + "/getLoggerAll", rtnJob.toString());
 
 			jsonArray =  new JSONArray(rtnMsg);
 			log.debug("jsonArray.size() : " + jsonArray.length());
@@ -298,7 +298,7 @@ public class MonitoringController {
 		log.debug("----- MonitoringController.statusAgent() -----");
 		HttpResponse resp = null;
 		try {
-			resp = OkUrlUtil.get(cd.getDaemonSrv() + "/exec/status/" + agentId, "Content-Type", "application/json");
+			resp = OkUrlUtil.get(configEnv.getDaemonSrv() + "/exec/status/" + agentId, "Content-Type", "application/json");
 		} catch (Exception e) {
 			response.setStatus(HttpStatus.NO_CONTENT.value());
 			log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -317,8 +317,8 @@ public class MonitoringController {
 		try {
 
 			stList = new ArrayList<>();
-			log.debug(cd.getDataModelApiUrl() + "?level=000&");
-			HttpResponse resp = UrlUtil.get(cd.getDataModelApiUrl() + "?level=000", "Content-type", "application/json");
+			log.debug(configEnv.getDataModelApiUrl() + "?level=000&");
+			HttpResponse resp = UrlUtil.get(configEnv.getDataModelApiUrl() + "?level=000", "Content-type", "application/json");
 			JSONArray jsonarr = new JSONArray(resp.getPayload());
 
 			for (int i = 0; i < jsonarr.length(); i++) {

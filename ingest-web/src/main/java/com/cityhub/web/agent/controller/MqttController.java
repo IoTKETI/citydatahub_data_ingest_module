@@ -34,7 +34,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpHeaders;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,6 +46,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.OkUrlUtil;
+import com.cityhub.web.config.ConfigEnv;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,6 +54,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 public class MqttController {
+
+  @Autowired
+  ConfigEnv configEnv;
 
   @GetMapping({"/mqtt/subscribe/view"})
   public ModelAndView mqttSubscribeView(HttpServletRequest request,HttpServletResponse response) {
@@ -125,8 +129,6 @@ public class MqttController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
-  @Value("${daemon.configUrl}")
-  private String daemonConfigUrl;
 
   @PostMapping({"/mqtt/subscribe/save"})
   public ResponseEntity<List<Map>> mqttSubscribeSave(@RequestBody Map param, HttpServletRequest request,HttpServletResponse response) {

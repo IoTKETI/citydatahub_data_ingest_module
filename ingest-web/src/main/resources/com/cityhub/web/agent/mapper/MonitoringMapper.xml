@@ -4,7 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.cityhub.web.agent.mapper.MonitoringMapper">
-
   <select id="selectById" resultType="map">
   select agent_id, agent_nm, ip_addr, port_number, use_yn, etc_note, first_create_dt, first_create_id, last_update_dt, last_update_id 
   from agent_info
@@ -62,7 +61,7 @@ from
     from (
         select
           data_request,
-          TO_CHAR(log_dt, 'YYYY년MM월DD일-HH24시') as hour,
+          TO_CHAR(log_dt, 'YYYYMMDDHH24') as hour,
           case when step = '2003' then 'S' else 'F' end as step, count(*) as cnt 
           , sum(length) as clength
         from  connectivity_log a left outer join  (select instance_id,value as data_request from instance_detail_conf  where item = 'dataRequester') b
@@ -78,7 +77,7 @@ from
             and log_dt::timestamp > (now() - '1 day'::interval)::timestamp
           </otherwise>
         </choose> 
-        group by TO_CHAR(log_dt, 'YYYY년MM월DD일-HH24시'), data_request, step
+        group by TO_CHAR(log_dt, 'YYYYMMDDHH24'), data_request, step
         order by data_request, hour
     ) a
  ) b
@@ -94,7 +93,7 @@ from
     select hour, a.step,case when a.step = 'S' then a.cnt else 0 end Scnt, case when a.step = 'F' then a.cnt else 0 end Fcnt
     from (
         select
-          TO_CHAR(log_dt, 'YYYY년MM월DD일-HH24시') as hour,
+          TO_CHAR(log_dt, 'YYYYMMDDHH24') as hour,
           case when step = '2003' then 'S' else 'F' end as step, 
           count(*) as cnt
         from  connectivity_log
@@ -109,7 +108,7 @@ from
             and log_dt::timestamp > (now() - '1 day'::interval)::timestamp
           </otherwise>
         </choose>        
-        group by TO_CHAR(log_dt, 'YYYY년MM월DD일-HH24시'), step
+        group by TO_CHAR(log_dt, 'YYYYMMDDHH24'), step
         order by hour
     ) a
  ) b
@@ -123,7 +122,7 @@ group by hour
   <choose>
     <when test="dataRequester != null and dataRequester != '' ">
 select
-  TO_CHAR(log_dt, 'YYYY년MM월DD일-HH24시') as hour, data_request, count(*) cnt
+  TO_CHAR(log_dt, 'YYYYMMDDHH24') as hour, data_request, count(*) cnt
 from  connectivity_log a left outer join  (select instance_id,value as data_request from instance_detail_conf  where item = 'dataRequester') b 
       on a.adapter_id  = b.instance_id 
 where (step = '2003' or step like '9%' and step not like '9003') and b.data_request is not null 
@@ -137,7 +136,7 @@ where (step = '2003' or step like '9%' and step not like '9003') and b.data_requ
       and log_dt::timestamp > (now() - '1 day'::interval)::timestamp
     </otherwise>
   </choose>
-group by TO_CHAR(log_dt, 'YYYY년MM월DD일-HH24시') , data_request
+group by TO_CHAR(log_dt, 'YYYYMMDDHH24') , data_request
 order by data_request asc      
     </when>
     <otherwise>
@@ -173,7 +172,7 @@ order by adapter_type desc
         select
         hour, a.step,a.data_request, case when a.step = 'S' then a.cnt else 0 end Scnt,case when a.step = 'F' then a.cnt else 0 end Fcnt
         from (
-            select TO_CHAR(log_dt, 'YYYY년MM월DD일-HH24시') as hour, data_request,
+            select TO_CHAR(log_dt, 'YYYYMMDDHH24') as hour, data_request,
               case when step = '2003' then 'S'  else 'F' end as step, count(*) as cnt
             from  connectivity_log a left outer join  (select instance_id,value as data_request from instance_detail_conf  where item = 'dataRequester') b 
               on a.adapter_id  = b.instance_id   
@@ -188,7 +187,7 @@ order by adapter_type desc
                 and log_dt::timestamp > (now() - '1 day'::interval)::timestamp
               </otherwise>
             </choose>
-            group by TO_CHAR(log_dt, 'YYYY년MM월DD일-HH24시') , step, b.data_request
+            group by TO_CHAR(log_dt, 'YYYYMMDDHH24') , step, b.data_request
         ) a
      ) b
     group by hour, data_request
@@ -247,7 +246,7 @@ from
 left outer join
 (
     select
-      data_request, step, TO_CHAR(log_dt, 'YYYY년MM월DD일-HH24시') as hour,count(*) cnt
+      data_request, step, TO_CHAR(log_dt, 'YYYYMMDDHH24') as hour,count(*) cnt
     from  connectivity_log a left outer join  (select instance_id,value as data_request from instance_detail_conf  where item = 'dataRequester') b 
       on a.adapter_id  = b.instance_id
     where step like '9%' and step not like '9003' and b.data_request is not null
@@ -261,7 +260,7 @@ left outer join
         and log_dt::timestamp > (now() - '1 day'::interval)::timestamp
       </otherwise>
     </choose>
-    group by step, data_request,TO_CHAR(log_dt, 'YYYY년MM월DD일-HH24시')
+    group by step, data_request,TO_CHAR(log_dt, 'YYYYMMDDHH24')
 ) b on a.step = b.step
 where b.data_request is not null
       </when>
@@ -309,32 +308,32 @@ left outer join
 select  COALESCE(to_char(max(log_dt), 'yyyy-mm-dd hh24:mi:ss.MS'), to_char(now(), 'yyyy-mm-dd hh24:mi:ss.MS'))  as last_dt from connectivity_log
   </select> 
   
-         
+  
 
 <insert id="insertConnectivityLog" parameterType="map" timeout="20" useGeneratedKeys="true" keyProperty="payload">
-	INSERT INTO connectivity_log (
-	  log_dt,
-	  adapter_id,
-	  step,
-	  payload,
-	  st_datamodel,
-	  data_id,
-	  log_desc,
-	  length,
-	  adapter_type,
-	  first_create_dt
-	) VALUES (
-	  TO_TIMESTAMP(#{timestamp}, 'YYYY-MM-DD HH24:MI:SS,MS'),
-	  #{sourceName},
-	  #{step},
-	  #{payload},
-	  #{type},
-	  #{id},
-	  #{desc},
-	  #{length},
-	  #{adapterType},
-	  now() 
-	)
+  INSERT INTO connectivity_log (
+    log_dt,
+    adapter_id,
+    step,
+    payload,
+    st_datamodel,
+    data_id,
+    log_desc,
+    length,
+    adapter_type,
+    first_create_dt
+  ) VALUES (
+    TO_TIMESTAMP(#{timestamp}, 'YYYY-MM-DD HH24:MI:SS,MS'),
+    #{sourceName},
+    #{step},
+    #{payload},
+    #{type},
+    #{id},
+    #{desc},
+    #{length},
+    #{adapterType},
+    now() 
+  )
 </insert>
   
 <select id="selectLog" resultType="map">   

@@ -41,7 +41,6 @@ import org.apache.http.message.BasicHeader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -65,7 +64,7 @@ import com.cityhub.utils.StrUtil;
 import com.cityhub.utils.UrlUtil;
 import com.cityhub.web.agent.service.AdapterService;
 import com.cityhub.web.agent.service.MainService;
-import com.cityhub.web.config.ConfigDaemon;
+import com.cityhub.web.config.ConfigEnv;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,20 +78,11 @@ public class AgentController {
 
 	public static final String FIELD_HEX = (char) 0xD1 + "";
 
-	@Value("${ingest.interfaceApiUrl}")
-	public String interfaceApiUrl;
-
-	@Value("${ingest.yn:N}")
-	public String ingestYn;
-
-	@Value("${daemon.dataModelApiUrl}")
-	public String dataModelApiUrl;
-
 	@Autowired
 	MainService svc;
 
 	@Autowired
-	ConfigDaemon cd;
+	ConfigEnv configEnv;
 
 	@Autowired
 	AdapterService as;
@@ -451,8 +441,8 @@ public class AgentController {
 		HttpResponse resp = null;
 		try {
 			Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
-			log.debug(cd.getCompileUrl());
-			resp = UrlUtil.post(cd.getCompileUrl(), headers, jsonData);
+			log.debug(configEnv.getCompileUrl());
+			resp = UrlUtil.post(configEnv.getCompileUrl(), headers, jsonData);
 			log.debug("resp = " + resp);
 		} catch (Exception e) {
 			log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -467,8 +457,8 @@ public class AgentController {
 		HttpResponse resp = null;
 		try {
 			Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
-			log.debug(cd.getCompileUrl());
-			resp = UrlUtil.post(cd.getCompileUrl(), headers, jsonData);
+			log.debug(configEnv.getCompileUrl());
+			resp = UrlUtil.post(configEnv.getCompileUrl(), headers, jsonData);
 			log.debug("resp = " + resp);
 		} catch (Exception e) {
 			log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -483,8 +473,8 @@ public class AgentController {
 		HttpResponse resp = null;
 		try {
 			Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
-			log.debug(cd.getCompileUrl());
-			resp = UrlUtil.post(cd.getCompileUrl(), headers, jsonData);
+			log.debug(configEnv.getCompileUrl());
+			resp = UrlUtil.post(configEnv.getCompileUrl(), headers, jsonData);
 			log.debug("resp = " + resp);
 		} catch (Exception e) {
 			log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -503,7 +493,7 @@ public class AgentController {
 			body.put("instance_id", instanceId);
 
 			Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
-			resp = UrlUtil.post(cd.getDaemonSrv() + "/exec/read", headers, body.toString());
+			resp = UrlUtil.post(configEnv.getDaemonSrv() + "/exec/read", headers, body.toString());
 
 		} catch (Exception e) {
 			log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -522,8 +512,8 @@ public class AgentController {
 			body.put("sourceCode", "");
 
 			Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
-			log.debug(cd.getCompileUrl());
-			resp = UrlUtil.post(cd.getCompileUrl(), headers, body.toString());
+			log.debug(configEnv.getCompileUrl());
+			resp = UrlUtil.post(configEnv.getCompileUrl(), headers, body.toString());
 			log.debug("resp = " + resp);
 		} catch (Exception e) {
 			log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -678,8 +668,8 @@ public class AgentController {
 
 					bodyAgentSink.put("channel", "logCh");
 					bodyAgentSink.put("type", "com.cityhub.flow.CallRestApiSink");
-					bodyAgentSink.put("INGEST_API_URL", interfaceApiUrl);
-					bodyAgentSink.put("INGEST_YN", ingestYn.toUpperCase());
+					bodyAgentSink.put("INGEST_API_URL", configEnv.getInterfaceApiUrl());
+					bodyAgentSink.put("INGEST_YN", configEnv.getInterfaceApiUrlUseYn().toUpperCase());
 
 					/*
 					if (hdfsYn == true) {
@@ -744,7 +734,7 @@ public class AgentController {
 				log.info("type : " + curMap.get("type"));
 				bodyInstance.put("type", curMap.get("type"));
 				bodyInstance.put("CONF_FILE", "openapi/" + curMap.get("instance_id") + ".conf");
-				bodyInstance.put("DATAMODEL_API_URL", dataModelApiUrl);
+				bodyInstance.put("DATAMODEL_API_URL", configEnv.getDataModelApiUrl());
 				bodyInstance.put("INVOKE_CLASS", "com.cityhub.adapter.convex." + curMap.get("instance_id"));
 				for (Map<String, String> keyword : keywordInfoList) {
 					for (Map<String, String> vMp : insDetail) {
@@ -830,13 +820,13 @@ public class AgentController {
 
 				Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
 				log.debug(adtConf.toString());
-				resp = UrlUtil.post(cd.getConfigUrl() + "/adapter", headers, adtConf.toString()); /// plugins.d/agent/lib/openapi/
+				resp = UrlUtil.post(configEnv.getConfigUrl() + "/adapter", headers, adtConf.toString()); /// plugins.d/agent/lib/openapi/
 
 			}
 
 			Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
 			log.debug(agentHashMap.get(adapter_id).toString());
-			resp = UrlUtil.post(cd.getConfigUrl() + "/agent", headers, agentHashMap.get(adapter_id).toString()); /// conf/
+			resp = UrlUtil.post(configEnv.getConfigUrl() + "/agent", headers, agentHashMap.get(adapter_id).toString()); /// conf/
 
 		} catch (Exception e) {
 			log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -936,9 +926,9 @@ public class AgentController {
 		try {
 
 			stList = new ArrayList<>();
-			log.debug(cd.getDataModelApiUrl() + "?level=000&name=" + param.get("search_datamodel_nm"));
+			log.debug(configEnv.getDataModelApiUrl() + "?level=000&name=" + param.get("search_datamodel_nm"));
 			HttpResponse resp = UrlUtil.get(
-					cd.getDataModelApiUrl() + "?level=000&name=" + param.get("search_datamodel_nm"), "Content-type",
+			    configEnv.getDataModelApiUrl() + "?level=000&name=" + param.get("search_datamodel_nm"), "Content-type",
 					"application/json");
 			JSONArray jsonarr = new JSONArray(resp.getPayload());
 
@@ -1316,7 +1306,7 @@ public class AgentController {
 
 		templateItem = new JSONObject();
 		if (ArrModel != null) {
-			resp = OkUrlUtil.get(dataModelApiUrl, "Accept", "application/json");
+			resp = OkUrlUtil.get(configEnv.getDataModelApiUrl(), "Accept", "application/json");
 			log.debug("model info: {},{}", modelId, resp.getStatusCode());
 			if (resp.getStatusCode() == 200) {
 				DataModelEx dm = new DataModelEx(resp.getPayload());
