@@ -39,51 +39,22 @@ public class ConfigEnv {
   @Value("${ingest.daemonSrv}")
   private String daemonSrv;
 
-  @Value("${ingest.logUrl}")
-  private String logUrl;
-
-  @Value("${ingest.agentUrl}")
-  private String agentUrl;
-
-  @Value("${ingest.compileUrl}")
-  private String compileUrl;
-
-  @Value("${ingest.dataModelApiUrl}")
-  private String dataModelApiUrl;
-
-  @Value("${ingest.configUrl}")
-  private String configUrl;
-
   @Value("${ingest.interfaceApiUrl}")
   private String interfaceApiUrl;
-
 
   @Value("${ingest.interfaceApiUrlUseYn}")
   private String interfaceApiUrlUseYn;
 
+  @Value("${ingest.dataModelApiUrl}")
+  private String dataModelApiUrl;
 
-  public String getLogUrl() {
-    return logUrl;
-  }
+  private String logUrl = "/exec/logger";
 
-  public String getAgentUrl() {
-    return agentUrl;
-  }
+  private String agentUrl= "/exec/agent";
 
+  private String compileUrl = "/exec/compile";
 
-  public String getCompileUrl() {
-    return compileUrl;
-  }
-
-
-  public String getDataModelApiUrl() {
-    return dataModelApiUrl;
-  }
-
-
-  public String getConfigUrl() {
-    return configUrl;
-  }
+  private String configUrl = "/exec/config";
 
 
   public String getDaemonSrv() {
@@ -93,27 +64,6 @@ public class ConfigEnv {
   public void setDaemonSrv(String daemonSrv) {
     this.daemonSrv = daemonSrv;
   }
-
-  public void setLogUrl(String logUrl) {
-    this.logUrl = logUrl;
-  }
-
-  public void setAgentUrl(String agentUrl) {
-    this.agentUrl = agentUrl;
-  }
-
-  public void setCompileUrl(String compileUrl) {
-    this.compileUrl = compileUrl;
-  }
-
-  public void setDataModelApiUrl(String dataModelApiUrl) {
-    this.dataModelApiUrl = dataModelApiUrl;
-  }
-
-  public void setConfigUrl(String configUrl) {
-    this.configUrl = configUrl;
-  }
-
 
   public String getInterfaceApiUrl() {
     return interfaceApiUrl;
@@ -130,6 +80,29 @@ public class ConfigEnv {
   public void setInterfaceApiUrlUseYn(String interfaceApiUrlUseYn) {
     this.interfaceApiUrlUseYn = interfaceApiUrlUseYn;
   }
+
+  public String getDataModelApiUrl() {
+    return dataModelApiUrl;
+  }
+
+  public void setDataModelApiUrl(String dataModelApiUrl) {
+    this.dataModelApiUrl = dataModelApiUrl;
+  }
+
+  public String getLogUrl() {
+    return daemonSrv + logUrl;
+  }
+  public String getAgentUrl() {
+    return daemonSrv + agentUrl;
+  }
+  public String getCompileUrl() {
+    return daemonSrv + compileUrl;
+  }
+  public String getConfigUrl() {
+    return daemonSrv + configUrl;
+  }
+
+
 
 
 }

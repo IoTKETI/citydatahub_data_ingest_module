@@ -26,10 +26,6 @@ ingest:
   interfaceApiUrl: ${INGEST_INTERFACE_API_URL}
   interfaceApiUrlUseYn: ${INGEST_INTERFACE_API_USE_YN}
   daemonSrv: ${DAEMON_URL}
-  configUrl: ${ingest.daemonSrv}/exec/config
-  agentUrl: ${ingest.daemonSrv}/exec/agent
-  logUrl: ${ingest.daemonSrv}/exec/logger
-  compileUrl: ${ingest.daemonSrv}/exec/compile
 
 
 eureka:

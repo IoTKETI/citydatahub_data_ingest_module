@@ -42,7 +42,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -79,15 +78,6 @@ public class MainController {
 
 	@Autowired
 	ConfigEnv configEnv;
-
-	////////////////////////////////////////////////////////////////////////////
-
-  @Value("${ingest.interfaceApiUrl}")
-  public String interfaceApiUrl;
-
-
-	@Value("${ingest.yn:N}")
-  public String ingestYn;
 
 	private ObjectMapper objectMapper;
 
@@ -442,8 +432,8 @@ public class MainController {
 				body.put("entities", entities);
 
 				bodyStr = objectMapper.writeValueAsString(body);
-				if("Y".equalsIgnoreCase(ingestYn)) {
-				  log.info("postData : " + postData(interfaceApiUrl, bodyStr));
+				if("Y".equalsIgnoreCase(configEnv.getInterfaceApiUrlUseYn())) {
+				  log.info("postData : " + postData(configEnv.getInterfaceApiUrl(), bodyStr));
 				}
 
 			}
@@ -453,8 +443,8 @@ public class MainController {
 
 		try {
 		  String rtn = "";
-      if("Y".equalsIgnoreCase(ingestYn)) {
-        rtn = postData(interfaceApiUrl, bodyStr).toString();
+      if("Y".equalsIgnoreCase(configEnv.getInterfaceApiUrlUseYn())) {
+        rtn = postData(configEnv.getInterfaceApiUrl(), bodyStr).toString();
       }
 
 			return new ResponseEntity<>(rtn, HttpStatus.OK);

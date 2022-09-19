@@ -18,10 +18,6 @@ ingest:
   interfaceApiUrl: http://192.168.1.192:8084/entityOperations/upsert?options=update
   interfaceApiUrlUseYn: Y
   daemonSrv: http://133.186.162.229:8888
-  configUrl: ${ingest.daemonSrv}/exec/config
-  agentUrl: ${ingest.daemonSrv}/exec/agent
-  logUrl: ${ingest.daemonSrv}/exec/logger
-  compileUrl: ${ingest.daemonSrv}/exec/compile
   
 
 server:
