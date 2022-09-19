@@ -44,6 +44,7 @@ services:
       -  log-data:/opt/logs        
     environment:
       - TZ=Asia/Seoul
+      - DATASOURCE_DRIVER=org.postgresql.Driver
       - DATASOURCE_URL=jdbc:postgresql://ingest-db:5432/postgres
       - DATASOURCE_ID=postgres
       - DATASOURCE_PW=pine1234
@@ -62,6 +63,8 @@ services:
     depends_on:
       ingest-db:
         condition: service_healthy
+      ingest-daemon:
+        condition: service_started        
 
 volumes:
   log-data:

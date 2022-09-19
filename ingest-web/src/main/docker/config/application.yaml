@@ -8,7 +8,7 @@ spring:
     mode: HTML
     cache: false
   datasource:
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: ${DATASOURCE_DRIVER}
     url: ${DATASOURCE_URL}
     username: ${DATASOURCE_ID} 
     password: ${DATASOURCE_PW}
