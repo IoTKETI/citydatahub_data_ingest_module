@@ -33,7 +33,8 @@ WORKDIR /opt/flume
 
 COPY ./agent/ plugins.d/agent/
 COPY ./conf/ conf/
-COPY ./config/ /opt/daemon/config/
+ADD ./config/application.yaml /opt/daemon/config/application.yaml
+ADD ./config/log4j2.xml /opt/daemon/config/log4j2.xml
 
 RUN  chmod 755 plugins.d/agent/lib/compile.sh 
 
@@ -41,4 +42,4 @@ EXPOSE 8888
 
 COPY ingest-daemon-0.9.0.jar /opt/daemon/app.jar
 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-Dspring.profiles.active=local","-jar","/opt/daemon/app.jar"]
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-Dspring.profiles.active=dev","-jar","/opt/daemon/app.jar"]

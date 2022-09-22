@@ -79,13 +79,13 @@ public class ConvWeatherForecast_sy extends AbstractConvert {
           JSONArray arrList = ju.getArray("response.body.items.item");
 
           if (arrList.length() > 0) {
-            List<String> tmpFcstTimeArray = new LinkedList<String>();
+            List<String> tmpFcstTimeArray = new LinkedList<>();
             for (Object jitem : arrList) {
               JSONObject item = (JSONObject) jitem;
               String fcstDateTime = item.get("fcstDate") + "" + item.get("fcstTime");
               tmpFcstTimeArray.add(fcstDateTime);
             }
-            List<String> rmList = new LinkedList<String>(new HashSet<String>(tmpFcstTimeArray));
+            List<String> rmList = new LinkedList<>(new HashSet<>(tmpFcstTimeArray));
             rmList.sort( (a, b) -> a.compareTo( b ) );
 
             Map<String, Object> tmpMap = getBaseForeMap(rmList);
@@ -168,12 +168,10 @@ public class ConvWeatherForecast_sy extends AbstractConvert {
       rtnStr = objectMapper.writeValueAsString(rtnList);
       log.info("rtnStr:{}",rtnStr);
     } catch (CoreException e) {
-      e.printStackTrace();
       if ("!C0099".equals(e.getErrorCode())) {
         log(SocketCode.DATA_CONVERT_FAIL,   id, e.getMessage());
       }
     } catch (Exception e) {
-      e.printStackTrace();
       log(SocketCode.DATA_CONVERT_FAIL,   id, e.getMessage());
       throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
     }
@@ -185,9 +183,9 @@ public class ConvWeatherForecast_sy extends AbstractConvert {
   public Map<String, Object> getBaseForeMap(List<String>  fcstTimeList) {
 
     // 중복제거한 리스트를 가지고 기본형 시작
-    Map<String, Object> tmpMap = new LinkedHashMap<String, Object>();
+    Map<String, Object> tmpMap = new LinkedHashMap<>();
     for (String item : fcstTimeList) {
-      Map<String, Object> foreMap = new LinkedHashMap<String, Object>();
+      Map<String, Object> foreMap = new LinkedHashMap<>();
       tmpMap.put(item, foreMap);
     }
     // 중복제거한 리스트를 가지고 기본형 종료

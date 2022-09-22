@@ -4,6 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.cityhub.web.agent.mapper.MonitoringMapper">
+
   <select id="selectById" resultType="map">
   select agent_id, agent_nm, ip_addr, port_number, use_yn, etc_note, first_create_dt, first_create_id, last_update_dt, last_update_id 
   from agent_info
@@ -53,20 +54,21 @@
   <choose>
     <when test="dataRequester != null and dataRequester != '' ">
 select
-  data_request, hour, sum(Scnt) as Scnt,   sum(Fcnt) as Fcnt, sum(clength) as clength
+  code_type,data_request, hour, sum(Scnt) as Scnt,   sum(Fcnt) as Fcnt, sum(clength) as clength
 from
 (
     select
-      data_request, hour, a.step, case when a.step = 'S' then a.cnt else 0 end Scnt, case when a.step = 'F' then a.cnt else 0 end Fcnt,clength
+      code_type,data_request, hour, a.step, case when a.step = 'S' then a.cnt else 0 end Scnt, case when a.step = 'F' then a.cnt else 0 end Fcnt,clength
     from (
         select
-          data_request,
+          code_type_id as code_type,
+          code_type_nm as data_request,
           TO_CHAR(log_dt, 'YYYYMMDDHH24') as hour,
           case when step = '2003' then 'S' else 'F' end as step, count(*) as cnt 
           , sum(length) as clength
-        from  connectivity_log a left outer join  (select instance_id,value as data_request from instance_detail_conf  where item = 'dataRequester') b
-          on a.adapter_id  = b.instance_id  
-        where (step = '2003' or step like '9%' and step not like '9003') and b.data_request is not null 
+        from  connectivity_log a left outer join  (select instance_id,value  from instance_detail_conf  where item = 'dataRequester') b on a.adapter_id  = b.instance_id
+            inner join comm_type c on c.code_type_id = b.value     
+        where (step = '2003' or step like '9%' and step not like '9003') and b.value is not null 
         <choose>
           <when test="searchFrom != null and searchFrom != '' and searchTo != null and searchTo != ''">
             <![CDATA[    
@@ -77,11 +79,11 @@ from
             and log_dt::timestamp > (now() - '1 day'::interval)::timestamp
           </otherwise>
         </choose> 
-        group by TO_CHAR(log_dt, 'YYYYMMDDHH24'), data_request, step
+        group by TO_CHAR(log_dt, 'YYYYMMDDHH24'),  code_type_id, code_type_nm, step
         order by data_request, hour
     ) a
  ) b
-group by data_request, hour
+group by code_type,data_request, hour
 order by data_request, hour
     </when>
 
@@ -122,10 +124,10 @@ group by hour
   <choose>
     <when test="dataRequester != null and dataRequester != '' ">
 select
-  TO_CHAR(log_dt, 'YYYYMMDDHH24') as hour, data_request, count(*) cnt
-from  connectivity_log a left outer join  (select instance_id,value as data_request from instance_detail_conf  where item = 'dataRequester') b 
-      on a.adapter_id  = b.instance_id 
-where (step = '2003' or step like '9%' and step not like '9003') and b.data_request is not null 
+  TO_CHAR(log_dt, 'YYYYMMDDHH24') as hour, count(*) cnt, code_type_id as code_type, code_type_nm as data_request
+from  connectivity_log a left outer join  (select instance_id,value  from instance_detail_conf  where item = 'dataRequester') b on a.adapter_id  = b.instance_id 
+      inner join comm_type c on c.code_type_id = b.value   
+where (step = '2003' or step like '9%' and step not like '9003') and b.value is not null 
   <choose>
     <when test="searchFrom != null and searchFrom != '' and searchTo != null and searchTo != ''">
       <![CDATA[    
@@ -136,7 +138,7 @@ where (step = '2003' or step like '9%' and step not like '9003') and b.data_requ
       and log_dt::timestamp > (now() - '1 day'::interval)::timestamp
     </otherwise>
   </choose>
-group by TO_CHAR(log_dt, 'YYYYMMDDHH24') , data_request
+group by TO_CHAR(log_dt, 'YYYYMMDDHH24') , code_type_id, code_type_nm
 order by data_request asc      
     </when>
     <otherwise>
@@ -166,17 +168,17 @@ order by adapter_type desc
   <choose>
     <when test="dataRequester != null and dataRequester != '' ">
     select
-      hour,data_request,   sum(Scnt) as Scnt,  sum(Fcnt) as Fcnt
+      hour,code_type, data_request,   sum(Scnt) as Scnt,  sum(Fcnt) as Fcnt
     from
     (
         select
-        hour, a.step,a.data_request, case when a.step = 'S' then a.cnt else 0 end Scnt,case when a.step = 'F' then a.cnt else 0 end Fcnt
+        hour, a.step,code_type, a.data_request, case when a.step = 'S' then a.cnt else 0 end Scnt,case when a.step = 'F' then a.cnt else 0 end Fcnt
         from (
-            select TO_CHAR(log_dt, 'YYYYMMDDHH24') as hour, data_request,
+            select TO_CHAR(log_dt, 'YYYYMMDDHH24') as hour, code_type_id as code_type, code_type_nm as data_request,
               case when step = '2003' then 'S'  else 'F' end as step, count(*) as cnt
-            from  connectivity_log a left outer join  (select instance_id,value as data_request from instance_detail_conf  where item = 'dataRequester') b 
-              on a.adapter_id  = b.instance_id   
-            where (step = '2003' or step like '9%' and step not like '9003') and b.data_request is not null
+            from  connectivity_log a left outer join  (select instance_id,value from instance_detail_conf  where item = 'dataRequester') b on a.adapter_id  = b.instance_id
+              inner join comm_type c on c.code_type_id = b.value   
+            where (step = '2003' or step like '9%' and step not like '9003') and b.value is not null
             <choose>
               <when test="searchFrom != null and searchFrom != '' and searchTo != null and searchTo != ''">
                 <![CDATA[    
@@ -187,10 +189,10 @@ order by adapter_type desc
                 and log_dt::timestamp > (now() - '1 day'::interval)::timestamp
               </otherwise>
             </choose>
-            group by TO_CHAR(log_dt, 'YYYYMMDDHH24') , step, b.data_request
+            group by TO_CHAR(log_dt, 'YYYYMMDDHH24') , step, code_type_id, code_type_nm
         ) a
      ) b
-    group by hour, data_request
+    group by hour, code_type, data_request
     order by data_request asc    
     </when>
     <otherwise>
@@ -220,7 +222,6 @@ from
  ) b
 group by adapter_type
 order by adapter_type desc    
-    
     </otherwise>
   </choose>        
   </select> 
@@ -230,15 +231,13 @@ order by adapter_type desc
    <choose>
       <when test="dataRequester != null and dataRequester != '' ">
 select
-  a.step, a.name,data_request,hour, COALESCE(b.cnt, 0 ) as cnt
+  a.step, a.name,code_type, data_request,hour, COALESCE(b.cnt, 0 ) as cnt
 from
 (
     select '9001:데이터 변환 실패' as name, '9001' as step 
     union all
     select '9002:데이터 모델 없음' as name, '9002' as step 
     union all
-<!--     select '9003:소켓 연결 실패' as name, '9003' as step  -->
-<!--     union all -->
     select '9800:일반에러' as name, '9800' as step 
     union all
     select '9900:시스템에러' as name, '9900' as step 
@@ -246,10 +245,10 @@ from
 left outer join
 (
     select
-      data_request, step, TO_CHAR(log_dt, 'YYYYMMDDHH24') as hour,count(*) cnt
-    from  connectivity_log a left outer join  (select instance_id,value as data_request from instance_detail_conf  where item = 'dataRequester') b 
-      on a.adapter_id  = b.instance_id
-    where step like '9%' and step not like '9003' and b.data_request is not null
+      code_type_id as code_type, code_type_nm as data_request, step, TO_CHAR(log_dt, 'YYYYMMDDHH24') as hour,count(*) cnt
+    from  connectivity_log a left outer join  (select instance_id,value from instance_detail_conf  where item = 'dataRequester') b on a.adapter_id  = b.instance_id
+      inner join comm_type c on c.code_type_id = b.value   
+    where step like '9%' and step not like '9003' and b.value is not null
     <choose>
       <when test="searchFrom != null and searchFrom != '' and searchTo != null and searchTo != ''">
         <![CDATA[    
@@ -260,7 +259,7 @@ left outer join
         and log_dt::timestamp > (now() - '1 day'::interval)::timestamp
       </otherwise>
     </choose>
-    group by step, data_request,TO_CHAR(log_dt, 'YYYYMMDDHH24')
+    group by step, code_type_id,code_type_nm, TO_CHAR(log_dt, 'YYYYMMDDHH24')
 ) b on a.step = b.step
 where b.data_request is not null
       </when>
@@ -311,29 +310,29 @@ select  COALESCE(to_char(max(log_dt), 'yyyy-mm-dd hh24:mi:ss.MS'), to_char(now()
   
 
 <insert id="insertConnectivityLog" parameterType="map" timeout="20" useGeneratedKeys="true" keyProperty="payload">
-  INSERT INTO connectivity_log (
-    log_dt,
-    adapter_id,
-    step,
-    payload,
-    st_datamodel,
-    data_id,
-    log_desc,
-    length,
-    adapter_type,
-    first_create_dt
-  ) VALUES (
-    TO_TIMESTAMP(#{timestamp}, 'YYYY-MM-DD HH24:MI:SS,MS'),
-    #{sourceName},
-    #{step},
-    #{payload},
-    #{type},
-    #{id},
-    #{desc},
-    #{length},
-    #{adapterType},
-    now() 
-  )
+	INSERT INTO connectivity_log (
+	  log_dt,
+	  adapter_id,
+	  step,
+	  payload,
+	  st_datamodel,
+	  data_id,
+	  log_desc,
+	  length,
+	  adapter_type,
+	  first_create_dt
+	) VALUES (
+	  TO_TIMESTAMP(#{timestamp}, 'YYYY-MM-DD HH24:MI:SS,MS'),
+	  #{sourceName},
+	  #{step},
+	  #{payload},
+	  #{type},
+	  #{id},
+	  #{desc},
+	  #{length},
+	  #{adapterType},
+	  now() 
+	)
 </insert>
   
 <select id="selectLog" resultType="map">   

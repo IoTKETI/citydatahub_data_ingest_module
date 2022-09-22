@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -117,7 +118,7 @@ public class ConvAirForecast extends AbstractConvert {
             log(SocketCode.DATA_CONVERT_FAIL,  id, "파싱하기 위한 필수항목이 존재하지 않습니다");
           } // if (objarr.length() > 0)
         } catch (Exception e) {
-          e.printStackTrace();
+          log.error("Exception : "+ExceptionUtils.getStackTrace(e));
         }
         log(SocketCode.DATA_RECEIVE, id,objLength.getBytes());
         /*

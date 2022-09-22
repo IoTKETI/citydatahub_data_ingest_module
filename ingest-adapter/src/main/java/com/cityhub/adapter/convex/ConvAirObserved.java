@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -114,7 +115,7 @@ public class ConvAirObserved extends AbstractConvert {
                   observation.put("pm25", item.optInt("pm25Value", 0));
                 }
               } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Exception : "+ExceptionUtils.getStackTrace(e));
               }
               if(! observation.isEmpty()) {
                 Map<String,Object> airQualityObservation = new LinkedHashMap<>();
@@ -161,7 +162,7 @@ public class ConvAirObserved extends AbstractConvert {
                   indexObservation.put("totalCategory", JsonUtil.nvl(GradeType.findBy(o).getValue()));
                 }
               } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Exception : "+ExceptionUtils.getStackTrace(e));
               }
               if(! indexObservation.isEmpty()) {
                 Map<String,Object> airQualityIndexObservation = new LinkedHashMap<>();
@@ -193,12 +194,11 @@ public class ConvAirObserved extends AbstractConvert {
       } // for (int i = 0 ; i < svcList.length(); i++)
       rtnStr = objectMapper.writeValueAsString(rtnList);
     } catch (CoreException e) {
-      e.printStackTrace();
+
       if ("!C0099".equals(e.getErrorCode())) {
         log(SocketCode.DATA_CONVERT_FAIL,  id,e.getMessage() );
       }
     } catch (Exception e) {
-      e.printStackTrace();
       log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage() );
       throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage() + "`" + id  , e);
     }

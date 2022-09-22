@@ -50,6 +50,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -80,6 +81,12 @@ public class MainController {
 	ConfigEnv configEnv;
 
 	private ObjectMapper objectMapper;
+
+	@GetMapping("favicon.ico")
+  @ResponseBody
+  public void returnNoFavicon() {
+  }
+
 
 	@PostMapping("/HealthMeasurement/{path}")
 	public ResponseEntity<String> HealthMeasurement(@PathVariable("path") String path, @RequestBody Map param,

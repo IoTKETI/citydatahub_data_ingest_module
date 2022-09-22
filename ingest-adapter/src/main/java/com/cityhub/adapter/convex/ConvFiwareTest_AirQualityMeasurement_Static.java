@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -121,18 +122,8 @@ public class ConvFiwareTest_AirQualityMeasurement_Static extends AbstractConvert
 			wMap.putAll(objectMapper.readValue(item.getJSONObject(name).getJSONObject("value").toString(),
 					new TypeReference<Map<String, Object>>() {
 					}));
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (JSONException | IOException e) {
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}
 	}
 

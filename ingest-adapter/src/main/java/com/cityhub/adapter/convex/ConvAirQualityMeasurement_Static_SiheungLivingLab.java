@@ -19,8 +19,6 @@ package com.cityhub.adapter.convex;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -42,7 +41,6 @@ import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -92,7 +90,7 @@ public class ConvAirQualityMeasurement_Static_SiheungLivingLab extends AbstractC
 						JsonUtil gMVL = new JsonUtil((JSONObject) CommonUtil.getData(_serviceList,
 								_serviceList.getString("getMeasureValueList_url_addr") + "&" + "deviceId" + "="
 										+ deviceId + "&" + "pastReqTime" + "=" + thistime));
-						
+
 						if (gMVL.has("list")) {
 							JSONArray MVLList = gMVL.getArray("list");
 							for (Object MVLobj : MVLList) {
@@ -101,9 +99,9 @@ public class ConvAirQualityMeasurement_Static_SiheungLivingLab extends AbstractC
 								if ((MVLitem.optFloat("lon", 0.0f) == 0.0f) || (MVLitem.optFloat("lat", 0.0f) == 0.0f)) {
 									continue;
 								}
-							
+
 								log(SocketCode.DATA_RECEIVE, id, gDL.toString().getBytes());
-								
+
 								Map<String, Object> tMap = objectMapper.readValue(
 										templateItem.getJSONObject(ConfItem.getString("modelId")).toString(),
 										new TypeReference<Map<String, Object>>() {
@@ -207,7 +205,7 @@ public class ConvAirQualityMeasurement_Static_SiheungLivingLab extends AbstractC
 									Delete_wMap(tMap, "pm25GradeHour1");
 
 								Find_wMap(tMap, "deviceType").put("value", Grade_DeviceType(deviceType));
-								
+
 								wMap = (Map) tMap.get("dataProvider");
 								wMap.put("value", _serviceList.optString("dataProvider", "https://www.weather.go.kr"));
 
@@ -245,12 +243,10 @@ public class ConvAirQualityMeasurement_Static_SiheungLivingLab extends AbstractC
 				throw new CoreException(ErrorCode.NORMAL_ERROR);
 			}
 		} catch (CoreException e) {
-			e.printStackTrace();
 			if ("!C0099".equals(e.getErrorCode())) {
 				log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
 		}
@@ -265,7 +261,7 @@ public class ConvAirQualityMeasurement_Static_SiheungLivingLab extends AbstractC
 		try {
 			date = df.parse(gettime);
 		} catch (ParseException e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}
 		cal.setTime(date);
 		DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss,SSSXXX");

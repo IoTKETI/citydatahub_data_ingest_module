@@ -16,34 +16,27 @@
  */
 package com.cityhub.adapter.convex;
 
+import java.text.SimpleDateFormat;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cityhub.core.AbstractConvert;
+import com.cityhub.environment.Constants;
 import com.cityhub.exception.CoreException;
 import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
-import com.cityhub.utils.DataType;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
-import com.cityhub.utils.RoadType;
-import com.cityhub.utils.WeatherType;
-import com.cityhub.environment.Constants;
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.TimeZone;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -111,32 +104,32 @@ public class ConvBusArrivalInformation extends AbstractConvert {
 							Find_wMap(tMap, "predictTime1").put("value", item.optInt("predictTime1"));
 						else
 							Delete_wMap(tMap, "predictTime1");
-						
+
 						if (item.has("predictTime2"))
 							Find_wMap(tMap, "predictTime2").put("value", item.optInt("predictTime2"));
 						else
 							Delete_wMap(tMap, "predictTime2");
-						
+
 						if (item.has("flag"))
 							Find_wMap(tMap, "flag").put("value", item.optInt("flag"));
 						else
 							Delete_wMap(tMap, "flag");
-						
+
 						if (item.has("lowPlate2"))
 							Find_wMap(tMap, "lowPlate2").put("value", item.optInt("lowPlate2"));
 						else
 							Delete_wMap(tMap, "lowPlate2");
-						
+
 						if (item.has("plateNo1"))
 							Find_wMap(tMap, "plateNo1").put("value", item.optInt("plateNo1"));
 						else
 							Delete_wMap(tMap, "plateNo1");
-						
+
 						if (item.has("plateNo2"))
 							Find_wMap(tMap, "plateNo2").put("value", item.optInt("plateNo2"));
 						else
 							Delete_wMap(tMap, "plateNo2");
-						
+
 						id = iSvc.getString("gs1Code");
 
 						wMap = (Map) tMap.get("globalLocationNumber");
@@ -168,12 +161,10 @@ public class ConvBusArrivalInformation extends AbstractConvert {
 			rtnStr = objectMapper.writeValueAsString(rtnList);
 
 		} catch (CoreException e) {
-			e.printStackTrace();
 			if ("!C0099".equals(e.getErrorCode())) {
 				log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "'" + id, e);
 		}

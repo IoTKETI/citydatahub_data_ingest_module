@@ -30,27 +30,24 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.json.JSONArray;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.environment.Constants;
 import com.cityhub.exception.CoreException;
-import com.cityhub.utils.DateUtil;
-import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
+import com.cityhub.utils.DateUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ibm.icu.text.DecimalFormat;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -84,7 +81,7 @@ public class ConvCCTV_DisasterMonitoring_Postgres extends AbstractConvert {
 			Class.forName(className);
 			conn = DriverManager.getConnection(url, user, password);
 		} catch (Exception e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}
 
 		String rtnStr = "";
@@ -112,7 +109,7 @@ public class ConvCCTV_DisasterMonitoring_Postgres extends AbstractConvert {
 				String addressRegion = "";
 				String addressLocality = "";
 				String addressTown = "";
-				ArrayList<Double> location = new ArrayList<Double>();
+				ArrayList<Double> location = new ArrayList<>();
 				String status = "normal";
 				String hasEmergencyBell = "FALSE";
 				Float direction = 0.0f;
@@ -220,7 +217,6 @@ public class ConvCCTV_DisasterMonitoring_Postgres extends AbstractConvert {
 				throw new CoreException(ErrorCode.NORMAL_ERROR);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
 			log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
 		} catch (CoreException e) {
 			if ("!C0099".equals(e.getErrorCode())) {
@@ -235,21 +231,21 @@ public class ConvCCTV_DisasterMonitoring_Postgres extends AbstractConvert {
 					rs.close();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+			  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 			}
 			try {
 				if (pstmt != null) {
 					pstmt.close();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+			  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 			}
 			try {
 				if (conn != null) {
 					conn.close();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+			  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 			}
 		}
 		return rtnStr;

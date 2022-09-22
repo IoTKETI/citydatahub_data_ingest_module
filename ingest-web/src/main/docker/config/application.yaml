@@ -21,6 +21,17 @@ server:
       charset: UTF-8
       force: true
 
+logging:
+  config: classpath:config/log4j2.xml
+  level:
+    root: info
+
+mybatis: 
+  type-aliases-package: com.cityhub.web
+  configuration:
+    callSettersOnNulls: true
+
+
 ingest:
   dataModelApiUrl: ${DATAMODEL_API_URL}
   interfaceApiUrl: ${INGEST_INTERFACE_API_URL}
@@ -57,17 +68,4 @@ grantType:
   refresh: refresh_token
 
 
-
-
-logging:
-  config: classpath:config/log4j2.xml
-  level:
-    root: info
-
-
-# mybatis info
-mybatis: 
-  type-aliases-package: com.cityhub.web
-  configuration:
-    callSettersOnNulls: true
 

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -40,7 +41,6 @@ import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -243,12 +243,10 @@ public class ConvWeatherMeasurement_Move_SiheungLivingLab extends AbstractConver
 			}
 
 		} catch (CoreException e) {
-			e.printStackTrace();
 			if ("!C0099".equals(e.getErrorCode())) {
 				log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
 		}
@@ -263,7 +261,7 @@ public class ConvWeatherMeasurement_Move_SiheungLivingLab extends AbstractConver
 		try {
 			date = df.parse(gettime);
 		} catch (ParseException e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}
 		cal.setTime(date);
 		DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss,SSSXXX");

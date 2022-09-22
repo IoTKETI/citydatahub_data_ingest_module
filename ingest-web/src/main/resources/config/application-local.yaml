@@ -8,9 +8,9 @@ spring:
     mode: HTML
     cache: false
   datasource:
-    url: jdbc:postgresql://192.168.1.204:5432/postgres
+    url: jdbc:postgresql://192.168.1.218:5430/postgres
     username: postgres 
-    password: pine1234!@#$
+    password: pine1234
     driver-class-name: org.postgresql.Driver
 
 ingest:

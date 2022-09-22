@@ -16,17 +16,18 @@
  */
 package com.cityhub.adapter.convert;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.exception.CoreException;
 import com.cityhub.utils.CommonUtil;
-
-import lombok.extern.slf4j.Slf4j;
-
+import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
-import com.cityhub.utils.DataCoreCode.SocketCode;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ConvBusArrivalInformation extends AbstractConvert {
@@ -80,7 +81,7 @@ public class ConvBusArrivalInformation extends AbstractConvert {
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+			  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 			}
 
 			templUtil.toString();

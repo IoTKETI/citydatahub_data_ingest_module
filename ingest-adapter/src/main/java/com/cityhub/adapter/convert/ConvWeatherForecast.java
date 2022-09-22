@@ -70,13 +70,13 @@ public class ConvWeatherForecast extends AbstractConvert {
 
           if (arrList.length() > 0) {
          // 중복제거 시작
-            ArrayList<String> tmpFcstTimeArray = new ArrayList<String>();
+            ArrayList<String> tmpFcstTimeArray = new ArrayList<>();
             for (Object jitem : arrList) {
               JSONObject item = (JSONObject) jitem;
               String fcstDateTime = item.get("fcstDate") + "" + item.get("fcstTime");
               tmpFcstTimeArray.add(fcstDateTime);
             }
-            ArrayList<String> rmList = new ArrayList<String>(new HashSet<String>(tmpFcstTimeArray));
+            ArrayList<String> rmList = new ArrayList<>(new HashSet<>(tmpFcstTimeArray));
             // 중복제거 종료
 
             // 중복제거 후 리스트를 가지고 기본형 시작
@@ -144,7 +144,7 @@ public class ConvWeatherForecast extends AbstractConvert {
             jsonEx.put("weatherPrediction.value", forecastValueArray);
             jsonEx.put("weatherPrediction.observedAt", DateUtil.getTime());
 
-            List<String> rmKeys = new ArrayList<String>();
+            List<String> rmKeys = new ArrayList<>();
             rmKeys.add("name");
             JsonUtil.removeNullItem(jTemplate,"weatherPrediction.value", rmKeys );
 
@@ -159,12 +159,10 @@ public class ConvWeatherForecast extends AbstractConvert {
       }
 
     } catch (CoreException e) {
-//      e.printStackTrace();
       if ("!C0099".equals(e.getErrorCode())) {
         log(SocketCode.DATA_CONVERT_FAIL,   id, e.getMessage());
       }
     } catch (Exception e) {
-//      e.printStackTrace();
       log(SocketCode.DATA_CONVERT_FAIL,   id, e.getMessage());
       throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
     }
@@ -176,9 +174,9 @@ public class ConvWeatherForecast extends AbstractConvert {
   public Map<String, Object> getBaseForeMap(List<String>  fcstTimeList) {
 
     // 중복제거한 리스트를 가지고 기본형 시작
-    Map<String, Object> tmpMap = new HashMap<String, Object>();
+    Map<String, Object> tmpMap = new HashMap<>();
     for (String item : fcstTimeList) {
-      Map<String, Object> foreMap = new HashMap<String, Object>();
+      Map<String, Object> foreMap = new HashMap<>();
       foreMap.put("rainType", JSONObject.NULL);
       foreMap.put("temperature", JSONObject.NULL);
       foreMap.put("rainfall", JSONObject.NULL);

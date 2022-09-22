@@ -46,7 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ConvEnergyFemsElec_sh extends AbstractConvert {
-	
+
 	private ObjectMapper objectMapper;
 	static Connection conn = null;
 
@@ -60,45 +60,45 @@ public class ConvEnergyFemsElec_sh extends AbstractConvert {
 
 	@Override
 	public String doit() throws CoreException {
-		
+
 		List<Map<String, Object>> rtnList = new LinkedList<>();
 		String rtnStr = "";
-		
+
 		try {
 			JSONObject energy = ConfItem.getJSONObject("energy");
 			JSONObject sqlcon = ConfItem.getJSONObject("databaseInfo");
-			
+
 			String url = sqlcon.getString("url");
 			String user = sqlcon.getString("user");
 			String password = sqlcon.getString("password");
-			
+
 			conn = DriverManager.getConnection(url, user, password);
-			
+
 			Iterator<String> etype = new JSONObject(ConfItem.get("energy").toString()).keys();
-			
+
 			while(etype.hasNext()) {
-				
+
 				String energytype = etype.next();
 				System.out.println(energytype);
-				
+
 				JSONObject energyInfo = new JSONObject(new JsonUtil(ConfItem).get("energy." + energytype).toString());
-				
+
 				String sql = energyInfo.getString("query");
 				PreparedStatement pstmt = null;
 				ResultSet rs = null;
-				
+
 				pstmt = conn.prepareStatement(sql);
 				rs = pstmt.executeQuery();
-				
+
 				int num = 1;
 				while (rs.next()) {
 					Map<String,Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String,Object>>(){});
 			        Map<String,Object> wMap = new LinkedHashMap<>();
-			        
+
 
 					ArrayList<Double> location = new ArrayList<>();
-					
-					
+
+
 					String workplaceName = "";
 					String measurementType = "";
 					String sequence = " ";
@@ -116,8 +116,8 @@ public class ConvEnergyFemsElec_sh extends AbstractConvert {
 					String addressLocality = "시흥시";
 					String addressTown = "";
 					String streetAddress = "";
-					
-					if(energytype.equals("fems")) {			
+
+					if(energytype.equals("fems")) {
 						location.add(126.736327);
 						location.add(37.334748);
 						workplaceName = "정우이지텍";
@@ -127,7 +127,7 @@ public class ConvEnergyFemsElec_sh extends AbstractConvert {
 						addressTown = "정왕동";
 						streetAddress = "마유로238번길 81";
 					}
-						
+
 					if(energytype.equals("bems")) {
 						location.add(126.735936);
 						location.add(37.338464);
@@ -137,9 +137,9 @@ public class ConvEnergyFemsElec_sh extends AbstractConvert {
 						type = "빌딩 에너지 사용량";
 						addressTown = "정왕1동";
 						streetAddress = "경기과기대로 284";
-						
+
 					}
-	
+
 					wMap.put("workplaceName", workplaceName);
 					wMap.put("measurementType", measurementType);
 					wMap.put("sequence", sequence);
@@ -164,37 +164,35 @@ public class ConvEnergyFemsElec_sh extends AbstractConvert {
 					locMap.put("observedAt", DateUtil.getTime());
 					Map<String, Object> locValueMap = (Map) locMap.get("value");
 					locValueMap.put("coordinates", location);
-					
+
 					String id = energyInfo.getString("idPrefix") + Integer.toString(num);
 					tMap.put("id", id);
 					num++;
-					
+
 					Map<String,Object> EntityAttribute = new LinkedHashMap<>();
 					EntityAttribute.put("type","Property");
 					EntityAttribute.put("observedAt",DateUtil.getTime());
 					EntityAttribute.put("value",wMap);
 		            tMap.put("energy", EntityAttribute);
-		            
+
 		            rtnList.add(tMap);
 		            String str = objectMapper.writeValueAsString(tMap);
 		            log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
-				}		
+				}
 			}
-			
+
 			rtnStr = objectMapper.writeValueAsString(rtnList);
 		} catch (CoreException e) {
-			e.printStackTrace();
 			if("!C0099".equals(e.getErrorCode())) {
 				log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "'" + id, e);
 		}
-		
+
 		return rtnStr;
-		
+
 	} // end of doit
 }
 // end of class

@@ -42,14 +42,17 @@ import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.json.JSONObject;
 
 import com.cityhub.core.AbstractBaseSource;
+import com.cityhub.dto.LogVO;
 import com.cityhub.environment.Constants;
 import com.cityhub.environment.DefaultConstants;
 import com.cityhub.environment.ReflectExecuter;
 import com.cityhub.environment.ReflectExecuterManager;
 import com.cityhub.model.DataModelEx;
 import com.cityhub.utils.DataCoreCode.SocketCode;
+import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
+import com.cityhub.utils.LogWriterToDb;
 import com.cityhub.utils.OkUrlUtil;
 import com.cityhub.utils.StrUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -80,7 +83,6 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
   private JSONObject templateItem;
   private ReflectExecuter reflectExecuter = null;
 
-  private String modelVersion;
   private String datasetId;
   private String schemaSrv;
   private String[] ArrDatasetId = null;
@@ -109,7 +111,11 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     } else {
       ConfItem = new JSONObject();
     }
-
+    if (getInit().has("daemonSrverLogApi") ) {
+      ConfItem.put("daemonSrverLogApi", getInit().getString("daemonSrverLogApi"));
+    } else {
+      ConfItem.put("daemonSrverLogApi", "http://localhost:8888/logToDbApi");
+    }
     ConfItem.put("topic", topic);
     ConfItem.put("req_topic", reqTopic + "/#");
     ConfItem.put("resp_topic", respTopic + "/json");
@@ -119,7 +125,6 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     ConfItem.put("metaInfo", metaInfo);
     ConfItem.put("sourceName", this.getName());
     ConfItem.put("adapterType", adapterType);
-    ConfItem.put("modelVersion", modelVersion);
     ConfItem.put("datasetId", datasetId);
 
     mqttOptions = new MqttConnectOptions();
@@ -153,7 +158,6 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
       log.info("connected: {}", iMqttToken.isComplete());
 
     } catch (MqttException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
       log.error("Error connecting to the MQTT broker.", e);
     } catch (Exception e) {
       log.error("Exception : "+ExceptionUtils.getStackTrace(e));
@@ -166,14 +170,14 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
   @SuppressWarnings("rawtypes")
   public void execFirst() {
     templateItem = new JSONObject();
-    if ( ArrModel != null ) {
+    if (ArrModel != null) {
       for (String model : ArrModel) {
         HttpResponse resp = OkUrlUtil.get(schemaSrv+"?id=" + model, "Accept", "application/json");
         log.info("schema info: {},{},{}",model, resp.getStatusCode(), schemaSrv+"?id=" + model);
         if (resp.getStatusCode() == 200) {
           DataModelEx dm = new DataModelEx(resp.getPayload());
           if (dm.hasModelId(model)) {
-            templateItem.put(model, dm.createModel(model, modelVersion));
+            templateItem.put(model, dm.createModel(model));
             log.info("schema server: {},{}",model, templateItem);
           } else {
             templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
@@ -182,10 +186,10 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
           templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
         }
       }
-
     } else {
       log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId , getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
     }
+
     if (log.isDebugEnabled()) {
       //log.debug("ConfItem:{} -- {}", topic, ConfItem);
       log.debug("templateItem:{} -- {}", topic, templateItem);
@@ -221,6 +225,26 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
             for (Map<String,Object> itm : entities) {
               int length = objectMapper.writeValueAsString(itm).getBytes().length;
               log.info("`{}`{}`{}`{}`{}`{}",this.getName() ,itm.get("type"), getStr(SocketCode.DATA_SAVE_REQ) , itm.get("id"), length , adapterType);
+              StringBuilder l =  new StringBuilder();
+              l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
+              l.append("`").append(ConfItem.getString("sourceName"));
+              l.append("`").append(modelId);
+              l.append("`").append(SocketCode.DATA_SAVE_REQ.getCode() + ";" + SocketCode.DATA_SAVE_REQ.getMessage());
+              l.append("`").append(itm.get("id")+"");
+              l.append("`").append(length);
+              l.append("`").append(adapterType);
+              l.append("`").append(ConfItem.getString("invokeClass"));
+              LogVO logVo = new LogVO();
+              logVo.setSourceName(ConfItem.getString("sourceName"));
+              logVo.setPayload(l.toString());
+              logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
+              logVo.setType(modelId);
+              logVo.setStep(SocketCode.DATA_SAVE_REQ.getCode());
+              logVo.setDesc(SocketCode.DATA_SAVE_REQ.getMessage());
+              logVo.setId(itm.get("id")+"");
+              logVo.setLength(String.valueOf(length));
+              logVo.setAdapterType(ConfItem.getString("invokeClass"));
+              LogWriterToDb.logToDaemonApi(ConfItem,logVo);
               for (int i = 0; i < ArrModel.length; i++) {
                 if (ArrModel[i].equals(itm.get("type") + "")) {
                   sendEventEx(itm, ArrDatasetId[i]);
@@ -243,6 +267,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
       log.error("Exception : "+ExceptionUtils.getStackTrace(e));
     }
   }
+
 
   public void sendEventEx(Map<String,Object> entity, String datasetId) {
     try {
@@ -310,6 +335,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
       log.info("Subscribing to topic: {}, QoS: {}", reqTopic+ "/#", Qos);
       mqttClient.subscribe(reqTopic+ "/#", Qos);
     } catch (MqttException e) {
+      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
       log.error("Error connecting to the MQTT broker.", e);
     }
   }
@@ -325,7 +351,6 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
       }
     } catch (Exception e) {
       log.error("Reconnection failed.", ExceptionUtils.getStackTrace(e));
-      //connectionLost(e);
     }
   }
 

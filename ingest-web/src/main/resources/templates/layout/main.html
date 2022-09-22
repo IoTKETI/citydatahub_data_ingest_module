@@ -11,7 +11,7 @@
 <script src="/asset/js/common-ui.js"></script>
 <script src="/asset/js/cmUtl.js"></script>    
 <script src="/asset/js/validation.js"></script>
-<link rel="stylesheet" href="/asset/css/sub.css?ver=1">
+<link rel="stylesheet" href="/asset/css/sub.css">
 <style type="text/css">
 *.pop-layer .pop-container { }
 .pop-layer p.ctxt {  color: #666;  line-height: 25px;}
@@ -172,14 +172,6 @@ p {
     }
   }
   
-  function showApplyForApp(message) {
-    // 쪽지 알림 기능
-    if(message.body.length> 0) {
-      var j = JSON.parse(message.body);
-      $('#divLayerAlertMessage').html("<img src='/asset/images/noticenotify.gif' alt='알림메세지' onclick='javascript:showAlarm();' style='cursor:pointer'/>");
-      showAlarm();
-    }
-  }
   
 </script>
 
@@ -230,6 +222,7 @@ p {
                 <li class="nav__item"><a class="nav__link" href="#" onClick='move("/mqtt/subscribe/view")'>oneM2M 구독관리</a></li>
               </ul>
             </li>
+          
             <li class="nav__depth1 material-icons">
               <button class="nav__link nav__button" type="button">시스템관리</button>
               <ul class="nav__depth2">
@@ -277,37 +270,38 @@ p {
   
 <!--   <div style="padding-top:20px"></div> -->
 
-<!--   <footer class="footer"> -->
-<!--     <span class="footer__copyright">Copyright © 2019 PINE C&I co.,Ltd All right reserved</span> -->
-<!--   </footer> -->
+
             <footer class="footer">
-<!--     <div class="footer-top"> -->
-<!--         <div class="content-area"> -->
-<!--             <div class="footer-link"> -->
-<!--                 <a href="#">개인정보취급방침</a> -->
-<!--                 <a href="#">이메일무단수집거부</a> -->
-<!--                 <a href="#">이용약관</a> -->
-<!--             </div> -->
-<!--             <div class="site-link"> -->
-<!--                 <select class="select-box"> -->
-<!--                     <option>국토교통부</option> -->
-<!--                     <option>국토교통부</option> -->
-<!--                     <option>국토교통부</option> -->
-<!--                     <option>국토교통부</option> -->
-<!--                 </select> -->
-<!--             </div> -->
-<!--         </div> -->
-<!--     </div> -->
+    <div class="footer-top">
+        <div class="content-area">
+            <div class="footer-link">
+                <a href="#">개인정보취급방침</a>
+                <a href="#">이메일무단수집거부</a>
+                <a href="#">이용약관</a>
+            </div>
+            <div class="site-link">
+                <select class="select-box">
+                    <option>국토교통부</option>
+                    <option>국토교통부</option>
+                    <option>국토교통부</option>
+                    <option>국토교통부</option>
+                </select>
+            </div>
+        </div>
+    </div>
     <div class="footer-bottom">
         <div class="info">
             <address class="footer-address">
-                <p style="margin: 0px 0px 0px 0px;">주소(04513) 서울시 송파구 잠실동</p>
-                <p style="margin: 0px 0px 0px 0px;">대표번호 : 031-0000-0000    고객센터 : 02-0000-0000 (월~금 09:00 ~ 18:00, 공휴일 제외)</p>
-                <p class="copyright"  style="margin: 0px 0px 0px 0px;">Copyright©Datahub. All rights reserved.</p>
+                 <p style="margin: 0px 0px 0px 0px;">주소(04513) 서울시 송파구 잠실동</p> 
+                 <p style="margin: 0px 0px 0px 0px;">대표번호 : 031-0000-0000    고객센터 : 02-0000-0000 (월~금 09:00 ~ 18:00, 공휴일 제외)</p>
+                 <p class="copyright"  style="margin: 0px 0px 0px 0px;">Copyright©Datahub. All rights reserved.</p> 
+                <p style="margin: 0px 0px 0px 0px;">  </p>
+                <p style="margin: 0px 0px 0px 0px;">  </p>
+                <p class="copyright"  style="margin: 0px 0px 0px 0px;">  </p>
             </address>
         </div>
         <div class="footer-banner">
-            <img src="/asset/images/footer-banner.jpg">
+             <img src="/asset/images/footer-banner.jpg">
         </div>
     </div>
 </footer>
@@ -316,60 +310,6 @@ p {
   <hr>
 
 
-    <div id="modal_alarm_alert"  style="width:300px;z-index: 9000;position: fixed;bottom: 10px;left: 0;display:none" >
-      <div class="modal__wrap__alert">
-        <div class="modal__content">
-          <div class="modal__header__alert">
-            <h4 class="modal__title">알림창</h4>
-            <button class="modal__button--close button__modal--alert" type="button"><span class="hidden">최소화</span></button>
-          </div>
-          <div class="modal__body__alert">
-          <!-- 내용 -->
-          <div class="section__content" id="modal__alert__content">
-                      신청서가 있습니다.
-          </div>
-      
-        
-          <!-- //내용 -->
-          </div>
-          
-          
-        </div>
-      
-      
-      
-      </div>
-    </div>
-<style>
-.modal__wrap__alert {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  height: 100%;
-}
-.modal__header__alert {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-  background-color: #6BA4B9
-}
-.modal__body__alert {
-    padding: 10px;
-    background-color: #FFFFFF
-}
-</style>
 
 
 <script>

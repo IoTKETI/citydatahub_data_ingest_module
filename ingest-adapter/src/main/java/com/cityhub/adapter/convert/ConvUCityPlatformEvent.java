@@ -18,17 +18,19 @@ package com.cityhub.adapter.convert;
 
 
 import java.io.FileInputStream;
+
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.exception.CoreException;
-import com.cityhub.utils.DataType;
-import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
+import com.cityhub.utils.DataType;
+import com.cityhub.utils.JsonUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -97,10 +99,8 @@ public class ConvUCityPlatformEvent extends AbstractConvert {
       strBuff.append(jsonEx+",");
 
     }catch(CoreException e) {
-      e.printStackTrace();
       log(SocketCode.DATA_CONVERT_FAIL, null, e.getMessage());
     }catch(Exception e) {
-      e.printStackTrace();
       log(SocketCode.DATA_CONVERT_FAIL, null, e.getMessage());
       throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + null, e);
     }

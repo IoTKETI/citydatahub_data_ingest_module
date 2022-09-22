@@ -1294,212 +1294,211 @@ public class AgentController {
 //	@Scheduled(cron = "0 0/30 * * * *")
 	@GetMapping({ "/FiwarePost" })
 	public ResponseEntity<String> FiwarePost() {
-		log.debug("----- MonitoringController.FiwarePost() -----");
-		HttpResponse resp = null;
+	  log.debug("----- MonitoringController.FiwarePost() -----");
+    HttpResponse resp = null;
 
-		ObjectMapper objectMapper;
-		JSONObject templateItem = null;
-		String modelId = "WeatherMeasurement";
-		String modelVersion = "1.0";
-		String adapterType = "com.cityhub.adapter.convex.OpenApiSource";
-		String[] ArrModel = StrUtil.strToArray(modelId, ",");
+    ObjectMapper objectMapper;
+    JSONObject templateItem = null;
+    String modelId = "WeatherMeasurement";
+    String adapterType = "com.cityhub.adapter.convex.OpenApiSource";
+    String[] ArrModel = StrUtil.strToArray(modelId, ",");
 
-		templateItem = new JSONObject();
-		if (ArrModel != null) {
-			resp = OkUrlUtil.get(configEnv.getDataModelApiUrl(), "Accept", "application/json");
-			log.debug("model info: {},{}", modelId, resp.getStatusCode());
-			if (resp.getStatusCode() == 200) {
-				DataModelEx dm = new DataModelEx(resp.getPayload());
-				for (String model : ArrModel) {
-					if (dm.hasModelId(model)) {
-						templateItem.put(model, dm.createModel(model, modelVersion));
-					} else {
-						log.error("`{}`{}`{}`{}`{}`{}", "FiwarePost1", modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL),
-								"", 0, adapterType);
-					}
-				}
-			} else {
-				for (String model : ArrModel) {
-					templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
-				}
-			}
+    templateItem = new JSONObject();
+    if (ArrModel != null) {
+      resp = OkUrlUtil.get(configEnv.getDataModelApiUrl(), "Accept", "application/json");
+      log.debug("model info: {},{}", modelId, resp.getStatusCode());
+      if (resp.getStatusCode() == 200) {
+        DataModelEx dm = new DataModelEx(resp.getPayload());
+        for (String model : ArrModel) {
+          if (dm.hasModelId(model)) {
+            templateItem.put(model, dm.createModel(model));
+          } else {
+            log.error("`{}`{}`{}`{}`{}`{}", "FiwarePost1", modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL),
+                "", 0, adapterType);
+          }
+        }
+      } else {
+        for (String model : ArrModel) {
+          templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+        }
+      }
 
-		} else {
-			log.error("`{}`{}`{}`{}`{}`{}", "FiwarePost2", modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0,
-					adapterType);
-		}
+    } else {
+      log.error("`{}`{}`{}`{}`{}`{}", "FiwarePost2", modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0,
+          adapterType);
+    }
 
-		if (log.isDebugEnabled()) {
-			log.debug("Template : {},{}", modelId, templateItem);
-		}
+    if (log.isDebugEnabled()) {
+      log.debug("Template : {},{}", modelId, templateItem);
+    }
 
-//		resp = OkUrlUtil.get(schemaSrv, "Accept", "application/json");
+//    resp = OkUrlUtil.get(schemaSrv, "Accept", "application/json");
 
-		objectMapper = new ObjectMapper();
-		objectMapper.setSerializationInclusion(Include.NON_NULL);
-		objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
-		objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
+    objectMapper = new ObjectMapper();
+    objectMapper.setSerializationInclusion(Include.NON_NULL);
+    objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
+    objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
 
-		Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
+    Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
 
-		Map<String, Object> tMap = new LinkedHashMap<>();
-		Map<String, Object> wMap = new LinkedHashMap<>();
+    Map<String, Object> tMap = new LinkedHashMap<>();
+    Map<String, Object> wMap = new LinkedHashMap<>();
 
-		try {
-			tMap = objectMapper.readValue(templateItem.getJSONObject(modelId).toString(),
-					new TypeReference<Map<String, Object>>() {
-					});
+    try {
+      tMap = objectMapper.readValue(templateItem.getJSONObject(modelId).toString(),
+          new TypeReference<Map<String, Object>>() {
+          });
 
-			tMap.put("id", "WeatherMeasurement_Fiware_ID_001");
-			tMap.put("type", "WeatherMeasurement_Fiware_TYPE_001");
+      tMap.put("id", "WeatherMeasurement_Fiware_ID_001");
+      tMap.put("type", "WeatherMeasurement_Fiware_TYPE_001");
 
-			Map<String, Object> addrValue = (Map) ((Map) tMap.get("address")).get("value");
-			addrValue.put("addressCountry", "KR");
-			addrValue.put("addressRegion", "Gyeonggi-do");
-			addrValue.put("addressLocality", "Seongnam-si");
-			addrValue.put("addressTown", "8th Seungin-ro");
-			addrValue.put("streetAddress", "Yatap-dong");
+      Map<String, Object> addrValue = (Map) ((Map) tMap.get("address")).get("value");
+      addrValue.put("addressCountry", "KR");
+      addrValue.put("addressRegion", "Gyeonggi-do");
+      addrValue.put("addressLocality", "Seongnam-si");
+      addrValue.put("addressTown", "8th Seungin-ro");
+      addrValue.put("streetAddress", "Yatap-dong");
 
-			String[] context = new String[2];
-			context[0] = "http://uri.etsi.org/ngsi-ld/core-context.jsonld";
-			context[1] = "http://citydatahub.siheung.kr/ngsi-ld/environment.jsonld";
-			tMap.put("@context", context);
+      String[] context = new String[2];
+      context[0] = "http://uri.etsi.org/ngsi-ld/core-context.jsonld";
+      context[1] = "http://citydatahub.siheung.kr/ngsi-ld/environment.jsonld";
+      tMap.put("@context", context);
 
-			tMap.put("createdAt", DateUtil.getTime());
+      tMap.put("createdAt", DateUtil.getTime());
 
-			Map<String, Object> locMap = (Map) tMap.get("location");
-			locMap.put("observedAt", DateUtil.getTime());
-			Map<String, Object> locValueMap = (Map) locMap.get("value");
-			ArrayList<Float> location = new ArrayList<>();
-			location.add(127.1293735f);
-			location.add(37.4114423f);
-			locValueMap.put("coordinates", location);
+      Map<String, Object> locMap = (Map) tMap.get("location");
+      locMap.put("observedAt", DateUtil.getTime());
+      Map<String, Object> locValueMap = (Map) locMap.get("value");
+      ArrayList<Float> location = new ArrayList<>();
+      location.add(127.1293735f);
+      location.add(37.4114423f);
+      locValueMap.put("coordinates", location);
 
-			long seed; // 1970년 1월 1일부터 현재까지 타임스템프를 가져옵니다.
-			Random rand; // 현재시간을 씨앗으로 한 랜덤 인스턴스를 만듭니다.
+      long seed; // 1970년 1월 1일부터 현재까지 타임스템프를 가져옵니다.
+      Random rand; // 현재시간을 씨앗으로 한 랜덤 인스턴스를 만듭니다.
 
-			Find_wMap(tMap, "altitude").put("value", 95.78d);
+      Find_wMap(tMap, "altitude").put("value", 95.78d);
 
-			// 0 ~ 360
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			Find_wMap(tMap, "windDirection").put("value", rand.nextDouble() * 360.0d);
+      // 0 ~ 360
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      Find_wMap(tMap, "windDirection").put("value", rand.nextDouble() * 360.0d);
 
-			// 0 ~ 14
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			Find_wMap(tMap, "windSpeed").put("value", rand.nextDouble() * 14.0d);
+      // 0 ~ 14
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      Find_wMap(tMap, "windSpeed").put("value", rand.nextDouble() * 14.0d);
 
-			// 기온(℃) 20 ~ 35
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			Double temperature = (rand.nextDouble() * 15.0d) + 20.0d;
-			Find_wMap(tMap, "temperature").put("value", temperature);
+      // 기온(℃) 20 ~ 35
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      Double temperature = (rand.nextDouble() * 15.0d) + 20.0d;
+      Find_wMap(tMap, "temperature").put("value", temperature);
 
-			// 습도(%) 50 ~ 85
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			Double humidity = (rand.nextDouble() * 35.0d) + 50.0d;
-			Find_wMap(tMap, "humidity").put("value", humidity);
+      // 습도(%) 50 ~ 85
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      Double humidity = (rand.nextDouble() * 35.0d) + 50.0d;
+      Find_wMap(tMap, "humidity").put("value", humidity);
 
-			// 985 ~ 1035
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			Find_wMap(tMap, "atmosphericPressure").put("value", (rand.nextDouble() * 50.0d) + 985.0d);
+      // 985 ~ 1035
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      Find_wMap(tMap, "atmosphericPressure").put("value", (rand.nextDouble() * 50.0d) + 985.0d);
 
-			// 990 ~ 1030
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			Find_wMap(tMap, "seaLevelPressure").put("value", (rand.nextDouble() * 40.0d) + 990.0d);
+      // 990 ~ 1030
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      Find_wMap(tMap, "seaLevelPressure").put("value", (rand.nextDouble() * 40.0d) + 990.0d);
 
-			// 0~7 없음 8~9 빗방울 10 비
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			Integer RandomRainfall = rand.nextInt(10);
-			Object[][] rainfall = { { 7, "없음" }, { 9, "빗방울" }, { 10, "비" } };
-			String rainfallValue = ExponentialStage(RandomRainfall, rainfall);
-			Find_wMap(tMap, "rainfall").put("value", rainfallValue);
+      // 0~7 없음 8~9 빗방울 10 비
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      Integer RandomRainfall = rand.nextInt(10);
+      Object[][] rainfall = { { 7, "없음" }, { 9, "빗방울" }, { 10, "비" } };
+      String rainfallValue = ExponentialStage(RandomRainfall, rainfall);
+      Find_wMap(tMap, "rainfall").put("value", rainfallValue);
 
-			// 0~45
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			if (rainfallValue.equals("비")) {
-				Find_wMap(tMap, "hourlyRainfall").put("value", (rand.nextDouble() * 40.0d) + 5.0d);
-			} else if (rainfallValue.equals("빗방울")) {
-				Find_wMap(tMap, "hourlyRainfall").put("value", (rand.nextDouble() * 5.0d));
-			} else {
-				Find_wMap(tMap, "hourlyRainfall").put("value", 0.0d);
-			}
+      // 0~45
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      if (rainfallValue.equals("비")) {
+        Find_wMap(tMap, "hourlyRainfall").put("value", (rand.nextDouble() * 40.0d) + 5.0d);
+      } else if (rainfallValue.equals("빗방울")) {
+        Find_wMap(tMap, "hourlyRainfall").put("value", (rand.nextDouble() * 5.0d));
+      } else {
+        Find_wMap(tMap, "hourlyRainfall").put("value", 0.0d);
+      }
 
-			// 0~35
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			if (rainfallValue.equals("비")) {
-				Find_wMap(tMap, "dailyRainfall").put("value", (rand.nextDouble() * 30.0d) + 5.0d);
-			} else if (rainfallValue.equals("빗방울")) {
-				Find_wMap(tMap, "dailyRainfall").put("value", (rand.nextDouble() * 4.0d) + 1.0d);
-			} else {
-				Find_wMap(tMap, "dailyRainfall").put("value", 0.0d);
-			}
+      // 0~35
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      if (rainfallValue.equals("비")) {
+        Find_wMap(tMap, "dailyRainfall").put("value", (rand.nextDouble() * 30.0d) + 5.0d);
+      } else if (rainfallValue.equals("빗방울")) {
+        Find_wMap(tMap, "dailyRainfall").put("value", (rand.nextDouble() * 4.0d) + 1.0d);
+      } else {
+        Find_wMap(tMap, "dailyRainfall").put("value", 0.0d);
+      }
 
-			// 0~20
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			Find_wMap(tMap, "vaporPressure").put("value", (rand.nextDouble() * 20.0d));
+      // 0~20
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      Find_wMap(tMap, "vaporPressure").put("value", (rand.nextDouble() * 20.0d));
 
-			// 이슬점온도(℃) (f/100)^(1/8)*(112+0.9T)+(0.1*T)-112 f = 현재습도 T = 현재온도
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			Find_wMap(tMap, "dewPoint").put("value",
-					(Math.pow((humidity / 100.0d), (1.0d / 8.0d)) * (112.0d + (0.9d * temperature))
-							+ ((0.1d * temperature))) - 112.0d);
+      // 이슬점온도(℃) (f/100)^(1/8)*(112+0.9T)+(0.1*T)-112 f = 현재습도 T = 현재온도
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      Find_wMap(tMap, "dewPoint").put("value",
+          (Math.pow((humidity / 100.0d), (1.0d / 8.0d)) * (112.0d + (0.9d * temperature))
+              + ((0.1d * temperature))) - 112.0d);
 
-			// 2.5 ~ 4.5
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			Find_wMap(tMap, "sunshine").put("value", ((rand.nextDouble() * 2.0d) + 2.5d));
+      // 2.5 ~ 4.5
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      Find_wMap(tMap, "sunshine").put("value", ((rand.nextDouble() * 2.0d) + 2.5d));
 
-			// 704.54~ 1378.26
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			Find_wMap(tMap, "insolation").put("value", (rand.nextDouble() * 673.72d) + 704.54d);
+      // 704.54~ 1378.26
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      Find_wMap(tMap, "insolation").put("value", (rand.nextDouble() * 673.72d) + 704.54d);
 
-			// 0~10
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			Find_wMap(tMap, "snowfall").put("value", (rand.nextDouble() * 10.0d));
+      // 0~10
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      Find_wMap(tMap, "snowfall").put("value", (rand.nextDouble() * 10.0d));
 
-			// 0~5
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			Find_wMap(tMap, "snowfallHour3").put("value", (rand.nextDouble() * 5.0d));
+      // 0~5
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      Find_wMap(tMap, "snowfallHour3").put("value", (rand.nextDouble() * 5.0d));
 
-			// 1094.9 ~ 1603.9
-			seed = System.currentTimeMillis();
-			rand = new Random(seed);
-			Find_wMap(tMap, "visibility").put("value", (rand.nextDouble() * 504.0d) + 1094.9d);
+      // 1094.9 ~ 1603.9
+      seed = System.currentTimeMillis();
+      rand = new Random(seed);
+      Find_wMap(tMap, "visibility").put("value", (rand.nextDouble() * 504.0d) + 1094.9d);
 
-			Find_wMap(tMap, "deviceType").put("value", "Static");
+      Find_wMap(tMap, "deviceType").put("value", "Static");
 
-			wMap = (Map) tMap.get("dataProvider");
-			wMap.put("value", "https://www.weather.go.kr");
+      wMap = (Map) tMap.get("dataProvider");
+      wMap.put("value", "https://www.weather.go.kr");
 
-			wMap = (Map) tMap.get("globalLocationNumber");
-			wMap.put("value", "urn:epc:id:giai:880969104.140001.0108");
+      wMap = (Map) tMap.get("globalLocationNumber");
+      wMap.put("value", "urn:epc:id:giai:880969104.140001.0108");
 
-			JSONArray entities = new JSONArray();
-			entities.put(tMap);
+      JSONArray entities = new JSONArray();
+      entities.put(tMap);
 
-			JSONObject Body = new JSONObject();
-			Body.put("actionType", "append");
-			Body.put("entities", entities);
+      JSONObject Body = new JSONObject();
+      Body.put("actionType", "append");
+      Body.put("entities", entities);
 
-			resp = UrlUtil.post("http://192.168.1.179:1026/v2/op/update?options=keyValues", headers, Body.toString());
+      resp = UrlUtil.post("http://192.168.1.179:1026/v2/op/update?options=keyValues", headers, Body.toString());
 
-		} catch (Exception e) {
-			log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-		}
-		return new ResponseEntity<>(resp.getPayload(), HttpStatus.OK);
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
+    return new ResponseEntity<>(resp.getPayload(), HttpStatus.OK);
 	}
 
 	Map<String, Object> Find_wMap(Map<String, Object> tMap, String Name) {

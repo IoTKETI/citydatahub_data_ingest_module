@@ -168,12 +168,10 @@ public class ConvWeatherForecast extends AbstractConvert {
       rtnStr = objectMapper.writeValueAsString(rtnList);
       log.info("rtnStr:{}",rtnStr);
     } catch (CoreException e) {
-      e.printStackTrace();
       if ("!C0099".equals(e.getErrorCode())) {
         log(SocketCode.DATA_CONVERT_FAIL,   id, e.getMessage());
       }
     } catch (Exception e) {
-      e.printStackTrace();
       log(SocketCode.DATA_CONVERT_FAIL,   id, e.getMessage());
       throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
     }

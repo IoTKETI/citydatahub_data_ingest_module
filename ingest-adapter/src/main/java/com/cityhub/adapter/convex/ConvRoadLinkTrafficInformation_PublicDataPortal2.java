@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -169,7 +170,7 @@ public class ConvRoadLinkTrafficInformation_PublicDataPortal2 extends AbstractCo
 		try {
 			date = df.parse(gettime);
 		} catch (ParseException e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}
 		cal.setTime(date);
 		DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss,SSSXXX");

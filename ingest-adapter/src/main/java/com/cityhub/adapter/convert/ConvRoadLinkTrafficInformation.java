@@ -128,12 +128,10 @@ public class ConvRoadLinkTrafficInformation extends AbstractConvert {
 
 
     } catch (CoreException e) {
-      e.printStackTrace();
       if ("!C0099".equals(e.getErrorCode())) {
         log(SocketCode.DATA_CONVERT_FAIL, id,  e.getMessage());
       }
     } catch (Exception e) {
-      e.printStackTrace();
       log(SocketCode.DATA_CONVERT_FAIL,  id,  e.getMessage());
       throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage() + "`" + id  , e);
     }

@@ -30,14 +30,13 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -46,25 +45,20 @@ import com.cityhub.environment.Constants;
 import com.cityhub.exception.CoreException;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
+import com.cityhub.utils.DateUtil;
+import com.cityhub.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.cityhub.utils.DataType;
-import com.cityhub.utils.DateUtil;
-import com.cityhub.utils.JsonUtil;
 
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Headers;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 @Slf4j
 public class ConvEnergyBemsElecTest_by extends AbstractConvert {
 
 	private ObjectMapper objectMapper;
 	private JSONObject dataInfo;
-	
+
 	@Override
 	public void init(JSONObject ConfItem, JSONObject templateItem) {
 		super.setup(ConfItem, templateItem);
@@ -74,18 +68,18 @@ public class ConvEnergyBemsElecTest_by extends AbstractConvert {
 	    this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE ));
 	    dataInfo = new JSONObject(new JsonUtil(ConfItem).get("energeBems").toString());
 	}
-		
+
 	@Override
 	public String doit() throws CoreException {
 //		StringBuffer sendJson = new StringBuffer();
 		String rtnStr =""; // list로 받은것 string으로 변환해서 적재할거임
-		
+
 		try {
 			String model = ConfItem.getString("model_id");
 			System.out.println("model : "+model);
-			
+
 			rtnStr = getResult();
-			
+
 		} catch (CoreException e) {
 			if ("!C0099".equals(e.getErrorCode())) {
 				log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
@@ -111,11 +105,11 @@ public class ConvEnergyBemsElecTest_by extends AbstractConvert {
 			Class.forName(className);
 			conn = DriverManager.getConnection(url, user, password);
 		}catch (Exception e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}
 		return conn;
 	}
-	
+
 	public final String getResult() {
 
 		Connection conn = getConnection();
@@ -124,7 +118,7 @@ public class ConvEnergyBemsElecTest_by extends AbstractConvert {
 
 		return refinedData;
 	}
-	
+
 	protected JSONArray getData(Connection conn) {
 
 		StringBuffer strBuffer = new StringBuffer();
@@ -153,7 +147,7 @@ public class ConvEnergyBemsElecTest_by extends AbstractConvert {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}finally {
 			disconnectDB(conn, pstmt, rs);
 		}
@@ -164,20 +158,20 @@ public class ConvEnergyBemsElecTest_by extends AbstractConvert {
 
 		return result;
 	}
-	
+
 	protected String getRefinedData(JSONArray jsonData){
 		int cnt = 0;
 		String rtnStr = "";
 		List<Map<String,Object>> rtnList = new LinkedList<>(); // buffer대신 List로 데이터 받을예정
 
-		
+
 		try {
-		
+
 		for(Object obj : jsonData) {
-			
+
 			Map<String,Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String,Object>>(){});
 	        Map<String,Object> wMap = new LinkedHashMap<>();
-	        
+
 			JSONObject jobj = (JSONObject) obj;
 //			JSONObject refinedData = new JSONObject(strTemplate);
 			JsonUtil refinedData = new JsonUtil(templateItem.toString());
@@ -193,7 +187,7 @@ public class ConvEnergyBemsElecTest_by extends AbstractConvert {
 			String measure16to30 = jobj.get("measure16to30").toString();
 			String measure31to45 = jobj.get("measure31to45").toString();
 			String measure46to60 = jobj.get("measure46to60").toString();
-			
+
 			String measureDay = dataInfo.get("measureDay").toString();
 			String measureTime = dataInfo.get("measureTime").toString();
 			String addressCountry = dataInfo.get("addressCountry").toString();
@@ -204,27 +198,27 @@ public class ConvEnergyBemsElecTest_by extends AbstractConvert {
 			String gs1Code = dataInfo.get("gs1Code").toString();
 			String workplaceName = dataInfo.get("workplaceName").toString();
 			String measurementType = dataInfo.get("measurementType").toString();
-			
+
 			String createdAt = getTimeInfo(LocalDate.now(), LocalTime.now());
 
-			ArrayList<Float> coordinates = new ArrayList<Float>();
+			ArrayList<Float> coordinates = new ArrayList<>();
 			coordinates.add(0f);
 			coordinates.add(0f);
-			
-			
+
+
 			tMap.put("id", gs1Code);
-			Map<String,Object> addrValue = (Map)((Map)tMap.get("address")).get("value");						
+			Map<String,Object> addrValue = (Map)((Map)tMap.get("address")).get("value");
 	        addrValue.put("addressCountry",addressCountry);
 	        addrValue.put("addressRegion", addressRegion);
 	        addrValue.put("addressLocality", addressLocality );
 	        addrValue.put("addressTown", addressTown );
 	        addrValue.put("streetAddress",streetAddress);
-	        		        
+
 	        Map<String,Object> locMap = (Map)tMap.get("location");
 	        locMap.put("observedAt",createdAt);
 	        Map<String,Object> locValueMap  = (Map)locMap.get("value");
 	        locValueMap.put("coordinates", coordinates);
-	        
+
 	        wMap.put("tagName", tagname);
 	        wMap.put("tagDesc", tagdesc);
 	        wMap.put("unitName", unitname);
@@ -238,20 +232,20 @@ public class ConvEnergyBemsElecTest_by extends AbstractConvert {
 	        wMap.put("measureTime", measureTime);
 	        wMap.put("workplaceName", workplaceName);
 	        wMap.put("measurementpeak", measurementpeak);
-	               
+
 	        Map<String,Object> energyObj = new LinkedHashMap<>();
 	        energyObj.put("type", "Property");
 	        energyObj.put("observedAt", DateUtil.getTime());
 	        energyObj.put("value", wMap);
-	                
+
 	        tMap.put("energe", energyObj);
-	        
-	        rtnList.add(tMap);   			
+
+	        rtnList.add(tMap);
 		}
-		
+
 		log.info("tMap : {}", rtnList);
 		rtnStr = objectMapper.writeValueAsString(rtnList);
-		
+
 		} catch (CoreException e) {
 			if ("!C0099".equals(e.getErrorCode())) {
 				log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
@@ -263,17 +257,17 @@ public class ConvEnergyBemsElecTest_by extends AbstractConvert {
 
 		return rtnStr;
 	}
-	
+
 	protected void disconnectDB(Connection conn, PreparedStatement pstmt, ResultSet rs) {
 		try {if(rs != null) {rs.close();}}
-		catch (Exception e) {e.printStackTrace();}
+		catch (Exception e) {log.error("Exception : "+ExceptionUtils.getStackTrace(e));}
 		disconnectDB(conn, pstmt);
 	}
 	protected void disconnectDB(Connection conn, PreparedStatement pstmt) {
 		try {if(pstmt != null) {pstmt.close();}}
-		catch (Exception e) {e.printStackTrace();}
+		catch (Exception e) {log.error("Exception : "+ExceptionUtils.getStackTrace(e));}
 		try {if(conn != null) {conn.close();}}
-		catch (Exception e) {e.printStackTrace();}
+		catch (Exception e) {log.error("Exception : "+ExceptionUtils.getStackTrace(e));}
 	}
 
 	protected String getTimeInfo(LocalDate date, LocalTime time) {
@@ -284,7 +278,7 @@ public class ConvEnergyBemsElecTest_by extends AbstractConvert {
 
 	    return returnValue;
 	}
-	
+
 }
 
 // end of class

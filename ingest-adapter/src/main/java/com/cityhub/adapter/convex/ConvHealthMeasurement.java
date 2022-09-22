@@ -24,8 +24,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,18 +39,11 @@ import com.cityhub.exception.CoreException;
 import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
-import com.cityhub.utils.DataType;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.TimeZone;
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -266,7 +257,7 @@ public class ConvHealthMeasurement extends AbstractConvert {
 						} else {
 							tMap.remove("remainedBloodVolume");
 						}
-						
+
 						if (iSvc.has("globalLocationNumber"))
 							Find_wMap(tMap, "globalLocationNumber").put("value", iSvc.get("globalLocationNumber"));
 
@@ -297,12 +288,10 @@ public class ConvHealthMeasurement extends AbstractConvert {
 			rtnStr = objectMapper.writeValueAsString(rtnList);
 
 		} catch (CoreException e) {
-			e.printStackTrace();
 			if ("!C0099".equals(e.getErrorCode())) {
 				log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
 		}

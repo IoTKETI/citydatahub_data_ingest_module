@@ -76,38 +76,27 @@
     </select>
     
     <select id="itemSelect2" resultType="map">
-      SELECT a.adapter_type_id, b.item, c.value, 'Y' AS essential_yn, c.item_described, c.value_type, 0 AS display_seq, c.setup_method, c.change_able_yn, c.use_purpose, 'Y' AS keyword_yn, adapter_type_nm AS adapter_type_nm
-      FROM adapter_type_info a 
-      INNER JOIN keyword_info b ON a.adapter_type_div = b.relation_code_id
-      LEFT OUTER JOIN adapter_type_detail_conf c ON a.adapter_type_id = c.adapter_type_id AND b.item = c.item
-      WHERE a.adapter_type_id = #{adapter_type_id}
-      
-      UNION ALL
-      
-      SELECT adapter_type_id, item, value, essential_yn, item_described, value_type, CASE WHEN display_seq=0 THEN display_seq+1 ELSE display_seq END AS display_seq, setup_method, change_able_yn, use_purpose, 'N' AS keyword_yn, '' AS adapter_type_nm
-      FROM adapter_type_detail_conf a
-      WHERE adapter_type_id = #{adapter_type_id}
-        AND sector = 'a'
-        AND NOT EXISTS (SELECT 1 FROM adapter_type_info t1, keyword_info t2 WHERE t1.adapter_type_div = t2.relation_code_id AND t1.adapter_type_id = a.adapter_type_id AND t2.item = a.item)
-      ORDER BY display_seq
+    select a.adapter_type_id, b.item, b.value, 'Y' AS essential_yn,  b.item_described, b.value_type, b.display_seq, b.setup_method, b.change_able_yn, b.use_purpose, 'Y' AS keyword_yn, adapter_type_nm AS adapter_type_nm 
+    from adapter_type_info a
+    inner join adapter_type_detail_conf b on  a.adapter_type_id = b.adapter_type_id and sector = 'a'
+    where a.adapter_type_id = #{adapter_type_id}
+    order by display_seq asc
     </select>
     
-    <select id="itemSelect3" resultType="map">
-      SELECT a.adapter_type_id, b.item, c.value, 'Y' AS essential_yn, c.item_described, c.value_type, 0 AS display_seq, c.setup_method, c.change_able_yn, c.use_purpose, 'Y' AS keyword_yn, adapter_type_nm AS adapter_type_nm
-      FROM adapter_type_info a 
-<!--       INNER JOIN keyword_info b ON a.adapter_type_div = b.relation_code_id -->
-    INNER JOIN keyword_info b ON a.adapter_type_div = b.item
-      LEFT OUTER JOIN adapter_type_detail_conf c ON a.adapter_type_id = c.adapter_type_id AND b.item = c.item
-      WHERE a.adapter_type_id = #{adapter_type_id}
-      
-      UNION ALL
-      
-      SELECT adapter_type_id, item, value, essential_yn, item_described, value_type, CASE WHEN display_seq=0 THEN display_seq+1 ELSE display_seq END AS display_seq, setup_method, change_able_yn, use_purpose, 'N' AS keyword_yn, '' AS adapter_type_nm
-      FROM adapter_type_detail_conf a
-      WHERE adapter_type_id = #{adapter_type_id}
-        AND sector = 'b'
-        AND NOT EXISTS (SELECT 1 FROM adapter_type_info t1, keyword_info t2 WHERE t1.adapter_type_div = t2.relation_code_id AND t1.adapter_type_id = a.adapter_type_id AND t2.item = a.item)
-      ORDER BY display_seq
+    <select id="itemSelect3" resultType="map"> 
+    SELECT a.adapter_type_id, b.item, c.value, 'Y' AS essential_yn, c.item_described, c.value_type, 0 AS display_seq, c.setup_method, c.change_able_yn, c.use_purpose, 'Y' AS keyword_yn, adapter_type_nm AS adapter_type_nm
+        FROM adapter_type_info a 
+    INNER JOIN keyword_info b ON a.adapter_type_div = b.relation_code_id
+        LEFT OUTER JOIN adapter_type_detail_conf c ON a.adapter_type_id = c.adapter_type_id AND b.item = c.item
+    WHERE a.adapter_type_id = #{adapter_type_id}
+  
+   union all   
+  
+    select b.adapter_type_id, b.item, b.value, 'Y' AS essential_yn,  b.item_described, b.value_type, 0 AS display_seq, b.setup_method, b.change_able_yn, b.use_purpose, 'N' AS keyword_yn, '' AS adapter_type_nm
+    from adapter_type_detail_conf b 
+    where b.adapter_type_id = #{adapter_type_id} and sector = 'b'
+      AND not EXISTS (SELECT 1 FROM adapter_type_info t1, keyword_info t2 WHERE t1.adapter_type_div = t2.relation_code_id AND t1.adapter_type_id = b.adapter_type_id AND t2.item = b.item)
+    ORDER BY display_seq
     </select>
     
     <delete id="deleteAdtItem" parameterType="map">
@@ -153,5 +142,4 @@
       DELETE FROM adapter_type_info 
       WHERE adapter_type_id = #{adapter_type_id}      
     </delete>
-    
 </mapper>

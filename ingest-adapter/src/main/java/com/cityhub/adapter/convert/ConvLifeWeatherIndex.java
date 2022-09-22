@@ -24,10 +24,9 @@ import com.cityhub.exception.CoreException;
 import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
+import com.cityhub.utils.JsonUtil;
 
 import lombok.extern.slf4j.Slf4j;
-
-import com.cityhub.utils.JsonUtil;
 
 @Slf4j
 public class ConvLifeWeatherIndex extends AbstractConvert {
@@ -86,13 +85,11 @@ public class ConvLifeWeatherIndex extends AbstractConvert {
             }
 
     } catch (CoreException e) {
-            e.printStackTrace();
             if ("!C0099".equals(e.getErrorCode())) {
               log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
             }
 
     } catch (Exception e) {
-            e.printStackTrace();
             log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
             throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
     }

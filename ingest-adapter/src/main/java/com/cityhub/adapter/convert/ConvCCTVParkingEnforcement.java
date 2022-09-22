@@ -24,12 +24,16 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cityhub.utils.JsonUtil;
 import com.ibm.icu.text.DecimalFormat;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ConvCCTVParkingEnforcement extends ConvCCTV2{
 
 	@Override
@@ -60,7 +64,7 @@ public class ConvCCTVParkingEnforcement extends ConvCCTV2{
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}finally {
 			disconnectDB(conn, pstmt, rs);
 		}
@@ -96,7 +100,7 @@ public class ConvCCTVParkingEnforcement extends ConvCCTV2{
 			String pixel = jobj.getString("pixel").toString();
 			String numberOfCCTV = jobj.get("numberOfCCTV").toString();
 			String installedAt = jobj.get("installedAt").toString();
-			ArrayList<Double> location = new ArrayList<Double>();
+			ArrayList<Double> location = new ArrayList<>();
 
 			Float height = 4.0f;
 			String status = "normal";

@@ -1,6 +1,14 @@
 spring:
+  profiles: dev
   application:
     name: DH-CONNECTIVITY-DAEMON
+  datasource:
+    driver-class-name: ${DATASOURCE_DRIVER}
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_ID} 
+    password: ${DATASOURCE_PW}    
+  
+
 
 logging:
   config: classpath:config/log4j2.xml

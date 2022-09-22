@@ -46,7 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ConvEnergy extends AbstractConvert {
-	
+
 	private ObjectMapper objectMapper;
 	static Connection conn = null;
 
@@ -60,36 +60,36 @@ public class ConvEnergy extends AbstractConvert {
 
 	@Override
 	public String doit() throws CoreException {
-		
+
 		List<Map<String, Object>> rtnList = new LinkedList<>();
 		String rtnStr = "";
-		
+
 		try {
 			JSONObject energy = ConfItem.getJSONObject("energy");
 			JSONObject sqlcon = ConfItem.getJSONObject("databaseInfo");
-			
+
 			String url = sqlcon.getString("url");
 			String user = sqlcon.getString("user");
 			String password = sqlcon.getString("password");
-			
+
 			conn = DriverManager.getConnection(url, user, password);
-			
+
 			Iterator<String> etype = new JSONObject(ConfItem.get("energy").toString()).keys();
-			
+
 			while(etype.hasNext()) {
-				
+
 				String energytype = etype.next();
 				System.out.println(energytype);
-				
+
 				JSONObject energyInfo = new JSONObject(new JsonUtil(ConfItem).get("energy." + energytype).toString());
-				
+
 				String sql = energyInfo.getString("query");
 				PreparedStatement pstmt = null;
 				ResultSet rs = null;
-				
+
 				pstmt = conn.prepareStatement(sql);
 				rs = pstmt.executeQuery();
-				
+
 				if(energytype.equals("fems")) {
 					int num = 1;
 					while (rs.next()) {
@@ -124,23 +124,23 @@ public class ConvEnergy extends AbstractConvert {
 						locMap.put("observedAt", DateUtil.getTime());
 						Map<String, Object> locValueMap = (Map) locMap.get("value");
 						locValueMap.put("coordinates", location);
-						
+
 						String id = energyInfo.getString("idPrefix") + Integer.toString(num);
 						tMap.put("id", id);
 						num++;
-						
+
 						Map<String,Object> energyf = new LinkedHashMap<>();
 						energyf.put("type","Property");
 						energyf.put("observedAt",DateUtil.getTime());
 						energyf.put("value",wMap);
 			            tMap.put("energy", energyf);
-			            
+
 			            rtnList.add(tMap);
 			            String str = objectMapper.writeValueAsString(tMap);
 			            log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
 					}
 				}
-				
+
 				if(energytype.equals("bems")) {
 					int num = 1;
 					while (rs.next()) {
@@ -150,7 +150,7 @@ public class ConvEnergy extends AbstractConvert {
 						ArrayList<Double> location = new ArrayList<>();
 						location.add(126.735936);
 						location.add(37.338464);
-						
+
 						//TODO
 						wMap.put("workplaceName", "시흥에코센터");
 						wMap.put("type", "빌딩 에너지 사용량");
@@ -164,7 +164,7 @@ public class ConvEnergy extends AbstractConvert {
 						wMap.put("measure16to30", rs.getString("measure16to30"));
 						wMap.put("measure31to45", rs.getString("measure31to45"));
 						wMap.put("measure46to60", rs.getString("measure46to60"));
-						
+
 						Map<String, Object> addrValue = (Map) ((Map) tMap.get("address")).get("value");
 						addrValue.put("addressCountry", "kr");
 						addrValue.put("addressRegion", "경기도");
@@ -176,38 +176,36 @@ public class ConvEnergy extends AbstractConvert {
 						locMap.put("observedAt", DateUtil.getTime());
 						Map<String, Object> locValueMap = (Map) locMap.get("value");
 						locValueMap.put("coordinates", location);
-						
+
 						String id = energyInfo.getString("idPrefix") + Integer.toString(num);
 						tMap.put("id", id);
 						num++;
-						
+
 						Map<String,Object> energyf = new LinkedHashMap<>();
 						energyf.put("type","Property");
 						energyf.put("observedAt",DateUtil.getTime());
 						energyf.put("value",wMap);
 			            tMap.put("energy", energyf);
-			            
+
 			            rtnList.add(tMap);
 			            String str = objectMapper.writeValueAsString(tMap);
 			            log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
 					}
 				}
 			}
-			
+
 			rtnStr = objectMapper.writeValueAsString(rtnList);
 		} catch (CoreException e) {
-			e.printStackTrace();
 			if("!C0099".equals(e.getErrorCode())) {
 				log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "'" + id, e);
 		}
-		
+
 		return rtnStr;
-		
+
 	} // end of doit
 }
 // end of class

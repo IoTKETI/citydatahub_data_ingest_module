@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -135,34 +136,34 @@ public class ConvRoadLinkTrafficInformation_PublicDataPortal extends AbstractCon
 					addrValue.put("addressLocality", iSvc.optString("addressLocality", ""));
 					addrValue.put("addressTown", iSvc.optString("dongne", ""));
 					addrValue.put("streetAddress", iSvc.optString("juso", ""));
-					
-					ArrayList<ArrayList<Double>> location = new ArrayList<ArrayList<Double>>();
-					ArrayList<Double> location2 = new ArrayList<Double>();
+
+					ArrayList<ArrayList<Double>> location = new ArrayList<>();
+					ArrayList<Double> location2 = new ArrayList<>();
 					location2.add(-109.05d);
 					location2.add(41.00d);
 					location.add(location2);
-					
-					location2 = new ArrayList<Double>();
+
+					location2 = new ArrayList<>();
 					location2.add(-102.06);
 					location2.add(40.99d);
 					location.add(location2);
-					
-					location2 = new ArrayList<Double>();
+
+					location2 = new ArrayList<>();
 					location2.add(-102.03d);
 					location2.add(36.99d);
 					location.add(location2);
-					
-					location2 = new ArrayList<Double>();
+
+					location2 = new ArrayList<>();
 					location2.add(-109.04d);
 					location2.add(36.99d);
 					location.add(location2);
-					
-					location2 = new ArrayList<Double>();
+
+					location2 = new ArrayList<>();
 					location2.add(-109.05);
 					location2.add(41.00);
 					location.add(location2);
-					
-					
+
+
 					Map<String, Object> locMap = (Map) tMap.get("location");
 					locMap.put("observedAt", DateUtil.getTime());
 					Map<String, Object> locValueMap = (Map) locMap.get("value");
@@ -199,7 +200,7 @@ public class ConvRoadLinkTrafficInformation_PublicDataPortal extends AbstractCon
 		try {
 			date = df.parse(gettime);
 		} catch (ParseException e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}
 		cal.setTime(date);
 		DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss,SSSXXX");

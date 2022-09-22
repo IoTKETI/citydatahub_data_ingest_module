@@ -17,21 +17,11 @@
 package com.cityhub.adapter.convex;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,21 +29,16 @@ import org.json.JSONObject;
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.environment.Constants;
 import com.cityhub.exception.CoreException;
+import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
+import com.cityhub.utils.DateUtil;
+import com.cityhub.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.cityhub.utils.CommonUtil;
-import com.cityhub.utils.DataType;
-import com.cityhub.utils.DateUtil;
-import com.cityhub.utils.JsonUtil;
 
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Headers;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 @Slf4j
 public class ConvWeatherMeasurement_PublicDataPortal extends AbstractConvert {
@@ -162,12 +147,10 @@ public class ConvWeatherMeasurement_PublicDataPortal extends AbstractConvert {
 			rtnStr = objectMapper.writeValueAsString(rtnList);
 
 		} catch (CoreException e) {
-			e.printStackTrace();
 			if ("!C0099".equals(e.getErrorCode())) {
 				log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
 		}

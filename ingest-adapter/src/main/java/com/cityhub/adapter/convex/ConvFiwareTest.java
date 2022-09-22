@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,7 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConvFiwareTest extends AbstractConvert {
 	private ObjectMapper objectMapper;
-	
+
 
 	@Override
 	public void init(JSONObject ConfItem, JSONObject templateItem) {
@@ -61,12 +62,12 @@ public class ConvFiwareTest extends AbstractConvert {
 	@Override
 	public String doit() throws CoreException {
 		List<Map<String, Object>> rtnList = new LinkedList<>();
-		
+
 		String rtnStr = "";
 		try {
 			JSONArray svcList = ConfItem.getJSONArray("serviceList");
 			for (int i = 0; i < svcList.length(); i++) {
-				
+
 				JSONObject iSvc = svcList.getJSONObject(i); // Column별로 분리함
 				Object ju = getData("http://192.168.1.179:1026/v2/entities?type=CCTV");
 				JSONArray arrList = (JSONArray) ju;
@@ -127,18 +128,8 @@ public class ConvFiwareTest extends AbstractConvert {
 		wMap = (Map) tMap.get(name);
 		try {
 			wMap.putAll(objectMapper.readValue(item.getJSONObject(name).getJSONObject("value").toString(),new TypeReference < Map < String, Object >> () {}));
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (JSONException | IOException e) {
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}
 	}
 

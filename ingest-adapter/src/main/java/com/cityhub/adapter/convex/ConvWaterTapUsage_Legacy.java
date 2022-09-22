@@ -21,26 +21,25 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
-import org.json.JSONObject;
-
-import com.cityhub.core.AbstractConvert;
-import com.cityhub.exception.CoreException;
-import com.cityhub.utils.DataCoreCode.ErrorCode;
-import com.cityhub.utils.DataCoreCode.SocketCode;
-import com.cityhub.utils.DateUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.SimpleDateFormat;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.cityhub.environment.Constants;
-
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.JSONObject;
+
+import com.cityhub.core.AbstractConvert;
+import com.cityhub.environment.Constants;
+import com.cityhub.exception.CoreException;
+import com.cityhub.utils.DataCoreCode.ErrorCode;
+import com.cityhub.utils.DataCoreCode.SocketCode;
+import com.cityhub.utils.DateUtil;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -136,7 +135,7 @@ public class ConvWaterTapUsage_Legacy extends AbstractConvert {
 
 			rtnStr = objectMapper.writeValueAsString(rtnList);
 		} catch (SQLException e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 
 		} catch (CoreException e) {
 			if ("!C0099".equals(e.getErrorCode())) {
@@ -157,7 +156,7 @@ public class ConvWaterTapUsage_Legacy extends AbstractConvert {
 					conn.close();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+			  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 			}
 		}
 

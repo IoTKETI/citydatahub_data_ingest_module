@@ -28,11 +28,15 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cityhub.utils.JsonUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public abstract class ConvCCTV2 {
 
 	JSONObject _confItem;
@@ -105,7 +109,7 @@ public abstract class ConvCCTV2 {
 			Class.forName(className);
 			conn = DriverManager.getConnection(url, user, password);
 		}catch (Exception e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}
 		return conn;
 	}
@@ -116,14 +120,14 @@ public abstract class ConvCCTV2 {
 
 	protected void disconnectDB(Connection conn, PreparedStatement pstmt, ResultSet rs) {
 		try {if(rs != null) {rs.close();}}
-		catch (Exception e) {e.printStackTrace();}
+		catch (Exception e) {log.error("Exception : "+ExceptionUtils.getStackTrace(e));}
 		disconnectDB(conn, pstmt);
 	}
 	protected void disconnectDB(Connection conn, PreparedStatement pstmt) {
 		try {if(pstmt != null) {pstmt.close();}}
-		catch (Exception e) {e.printStackTrace();}
+		catch (Exception e) {log.error("Exception : "+ExceptionUtils.getStackTrace(e));}
 		try {if(conn != null) {conn.close();}}
-		catch (Exception e) {e.printStackTrace();}
+		catch (Exception e) {log.error("Exception : "+ExceptionUtils.getStackTrace(e));}
 	}
 
 	protected String getTimeInfo(LocalDate date, LocalTime time) {

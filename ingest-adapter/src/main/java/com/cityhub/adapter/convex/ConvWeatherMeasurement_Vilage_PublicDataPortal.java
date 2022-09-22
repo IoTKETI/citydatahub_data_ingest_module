@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -68,7 +69,7 @@ public class ConvWeatherMeasurement_Vilage_PublicDataPortal extends AbstractConv
 
 				JSONObject iSvc = svcList.getJSONObject(i); // Column별로 분리함
 				id = iSvc.optString("gs1Code");
-				
+
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(DateUtil.getTimestamp());
 				DateFormat df = new SimpleDateFormat("yyyyMMdd");
@@ -175,7 +176,7 @@ public class ConvWeatherMeasurement_Vilage_PublicDataPortal extends AbstractConv
 						} // end for
 
 						log(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
-						
+
 						Find_wMap2(tMap, Tempitem, "altitude", "Double");
 						Find_wMap2(tMap, Tempitem, "windDirection", "Double");
 						Find_wMap2(tMap, Tempitem, "windSpeed", "Double");
@@ -269,7 +270,7 @@ public class ConvWeatherMeasurement_Vilage_PublicDataPortal extends AbstractConv
 			try {
 				date = df.parse(Tempitem.optString(Name + "Time"));
 			} catch (ParseException e) {
-				e.printStackTrace();
+			  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 			}
 			cal.setTime(date);
 			DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss,SSSXXX");

@@ -28,13 +28,14 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.exception.CoreException;
+import com.cityhub.utils.DataCoreCode.ErrorCode;
+import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DataType;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
-import com.cityhub.utils.DataCoreCode.ErrorCode;
-import com.cityhub.utils.DataCoreCode.SocketCode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,7 +70,7 @@ public class ConvUCityPlatformEvent_rev extends AbstractConvert {
         curSheet = workbook.getSheetAt(sheetIdx); //첫 번째 시트안의 모든 데이터
         for(int rowIdx=1; rowIdx<curSheet.getPhysicalNumberOfRows(); rowIdx++) {
           curRow = curSheet.getRow(rowIdx);
-          Map<String,String> row = new HashMap<String,String>();
+          Map<String,String> row = new HashMap<>();
           for(int cellIdx=0; cellIdx<curRow.getPhysicalNumberOfCells(); cellIdx++) {
 
             String type = curSheet.getRow(rowIdx).getCell(1).toString();
@@ -123,10 +124,8 @@ public class ConvUCityPlatformEvent_rev extends AbstractConvert {
       System.out.println("Model transfer end: "+System.currentTimeMillis());
 
     }catch(CoreException e) {
-      e.printStackTrace();
       log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
     }catch(Exception e) {
-      e.printStackTrace();
       log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
     }

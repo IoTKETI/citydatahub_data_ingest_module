@@ -23,19 +23,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
+
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.environment.Constants;
 import com.cityhub.exception.CoreException;
-import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
+import com.cityhub.utils.DateUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -90,7 +91,7 @@ public class ConvUCityPlatformEvent_Postgres extends AbstractConvert {
 						new TypeReference<Map<String, Object>>() {
 						});
 				Map<String, Object> wMap;
-				ArrayList<Double> coordinates = new ArrayList<Double>();
+				ArrayList<Double> coordinates = new ArrayList<>();
 
 				Object[][] EVT_ID = { { "112UC001", "112긴급영상" }, { "112UC120", "112긴급출동" }, { "119UC001", "119긴급출동" },
 						{ "APLEN110", "기상특보" }, { "BISTR110", "버스정보" }, { "BNRCP140", "강도발생" },
@@ -107,8 +108,8 @@ public class ConvUCityPlatformEvent_Postgres extends AbstractConvert {
 				String eventName = ExponentialStage(rs.getString("EVT_ID"), EVT_ID);
 				String grade = ExponentialStage(rs.getString("EVT_GRAD_CD"), EVT_GRAD_CD);
 				String status = ExponentialStage(rs.getString("EVT_PRGRS_CD"), EVT_PRGRS_CD);
-				
-				
+
+
 				Find_wMap(tMap, "eventType").put("value", rs.getString("EVT_ID"));
 				Find_wMap(tMap, "eventName").put("value", eventName);
 				Find_wMap(tMap, "grade").put("value", grade);
@@ -148,7 +149,7 @@ public class ConvUCityPlatformEvent_Postgres extends AbstractConvert {
 				throw new CoreException(ErrorCode.NORMAL_ERROR);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 
 		} catch (CoreException e) {
 			if ("!C0099".equals(e.getErrorCode())) {
@@ -169,7 +170,7 @@ public class ConvUCityPlatformEvent_Postgres extends AbstractConvert {
 					conn.close();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+			  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 			}
 		}
 

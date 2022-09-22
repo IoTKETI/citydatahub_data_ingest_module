@@ -32,27 +32,20 @@ import com.cityhub.exception.CoreException;
 import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
-import com.cityhub.utils.DataType;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.TimeZone;
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ConvBusArrivalStation_by extends AbstractConvert {
 	private ObjectMapper objectMapper;
-	
+
   @Override
-  public void init(JSONObject ConfItem, JSONObject templateItem) { 
+  public void init(JSONObject ConfItem, JSONObject templateItem) {
     super.setup(ConfItem, templateItem);
     this.objectMapper = new ObjectMapper();
     this.objectMapper.setSerializationInclusion(Include.NON_NULL);
@@ -62,28 +55,28 @@ public class ConvBusArrivalStation_by extends AbstractConvert {
 
   @Override
   public String doit() throws CoreException {
-	
+
 	List<Map<String,Object>> rtnList = new LinkedList<>();
 	String rtnStr = "";
-	  
+
     try {
       JSONArray svcList = ConfItem.getJSONArray("serviceList");
-      
+
       for (int i = 0; i < svcList.length(); i++) {
         JSONObject iSvc = svcList.getJSONObject(i);
         id = iSvc.getString("gs1Code");
-               
+
         JsonUtil ju = new JsonUtil((JSONObject) CommonUtil.getData(iSvc));
-        
-        if (ju.has("response.msgBody.busArrivalList")) {   
+
+        if (ju.has("response.msgBody.busArrivalList")) {
 
           JSONArray arrList = ju.getArray("response.msgBody.busArrivalList");
-               
-          for (Object obj : arrList) { 
+
+          for (Object obj : arrList) {
         	  Map<String,Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String,Object>>(){});
               Map<String,Object> wMap = new LinkedHashMap<>();
         	  JSONObject item = (JSONObject) obj;
-        	 
+
         	  wMap.put("stationId", item.optString("stationId", ""));
         	  wMap.put("staOrder", item.optString("staOrder", ""));
         	  wMap.put("flag", item.optString("flag", ""));
@@ -105,7 +98,7 @@ public class ConvBusArrivalStation_by extends AbstractConvert {
 	          addrValue.put("addressLocality", JsonUtil.nvl(iSvc.getString("addressLocality")) );
 	          addrValue.put("addressTown", JsonUtil.nvl(iSvc.getString("addressTown")) );
 	          addrValue.put("streetAddress", JsonUtil.nvl(iSvc.getString("streetAddress")) );
-	          
+
 	          Map<String,Object> locMap = (Map)tMap.get("location");
 	          Map<String,Object> locValueMap  = (Map)locMap.get("value");
 
@@ -120,23 +113,21 @@ public class ConvBusArrivalStation_by extends AbstractConvert {
 	          tMap.put("BusArrivalInfo", busArrivalIinfo);
 	          rtnList.add(tMap);
           }
-          
+
         }
 
        }
-      
+
       rtnStr = objectMapper.writeValueAsString(rtnList);
     } catch (CoreException e) {
-        e.printStackTrace();
         if ("!C0099".equals(e.getErrorCode())) {
           log(SocketCode.DATA_CONVERT_FAIL, id,  e.getMessage());
         }
       } catch (Exception e) {
-        e.printStackTrace();
         log(SocketCode.DATA_CONVERT_FAIL,  id,  e.getMessage());
         throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage() + "`" + id  , e);
       }
-    
+
     return rtnStr;
   }
 

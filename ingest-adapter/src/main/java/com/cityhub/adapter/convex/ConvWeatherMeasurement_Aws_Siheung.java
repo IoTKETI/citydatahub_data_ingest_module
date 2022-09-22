@@ -33,21 +33,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.environment.Constants;
 import com.cityhub.exception.CoreException;
+import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
+import com.cityhub.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ObjectArrays;
-import com.cityhub.utils.CommonUtil;
-import com.cityhub.utils.DateUtil;
-import com.cityhub.utils.JsonUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -90,7 +90,7 @@ public class ConvWeatherMeasurement_Aws_Siheung extends AbstractConvert {
 								if (arrList.length() > 0) {
 									for (Object obj : arrList) {
 										JSONObject item = (JSONObject) obj;
-										if (item != null) {							
+										if (item != null) {
 											log(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
 											Map<String, Object> tMap = objectMapper
 													.readValue(
@@ -208,7 +208,7 @@ public class ConvWeatherMeasurement_Aws_Siheung extends AbstractConvert {
 
 											Find_wMap(tMap, "deviceType").put("value",
 													item.optString("deviceType", "Static"));
-											
+
 
 											wMap = (Map) tMap.get("globalLocationNumber");
 											wMap.put("value", id);
@@ -230,7 +230,7 @@ public class ConvWeatherMeasurement_Aws_Siheung extends AbstractConvert {
 											addrValue.put("addressTown", item.optString("SPOT_NM", ""));
 											addrValue.put("streetAddress", item.optString("LEGALDONG_NM", ""));
 
-											ArrayList<Double> coordinates = new ArrayList<Double>();
+											ArrayList<Double> coordinates = new ArrayList<>();
 
 											coordinates.add(item.optDouble("WGS84_LOGT", 0.0d));
 											coordinates.add(item.optDouble("WGS84_LAT", 0.0d));
@@ -256,12 +256,10 @@ public class ConvWeatherMeasurement_Aws_Siheung extends AbstractConvert {
 				throw new CoreException(ErrorCode.NORMAL_ERROR);
 			}
 		} catch (CoreException e) {
-			e.printStackTrace();
 			if ("!C0099".equals(e.getErrorCode())) {
 				log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
 		}
@@ -277,7 +275,7 @@ public class ConvWeatherMeasurement_Aws_Siheung extends AbstractConvert {
 		try {
 			date = df.parse(gettime);
 		} catch (ParseException e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}
 		cal.setTime(date);
 		DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss,SSSXXX");

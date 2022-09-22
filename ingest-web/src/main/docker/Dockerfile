@@ -30,5 +30,5 @@ EXPOSE 8080
   
 ADD ingest-web-1.0.0.jar /opt/web/app.jar
 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-jar","/opt/web/app.jar"]
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-Djdk.io.File.enableADS=true", "-jar","/opt/web/app.jar"]
 

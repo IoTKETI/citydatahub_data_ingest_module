@@ -30,13 +30,16 @@ import org.apache.flume.event.EventBuilder;
 import org.json.JSONObject;
 
 import com.cityhub.core.AbstractPollSource;
+import com.cityhub.dto.LogVO;
 import com.cityhub.environment.Constants;
 import com.cityhub.environment.ReflectExecuter;
 import com.cityhub.environment.ReflectExecuterManager;
 import com.cityhub.model.DataModelEx;
 import com.cityhub.utils.DataCoreCode.SocketCode;
+import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
+import com.cityhub.utils.LogWriterToDb;
 import com.cityhub.utils.OkUrlUtil;
 import com.cityhub.utils.StrUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -49,7 +52,6 @@ import lombok.extern.slf4j.Slf4j;
 public class OpenApiSource extends AbstractPollSource {
 
   private String modelId;
-  private String modelVersion;
   private String datasetId;
   private String schemaSrv;
   private JSONObject templateItem;
@@ -62,6 +64,8 @@ public class OpenApiSource extends AbstractPollSource {
   public void setup(Context context) {
     modelId = context.getString("MODEL_ID", "");
     datasetId = context.getString("DATASET_ID", "");
+
+    log.info("*****************************1datasetId:{}",datasetId);
     String confFile = context.getString("CONF_FILE", "");
     adapterType = context.getString("type", "");
 
@@ -73,9 +77,13 @@ public class OpenApiSource extends AbstractPollSource {
     } else {
       configInfo = new JSONObject();
     }
+    if (getInit().has("daemonSrverLogApi") ) {
+      configInfo.put("daemonSrverLogApi", getInit().getString("daemonSrverLogApi"));
+    } else {
+      configInfo.put("daemonSrverLogApi", "http://localhost:8888/logToDbApi");
+    }
     configInfo.put("modelId", modelId);
     configInfo.put("model_id", modelId);
-    configInfo.put("modelVersion", modelVersion);
     configInfo.put("datasetId", datasetId);
     configInfo.put("schemaSrv", schemaSrv);
     configInfo.put("sourceName", this.getName());
@@ -94,12 +102,12 @@ public class OpenApiSource extends AbstractPollSource {
     templateItem = new JSONObject();
     if (ArrModel != null) {
       for (String model : ArrModel) {
-        HttpResponse resp = OkUrlUtil.get(schemaSrv+"?ud=" + model, "Accept", "application/json");
+        HttpResponse resp = OkUrlUtil.get(schemaSrv+"?id=" + model, "Accept", "application/json");
         log.info("schema info: {},{},{}",model, resp.getStatusCode(), schemaSrv+"?id=" + model);
         if (resp.getStatusCode() == 200) {
           DataModelEx dm = new DataModelEx(resp.getPayload());
           if (dm.hasModelId(model)) {
-            templateItem.put(model, dm.createModel(model, modelVersion));
+            templateItem.put(model, dm.createModel(model));
             log.info("schema server: {},{}",model, templateItem);
           } else {
             templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
@@ -132,7 +140,29 @@ public class OpenApiSource extends AbstractPollSource {
           for (Map<String,Object> itm : entities) {
             int length = objectMapper.writeValueAsString(itm).getBytes().length;
             log.info("`{}`{}`{}`{}`{}`{}",this.getName() ,itm.get("type"), getStr(SocketCode.DATA_SAVE_REQ) , itm.get("id"), length , adapterType);
+            StringBuilder l =  new StringBuilder();
+            l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
+            l.append("`").append(configInfo.getString("sourceName"));
+            l.append("`").append(modelId);
+            l.append("`").append(SocketCode.DATA_SAVE_REQ.getCode() + ";" + SocketCode.DATA_SAVE_REQ.getMessage());
+            l.append("`").append(itm.get("id")+"");
+            l.append("`").append(length);
+            l.append("`").append(adapterType);
+            l.append("`").append(configInfo.getString("invokeClass"));
+            LogVO logVo = new LogVO();
+            logVo.setSourceName(configInfo.getString("sourceName"));
+            logVo.setPayload(l.toString());
+            logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
+            logVo.setType(modelId);
+            logVo.setStep(SocketCode.DATA_SAVE_REQ.getCode());
+            logVo.setDesc(SocketCode.DATA_SAVE_REQ.getMessage());
+            logVo.setId(itm.get("id")+"");
+            logVo.setLength(String.valueOf(length));
+            logVo.setAdapterType(configInfo.getString("invokeClass"));
+            LogWriterToDb.logToDaemonApi(configInfo,logVo);
+
           }
+
           sendEventEx(entities);
           Thread.sleep(10);
         }
@@ -140,10 +170,11 @@ public class OpenApiSource extends AbstractPollSource {
         log.error("`{}`{}`{}`{}`{}`{}",this.getName(), modelId , getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
       log.error("`{}`{}`{}`{}`{}`{}",this.getName(), modelId , getStr(SocketCode.NORMAL_ERROR, e.getMessage()), "", 0, adapterType);
     }
   }
+
+
   public void sendEventEx(List<Map<String,Object>> entities) {
     try {
       Map<String,Object> body = new LinkedHashMap<>();

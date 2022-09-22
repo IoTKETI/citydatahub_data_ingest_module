@@ -46,6 +46,7 @@ import com.cityhub.environment.DefaultConstants;
 import com.cityhub.utils.DateUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -124,7 +125,7 @@ public class SelfQuarantineEventSource extends AbstractSource implements Configu
       }
       Thread.sleep(connTerm * 1000); // second * 1000
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -140,7 +141,7 @@ public class SelfQuarantineEventSource extends AbstractSource implements Configu
       Event event = EventBuilder.withBody(byteBuffer.array());
       getChannelProcessor().processEvent(event);
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
     }
   }
   public String httpConnection(String targetUrl,String method,  String jsonBody)  {
@@ -198,7 +199,7 @@ public class SelfQuarantineEventSource extends AbstractSource implements Configu
       returnText = sb.toString();
       log.info("responseData: {},{}", responseCode, returnText);
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
     } finally {
       if (conn != null) {
         conn.disconnect();

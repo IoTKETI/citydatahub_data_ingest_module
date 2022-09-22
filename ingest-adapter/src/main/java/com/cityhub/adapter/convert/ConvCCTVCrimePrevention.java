@@ -24,11 +24,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cityhub.utils.JsonUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ConvCCTVCrimePrevention extends ConvCCTV2 {
 
 	@Override
@@ -60,7 +64,7 @@ public class ConvCCTVCrimePrevention extends ConvCCTV2 {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}finally {
 			disconnectDB(conn, pstmt, rs);
 		}
@@ -104,7 +108,7 @@ public class ConvCCTVCrimePrevention extends ConvCCTV2 {
 			String typeOfCCTV = _cctvType;
 			String createdAt = getTimeInfo(LocalDate.now(), LocalTime.now());
 
-			ArrayList<Float> coordinates = new ArrayList<Float>();
+			ArrayList<Float> coordinates = new ArrayList<>();
 			coordinates.add(0f);
 			coordinates.add(0f);
 

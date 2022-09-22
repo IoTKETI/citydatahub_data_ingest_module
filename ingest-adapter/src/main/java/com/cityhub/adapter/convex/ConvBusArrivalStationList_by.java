@@ -16,7 +16,6 @@
  */
 package com.cityhub.adapter.convex;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -33,14 +32,8 @@ import com.cityhub.exception.CoreException;
 import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
-import com.cityhub.utils.DataType;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.TimeZone;
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConvBusArrivalStationList_by extends AbstractConvert {
 	private ObjectMapper objectMapper;
-	
+
 	 @Override
 	  public void init(JSONObject ConfItem, JSONObject templateItem) {
 	    super.setup(ConfItem, templateItem);
@@ -62,11 +55,11 @@ public class ConvBusArrivalStationList_by extends AbstractConvert {
 
 	  @Override
 	  public String doit() throws CoreException {
-		  
-			  
+
+
 		List<Map<String,Object>> rtnList = new LinkedList<>();
 		String rtnStr = "";
-		
+
 	    try {
 	      JSONArray svcList = ConfItem.getJSONArray("serviceList");
 	      for (int i = 0; i < svcList.length(); i++) {
@@ -79,24 +72,24 @@ public class ConvBusArrivalStationList_by extends AbstractConvert {
 	          throw new CoreException(ErrorCode.NORMAL_ERROR);
 	        } else {
 	          log(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
-	          
+
 	          Map<String,Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String,Object>>(){});
 	          Map<String,Object> wMap = new LinkedHashMap<>();
-	         
+
 	          log.info("response:{}",ju.get("response"));
 	          log.info("response.msgBody.busArrivalItem:{}",ju.getObj("response.msgBody.busArrivalItem"));
 
 	          JSONObject item =  (JSONObject) ju.getObj("response.msgBody.busArrivalItem");
 
 	          if (item.length() > 0) {
-		        	  			          
+
 	        	  wMap.put("stationId", item.optString("stationId", ""));
 	        	  wMap.put("staOrder", item.optString("staOrder", ""));
 		  	      wMap.put("flag", item.optString("flag", ""));
 		  	      wMap.put("routeId", item.optString("routeId", ""));
 		  	      wMap.put("predictTime1", item.optString("predictTime1", ""));
 		  	      wMap.put("predictTime2", item.optString("predictTime2", "0"));
-		  
+
 		      	  wMap.put("plateNo1", item.optString("plateNo1", ""));
 		  	      wMap.put("plateNo2", item.optString("plateNo2", "0"));
 		  	      wMap.put("locationNo1", item.optString("locationNo1", ""));
@@ -105,19 +98,19 @@ public class ConvBusArrivalStationList_by extends AbstractConvert {
 		  	      wMap.put("lowPlate2", item.optString("lowPlate2", ""));
 		  	      wMap.put("remainSeatCnt1", item.optInt("remainSeatCnt1", 0));
 			      wMap.put("remainSeatCnt2", item.optInt("remainSeatCnt2", 0));
-		          
+
 		          Map<String,Object> addrValue = (Map)((Map)tMap.get("address")).get("value");
 		          addrValue.put("addressCountry", JsonUtil.nvl(iSvc.getString("addressCountry")) );
 		          addrValue.put("addressRegion", JsonUtil.nvl(iSvc.getString("addressRegion")) );
 		          addrValue.put("addressLocality", JsonUtil.nvl(iSvc.getString("addressLocality")) );
 		          addrValue.put("addressTown", JsonUtil.nvl(iSvc.getString("addressTown")) );
 		          addrValue.put("streetAddress", JsonUtil.nvl(iSvc.getString("streetAddress")) );
-		          
+
 		          Map<String,Object> locMap = (Map)tMap.get("location");
 		          locMap.put("observedAt",DateUtil.getTime());
 		          Map<String,Object> locValueMap  = (Map)locMap.get("value");
 		          locValueMap.put("coordinates", iSvc.getJSONArray("location").toList());
-		          
+
 		          tMap.put("id", iSvc.getString("gs1Code"));
 		          Map<String,Object> busArrivalInfo = new LinkedHashMap<>();
 		          busArrivalInfo.put("type", "Property");
@@ -134,16 +127,14 @@ public class ConvBusArrivalStationList_by extends AbstractConvert {
 	          }
 	        }
 	      }
-	      
+
 	      rtnStr = objectMapper.writeValueAsString(rtnList);
 
 	    } catch (CoreException e) {
-	      e.printStackTrace();
 	      if ("!C0099".equals(e.getErrorCode())) {
 	        log(SocketCode.DATA_CONVERT_FAIL, id,  e.getMessage());
 	      }
 	    } catch (Exception e) {
-	      e.printStackTrace();
 	      log(SocketCode.DATA_CONVERT_FAIL,  id,  e.getMessage());
 	      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage() + "`" + id  , e);
 	    }

@@ -25,13 +25,10 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,27 +36,22 @@ import org.json.JSONObject;
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.environment.Constants;
 import com.cityhub.exception.CoreException;
+import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
+import com.cityhub.utils.DateUtil;
+import com.cityhub.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.cityhub.utils.CommonUtil;
-import com.cityhub.utils.DataType;
-import com.cityhub.utils.DateUtil;
-import com.cityhub.utils.JsonUtil;
 
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Headers;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 @Slf4j
 public class ConvWeatherMeasurement_PublicData_by2 extends AbstractConvert {
 
 	private ObjectMapper objectMapper;
-	
+
 	@Override
 	public void init(JSONObject ConfItem, JSONObject templateItem) {
 		super.setup(ConfItem, templateItem);
@@ -72,27 +64,27 @@ public class ConvWeatherMeasurement_PublicData_by2 extends AbstractConvert {
 	@Override
 	public String doit() throws CoreException {
 //		StringBuffer sendJson = new StringBuffer();
-		List<Map<String,Object>> rtnList = new LinkedList<>(); // buffer대신 List로 데이터 받을예정 
+		List<Map<String,Object>> rtnList = new LinkedList<>(); // buffer대신 List로 데이터 받을예정
 		String rtnStr =""; // list로 받은것 string으로 변환해서 적재할거임
-		
+
 		try {
 		      JSONArray svcList = ConfItem.getJSONArray("serviceList");
-		      
+
 		      for (int i = 0; i < svcList.length(); i++) {
 		        JSONObject iSvc = svcList.getJSONObject(i);
-		        
-		        
+
+
 		        JsonUtil ju = new JsonUtil((JSONObject) CommonUtil.getData(iSvc));
 		        System.out.println("ju : "+ju);
-		        
-		        if (ju.has("response.body.items.item")) {   
+
+		        if (ju.has("response.body.items.item")) {
 		          JSONArray arrList = ju.getArray("response.body.items.item");
-		           		          
+
 		          for (Object obj : arrList) { //array를 json object에 못넣기때문에 object에 넣고 다시 옮기는방식
 		        	  Map<String,Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String,Object>>(){});
-				      
+
 				      JSONObject item = (JSONObject) obj;
-		              
+
 				      if (item.has("wd")) {
 							Find_wMap(tMap, "windDirection").put("value", item.optInt("wd"));
 						} else {
@@ -123,22 +115,22 @@ public class ConvWeatherMeasurement_PublicData_by2 extends AbstractConvert {
 						} else {
 							Delete_wMap(tMap, "seaLevelPressure");
 						}
-				      
+
 				      // test할때만 숫자로 값 push 나중에 변환
 				      if (item.has("rn")) {
 							Find_wMap(tMap, "rainfall").put("value", item.optString("rn"));
 						} else {
 							Delete_wMap(tMap, "rainfall");
 						}
-				      
-				      
-				      
+
+
+
 				      if (item.has("altitude")) {
 							Find_wMap(tMap, "altitude").put("value", item.optString("altitude"));
 						} else {
 							Delete_wMap(tMap, "altitude");
 						}
-				      
+
 				      if (item.has("deviceType")) {
 							Find_wMap(tMap, "deviceType").put("value", item.optString("deviceType"));
 						} else {
@@ -190,55 +182,53 @@ public class ConvWeatherMeasurement_PublicData_by2 extends AbstractConvert {
 						} else {
 							Delete_wMap(tMap, "visibility");
 						}
-				      				      
-				      if (iSvc.has("globalLocationNumber")) 
+
+				      if (iSvc.has("globalLocationNumber"))
 							Find_wMap(tMap, "globalLocationNumber").put("value", iSvc.get("globalLocationNumber"));
 				      Map<String, Object> dp_wMap = (Map) tMap.get("dataProvider");
 	                  dp_wMap.put("value", iSvc.optString("dataProvider", "https://www.weather.go.kr"));
-				      
+
 				      tMap.put("id", iSvc.get("id"));
-				      
+
 			          String createdAt = getTimeInfo(LocalDate.now(), LocalTime.now());
 			          tMap.put("createdAt", createdAt );
-			          
+
 			          Map<String, Object> addrValue = (Map) ((Map) tMap.get("address")).get("value");
 						addrValue.put("addressCountry", iSvc.optString("addressCountry", ""));
 						addrValue.put("addressRegion", iSvc.optString("addressRegion", ""));
 						addrValue.put("addressLocality", iSvc.optString("addressLocality", ""));
 						addrValue.put("addressTown", iSvc.optString("addressTown", ""));
 						addrValue.put("streetAddress", iSvc.optString("streetAddress", ""));
-								        
-			          ArrayList<Float> coordinates = new ArrayList<Float>();
+
+			          ArrayList<Float> coordinates = new ArrayList<>();
 			          coordinates.add(0f);
 			          coordinates.add(0f);
-						
+
 			          Map<String,Object> locMap = (Map)tMap.get("location");
 			          locMap.put("observedAt",createdAt);
 			          Map<String,Object> locValueMap  = (Map)locMap.get("value");
 			          locValueMap.put("coordinates", coordinates);
-			          		
+
 					  rtnList.add(tMap);
-			               	  
-		          }            
-		        } 	        
+
+		          }
+		        }
 		      }
-		      
+
 		      rtnStr = objectMapper.writeValueAsString(rtnList);
-		      
+
 		    } catch (CoreException e) {
-		        e.printStackTrace();
 		        if ("!C0099".equals(e.getErrorCode())) {
 		          log(SocketCode.DATA_CONVERT_FAIL, id,  e.getMessage());
 		        }
 		      } catch (Exception e) {
-		        e.printStackTrace();
 		        log(SocketCode.DATA_CONVERT_FAIL,  id,  e.getMessage());
 		        throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage() + "`" + id  , e);
 		      }
-		    
+
 		    return rtnStr;
 		  }
-	
+
 	Map<String, Object> Find_wMap(Map<String, Object> tMap, String Name) {
 		Map<String, Object> ValueMap = (Map) tMap.get(Name);
 		ValueMap.put("observedAt", DateUtil.getTime());
@@ -248,7 +238,7 @@ public class ConvWeatherMeasurement_PublicData_by2 extends AbstractConvert {
 	void Delete_wMap(Map<String, Object> tMap, String Name) {
 		tMap.remove(Name);
 	}
-	
+
 	String ExponentialStage(Integer Exponential, Object[][] arrList) {
 
 		Integer Min = 0;
@@ -269,7 +259,7 @@ public class ConvWeatherMeasurement_PublicData_by2 extends AbstractConvert {
 
 		return resultName;
 	}
-	
+
 	protected String getTimeInfo(LocalDate date, LocalTime time) {
 
 		LocalDateTime dt = LocalDateTime.of(date, time);

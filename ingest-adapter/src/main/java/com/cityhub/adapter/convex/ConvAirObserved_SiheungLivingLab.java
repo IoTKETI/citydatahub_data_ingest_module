@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -86,13 +87,13 @@ public class ConvAirObserved_SiheungLivingLab extends AbstractConvert {
 						JsonUtil gMVL = new JsonUtil((JSONObject) CommonUtil.getData(_serviceList,
 								_serviceList.getString("getMeasureValueList_url_addr") + "&" + "deviceId" + "="
 										+ deviceId + "&" + "pastReqTime" + "=" + thistime));
-						
+
 						if (gMVL.has("list")) {
 							JSONArray MVLList = gMVL.getArray("list");
 							if ((MVLList.length() > 0)) {
 								for (Object MVLobj : MVLList) {
 									JSONObject MVLitem = (JSONObject) MVLobj;
-									
+
 									if((MVLitem.optFloat("lon", 0.0f) == 0.0f) || (MVLitem.optFloat("lat", 0.0f) == 0.0f))
 										continue;
 
@@ -103,7 +104,7 @@ public class ConvAirObserved_SiheungLivingLab extends AbstractConvert {
 									Map<String, Object> wMap = new LinkedHashMap<>();
 
 									gettime = MVLitem.optString("time");
-									
+
 									if (MVLitem.has("so2")) {
 										Find_wMap(tMap, "so2").put("value", MVLitem.optDouble("so2"));
 									} else {
@@ -194,16 +195,14 @@ public class ConvAirObserved_SiheungLivingLab extends AbstractConvert {
 				}
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 			}
 
 		}
 		try {
 			rtnStr = objectMapper.writeValueAsString(rtnList);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}
 		return rtnStr;
 
@@ -217,7 +216,7 @@ public class ConvAirObserved_SiheungLivingLab extends AbstractConvert {
         try {
     		date = df.parse(gettime);
         } catch (ParseException e) {
-            e.printStackTrace();
+          log.error("Exception : "+ExceptionUtils.getStackTrace(e));
         }
 		cal.setTime(date);
 		DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss,SSSXXX");

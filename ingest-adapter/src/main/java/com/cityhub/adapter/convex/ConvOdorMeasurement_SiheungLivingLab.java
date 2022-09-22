@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -40,7 +41,6 @@ import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -90,23 +90,23 @@ public class ConvOdorMeasurement_SiheungLivingLab extends AbstractConvert {
 						JsonUtil gMVL = new JsonUtil((JSONObject) CommonUtil.getData(_serviceList,
 								_serviceList.getString("getMeasureValueList_url_addr") + "&" + "deviceId" + "="
 										+ deviceId + "&" + "pastReqTime" + "=" + thistime));
-						
+
 						if (gMVL.has("list")) {
 							JSONArray MVLList = gMVL.getArray("list");
 							for (Object MVLobj : MVLList) {
 								JSONObject MVLitem = (JSONObject) MVLobj;
-								
+
 								if ((MVLitem.optFloat("lon", 0.0f) == 0.0f) || (MVLitem.optFloat("lat", 0.0f) == 0.0f)) {
 									continue;
 								}
 								log(SocketCode.DATA_RECEIVE, id, gDL.toString().getBytes());
-								
+
 								Map<String, Object> tMap = objectMapper.readValue(
 										templateItem.getJSONObject(ConfItem.getString("modelId")).toString(),
 										new TypeReference<Map<String, Object>>() {
 										});
 								Map<String, Object> wMap = new LinkedHashMap<>();
-									
+
 									gettime = MVLitem.optString("time");
 
 									if (MVLitem.has("h2s"))
@@ -169,12 +169,10 @@ public class ConvOdorMeasurement_SiheungLivingLab extends AbstractConvert {
 				throw new CoreException(ErrorCode.NORMAL_ERROR);
 			}
 		} catch (CoreException e) {
-			e.printStackTrace();
 			if ("!C0099".equals(e.getErrorCode())) {
 				log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
 		}
@@ -189,7 +187,7 @@ public class ConvOdorMeasurement_SiheungLivingLab extends AbstractConvert {
         try {
     		date = df.parse(gettime);
         } catch (ParseException e) {
-            e.printStackTrace();
+          log.error("Exception : "+ExceptionUtils.getStackTrace(e));
         }
 		cal.setTime(date);
 		DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss,SSSXXX");

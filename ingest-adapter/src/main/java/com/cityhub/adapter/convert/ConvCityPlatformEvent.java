@@ -17,8 +17,10 @@
 package com.cityhub.adapter.convert;
 
 import java.sql.Statement;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.exception.CoreException;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
@@ -53,12 +55,10 @@ public class ConvCityPlatformEvent  extends AbstractConvert {
               }
 
         } catch (CoreException e) {
-              e.printStackTrace();
               if ("!C0099".equals(e.getErrorCode())) {
                 log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
               }
         } catch (Exception e) {
-              e.printStackTrace();
               log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
               throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
         }

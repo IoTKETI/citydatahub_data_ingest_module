@@ -16,20 +16,18 @@
  */
 package com.cityhub.adapter.convex;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 
@@ -41,9 +39,7 @@ import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.OkUrlUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConvSandbox extends AbstractConvert {
 	private ObjectMapper objectMapper;
-	
+
 
 	@Override
 	public void init(JSONObject ConfItem, JSONObject templateItem) {
@@ -65,12 +61,12 @@ public class ConvSandbox extends AbstractConvert {
 	@Override
 	public String doit() throws CoreException {
 		List<Map<String, Object>> rtnList = new LinkedList<>();
-		
+
 		String rtnStr = "";
 		try {
 			JSONArray svcList = ConfItem.getJSONArray("serviceList");
 			for (int i = 0; i < svcList.length(); i++) {
-				
+
 				JSONObject iSvc = svcList.getJSONObject(i); // Column별로 분리함
 				Object ju = getData("http://192.168.1.204:8082/entities?Type=kr.siheung.citydatahub.AirQualityMeasurement:1.0");
 				JSONArray arrList = (JSONArray) ju;
@@ -85,8 +81,8 @@ public class ConvSandbox extends AbstractConvert {
 									templateItem.getJSONObject(ConfItem.getString("modelId")).toString(),
 									new TypeReference<Map<String, Object>>() {
 									});
-							
-							
+
+
 							log.info("item : " + item);
 							log.info("item.optString(\"modifiedAt\") : " + item.optString("modifiedAt"));
 							Calendar cal = Calendar.getInstance();
@@ -95,7 +91,7 @@ public class ConvSandbox extends AbstractConvert {
 					        try {
 					    		date = df.parse(item.optString("modifiedAt"));
 					        } catch (ParseException e) {
-					            e.printStackTrace();
+					          log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 					        }
 							cal.setTime(date);
 							//yyyyMMddHHmmss
@@ -110,8 +106,8 @@ public class ConvSandbox extends AbstractConvert {
 							log.info("hdfs://192.168.1.182:8020/logs/WeatherMeasurement/"+Y+"/"+M+"/"+D);
 							//DS_AirQualityMeasurement_AirKorea_Siheung_%Y_%m_%d_%H_%M_%S
 							log.info("DS_AirQualityMeasurement_AirKorea_Siheung"+df5.format(cal.getTime()));
-							
-							
+
+
 
 							String str = objectMapper.writeValueAsString(tMap);
 							log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());

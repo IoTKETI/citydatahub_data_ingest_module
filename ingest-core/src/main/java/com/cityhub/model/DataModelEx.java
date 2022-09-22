@@ -29,6 +29,9 @@ import com.cityhub.dto.RequestMessageVO;
 import com.cityhub.utils.ByteUtil;
 import com.cityhub.utils.DataCoreCode.EventType;
 import com.cityhub.utils.DataCoreCode.Operation;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +52,47 @@ public class DataModelEx {
   private static final byte DEFAULT_KAFKA_MESSAGE_MAIN_VERSION = 0X01;
   private static final byte DEFAULT_KAFKA_MESSAGE_SUB_VERSION = 0X00;
 
-  JSONArray schema;
+
+  public static enum GeoJsonValueType {
+      @JsonProperty("Point")
+      POINT("Point"),
+      @JsonProperty("MultiPoint")
+      MULTIPOINT("MultiPoint"),
+      @JsonProperty("LineString")
+      LINESTRING("LineString"),
+      @JsonProperty("MultiLineString")
+      MULTILINESTRING("MultiLineString"),
+      @JsonProperty("Polygon")
+      POLYGON("Polygon"),
+      @JsonProperty("MultiPolygon")
+      MULTIPOLYGON("MultiPolygon"),
+
+      ;
+
+      private String code;
+
+      @JsonCreator
+      private GeoJsonValueType(String code) {
+          this.code = code;
+      }
+
+      public String getCode() {
+          return code;
+      }
+
+      @JsonValue
+      public static GeoJsonValueType parseType(String code) {
+          for (GeoJsonValueType geoJsonValueType : values()) {
+              if (geoJsonValueType.getCode().equals(code)) {
+                  return geoJsonValueType;
+              }
+          }
+          return null;
+      }
+  }
+
+  private JSONArray schema;
+  private JSONObject schemaModel;
 
   /**
    * @param jsonArray
@@ -87,112 +130,150 @@ public class DataModelEx {
     return bl;
   }
 
-  /**
-   * @param modelId
-   * @param version
-   * @return
-   */
-  public JSONObject getModel(String modelId, String version) {
+  public JSONObject getModel(String modelId) {
     JSONObject tm = new JSONObject();
     for (Object models : schema) {
       JSONObject model = (JSONObject) models;
       if (modelId.equals(model.get("type"))  ) {
         tm = model;
+        schemaModel = model;
         break;
       }
     }
     return tm;
   }
-  /**
-   * @return
-   */
+  public JSONObject getAttributeInfo(String attributeName) {
+    JSONObject attribute = new JSONObject();
+    JSONArray attributes = schemaModel.getJSONArray("attributes");
+    for (Object attr : attributes) {
+      JSONObject item = (JSONObject) attr;
+      if (attributeName.equalsIgnoreCase(item.getString("name"))) {
+        attribute = item;
+        break;
+      }
+    }
+    return attribute;
+  }
+
+  public boolean hasObservedAtAttribute(String attributeName) {
+    boolean bl = false;
+    JSONArray attributes = schemaModel.getJSONArray("attributes");
+    for (Object attr : attributes) {
+      JSONObject item = (JSONObject) attr;
+      if (attributeName.equalsIgnoreCase(item.getString("name"))) {
+        if (item.has("hasObservedAt") && item.getBoolean("hasObservedAt")) bl = true;
+        break;
+      }
+    }
+    return bl;
+  }
+  public boolean isRequiredAttribute(String attributeName) {
+    boolean bl = false;
+
+    JSONArray attributes = schemaModel.getJSONArray("attributes");
+    for (Object attr : attributes) {
+      JSONObject item = (JSONObject) attr;
+      if (attributeName.equalsIgnoreCase(item.getString("name"))) {
+        if (item.has("isRequired") && item.getBoolean("isRequired")) bl = true;
+        break;
+      }
+    }
+    return bl;
+  }
+
+  public boolean hasUnitCodeAttribute(String attributeName) {
+    boolean bl = false;
+    JSONArray attributes = schemaModel.getJSONArray("attributes");
+    for (Object attr : attributes) {
+      JSONObject item = (JSONObject) attr;
+      if (attributeName.equalsIgnoreCase(item.getString("name"))) {
+        if (item.has("hasUnitCode") && item.getBoolean("hasUnitCode")) bl = true;
+        break;
+      }
+    }
+    return bl;
+  }
   public List<Map<String,String>> listOfModel(){
     List<Map<String,String>> list = new LinkedList<>();
     for (Object models : schema) {
       JSONObject model = (JSONObject) models;
       Map<String,String> item = new HashMap<>();
       item.put("modelId",model.getString("type"));
-      item.put("version",model.getString("version"));
-      item.put("namespace",model.getString("namespace"));
+
+      if (model.has("id")) {
+        item.put("id",model.getString("id"));
+      }
       list.add(item);
-      //log.info("Model Info:{}, {}, {}, {}",model.getString("type"), model.getString("type"), model.getString("namespace"), model.getString("version"),model.getJSONArray("context"));
     }
     return list;
   }
-  /**
-   * @param modelId
-   * @param version
-   * @return
-   */
-  public JSONObject createModel(String modelId, String version) {
+
+  public JSONObject createModel(String modelId) {
     JSONObject templateItem = new JSONObject();
     if (hasModelId(modelId)) {
-      JSONObject jModel = getModel(modelId, version);
-      /*
-      if (jModel.has("indexAttributeNames")) {
-        log.info("indexAttributeNames:{}",jModel.getJSONArray("indexAttributeNames"));
-      }
-      */
-      templateItem.put("@context", jModel.getJSONArray("context"));
-      templateItem.put("type", jModel.getString("type"));
-      templateItem.put("id", "");
+      JSONObject jModel = getModel(modelId);
+      makeModel(templateItem,jModel);
+    } else {
 
-      JSONArray ja = jModel.getJSONArray("attributes");
-      for (Object items : ja) {
-        JSONObject item = (JSONObject) items;
-
-        item.getString("name");
-
-        JSONObject subItem = new JSONObject();
-        subItem.put("type", item.getString("attributeType"));
-        if (item.has("hasObservedAt") && item.get("hasObservedAt") != JSONObject.NULL && item.getBoolean("hasObservedAt") == true) {
-          subItem.put("observedAt", "");
-        }
-        if ("String".equals(item.getString("valueType")) ) {
-          subItem.put("value", JSONObject.NULL);
-        } else if ("GeoJson".equals(item.getString("valueType")) ) {
-          JSONObject jMember = new JSONObject();
-          jMember.put("type", "Point");
-          jMember.put("coordinates", new JSONArray());
-          subItem.put("value", jMember);
-        } else if ("Object".equals(item.getString("valueType")) ) {
-          if (item.has("objectMembers") ) {
-            JSONObject jMember = new JSONObject();
-            for(Object members : item.getJSONArray("objectMembers")) {
-              JSONObject member = (JSONObject) members;
-              jMember.put(member.getString("name") , getValueType(member.getString("valueType")));
-            }
-            subItem.put("value", jMember);
-          } else {
-            subItem.put("value", JSONObject.NULL);
-          }
-        } else if ("ArrayString".equals(item.getString("valueType"))) {
-          subItem.put("value", new JSONArray());
-        } else if ("Integer".equals(item.getString("valueType")) ) {
-          subItem.put("value", JSONObject.NULL);
-        } else if ("Double".equals(item.getString("valueType")) ) {
-          subItem.put("value", JSONObject.NULL);
-        } else if ("Date".equals(item.getString("valueType")) ) {
-          subItem.put("value", JSONObject.NULL);
-        } else if ("ArrayObject".equals(item.getString("valueType")) ) {
-          if (item.has("objectMembers")) {
-            JSONObject jMember = new JSONObject();
-            for(Object members : item.getJSONArray("objectMembers")) {
-              JSONObject member = (JSONObject) members;
-              jMember.put(member.getString("name") , getValueType(member.getString("valueType")));
-            }
-            subItem.put("value", new JSONArray().put(jMember));
-          } else {
-            subItem.put("value", JSONObject.NULL);
-          }
-        }
-        templateItem.put(item.getString("name"), subItem);
-      }
     }
-
-    //log.info("templateItem:{}",templateItem);
     return templateItem;
   }
+
+  private void makeModel(JSONObject templateItem, JSONObject jModel) {
+    templateItem.put("@context", jModel.getJSONArray("context"));
+    templateItem.put("type", jModel.getString("type"));
+    templateItem.put("id", "");
+    JSONArray ja = jModel.getJSONArray("attributes");
+    for (Object items : ja) {
+      JSONObject item = (JSONObject) items;
+
+      JSONObject subItem = new JSONObject();
+      subItem.put("type", item.getString("attributeType"));
+      if (item.has("hasObservedAt") && item.get("hasObservedAt") != JSONObject.NULL && item.getBoolean("hasObservedAt") == true) {
+        subItem.put("observedAt", item.getString("valueType"));
+      }
+      if ("String".equals(item.getString("valueType")) ) {
+        subItem.put("value", item.getString("valueType"));
+      } else if ("GeoJson".equals(item.getString("valueType")) ) {
+        JSONObject jMember = new JSONObject();
+        jMember.put("type", GeoJsonValueType.POINT.getCode());
+        jMember.put("coordinates", new JSONArray());
+        subItem.put("value", jMember);
+      } else if ("Object".equals(item.getString("valueType")) ) {
+        if (item.has("objectMembers") ) {
+          JSONObject jMember = new JSONObject();
+          for(Object members : item.getJSONArray("objectMembers")) {
+            JSONObject member = (JSONObject) members;
+            jMember.put(member.getString("name") , getValueType(member.getString("valueType")));
+          }
+          subItem.put("value", jMember);
+        } else {
+          subItem.put("value", item.getString("valueType"));
+        }
+      } else if ("ArrayString".equals(item.getString("valueType"))) {
+        subItem.put("value", new JSONArray().put(item.getString("valueType")));
+      } else if ("Integer".equals(item.getString("valueType")) ) {
+        subItem.put("value", item.getString("valueType"));
+      } else if ("Double".equals(item.getString("valueType")) ) {
+        subItem.put("value", item.getString("valueType"));
+      } else if ("Date".equals(item.getString("valueType")) ) {
+        subItem.put("value", item.getString("valueType"));
+      } else if ("ArrayObject".equals(item.getString("valueType")) ) {
+        if (item.has("objectMembers")) {
+          JSONObject jMember = new JSONObject();
+          for(Object members : item.getJSONArray("objectMembers")) {
+            JSONObject member = (JSONObject) members;
+            jMember.put(member.getString("name") , getValueType(member.getString("valueType")));
+          }
+          subItem.put("value", new JSONArray().put(jMember));
+        } else {
+          subItem.put("value", item.getString("valueType"));
+        }
+      }
+      templateItem.put(item.getString("name"), subItem);
+    }
+  }
+
   /**
    * @param valueType
    * @return

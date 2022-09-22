@@ -1,31 +1,30 @@
 package com.cityhub.adapter.convex;
 
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.cityhub.core.AbstractConvert;
-import com.cityhub.exception.CoreException;
-import com.cityhub.utils.CommonUtil;
-import com.cityhub.utils.DataCoreCode.ErrorCode;
-import com.cityhub.utils.DataCoreCode.SocketCode;
-import com.cityhub.utils.DateUtil;
-import com.cityhub.utils.JsonUtil;
-import com.cityhub.environment.Constants;
-
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.cityhub.core.AbstractConvert;
+import com.cityhub.environment.Constants;
+import com.cityhub.exception.CoreException;
+import com.cityhub.utils.CommonUtil;
+import com.cityhub.utils.DataCoreCode.ErrorCode;
+import com.cityhub.utils.DataCoreCode.SocketCode;
+import com.cityhub.utils.DateUtil;
+import com.cityhub.utils.JsonUtil;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -179,12 +178,10 @@ public class ConvWaterQualityIndustry_PublicDataPortal extends AbstractConvert {
 				throw new CoreException(ErrorCode.NORMAL_ERROR);
 			}
 		} catch (CoreException e) {
-			e.printStackTrace();
 			if ("!C0099".equals(e.getErrorCode())) {
 				log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "'" + id, e);
 		}
@@ -200,7 +197,7 @@ public class ConvWaterQualityIndustry_PublicDataPortal extends AbstractConvert {
 		try {
 			date = df.parse(gettime);
 		} catch (ParseException e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}
 		cal.setTime(date);
 		DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss,SSSXXX");

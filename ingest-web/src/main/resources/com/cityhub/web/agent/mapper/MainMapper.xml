@@ -15,15 +15,16 @@
   </select>
 
   <select id="selectAllAgentId" resultType="map">
-    SELECT agent_id, COALESCE(agent_nm,'') as agent_nm, COALESCE(use_yn,'') as use_yn, COALESCE(etc_note,'') as etc_note, first_create_dt, first_create_id, last_update_dt, last_update_id 
+    SELECT agent_id, COALESCE(agent_nm,'') as agent_nm, COALESCE(ip_addr,'') as ip_addr, COALESCE(port_number,0) as port_number, COALESCE(use_yn,'') as use_yn, COALESCE(etc_note,'') as etc_note, first_create_dt, first_create_id, last_update_dt, last_update_id 
     FROM AGENT_INFO
     WHERE agent_id = #{agent_id}
   </select>
 
   <select id="selectAll" resultType="map">
-    SELECT agent_id, agent_nm,  A.use_yn, A.etc_note, to_char(A.first_create_dt, 'YYYY-MM-DD HH24:MI:SS') AS first_create_dt, A.first_create_id, A.last_update_dt, A.last_update_id 
+    SELECT agent_id, agent_nm, A.ip_addr, port_number, A.use_yn, A.etc_note, to_char(A.first_create_dt, 'YYYY-MM-DD HH24:MI:SS') AS first_create_dt, A.first_create_id, A.last_update_dt, A.last_update_id 
     ,(SELECT COUNT(*) FROM adapter_info WHERE agent_id = A.agent_id) AS adt_cnt
     FROM public.agent_info a
+    LEFT OUTER JOIN comm_code B ON A.ip_addr = B.code_id
     order by agent_id
   </select>
 
@@ -35,14 +36,14 @@
  
   <insert id="insert" parameterType="map" useGeneratedKeys="true" keyProperty="agent_id">
     INSERT INTO agent_info (
-      agent_id, agent_nm, use_yn, etc_note, first_create_dt, first_create_id, last_update_dt, last_update_id 
+      agent_id, agent_nm, ip_addr, port_number, use_yn, etc_note, first_create_dt, first_create_id, last_update_dt, last_update_id 
     ) VALUES (
-      #{agent_id}, #{agent_nm}, #{use_yn}, #{etc_note}, now(), #{user_id}, now(), #{user_id} 
+      #{agent_id}, #{agent_nm}, #{ip_addrress}, cast(#{port_number} as int), #{use_yn}, #{etc_note}, now(), #{user_id}, now(), #{user_id} 
     )
   </insert>
   
   <select id="getLastId" resultType="map">
-    select * from agent_info order by agent_id desc limit 1
+  	select * from agent_info order by agent_id desc limit 1
   </select>
 
   <update id="update" parameterType="map" >
@@ -54,6 +55,12 @@
       </if>
       <if test="agent_nm != null and agent_nm != '' ">
       , agent_nm = #{agent_nm}
+      </if>
+      <if test="ip_addr != null and ip_addr != '' ">
+      , ip_addr = #{ip_addr}
+      </if>
+      <if test="port_number != null and port_number != '' ">
+      , port_number = #{port_number}
       </if>
       <if test="use_yn != null and use_yn != '' ">
       , use_yn = #{use_yn}
@@ -295,12 +302,12 @@
 <!--     , B.target_platform_type -->
 <!--     , D.code_nm -->
 <!--     ,CASE  -->
-<!--      WHEN D.code_nm = 'Open API' THEN 'com.cityhub.adapter.convex.OpenApiSource' -->
-<!--      WHEN D.code_nm = 'OneM2M' THEN 'com.cityhub.adapter.convex.OpenApiSource'  -->
-<!--      WHEN D.code_nm = 'Legacy Platform' THEN 'com.cityhub.adapter.convex.OpenApiSource'  -->
-<!--      WHEN D.code_nm = '도시통합 Platform' THEN 'com.cityhub.adapter.convex.OpenApiSource'  -->
-<!--      WHEN D.code_nm = 'Fiware' THEN 'com.cityhub.adapter.convex.OpenApiSource'  -->
-<!--   END AS "type" -->
+<!-- 	    WHEN D.code_nm = 'Open API' THEN 'com.cityhub.adapter.convex.OpenApiSource' -->
+<!-- 	    WHEN D.code_nm = 'OneM2M' THEN 'com.cityhub.adapter.convex.OpenApiSource'  -->
+<!-- 	    WHEN D.code_nm = 'Legacy Platform' THEN 'com.cityhub.adapter.convex.OpenApiSource'  -->
+<!-- 	    WHEN D.code_nm = '도시통합 Platform' THEN 'com.cityhub.adapter.convex.OpenApiSource'  -->
+<!-- 	    WHEN D.code_nm = 'Fiware' THEN 'com.cityhub.adapter.convex.OpenApiSource'  -->
+<!-- 	 END AS "type" -->
 <!--     , 1800 AS CONN_TERM -->
 <!--     , 'WeatherObserved' AS TEMPLATE_FILE -->
 <!--     , rank() OVER (PARTITION BY A.agent_id ORDER BY B.adapter_id) AS ADT_I -->
@@ -327,12 +334,12 @@ SELECT
     , B.target_platform_type
     , D.code_nm
     ,CASE 
-      WHEN D.code_nm = 'Open API' THEN 'com.cityhub.adapter.convex.OpenApiSource'
-      WHEN D.code_nm = 'OneM2M' THEN 'com.cityhub.adapter.convex.OneM2M' 
-      WHEN D.code_nm = 'Legacy Platform' THEN 'com.cityhub.adapter.convex.LegacyPlatform' 
-      WHEN D.code_nm = '도시통합 Platform' THEN 'com.cityhub.adapter.convex.UrbanintegrationPlatform' 
-      WHEN D.code_nm = 'Fiware' THEN 'com.cityhub.adapter.convex.Fiware' 
-   END AS "type"
+	    WHEN D.code_nm = 'Open API' THEN 'com.cityhub.adapter.convex.OpenApiSource'
+	    WHEN D.code_nm = 'OneM2M' THEN 'com.cityhub.adapter.convex.OneM2M' 
+	    WHEN D.code_nm = 'Legacy Platform' THEN 'com.cityhub.adapter.convex.LegacyPlatform' 
+	    WHEN D.code_nm = '도시통합 Platform' THEN 'com.cityhub.adapter.convex.UrbanintegrationPlatform' 
+	    WHEN D.code_nm = 'Fiware' THEN 'com.cityhub.adapter.convex.Fiware' 
+	 END AS "type"
     , 1800 AS CONN_TERM
     , 'WeatherObserved' AS TEMPLATE_FILE
     , rank() OVER (PARTITION BY A.agent_id ORDER BY B.adapter_id) AS ADT_I
@@ -394,10 +401,10 @@ ORDER BY A.agent_id, B.adapter_id, C.instance_id, D.display_seq
   </select>
   
   
-  <select id="selectKeywordInfo" resultType="map"> 
-  select item, item_described , relation_code_id
-  from keyword_info
-  </select>
+	<select id="selectKeywordInfo" resultType="map"> 
+	select item, item_described , relation_code_id
+	from keyword_info
+	</select>
   
 <select id="selectObComboList" resultType="map"> 
 SELECT

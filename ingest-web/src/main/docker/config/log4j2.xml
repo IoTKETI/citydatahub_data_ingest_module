@@ -36,7 +36,7 @@
 
   <Loggers>
     <Root level="info" >
-      <AppenderRef ref="Console-Appender" />
+      <AppenderRef ref="Console-Appender" level="info" />
       <AppenderRef ref="rollingFileAppender" level="info"/>
       <AppenderRef ref="errorRollingFileAppender" level="error"/>
     </Root>

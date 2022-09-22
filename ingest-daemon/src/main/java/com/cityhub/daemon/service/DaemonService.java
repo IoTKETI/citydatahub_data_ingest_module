@@ -56,7 +56,6 @@ public class DaemonService {
   @Value("${flume.conf}")
   private String flumeConfPath;
 
-
   /**
    * 읽어온 로그 파싱
    * @param lines

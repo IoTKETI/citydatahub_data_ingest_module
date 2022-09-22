@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -40,7 +41,6 @@ import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -69,10 +69,10 @@ public class ConvEnvironmentMeasurement_SiheungLivingLab extends AbstractConvert
 			for (Object sLobj : serviceList) {
 				JSONObject _serviceList = (JSONObject) sLobj;
 
-				
+
 				JsonUtil gDL = new JsonUtil((JSONObject) CommonUtil.getData(_serviceList,
 						_serviceList.getString("getDeviceList_url_addr")));
-				
+
 				if (gDL.has("list")) {
 					JSONArray DLList = gDL.getArray("list");
 					for (Object DLobj : DLList) {
@@ -108,58 +108,58 @@ public class ConvEnvironmentMeasurement_SiheungLivingLab extends AbstractConvert
 										new TypeReference<Map<String, Object>>() {
 										});
 								Map<String, Object> wMap = new LinkedHashMap<>();
-									
+
 									gettime = MVLitem.optString("time");
 
 									if (MVLitem.has("pm10"))
 									    Find_wMap(tMap, "pm10").put("value", MVLitem.optDouble("pm10", 0.0d));
 									else
 									    Delete_wMap(tMap, "pm10");
-									
+
 									if (MVLitem.has("pm25"))
 									    Find_wMap(tMap, "pm25").put("value", MVLitem.optDouble("pm25", 0.0d));
 									else
 									    Delete_wMap(tMap, "pm25");
-									
+
 									if (MVLitem.has("temper"))
 									    Find_wMap(tMap, "temperature").put("value", MVLitem.optDouble("temper", 0.0d));
 									else
 									    Delete_wMap(tMap, "temperature");
-									
+
 									if (MVLitem.has("humid"))
 									    Find_wMap(tMap, "humidity").put("value", MVLitem.optDouble("humid", 0.0d));
 									else
 									    Delete_wMap(tMap, "humidity");
-									
+
 									if (MVLitem.has("ap"))
 									    Find_wMap(tMap, "atmosphericPressure").put("value", MVLitem.optDouble("ap", 0.0d));
 									else
 									    Delete_wMap(tMap, "atmosphericPressure");
-									
+
 									if (MVLitem.has("tod"))
 									    Find_wMap(tMap, "tod").put("value", MVLitem.optDouble("tod", 0.0d));
 									else
 									    Delete_wMap(tMap, "tod");
-									
+
 									if (MVLitem.has("h2s"))
 									    Find_wMap(tMap, "h2s").put("value", MVLitem.optDouble("h2s", 0.0d));
 									else
 									    Delete_wMap(tMap, "h2s");
-									
+
 									if (MVLitem.has("nh3"))
 									    Find_wMap(tMap, "nh3").put("value", MVLitem.optDouble("nh3", 0.0d));
 									else
 									    Delete_wMap(tMap, "nh3");
-									
+
 									if (MVLitem.has("vocs"))
 									    Find_wMap(tMap, "voc").put("value", MVLitem.optDouble("vocs", 0.0d));
 									else
 									    Delete_wMap(tMap, "voc");
-									
+
 									id = _serviceList.optString("gs1Code");
-									
+
 									Find_wMap(tMap, "deviceType").put("value", Grade_DeviceType(deviceType));
-									
+
 									id +=  "." + deviceId;
 
 									wMap = (Map) tMap.get("dataProvider");
@@ -191,25 +191,23 @@ public class ConvEnvironmentMeasurement_SiheungLivingLab extends AbstractConvert
 							}
 						}
 					}
-				} 
+				}
 			}
 			rtnStr = objectMapper.writeValueAsString(rtnList);
 			if (rtnStr.length() < 10) {
 				throw new CoreException(ErrorCode.NORMAL_ERROR);
 			}
 		} catch (CoreException e) {
-			e.printStackTrace();
 			if ("!C0099".equals(e.getErrorCode())) {
 				log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
 			throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
 		}
 		return rtnStr;
 	}
-	
+
 	Map<String, Object> Find_wMap(Map<String, Object> tMap, String Name) {
 		Map<String, Object> ValueMap = (Map) tMap.get(Name);
 		Calendar cal = Calendar.getInstance();
@@ -218,7 +216,7 @@ public class ConvEnvironmentMeasurement_SiheungLivingLab extends AbstractConvert
         try {
     		date = df.parse(gettime);
         } catch (ParseException e) {
-            e.printStackTrace();
+          log.error("Exception : "+ExceptionUtils.getStackTrace(e));
         }
 		cal.setTime(date);
 		DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss,SSSXXX");

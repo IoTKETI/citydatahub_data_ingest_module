@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 
 import com.cityhub.core.AbstractConvert;
@@ -31,6 +32,9 @@ import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DataType;
 import com.cityhub.utils.JsonUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ConvAirQualityMeasurementDBConn extends AbstractConvert {
 
 	@Override
@@ -105,7 +109,7 @@ public class ConvAirQualityMeasurementDBConn extends AbstractConvert {
 
 
 		}catch(Exception e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}finally {
 			disConnection(conn, pstmt, rs);
 		}
@@ -124,7 +128,7 @@ public class ConvAirQualityMeasurementDBConn extends AbstractConvert {
 				maxTime = rs.getString("maxTime");
 			}
 		}catch (Exception e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}finally {
 			disConnection(conn, pstmt, rs);
 		}
@@ -145,15 +149,15 @@ public class ConvAirQualityMeasurementDBConn extends AbstractConvert {
 			Class.forName(className);
 			conn = DriverManager.getConnection(url, user, password);
 		}catch (Exception e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}
 		return conn;
 	}
 
 	private void disConnection(Connection conn, PreparedStatement pstmt, ResultSet rs) {
-		if(rs != null) {try{rs.close();}catch(Exception e) {e.printStackTrace();}}
-		if(pstmt != null) {try{pstmt.close();}catch(Exception e) {e.printStackTrace();}}
-		if(conn != null) {try{conn.close();}catch(Exception e) {e.printStackTrace();}}
+		if(rs != null) {try{rs.close();}catch(Exception e) {log.error("Exception : "+ExceptionUtils.getStackTrace(e));}}
+		if(pstmt != null) {try{pstmt.close();}catch(Exception e) {log.error("Exception : "+ExceptionUtils.getStackTrace(e));}}
+		if(conn != null) {try{conn.close();}catch(Exception e) {log.error("Exception : "+ExceptionUtils.getStackTrace(e));}}
 	}
 
 

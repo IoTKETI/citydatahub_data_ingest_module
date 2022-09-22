@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="loggerMapper">
+
+
+<insert id="insertConnectivityLog" parameterType="map" timeout="20" useGeneratedKeys="true" keyProperty="payload">
+	INSERT INTO connectivity_log (
+	  log_dt,
+	  adapter_id,
+	  step,
+	  payload,
+	  st_datamodel,
+	  data_id,
+	  log_desc,
+	  length,
+	  adapter_type,
+	  first_create_dt
+	) VALUES (
+	  TO_TIMESTAMP(#{timestamp}, 'YYYY-MM-DD HH24:MI:SS,MS'),
+	  #{sourceName},
+	  #{step},
+	  #{payload},
+	  #{type},
+	  #{id},
+	  #{desc},
+	  #{length},
+	  #{adapterType},
+	  now() 
+	)
+</insert>
+  
+  
+</mapper>

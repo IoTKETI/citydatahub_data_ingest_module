@@ -13,6 +13,7 @@ services:
     ports:
       - 5430:5432
     volumes:
+      - db-data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: on-failure
     healthcheck:
@@ -28,6 +29,10 @@ services:
       -  log-data:/opt/logs  
     environment:
       - TZ=Asia/Seoul
+      - DATASOURCE_DRIVER=org.postgresql.Driver
+      - DATASOURCE_URL=jdbc:postgresql://ingest-db:5432/postgres
+      - DATASOURCE_ID=postgres
+      - DATASOURCE_PW=pine1234      
       - DATAMODEL_API_URL=http://10.0.0.36:8080/datamodels
       - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
     depends_on:
@@ -67,5 +72,6 @@ services:
         condition: service_started        
 
 volumes:
+  db-data:
   log-data:
 

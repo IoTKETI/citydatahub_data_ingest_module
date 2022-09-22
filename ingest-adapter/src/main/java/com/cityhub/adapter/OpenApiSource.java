@@ -21,12 +21,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cityhub.core.AbstractPollSource;
+import com.cityhub.dto.LogVO;
 import com.cityhub.environment.ReflectExecuter;
 import com.cityhub.environment.ReflectExecuterManager;
 import com.cityhub.model.DataModel;
 import com.cityhub.utils.DataCoreCode.SocketCode;
+import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
+import com.cityhub.utils.LogWriterToDb;
 import com.cityhub.utils.OkUrlUtil;
 import com.cityhub.utils.StrUtil;
 
@@ -58,6 +61,12 @@ public class OpenApiSource extends AbstractPollSource {
     } else {
       ConfItem = new JSONObject();
     }
+    if (getInit().has("daemonSrverLogApi") ) {
+      ConfItem.put("daemonSrverLogApi", getInit().getString("daemonSrverLogApi"));
+    } else {
+      ConfItem.put("daemonSrverLogApi", "http://localhost:8888/logToDbApi");
+    }
+
     ConfItem.put("model_id", modelId);
     ConfItem.put("schema_srv", schemaSrv);
     ConfItem.put("sourceName", this.getName());
@@ -118,6 +127,26 @@ public class OpenApiSource extends AbstractPollSource {
             JSONObject jo = (JSONObject)itm;
             // 최소한의 검증 처리 (필수값 체크)
             log.info("`{}`{}`{}`{}`{}`{}",this.getName() ,jo.getString("type"), getStr(SocketCode.DATA_SAVE_REQ) , jo.getString("id"), jo.toString().getBytes().length, adapterType);
+            StringBuilder l =  new StringBuilder();
+            l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
+            l.append("`").append(ConfItem.getString("sourceName"));
+            l.append("`").append(modelId);
+            l.append("`").append(SocketCode.DATA_SAVE_REQ.getCode() + ";" + SocketCode.DATA_SAVE_REQ.getMessage());
+            l.append("`").append(jo.getString("id"));
+            l.append("`").append(jo.toString().getBytes().length);
+            l.append("`").append(adapterType);
+            l.append("`").append(ConfItem.getString("invokeClass"));
+            LogVO logVo = new LogVO();
+            logVo.setSourceName(ConfItem.getString("sourceName"));
+            logVo.setPayload(l.toString());
+            logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
+            logVo.setType(modelId);
+            logVo.setStep(SocketCode.DATA_SAVE_REQ.getCode());
+            logVo.setDesc(SocketCode.DATA_SAVE_REQ.getMessage());
+            logVo.setId(jo.getString("id"));
+            logVo.setLength(String.valueOf(jo.toString().getBytes().length));
+            logVo.setAdapterType(ConfItem.getString("invokeClass"));
+            LogWriterToDb.logToDaemonApi(ConfItem,logVo);
             cnt++;
             byte[] cont = createSendJson(jo);
 

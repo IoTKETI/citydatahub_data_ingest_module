@@ -16,6 +16,7 @@
  */
 package com.cityhub.adapter.convert;
 
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,11 +25,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cityhub.utils.JsonUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ConvCCTVDisasterMonitoring extends ConvCCTV2{
 
 	@Override
@@ -59,7 +64,7 @@ public class ConvCCTVDisasterMonitoring extends ConvCCTV2{
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
 		}finally {
 			disconnectDB(conn, pstmt, rs);
 		}
@@ -92,7 +97,7 @@ public class ConvCCTVDisasterMonitoring extends ConvCCTV2{
 			String addressLocality = cctvInfo.get("addressLocality").toString();
 			String addressTown = jobj.get("streetAddress2").toString().split(" ")[0];
 			String isRotatable = jobj.get("isRotatable").toString();
-			ArrayList<Double> location = new ArrayList<Double>();
+			ArrayList<Double> location = new ArrayList<>();
 			String pixel = jobj.get("pixel").toString();
 			String distance = jobj.get("distance").toString();
 			String installedAt = getTimeInfo(LocalDate.of(2020, 1, 1), LocalTime.of(12, 0, 0));
