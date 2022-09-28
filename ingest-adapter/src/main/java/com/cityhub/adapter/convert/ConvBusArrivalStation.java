@@ -18,6 +18,7 @@ package com.cityhub.adapter.convert;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.exception.CoreException;
 import com.cityhub.utils.CommonUtil;
@@ -54,21 +55,21 @@ public class ConvBusArrivalStation extends AbstractConvert {
           for (Object obj : arrList) {
             JSONObject item = (JSONObject) obj;
             JSONObject ob = new JSONObject();
-            ob.put("stationId", JsonUtil.nvl(item.getString("stationId") , DataType.STRING));
-            ob.put("staOrder", JsonUtil.nvl(item.getString("staOrder") , DataType.STRING));
-            ob.put("flag", JsonUtil.nvl(item.getString("flag") , DataType.STRING));
-            ob.put("routeId", JsonUtil.nvl(item.getString("routeId") , DataType.STRING));
+            ob.put("stationId", JsonUtil.nvl(item.getString("stationId"), DataType.STRING));
+            ob.put("staOrder", JsonUtil.nvl(item.getString("staOrder"), DataType.STRING));
+            ob.put("flag", JsonUtil.nvl(item.getString("flag"), DataType.STRING));
+            ob.put("routeId", JsonUtil.nvl(item.getString("routeId"), DataType.STRING));
 
-            ob.put("predictTime1", JsonUtil.nvl(item.getString("predictTime1") , DataType.STRING));
-            ob.put("predictTime2", JsonUtil.nvl(item.getString("predictTime2") , DataType.STRING));
-            ob.put("plateNo1", JsonUtil.nvl(item.getString("plateNo1") , DataType.STRING));
-            ob.put("plateNo2", JsonUtil.nvl(item.getString("plateNo2") , DataType.STRING));
-            ob.put("locationNo1", JsonUtil.nvl(ob.getString("locationNo1") , DataType.STRING));
-            ob.put("locationNo2", JsonUtil.nvl(item.getString("locationNo2") , DataType.STRING));
-            ob.put("lowPlate1", JsonUtil.nvl(item.getString("lowPlate1") , DataType.STRING));
-            ob.put("lowPlate2", JsonUtil.nvl(item.getString("lowPlate2") , DataType.STRING));
-            ob.put("remainSeatCnt1", JsonUtil.nvl(item.getString("remainSeatCnt1") , DataType.STRING));
-            ob.put("remainSeatCnt2", JsonUtil.nvl(item.getString("remainSeatCnt2") , DataType.STRING));
+            ob.put("predictTime1", JsonUtil.nvl(item.getString("predictTime1"), DataType.STRING));
+            ob.put("predictTime2", JsonUtil.nvl(item.getString("predictTime2"), DataType.STRING));
+            ob.put("plateNo1", JsonUtil.nvl(item.getString("plateNo1"), DataType.STRING));
+            ob.put("plateNo2", JsonUtil.nvl(item.getString("plateNo2"), DataType.STRING));
+            ob.put("locationNo1", JsonUtil.nvl(ob.getString("locationNo1"), DataType.STRING));
+            ob.put("locationNo2", JsonUtil.nvl(item.getString("locationNo2"), DataType.STRING));
+            ob.put("lowPlate1", JsonUtil.nvl(item.getString("lowPlate1"), DataType.STRING));
+            ob.put("lowPlate2", JsonUtil.nvl(item.getString("lowPlate2"), DataType.STRING));
+            ob.put("remainSeatCnt1", JsonUtil.nvl(item.getString("remainSeatCnt1"), DataType.STRING));
+            ob.put("remainSeatCnt2", JsonUtil.nvl(item.getString("remainSeatCnt2"), DataType.STRING));
 
             loop.put(ob);
           }
@@ -78,7 +79,7 @@ public class ConvBusArrivalStation extends AbstractConvert {
       }
 
     } catch (Exception e) {
-      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
     }
 
     return sendJson.toString();

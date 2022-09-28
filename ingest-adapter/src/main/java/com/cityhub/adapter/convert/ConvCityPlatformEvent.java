@@ -27,7 +27,7 @@ import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.JsonUtil;
 
-public class ConvCityPlatformEvent  extends AbstractConvert {
+public class ConvCityPlatformEvent extends AbstractConvert {
 
   @Override
   public void init(JSONObject ConfItem, JSONObject templateItem) {
@@ -37,38 +37,33 @@ public class ConvCityPlatformEvent  extends AbstractConvert {
   @Override
   public String doit(Statement st) throws CoreException {
 
-        StringBuffer sendJson = new StringBuffer();
+    StringBuffer sendJson = new StringBuffer();
 
-        try{
-              JSONArray svcList = ConfItem.getJSONArray("serviceList");
+    try {
+      JSONArray svcList = ConfItem.getJSONArray("serviceList");
 
-              for(int i=0; i<svcList.length(); i++) {
-                JSONObject iSvc = svcList.getJSONObject(i);
+      for (int i = 0; i < svcList.length(); i++) {
+        JSONObject iSvc = svcList.getJSONObject(i);
 
-                //id = iSvc.getString("gs1Code");
-                //confItem에서 "gs1Code" 값 호출
+        // id = iSvc.getString("gs1Code");
+        // confItem에서 "gs1Code" 값 호출
 
-                JSONObject jTemplate = templateItem.getJSONObject(ConfItem.getString("model_id"));
-                //Source.java파일에서 설정한 "model_id" 값 호출 - templateItem에 만들어진 양식 호출
+        JSONObject jTemplate = templateItem.getJSONObject(ConfItem.getString("model_id"));
+        // Source.java파일에서 설정한 "model_id" 값 호출 - templateItem에 만들어진 양식 호출
 
-                JsonUtil jsonEx = new JsonUtil(jTemplate);
-              }
+        JsonUtil jsonEx = new JsonUtil(jTemplate);
+      }
 
-        } catch (CoreException e) {
-              if ("!C0099".equals(e.getErrorCode())) {
-                log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-              }
-        } catch (Exception e) {
-              log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-              throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
-        }
+    } catch (CoreException e) {
+      if ("!C0099".equals(e.getErrorCode())) {
+        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      }
+    } catch (Exception e) {
+      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+    }
 
-            return sendJson.toString();
+    return sendJson.toString();
   }
-
-
-
-
-
 
 } // end of class

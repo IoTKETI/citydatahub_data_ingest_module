@@ -42,7 +42,7 @@ public abstract class AbstractBaseSource extends AbstractSource implements Confi
   public void configure(Context context) {
     setInit(new JsonUtil().getFileJsonObject("init.conf"));
     try {
-      if (getInit().has("SCHEMA_SERVER") ) {
+      if (getInit().has("SCHEMA_SERVER")) {
         if (!"".equals(getInit().getString("SCHEMA_SERVER"))) {
           setSchemaSrv(getInit().getString("SCHEMA_SERVER"));
         }
@@ -50,7 +50,6 @@ public abstract class AbstractBaseSource extends AbstractSource implements Confi
     } catch (Exception e) {
 
     }
-
 
     if (counterGroup == null) {
       counterGroup = new CounterGroup();
@@ -73,20 +72,19 @@ public abstract class AbstractBaseSource extends AbstractSource implements Confi
   }
 
   public String getUuid() {
-    return UUID.randomUUID().toString().replaceAll("-","");
+    return UUID.randomUUID().toString().replaceAll("-", "");
   }
 
   public void sendEvent(byte[] bodyBytes) {
     ByteBuffer byteBuffer = ByteBuffer.allocate(bodyBytes.length + 5);
-    byte version = 0x10;//4bit: Major version, 4bit: minor version
-    Integer bodyLength = bodyBytes.length;//length = 1234
+    byte version = 0x10;// 4bit: Major version, 4bit: minor version
+    Integer bodyLength = bodyBytes.length;// length = 1234
     byteBuffer.put(version);
     byteBuffer.putInt(bodyLength.byteValue());
     byteBuffer.put(bodyBytes);
     Event event = EventBuilder.withBody(byteBuffer.array());
     getChannelProcessor().processEvent(event);
   }
-
 
   public String getSchemaSrv() {
     return schemaSrv;
@@ -103,8 +101,5 @@ public abstract class AbstractBaseSource extends AbstractSource implements Confi
   public void setInit(JSONObject init) {
     this.init = init;
   }
-
-
-
 
 } // end of class

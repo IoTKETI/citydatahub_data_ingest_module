@@ -57,36 +57,31 @@ public class ConvRoadLinkTrafficInformation extends AbstractConvert {
 
         JsonUtil ju = new JsonUtil((JSONObject) CommonUtil.getData(iSvc));
 
-        log.info("ju:{}",ju.toString());
+        log.info("ju:{}", ju.toString());
 
-        if (!ju.has("ServiceResult.msgBody.itemList") ) {
+        if (!ju.has("ServiceResult.msgBody.itemList")) {
           throw new CoreException(ErrorCode.NORMAL_ERROR);
         } else {
           log(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
 
-          log.info("ServiceResult:{}",ju.get("ServiceResult"));
-          log.info("getObj:{}",ju.getObj("ServiceResult.msgBody.itemList"));
+          log.info("ServiceResult:{}", ju.get("ServiceResult"));
+          log.info("getObj:{}", ju.getObj("ServiceResult.msgBody.itemList"));
 
-          JSONObject itemList =  (JSONObject) ju.getObj("ServiceResult.msgBody.itemList");
-
+          JSONObject itemList = (JSONObject) ju.getObj("ServiceResult.msgBody.itemList");
 
 //          log.info("*******************");
 //          log.info("*******************");
-
-
-
 
           if (itemList.length() > 0) {
 
-
-          jsonEx.put("routeId.value", JsonUtil.nvl(itemList.get("routeId") , DataType.STRING));
-          jsonEx.put("routeName.value", JsonUtil.nvl(itemList.get("routeNm") , DataType.STRING));
-          jsonEx.put("speed.value", JsonUtil.nvl(itemList.get("spd") , DataType.FLOAT));
-          jsonEx.put("trafficVolume.value", JsonUtil.nvl(itemList.get("vol") , DataType.FLOAT));
-          jsonEx.put("travelTime.value", JsonUtil.nvl(itemList.get("trvlTime") , DataType.FLOAT));
-          jsonEx.put("linkDelayTime.value", JsonUtil.nvl(itemList.get("linkDelayTime") , DataType.FLOAT));
+            jsonEx.put("routeId.value", JsonUtil.nvl(itemList.get("routeId"), DataType.STRING));
+            jsonEx.put("routeName.value", JsonUtil.nvl(itemList.get("routeNm"), DataType.STRING));
+            jsonEx.put("speed.value", JsonUtil.nvl(itemList.get("spd"), DataType.FLOAT));
+            jsonEx.put("trafficVolume.value", JsonUtil.nvl(itemList.get("vol"), DataType.FLOAT));
+            jsonEx.put("travelTime.value", JsonUtil.nvl(itemList.get("trvlTime"), DataType.FLOAT));
+            jsonEx.put("linkDelayTime.value", JsonUtil.nvl(itemList.get("linkDelayTime"), DataType.FLOAT));
 //          jsonEx.put("congestedGrade.value", JsonUtil.nvl(itemList.get("congGrade") , DataType.STRING));
-          jsonEx.put("congestedGrade.value", RoadType.findBy(itemList.getInt("congGrade")).getEngNm());
+            jsonEx.put("congestedGrade.value", RoadType.findBy(itemList.getInt("congGrade")).getEngNm());
 
 //            jsonEx.put("interaval", JsonUtil.nvl(itemList.getString("") , DataType.STRING));
 //            jsonEx.put("taste", JsonUtil.nvl(itemList.getString("item1") , DataType.STRING));
@@ -96,48 +91,42 @@ public class ConvRoadLinkTrafficInformation extends AbstractConvert {
 //            jsonEx.put("turbidity", JsonUtil.nvl(itemList.get("item5") , DataType.FLOAT));
 //            jsonEx.put("residualChlorine", JsonUtil.nvl(itemList.get("item6") , DataType.FLOAT));
 
-
-
             jsonEx.put("@context", new JSONArray().put("http://uri.etsi.org/ngsi-ld/core-context.jsonld").put("http://cityhub.kr/ngsi-ld/trafficInformation.jsonld"));
             jsonEx.put("id", iSvc.getString("gs1Code"));
             jsonEx.put("location.value.coordinates", iSvc.getJSONArray("location"));
             jsonEx.put("location.observedAt", DateUtil.getTime());
-            jsonEx.put("address.value.addressCountry", JsonUtil.nvl(iSvc.getString("addressCountry")) );
-            jsonEx.put("address.value.addressRegion", JsonUtil.nvl(iSvc.getString("addressRegion")) );
-            jsonEx.put("address.value.addressLocality", JsonUtil.nvl(iSvc.getString("addressLocality")) );
-            jsonEx.put("address.value.addressTown", JsonUtil.nvl(iSvc.getString("addressTown")) );
-            jsonEx.put("address.value.streetAddress", JsonUtil.nvl(iSvc.getString("streetAddress")) );
+            jsonEx.put("address.value.addressCountry", JsonUtil.nvl(iSvc.getString("addressCountry")));
+            jsonEx.put("address.value.addressRegion", JsonUtil.nvl(iSvc.getString("addressRegion")));
+            jsonEx.put("address.value.addressLocality", JsonUtil.nvl(iSvc.getString("addressLocality")));
+            jsonEx.put("address.value.addressTown", JsonUtil.nvl(iSvc.getString("addressTown")));
+            jsonEx.put("address.value.streetAddress", JsonUtil.nvl(iSvc.getString("streetAddress")));
 
             List<String> rmKeys = new ArrayList<>();
 
-            String[] searchKey = {"routeId", "routeName", "speed", "trafficVolume", "travelTime", "linkDelayTime", "congestedGrade", "address.value"};
-            JsonUtil.removeNullItem(jTemplate, searchKey , new ArrayList<String>()  );
+            String[] searchKey = { "routeId", "routeName", "speed", "trafficVolume", "travelTime", "linkDelayTime", "congestedGrade", "address.value" };
+            JsonUtil.removeNullItem(jTemplate, searchKey, new ArrayList<String>());
 //            JsonUtil.removeNullItem(jTemplate,"RoadLinkTrafficInformation.value", rmKeys );
-            log(SocketCode.DATA_CONVERT_SUCCESS, id,jTemplate.toString().getBytes());
+            log(SocketCode.DATA_CONVERT_SUCCESS, id, jTemplate.toString().getBytes());
             sendJson.append(jTemplate.toString() + ",");
-            log.info("jTemplate:{}",jTemplate.toString());
+            log.info("jTemplate:{}", jTemplate.toString());
 
           } else {
-            log(SocketCode.DATA_CONVERT_FAIL, "" , id);
+            log(SocketCode.DATA_CONVERT_FAIL, "", id);
           }
-
 
         }
       }
 
-
-
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, id,  e.getMessage());
+        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL,  id,  e.getMessage());
-      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage() + "`" + id  , e);
+      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
     }
 
     return sendJson.toString();
   }
-
 
 } // end of class

@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BatchInVerifyDatabase {
   HikariDataSource ds = null;
+
   public BatchInVerifyDatabase(String init) {
     JSONObject _init = new JSONObject(init);
     try {
@@ -40,10 +41,11 @@ public class BatchInVerifyDatabase {
       ds.setUsername(_init.getString("db_username"));
       ds.setPassword(_init.getString("db_password"));
       ds.setAutoCommit(true);
-    } catch(Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
+
   public void insertListInVerifyDb(List<VerifyStatusVO> list) {
     String q = "INSERT INTO public.covid_verify (";
     q += "unique_id, group_id, data_type, request_info_id , person_id, observed_time ";
@@ -51,10 +53,9 @@ public class BatchInVerifyDatabase {
     q += " ?, ?, ?, ?, ?, ? ";
     q += " ) ";
 
-    try (Connection conn = ds.getConnection();
-        PreparedStatement psmt = conn.prepareStatement(q);){
+    try (Connection conn = ds.getConnection(); PreparedStatement psmt = conn.prepareStatement(q);) {
 
-      for (int i=0; i< list.size(); i++) {
+      for (int i = 0; i < list.size(); i++) {
         VerifyStatusVO vo = list.get(i);
         psmt.setString(1, vo.getUniqueId());
         psmt.setString(2, vo.getGroupId());
@@ -64,21 +65,26 @@ public class BatchInVerifyDatabase {
         psmt.setString(6, vo.getObservedTime());
         psmt.addBatch();
         psmt.clearParameters();
-        if( (i % 1000) == 0){
+        if ((i % 1000) == 0) {
           // Batch 실행
-          psmt.executeBatch() ;
+          psmt.executeBatch();
           // Batch 초기화
           psmt.clearBatch();
         }
       }
       psmt.executeBatch();
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   } // end method
 
   public void close() {
-    if (ds != null) try {ds.close();ds = null;} catch(Exception ex){}
+    if (ds != null)
+      try {
+        ds.close();
+        ds = null;
+      } catch (Exception ex) {
+      }
   }
 
 } // end class

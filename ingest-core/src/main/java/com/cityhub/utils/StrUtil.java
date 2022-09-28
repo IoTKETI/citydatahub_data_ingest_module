@@ -30,6 +30,7 @@ public class StrUtil {
 
   /**
    * 파일 가져오기
+   *
    * @param fileName
    * @return
    */
@@ -44,13 +45,14 @@ public class StrUtil {
       }
       scanner.close();
     } catch (IOException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return result.toString();
   }
 
   /**
-   * 문자열을 delimiter을 기준으로 배열로 변환하기 
+   * 문자열을 delimiter을 기준으로 배열로 변환하기
+   *
    * @param msg
    * @param delimiter
    * @return
@@ -73,6 +75,7 @@ public class StrUtil {
 
   /**
    * 배열을 리스트로 변환
+   *
    * @param Items
    * @param a1
    */
@@ -84,30 +87,33 @@ public class StrUtil {
         }
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
   /**
    * 문자열의 좌우 공백 제거
+   *
    * @param object
    * @return
    */
   public static String trim(Object object) {
     return object == null ? null : String.valueOf(object).trim();
   }
-  
+
   /**
    * 문자열의 널처리
+   *
    * @param val
    * @return
    */
   public static String nvl(Object val) {
     return nvl(val == null ? null : String.valueOf(val).trim(), "");
   }
-  
-  /** 
+
+  /**
    * 문자열의 널처리
+   *
    * @param val
    * @return
    */
@@ -117,6 +123,7 @@ public class StrUtil {
 
   /**
    * 문자열이 널일 경우 치환문자로 치환하기
+   *
    * @param val
    * @param replaceStr
    * @return
@@ -139,6 +146,7 @@ public class StrUtil {
 
   /**
    * 문자열의 널 여부
+   *
    * @param val
    * @return
    */
@@ -152,11 +160,10 @@ public class StrUtil {
       }
     } catch (Exception e) {
       bl = false;
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return bl;
   }
-
 
   /**
    * Applies the specified mask to the card number.
@@ -190,34 +197,37 @@ public class StrUtil {
 
   /**
    * 입력받은 문자열의 왼쪽에 채울문자 Concate
+   *
    * @param strContext
    * @param iLen
    * @param strChar
    * @return
    */
-  public static String lpad(String strContext, int iLen, String strChar ) {
+  public static String lpad(String strContext, int iLen, String strChar) {
     String strResult = "";
     StringBuilder sbAddChar = new StringBuilder();
-    for ( int i = strContext.length(); i < iLen; i++ ) {
+    for (int i = strContext.length(); i < iLen; i++) {
       // iLen길이 만큼 strChar문자로 채운다.
-      sbAddChar.append( strChar );
+      sbAddChar.append(strChar);
     }
     strResult = sbAddChar + strContext; // LPAD이므로, 채울문자열 + 원래문자열로 Concate한다.
     return strResult;
   }
+
   /**
    * 입력받은 문자열의 오른쪽에 채울문자 Concate
+   *
    * @param strContext
    * @param iLen
    * @param strChar
    * @return
    */
-  public static String rpad(String strContext, int iLen, String strChar ) {
+  public static String rpad(String strContext, int iLen, String strChar) {
     String strResult = "";
     StringBuilder sbAddChar = new StringBuilder();
-    for ( int i = strContext.length(); i < iLen; i++ ) {
+    for (int i = strContext.length(); i < iLen; i++) {
       // iLen길이 만큼 strChar문자로 채운다.
-      sbAddChar.append( strChar );
+      sbAddChar.append(strChar);
     }
     strResult = strContext + sbAddChar; // LPAD이므로, 채울문자열 + 원래문자열로 Concate한다.
     return strResult;

@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.event.EventBuilder;
@@ -33,19 +35,20 @@ import org.apache.flume.source.http.HTTPSourceHandler;
 import org.apache.http.MethodNotSupportedException;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class OrionHandler implements HTTPSourceHandler {
 
-  public static final String HEADER_NAME_CORRELATOR_ID  = "fiware-correlator";
-  public static final String HEADER_NAME_CONTENT_TYPE   = "content-type";
-  public static final String HEADER_VALUE_CONTENT_TYPE  = "application/json; charset=utf-8";
-  public static final String HEADER_NAME_SERVICE        = "fiware-service";
-  public static final String HEADER_NAME_SERVICE_PATH   = "fiware-servicepath";
+  public static final String HEADER_NAME_CORRELATOR_ID = "fiware-correlator";
+  public static final String HEADER_NAME_CONTENT_TYPE = "content-type";
+  public static final String HEADER_VALUE_CONTENT_TYPE = "application/json; charset=utf-8";
+  public static final String HEADER_NAME_SERVICE = "fiware-service";
+  public static final String HEADER_NAME_SERVICE_PATH = "fiware-servicepath";
   public static final String HEADER_NAME_TRANSACTION_ID = "transaction-id";
 
-  public static final int HEADER_SERVICE_MAX_LEN      = 50;
+  public static final int HEADER_SERVICE_MAX_LEN = 50;
   public static final int HEADER_SERVICE_PATH_MAX_LEN = 50;
 
   public String DEFAULT_SERVICE;
@@ -53,8 +56,8 @@ public class OrionHandler implements HTTPSourceHandler {
 
   @Override
   public void configure(Context context) {
-    DEFAULT_SERVICE       = context.getString("DEFAULT_SERVICE", "default_service");
-    DEFAULT_SERVICE_PATH  = context.getString("DEFAULT_SERVICE_PATH", "default_service_path");
+    DEFAULT_SERVICE = context.getString("DEFAULT_SERVICE", "default_service");
+    DEFAULT_SERVICE_PATH = context.getString("DEFAULT_SERVICE_PATH", "default_service_path");
   }
 
   @Override
@@ -71,48 +74,45 @@ public class OrionHandler implements HTTPSourceHandler {
       String value = request.getHeader(key);
 
       switch (key) {
-        case HEADER_NAME_CORRELATOR_ID:
-          corrId = value;
-          break;
+      case HEADER_NAME_CORRELATOR_ID:
+        corrId = value;
+        break;
 
-        case HEADER_NAME_CONTENT_TYPE:
-          if (!value.toLowerCase(Locale.ENGLISH).contains(HEADER_VALUE_CONTENT_TYPE)) {
-            throw new HTTPBadRequestException(value + " content type not supported");
-          } else {
-            contentType = value;
+      case HEADER_NAME_CONTENT_TYPE:
+        if (!value.toLowerCase(Locale.ENGLISH).contains(HEADER_VALUE_CONTENT_TYPE)) {
+          throw new HTTPBadRequestException(value + " content type not supported");
+        } else {
+          contentType = value;
+        }
+        break;
+
+      case HEADER_NAME_SERVICE:
+        if (value.length() > HEADER_SERVICE_MAX_LEN) {
+          throw new HTTPBadRequestException("'" + HEADER_NAME_SERVICE + "' header length greater than " + HEADER_SERVICE_MAX_LEN + ")");
+        } else {
+          service = value;
+        }
+        break;
+
+      case HEADER_NAME_SERVICE_PATH:
+        String[] splitValues = value.split(",");
+
+        for (String splitValue : splitValues) {
+          if (splitValue.length() > HEADER_SERVICE_PATH_MAX_LEN) {
+            throw new HTTPBadRequestException("'" + HEADER_NAME_SERVICE_PATH + "' header length greater than " + HEADER_SERVICE_PATH_MAX_LEN + ")");
+          } else if (!splitValue.startsWith("/")) {
+            throw new HTTPBadRequestException("'" + HEADER_NAME_SERVICE_PATH + "' header value must start with '/'");
           }
-          break;
+        }
 
-        case HEADER_NAME_SERVICE:
-          if (value.length() > HEADER_SERVICE_MAX_LEN) {
-            throw new HTTPBadRequestException(
-                    "'" + HEADER_NAME_SERVICE + "' header length greater than " + HEADER_SERVICE_MAX_LEN + ")");
-          } else {
-            service = value;
-          }
-          break;
+        servicePath = value;
+        break;
 
-        case HEADER_NAME_SERVICE_PATH:
-          String[] splitValues = value.split(",");
-
-          for (String splitValue : splitValues) {
-            if (splitValue.length() > HEADER_SERVICE_PATH_MAX_LEN) {
-              throw new HTTPBadRequestException(
-                      "'" + HEADER_NAME_SERVICE_PATH + "' header length greater than " + HEADER_SERVICE_PATH_MAX_LEN + ")");
-            } else if (!splitValue.startsWith("/")) {
-              throw new HTTPBadRequestException(
-                      "'" + HEADER_NAME_SERVICE_PATH + "' header value must start with '/'");
-            }
-          }
-
-          servicePath = value;
-          break;
-
-        default:
-          if (log.isInfoEnabled()) {
-            log.info("OrionHandler Unnecessary header");
-          }
-          break;
+      default:
+        if (log.isInfoEnabled()) {
+          log.info("OrionHandler Unnecessary header");
+        }
+        break;
       }
     }
 
@@ -147,11 +147,10 @@ public class OrionHandler implements HTTPSourceHandler {
     JSONArray list = (JSONArray) js.get("data");
 
     if (servicePaths.length != list.length()) {
-      throw new HTTPBadRequestException(
-              "'" + HEADER_NAME_SERVICE_PATH + "' header value does not match the number of notified context responses");
+      throw new HTTPBadRequestException("'" + HEADER_NAME_SERVICE_PATH + "' header value does not match the number of notified context responses");
     }
 
-    List<Event> eventList = new ArrayList<Event>();
+    List<Event> eventList = new ArrayList<>();
 
     for (int i = 0; i < list.length(); i++) {
       JSONObject item = list.getJSONObject(i);

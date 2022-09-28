@@ -6,7 +6,7 @@
 <mapper namespace="com.cityhub.web.agent.mapper.MainMapper">
 
   <select id="select_adtType" resultType="map">
-    SELECT a.adapter_type_id, a.adapter_type_nm, a.adapter_type_div, b.code_nm as adapter_type_div_nm, a.use_yn 
+    SELECT a.adapter_type_id, a.adapter_type_nm, a.adapter_type_div, b.code_nm as adapter_type_div_nm, a.use_yn
     FROM adapter_type_info a, comm_code b
     WHERE 1=1
     AND a.adapter_type_div = b.code_id
@@ -15,13 +15,15 @@
   </select>
 
   <select id="selectAllAgentId" resultType="map">
-    SELECT agent_id, COALESCE(agent_nm,'') as agent_nm, COALESCE(ip_addr,'') as ip_addr, COALESCE(port_number,0) as port_number, COALESCE(use_yn,'') as use_yn, COALESCE(etc_note,'') as etc_note, first_create_dt, first_create_id, last_update_dt, last_update_id 
+    SELECT agent_id, COALESCE(agent_nm,'') as agent_nm, COALESCE(ip_addr,'') as ip_addr, COALESCE(port_number,0) as port_number, COALESCE(use_yn,'') as
+    use_yn, COALESCE(etc_note,'') as etc_note, first_create_dt, first_create_id, last_update_dt, last_update_id
     FROM AGENT_INFO
     WHERE agent_id = #{agent_id}
   </select>
 
   <select id="selectAll" resultType="map">
-    SELECT agent_id, agent_nm, A.ip_addr, port_number, A.use_yn, A.etc_note, to_char(A.first_create_dt, 'YYYY-MM-DD HH24:MI:SS') AS first_create_dt, A.first_create_id, A.last_update_dt, A.last_update_id 
+    SELECT agent_id, agent_nm, A.ip_addr, port_number, A.use_yn, A.etc_note, to_char(A.first_create_dt, 'YYYY-MM-DD HH24:MI:SS') AS first_create_dt,
+    A.first_create_id, A.last_update_dt, A.last_update_id
     ,(SELECT COUNT(*) FROM adapter_info WHERE agent_id = A.agent_id) AS adt_cnt
     FROM public.agent_info a
     LEFT OUTER JOIN comm_code B ON A.ip_addr = B.code_id
@@ -33,39 +35,39 @@
     FROM agent_info
     WHERE agent_id = #{agent_id}
   </select>
- 
+
   <insert id="insert" parameterType="map" useGeneratedKeys="true" keyProperty="agent_id">
     INSERT INTO agent_info (
-      agent_id, agent_nm, ip_addr, port_number, use_yn, etc_note, first_create_dt, first_create_id, last_update_dt, last_update_id 
+    agent_id, agent_nm, ip_addr, port_number, use_yn, etc_note, first_create_dt, first_create_id, last_update_dt, last_update_id
     ) VALUES (
-      #{agent_id}, #{agent_nm}, #{ip_addrress}, cast(#{port_number} as int), #{use_yn}, #{etc_note}, now(), #{user_id}, now(), #{user_id} 
+    #{agent_id}, #{agent_nm}, #{ip_addrress}, cast(#{port_number} as int), #{use_yn}, #{etc_note}, now(), #{user_id}, now(), #{user_id}
     )
   </insert>
-  
+
   <select id="getLastId" resultType="map">
-  	select * from agent_info order by agent_id desc limit 1
+    select * from agent_info order by agent_id desc limit 1
   </select>
 
-  <update id="update" parameterType="map" >
+  <update id="update" parameterType="map">
     UPDATE agent_info
     SET
-      last_update_dt = now()
-      <if test="user_id != null and user_id != '' ">
-      , last_update_id  = #{user_id}
-      </if>
-      <if test="agent_nm != null and agent_nm != '' ">
+    last_update_dt = now()
+    <if test="user_id != null and user_id != '' ">
+      , last_update_id = #{user_id}
+    </if>
+    <if test="agent_nm != null and agent_nm != '' ">
       , agent_nm = #{agent_nm}
-      </if>
-      <if test="ip_addr != null and ip_addr != '' ">
+    </if>
+    <if test="ip_addr != null and ip_addr != '' ">
       , ip_addr = #{ip_addr}
-      </if>
-      <if test="port_number != null and port_number != '' ">
+    </if>
+    <if test="port_number != null and port_number != '' ">
       , port_number = #{port_number}
-      </if>
-      <if test="use_yn != null and use_yn != '' ">
+    </if>
+    <if test="use_yn != null and use_yn != '' ">
       , use_yn = #{use_yn}
-      </if>
-      , etc_note = #{etc_note}
+    </if>
+    , etc_note = #{etc_note}
     WHERE agent_id = #{agent_id}
   </update>
   <delete id="delete" parameterType="map">
@@ -75,207 +77,225 @@
 
 
   <select id="selectByAdaptorId" resultType="map">
-    SELECT adapter_id, COALESCE(adapter_nm,'') as adapter_nm, (select code_nm from comm_code where code_id = a.target_platform_type) as adapter_type_nm, COALESCE(use_yn,'') as use_yn
-      , first_create_dt, first_create_id, last_update_dt, last_update_id
-      ,(SELECT COUNT(*) FROM instance_info WHERE adapter_id = A.adapter_id) AS ins_cnt, agent_id
-      , target_platform_type    
+    SELECT adapter_id, COALESCE(adapter_nm,'') as adapter_nm, (select code_nm from comm_code where code_id = a.target_platform_type) as adapter_type_nm,
+    COALESCE(use_yn,'') as use_yn
+    , first_create_dt, first_create_id, last_update_dt, last_update_id
+    ,(SELECT COUNT(*) FROM instance_info WHERE adapter_id = A.adapter_id) AS ins_cnt, agent_id
+    , target_platform_type
     FROM ADAPTER_INFO a
     WHERE adapter_id = #{adapter_id}
   </select>
-  
+
   <select id="isExistAdapter" resultType="boolean">
     SELECT CASE WHEN COUNT(1) > 0 THEN TRUE ELSE FALSE END
     FROM adapter_info
     WHERE adapter_id = #{adapter_id}
   </select>
-  
+
   <delete id="deleteAdaptor" parameterType="map">
     DELETE FROM adapter_info
     WHERE adapter_id = #{adapter_id}
   </delete>
-  
+
   <insert id="insertAdaptor" parameterType="map" useGeneratedKeys="true" keyProperty="agent_id">
     INSERT INTO adapter_info (
-     adapter_id, adapter_nm, agent_id, target_platform_type, use_yn, first_create_dt, first_create_id, last_update_dt, last_update_id
+    adapter_id, adapter_nm, agent_id, target_platform_type, use_yn, first_create_dt, first_create_id, last_update_dt, last_update_id
     ) VALUES (
-      #{adapter_id}, #{adapter_nm}, #{agent_id}, #{target_platform_type}, #{use_yn}, now(), #{user_id}, now(), #{user_id} 
+    #{adapter_id}, #{adapter_nm}, #{agent_id}, #{target_platform_type}, #{use_yn}, now(), #{user_id}, now(), #{user_id}
     )
   </insert>
-  
+
   <update id="updateAdaptor" parameterType="map">
-     UPDATE adapter_info 
-     SET
-      adapter_nm = #{adapter_nm}
-      , target_platform_type = #{target_platform_type}
-      , use_yn = #{use_yn}
-      , last_update_dt = now()
-      , last_update_id = #{user_id}
-     WHERE
-      adapter_id = #{adapter_id}    
+    UPDATE adapter_info
+    SET
+    adapter_nm = #{adapter_nm}
+    , target_platform_type = #{target_platform_type}
+    , use_yn = #{use_yn}
+    , last_update_dt = now()
+    , last_update_id = #{user_id}
+    WHERE
+    adapter_id = #{adapter_id}
   </update>
-  
+
   <delete id="deleteInstance" parameterType="map">
     DELETE FROM instance_info
     WHERE adapter_id = #{adapter_id}
   </delete>
-  
+
   <delete id="deleteInstanceF" parameterType="map">
     DELETE FROM instance_info
     WHERE instance_id = #{instance_id}
   </delete>
-  
+
   <delete id="deleteInstanceEtc" parameterType="map">
     DELETE FROM instance_detail_conf
     WHERE instance_id in (select instance_id from instance_info where adapter_id = #{adapter_id})
   </delete>
-  
-   <insert id="insertInstance" parameterType="map" useGeneratedKeys="true" keyProperty="instance_id">
+
+  <insert id="insertInstance" parameterType="map" useGeneratedKeys="true" keyProperty="instance_id">
     INSERT INTO instance_info (
-     instance_id, instance_nm, adapter_id, image_extra_use_yn, video_extra_use_yn, datamodel_conv_div, datamodel_tf_id, etc_note, use_yn, first_create_dt, first_create_id, last_update_dt, last_update_id, adapter_type_id
+    instance_id, instance_nm, adapter_id, image_extra_use_yn, video_extra_use_yn, datamodel_conv_div, datamodel_tf_id, etc_note, use_yn, first_create_dt, first_create_id, last_update_dt, last_update_id,
+    adapter_type_id
     ) VALUES (
-      #{instance_id}, #{instance_nm}, #{adapter_id}, #{image_extra_use_yn}, #{video_extra_use_yn}, #{datamodel_conv_div}, #{datamodel_tf_id}, #{etc_note}, #{use_yn}, now(), #{user_id}, now(), #{user_id}, #{adapter_type_id}
+    #{instance_id}, #{instance_nm}, #{adapter_id}, #{image_extra_use_yn}, #{video_extra_use_yn}, #{datamodel_conv_div}, #{datamodel_tf_id}, #{etc_note}, #{use_yn}, now(), #{user_id}, now(), #{user_id},
+    #{adapter_type_id}
     )
   </insert>
-  
-  <update id="updateInstance" parameterType="map" >
+
+  <update id="updateInstance" parameterType="map">
     UPDATE instance_info
     SET
-      last_update_dt = now()
-      <if test="user_id != null and user_id != '' ">
-      , last_update_id  = #{user_id}
-      </if>
-      <if test="instance_nm != null and instance_nm != '' ">
+    last_update_dt = now()
+    <if test="user_id != null and user_id != '' ">
+      , last_update_id = #{user_id}
+    </if>
+    <if test="instance_nm != null and instance_nm != '' ">
       , instance_nm = #{instance_nm}
-      </if>
-      <if test="adapter_id != null and adapter_id != '' ">
+    </if>
+    <if test="adapter_id != null and adapter_id != '' ">
       , adapter_id = #{adapter_id}
-      </if>
-      <if test="image_extra_use_yn != null and image_extra_use_yn != '' ">
+    </if>
+    <if test="image_extra_use_yn != null and image_extra_use_yn != '' ">
       , image_extra_use_yn = #{image_extra_use_yn}
-      </if>
-      <if test="video_extra_use_yn != null and video_extra_use_yn != '' ">
+    </if>
+    <if test="video_extra_use_yn != null and video_extra_use_yn != '' ">
       , video_extra_use_yn = #{video_extra_use_yn}
-      </if>
-      <if test="datamodel_conv_div != null and datamodel_conv_div != '' ">
+    </if>
+    <if test="datamodel_conv_div != null and datamodel_conv_div != '' ">
       , datamodel_conv_div = #{datamodel_conv_div}
-      </if>
-      <if test="datamodel_tf_id != null and datamodel_tf_id != '' ">
+    </if>
+    <if test="datamodel_tf_id != null and datamodel_tf_id != '' ">
       , datamodel_tf_id = #{datamodel_tf_id}
-      </if>
-      <if test="etc_note != null and etc_note != '' ">
+    </if>
+    <if test="etc_note != null and etc_note != '' ">
       , etc_note = #{etc_note}
-      </if>
-      <if test="adapter_type_id != null and adapter_type_id != '' ">
+    </if>
+    <if test="adapter_type_id != null and adapter_type_id != '' ">
       , adapter_type_id = #{adapter_type_id}
-      </if>
-      <if test="use_yn != null and use_yn != '' ">
+    </if>
+    <if test="use_yn != null and use_yn != '' ">
       , use_yn = #{use_yn}
-      </if>
+    </if>
     WHERE instance_id = #{instance_id}
   </update>
-  
+
   <delete id="deleteInstanceConf" parameterType="map">
     DELETE FROM instance_detail_conf
     WHERE instance_id = #{instance_id}
   </delete>
-  
+
   <insert id="insertInstanceEtc" parameterType="map" useGeneratedKeys="true" keyProperty="instance_id">
     INSERT INTO instance_detail_conf (
-     instance_id, display_seq, item_described, item, value, first_create_dt, first_create_id, last_update_dt, last_update_id, sector
+    instance_id, display_seq, item_described, item, value, first_create_dt, first_create_id, last_update_dt, last_update_id, sector
     ) VALUES (
-      #{instance_id}, #{seq}, #{item_described}, #{item}, #{value}, now(), #{user_id}, now(), #{user_id} , #{sector}
+    #{instance_id}, #{seq}, #{item_described}, #{item}, #{value}, now(), #{user_id}, now(), #{user_id} , #{sector}
     )
   </insert>
-  
-  
-    <select id="selectAllAdaptorId" resultType="map">
-    SELECT adapter_id, COALESCE(adapter_nm,'') as adapter_nm , COALESCE((SELECT code_nm from comm_code where code_id = A.target_platform_type),'') as adapter_type, COALESCE(use_yn,'') as use_yn
+
+
+  <select id="selectAllAdaptorId" resultType="map">
+    SELECT adapter_id, COALESCE(adapter_nm,'') as adapter_nm , COALESCE((SELECT code_nm from comm_code where code_id = A.target_platform_type),'') as
+    adapter_type, COALESCE(use_yn,'') as use_yn
     , first_create_dt, to_char(A.first_create_dt, 'YYYY-MM-DD HH24:MI:SS') AS first_create_dt, last_update_dt, last_update_id
-    ,(SELECT COUNT(*) FROM instance_info WHERE adapter_id = A.adapter_id) AS ins_cnt
-    , target_platform_type 
+    ,(SELECT COUNT(*) FROM
+    instance_info WHERE adapter_id = A.adapter_id) AS ins_cnt
+    , target_platform_type
     FROM ADAPTER_INFO a
     WHERE agent_id = #{agent_id}
     ORDER BY a.first_create_dt asc
   </select>
-  
+
   <select id="platformType" resultType="map">
-    SELECT code_type_id, code_id, code_nm, use_yn 
-    FROM comm_code 
+    SELECT code_type_id, code_id, code_nm, use_yn
+    FROM comm_code
     WHERE code_type_id = 'I11'
     AND use_yn = 'Y'
   </select>
-  
+
   <select id="selectAllInstance" resultType="map">
-    SELECT * from INSTANCE_INFO 
+    SELECT * from INSTANCE_INFO
     WHERE ADAPTER_ID = #{adapter_id}
   </select>
-  
-  
-  
-   <select id="selectAllAdaptor" resultType="map">
-    SELECT A.adapter_id, COALESCE(A.adapter_nm,'') as adapter_nm, COALESCE((SELECT code_nm from comm_code where code_id = A.adapter_type_id),'') as adapter_type, COALESCE(A.use_yn,'') as use_yn, to_char(A.first_create_dt, 'YYYY-MM-DD HH24:MI:SS') AS first_create_dt, A.last_update_dt, A.last_update_id
-    ,(SELECT COUNT(*) FROM instance_info WHERE adapter_id = A.adapter_id) AS ins_cnt 
+
+
+
+  <select id="selectAllAdaptor" resultType="map">
+    SELECT A.adapter_id, COALESCE(A.adapter_nm,'') as adapter_nm, COALESCE((SELECT code_nm from comm_code where code_id = A.adapter_type_id),'') as
+    adapter_type, COALESCE(A.use_yn,'') as use_yn, to_char(A.first_create_dt, 'YYYY-MM-DD HH24:MI:SS') AS first_create_dt, A.last_update_dt, A.last_update_id
+    ,(SELECT COUNT(*) FROM instance_info WHERE
+    adapter_id = A.adapter_id) AS ins_cnt
     ,B.agent_id, COALESCE(B.agent_nm,'') as agent_nm
     FROM ADAPTER_INFO a
     INNER JOIN agent_info B ON A.agent_id = B.agent_id
   </select>
-  
-    <select id="selectAllInstanceAdaptorId" resultType="map">
+
+  <select id="selectAllInstanceAdaptorId" resultType="map">
     SELECT
-      A.adapter_id
+    A.adapter_id
     , 1 AS keyValueType
     , COALESCE(A.adapter_nm,'') as adapter_nm
     , COALESCE(A.adapter_type_id,'') as adapter_type_id
-    , (select code_nm from comm_code where code_type_id = 'I11' and code_id = A.adapter_type_id) as platform_type
+    , (select code_nm from comm_code where code_type_id = 'I11' and code_id =
+    A.adapter_type_id) as platform_type
     , COALESCE(A.use_yn,'') as adt_use_yn
     , B.instance_id
     , D.ESSENTIAL_YN
     , (SELECT code_nm from comm_code where code_id = D.value_type) as value_type
-    , COALESCE(B.instance_nm,'') as instance_nm
+    ,
+    COALESCE(B.instance_nm,'') as instance_nm
     , COALESCE(B.image_extra_use_yn,'') as image_extra_use_yn
     , COALESCE(B.video_extra_use_yn,'') as video_extra_use_yn
-    , COALESCE(B.datamodel_conv_div,'') as datamodel_conv_div
+    , COALESCE(B.datamodel_conv_div,'') as
+    datamodel_conv_div
     , COALESCE(B.use_yn,'') as use_yn
     , COALESCE(B.etc_note,'') as etc_note
     , COALESCE(D.item,'') as item
     , COALESCE(C."value", D."value") as "value"
-    , COALESCE(C.item_described,D.item_described) as item_described
+    ,
+    COALESCE(C.item_described,D.item_described) as item_described
     , COALESCE(E.ob_datamodel_id,'') as ob_datamodel_id
     , COALESCE(E.st_datamodel_id,'') as st_datamodel_id
-    , B.first_create_dt, B.first_create_id, B.last_update_dt, B.last_update_id 
+    , B.first_create_dt,
+    B.first_create_id, B.last_update_dt, B.last_update_id
     , D.DISPLAY_SEQ
     , B.adapter_type_id as adapter_type
     FROM ADAPTER_INFO A
     INNER JOIN INSTANCE_INFO B ON A.ADAPTER_ID = B.ADAPTER_ID
-    LEFT OUTER JOIN ADAPTER_TYPE_DETAIL_CONF D ON A.ADAPTER_TYPE_ID = D.ADAPTER_TYPE_ID
+    LEFT OUTER JOIN ADAPTER_TYPE_DETAIL_CONF D ON A.ADAPTER_TYPE_ID =
+    D.ADAPTER_TYPE_ID
     LEFT OUTER JOIN INSTANCE_DETAIL_CONF C ON B.INSTANCE_ID = C.INSTANCE_ID AND C.ITEM = D.ITEM
-    LEFT OUTER JOIN DM_TRANSFORM_INFO E ON B.DATAMODEL_TF_ID = E.DATAMODEL_TF_ID AND E.USE_YN = 'Y'
+    LEFT OUTER JOIN DM_TRANSFORM_INFO E ON B.DATAMODEL_TF_ID = E.DATAMODEL_TF_ID AND
+    E.USE_YN = 'Y'
     WHERE A.ADAPTER_ID = #{adapter_id}
 
     UNION ALL
 
     SELECT
-      A.adapter_id
+    A.adapter_id
     , 2 AS keyValueType
     , COALESCE(A.adapter_nm,'') as adapter_nm
     , COALESCE(A.adapter_type_id,'') as adapter_type_id
     , '' as platform_type
     , COALESCE(A.use_yn,'') as adt_use_yn
     , B.instance_id
-    , 'N' AS ESSENTIAL_YN
+    , 'N' AS
+    ESSENTIAL_YN
     , '사용자지정' as value_type
     , COALESCE(B.instance_nm,'') as instance_nm
     , COALESCE(B.image_extra_use_yn,'') as image_extra_use_yn
     , COALESCE(B.video_extra_use_yn,'') as video_extra_use_yn
-    , COALESCE(B.datamodel_conv_div,'') as datamodel_conv_div
+    ,
+    COALESCE(B.datamodel_conv_div,'') as datamodel_conv_div
     , COALESCE(B.use_yn,'') as use_yn
     , COALESCE(B.etc_note,'') as etc_note
     , COALESCE(C.item,'') as item
     , COALESCE(C."value", '') as "value"
-    , COALESCE(C.item_described,'') as item_described
+    ,
+    COALESCE(C.item_described,'') as item_described
     , COALESCE(E.ob_datamodel_id,'') as ob_datamodel_id
     , COALESCE(E.st_datamodel_id,'') as st_datamodel_id
-    , B.first_create_dt, B.first_create_id, B.last_update_dt, B.last_update_id 
+    , B.first_create_dt, B.first_create_id,
+    B.last_update_dt, B.last_update_id
     , C.DISPLAY_SEQ
     , B.adapter_type_id as adapter_type
     FROM ADAPTER_INFO A
@@ -283,192 +303,147 @@
     LEFT OUTER JOIN INSTANCE_DETAIL_CONF C ON B.INSTANCE_ID = C.INSTANCE_ID
     LEFT OUTER JOIN DM_TRANSFORM_INFO E ON B.DATAMODEL_TF_ID = E.DATAMODEL_TF_ID AND E.USE_YN = 'Y'
     WHERE A.ADAPTER_ID = #{adapter_id}
-    AND C.ITEM NOT IN (SELECT ITEM FROM adapter_type_detail_conf WHERE adapter_type_id = A.adapter_type_id)
+    AND C.ITEM NOT IN (SELECT ITEM FROM adapter_type_detail_conf WHERE
+    adapter_type_id = A.adapter_type_id)
 
 
     ORDER BY ADAPTER_ID, INSTANCE_ID, keyValueType, DISPLAY_SEQ
   </select>
-  
-  
-<!--    <select id="selectAgentConf" resultType="map"> -->
-<!-- SELECT -->
-<!--       A.agent_id -->
-<!--     , 'loggerChannel' AS channels -->
-<!--     , 'loggerSink' AS sinks -->
-<!--     , B.adapter_id -->
-<!--     , C.instance_id -->
-<!--     , C.instance_nm -->
-<!--     , 'com.cityhub.adapter.MqttSource' AS "type" -->
-<!--     , B.target_platform_type -->
-<!--     , D.code_nm -->
-<!--     ,CASE  -->
-<!-- 	    WHEN D.code_nm = 'Open API' THEN 'com.cityhub.adapter.convex.OpenApiSource' -->
-<!-- 	    WHEN D.code_nm = 'OneM2M' THEN 'com.cityhub.adapter.convex.OpenApiSource'  -->
-<!-- 	    WHEN D.code_nm = 'Legacy Platform' THEN 'com.cityhub.adapter.convex.OpenApiSource'  -->
-<!-- 	    WHEN D.code_nm = '도시통합 Platform' THEN 'com.cityhub.adapter.convex.OpenApiSource'  -->
-<!-- 	    WHEN D.code_nm = 'Fiware' THEN 'com.cityhub.adapter.convex.OpenApiSource'  -->
-<!-- 	 END AS "type" -->
-<!--     , 1800 AS CONN_TERM -->
-<!--     , 'WeatherObserved' AS TEMPLATE_FILE -->
-<!--     , rank() OVER (PARTITION BY A.agent_id ORDER BY B.adapter_id) AS ADT_I -->
-<!--     , COUNT(*) OVER(PARTITION BY A.agent_id) AS ADT_CNT -->
-<!-- FROM agent_info A -->
-<!-- INNER JOIN adapter_info B ON A.agent_id = B.agent_id AND B.use_yn = 'Y' -->
-<!-- INNER JOIN instance_info C ON B.adapter_id = C.adapter_id AND C.use_yn = 'Y' -->
-<!-- RIGHT OUTER JOIN comm_code D ON D.code_id = B.target_platform_type -->
-<!-- WHERE A.USE_YN = 'Y' -->
-<!--   AND A.agent_id = #{agent_id} -->
-<!--   AND B.adapter_id = #{adapter_id} -->
-<!-- ORDER BY A.agent_id, B.adapter_id, C.instance_id -->
-<!--   </select> -->
 
-   <select id="selectAgentConf" resultType="map">
-SELECT
-      A.agent_id
+
+
+  <select id="selectAgentConf" resultType="map">
+    SELECT
+    A.agent_id
     , 'loggerChannel' AS channels
     , 'loggerSink' AS sinks
     , B.adapter_id
     , C.instance_id
     , C.instance_nm
-<!--     , 'com.cityhub.adapter.MqttSource' AS "type" -->
+    <!-- , 'com.cityhub.adapter.MqttSource' AS "type" -->
     , B.target_platform_type
     , D.code_nm
-    ,CASE 
-	    WHEN D.code_nm = 'Open API' THEN 'com.cityhub.adapter.convex.OpenApiSource'
-	    WHEN D.code_nm = 'OneM2M' THEN 'com.cityhub.adapter.convex.OneM2M' 
-	    WHEN D.code_nm = 'Legacy Platform' THEN 'com.cityhub.adapter.convex.LegacyPlatform' 
-	    WHEN D.code_nm = '도시통합 Platform' THEN 'com.cityhub.adapter.convex.UrbanintegrationPlatform' 
-	    WHEN D.code_nm = 'Fiware' THEN 'com.cityhub.adapter.convex.Fiware' 
-	 END AS "type"
+    ,CASE
+    WHEN D.code_nm = 'Open API' THEN 'com.cityhub.adapter.convex.OpenApiSource'
+    WHEN D.code_nm = 'OneM2M' THEN 'com.cityhub.adapter.convex.OneM2M'
+    WHEN D.code_nm = 'Legacy Platform' THEN 'com.cityhub.adapter.convex.LegacyPlatform'
+    WHEN D.code_nm = '도시통합 Platform' THEN 'com.cityhub.adapter.convex.UrbanintegrationPlatform'
+    WHEN D.code_nm = 'Fiware' THEN 'com.cityhub.adapter.convex.Fiware'
+    END AS "type"
     , 1800 AS CONN_TERM
     , 'WeatherObserved' AS TEMPLATE_FILE
     , rank() OVER (PARTITION BY A.agent_id ORDER BY B.adapter_id) AS ADT_I
     , COUNT(*) OVER(PARTITION BY A.agent_id) AS ADT_CNT
-FROM agent_info A
-INNER JOIN adapter_info B ON A.agent_id = B.agent_id AND B.use_yn = 'Y'
-INNER JOIN instance_info C ON B.adapter_id = C.adapter_id AND C.use_yn = 'Y'
-RIGHT OUTER JOIN comm_code D ON D.code_id = B.target_platform_type
-WHERE A.USE_YN = 'Y'
-  AND A.agent_id = #{agent_id}
-  AND B.adapter_id = #{adapter_id}
-ORDER BY A.agent_id, B.adapter_id, C.instance_id
+    FROM agent_info A
+    INNER JOIN adapter_info B ON A.agent_id = B.agent_id AND B.use_yn = 'Y'
+    INNER JOIN instance_info C ON B.adapter_id = C.adapter_id AND C.use_yn = 'Y'
+    RIGHT OUTER JOIN comm_code D ON D.code_id = B.target_platform_type
+    WHERE A.USE_YN = 'Y'
+    AND A.agent_id = #{agent_id}
+    AND B.adapter_id = #{adapter_id}
+    ORDER BY A.agent_id, B.adapter_id, C.instance_id
   </select>
-  
-<select id="selectInstanceIdAll" resultType="map"> 
-  SELECT
-      C.instance_id
-FROM agent_info A
-INNER JOIN adapter_info B ON A.agent_id = B.agent_id AND B.use_yn = 'Y'
-INNER JOIN instance_info C ON B.adapter_id = C.adapter_id --AND C.use_yn = 'Y'
-WHERE A.USE_YN = 'Y'
-AND A.agent_id = #{agent_id}
-AND B.adapter_id = #{adapter_id}
-ORDER BY C.instance_id
+
+  <select id="selectInstanceIdAll" resultType="map">
+    SELECT
+    C.instance_id
+    FROM agent_info A
+    INNER JOIN adapter_info B ON A.agent_id = B.agent_id AND B.use_yn = 'Y'
+    INNER JOIN instance_info C ON B.adapter_id = C.adapter_id --AND C.use_yn = 'Y'
+    WHERE A.USE_YN = 'Y'
+    AND A.agent_id = #{agent_id}
+    AND B.adapter_id = #{adapter_id}
+    ORDER BY C.instance_id
   </select>
-  
-  
-<select id="selectInstanceDetail" resultType="map"> 
-<!-- SELECT -->
-<!--       A.agent_id -->
-<!--     , B.adapter_id -->
-<!--     , C.instance_id -->
-<!--     , C.instance_nm -->
-<!--     , D.item -->
-<!--     , D.value -->
-<!-- FROM agent_info A -->
-<!-- INNER JOIN adapter_info B ON A.agent_id = B.agent_id AND B.use_yn = 'Y' -->
-<!-- INNER JOIN instance_info C ON B.adapter_id = C.adapter_id  AND C.use_yn = 'Y' -->
-<!-- INNER JOIN instance_detail_conf D ON C.instance_id = D.instance_id -->
-<!-- WHERE A.USE_YN = 'Y' -->
-<!--   AND B.adapter_id = #{adapter_id} -->
-<!--   AND D.instance_id = #{instance_id} -->
-<!-- ORDER BY A.agent_id, B.adapter_id, C.instance_id, D.display_seq -->
-SELECT
-      A.agent_id
+
+
+  <select id="selectInstanceDetail" resultType="map">
+    SELECT
+    A.agent_id
     , B.adapter_id
     , C.instance_id
     , C.instance_nm
     , D.item
     , D.value
-FROM agent_info A
-INNER JOIN adapter_info B ON A.agent_id = B.agent_id
-INNER JOIN instance_info C ON B.adapter_id = C.adapter_id 
-INNER JOIN instance_detail_conf D ON C.instance_id = D.instance_id
-WHERE
-  B.adapter_id = #{adapter_id}
-  AND D.instance_id = #{instance_id}
-ORDER BY A.agent_id, B.adapter_id, C.instance_id, D.display_seq
+    FROM agent_info A
+    INNER JOIN adapter_info B ON A.agent_id = B.agent_id
+    INNER JOIN instance_info C ON B.adapter_id = C.adapter_id
+    INNER JOIN instance_detail_conf D ON C.instance_id = D.instance_id
+    WHERE
+    B.adapter_id = #{adapter_id}
+    AND D.instance_id = #{instance_id}
+    ORDER BY A.agent_id, B.adapter_id, C.instance_id, D.display_seq
   </select>
-  
-  
-	<select id="selectKeywordInfo" resultType="map"> 
-	select item, item_described , relation_code_id
-	from keyword_info
-	</select>
-  
-  
-  <select id="selectAdaptorKeywordInfo" resultType="map"> 
-  select item, item_described , relation_code_id
-  from adapter_info a inner join keyword_info b on a.adapter_id = #{adapter_id} and a.target_platform_type  = b.relation_code_id 
+
+
+  <select id="selectKeywordInfo" resultType="map">
+    select item, item_described , relation_code_id
+    from keyword_info
   </select>
-  
-<select id="selectObComboList" resultType="map"> 
-SELECT
-ob_datamodel_id, ob_datamodel_nm
-FROM ob_datamodel
-WHERE USE_YN = 'Y'
+
+
+  <select id="selectAdaptorKeywordInfo" resultType="map">
+    select item, item_described , relation_code_id
+    from adapter_info a inner join keyword_info b on a.adapter_id = #{adapter_id} and a.target_platform_type = b.relation_code_id
   </select>
-  
-<select id="selectDmTransform" resultType="map"> 
-SELECT 
+
+  <select id="selectObComboList" resultType="map">
+    SELECT
+    ob_datamodel_id, ob_datamodel_nm
+    FROM ob_datamodel
+    WHERE USE_YN = 'Y'
+  </select>
+
+  <select id="selectDmTransform" resultType="map">
+    SELECT
     DATAMODEL_TF_ID
- FROM DM_TRANSFORM_INFO
-WHERE OB_DATAMODEL_ID = #{ob_datamodel_id}
-   AND ST_DATAMODEL_ID = #{st_datamodel_id}
+    FROM DM_TRANSFORM_INFO
+    WHERE OB_DATAMODEL_ID = #{ob_datamodel_id}
+    AND ST_DATAMODEL_ID = #{st_datamodel_id}
   </select>
   <insert id="insertDmTransform" parameterType="map" useGeneratedKeys="true" keyProperty="datamodel_tf_id">
     INSERT INTO dm_transform_info (
-      datamodel_tf_id, ob_datamodel_id, st_datamodel_id, use_yn, first_create_dt, first_create_id, last_update_dt, last_update_id
+    datamodel_tf_id, ob_datamodel_id, st_datamodel_id, use_yn, first_create_dt, first_create_id, last_update_dt, last_update_id
     ) VALUES (
-      #{datamodel_tf_id}, #{ob_datamodel_id}, #{st_datamodel_id}, 'Y', now(), #{user_id}, now(), #{user_id} 
+    #{datamodel_tf_id}, #{ob_datamodel_id}, #{st_datamodel_id}, 'Y', now(), #{user_id}, now(), #{user_id}
     )
   </insert>
-  
-    <update id="updateDmTransform" parameterType="map" >
+
+  <update id="updateDmTransform" parameterType="map">
     UPDATE dm_transform_info
     SET
-      last_update_dt = now()
-      <if test="user_id != null and user_id != '' ">
-      , last_update_id  = #{user_id}
-      </if>
-      <if test="ob_datamodel_id != null and ob_datamodel_id != 'null' ">
+    last_update_dt = now()
+    <if test="user_id != null and user_id != '' ">
+      , last_update_id = #{user_id}
+    </if>
+    <if test="ob_datamodel_id != null and ob_datamodel_id != 'null' ">
       , ob_datamodel_id = #{ob_datamodel_id}
-      </if>
-      <if test="ob_datamodel_id == 'null' ">
+    </if>
+    <if test="ob_datamodel_id == 'null' ">
       , ob_datamodel_id = null
-      </if>
-      <if test="st_datamodel_id != null and st_datamodel_id != 'null' ">
+    </if>
+    <if test="st_datamodel_id != null and st_datamodel_id != 'null' ">
       , st_datamodel_id = #{st_datamodel_id}
-      </if>
-      <if test="st_datamodel_id == 'null' ">
+    </if>
+    <if test="st_datamodel_id == 'null' ">
       , st_datamodel_id = null
-      </if>
+    </if>
     WHERE datamodel_tf_id = #{datamodel_tf_id}
   </update>
-  
-  
-  
-  <select id="selectDmTransformKey" resultType="map"> 
-    SELECT 
-        (COALESCE(max(DATAMODEL_TF_ID ::numeric), 0 ) + 1)::text as datamodel_tf_id
-     FROM DM_TRANSFORM_INFO
+
+
+
+  <select id="selectDmTransformKey" resultType="map">
+    SELECT
+    (COALESCE(max(DATAMODEL_TF_ID ::numeric), 0 ) + 1)::text as datamodel_tf_id
+    FROM DM_TRANSFORM_INFO
   </select>
-  
-  <select id="instanceBaseList" resultType="map"> 
+
+  <select id="instanceBaseList" resultType="map">
     SELECT adapter_type_id
     , item
     , CASE WHEN a.setup_method = 'I1203' THEN '' ELSE a.value END as value
-    , essential_yn    
+    , essential_yn
     , (select code_nm from comm_code where code_id = a.value_type) AS value_type
     , item_described
     , setup_method
@@ -476,16 +451,16 @@ WHERE OB_DATAMODEL_ID = #{ob_datamodel_id}
     , use_purpose
     , value AS select_value
     , sector
-  FROM adapter_type_detail_conf a
-  WHERE adapter_type_id = #{id}
+    FROM adapter_type_detail_conf a
+    WHERE adapter_type_id = #{id}
   </select>
-  
-<!--   ///////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-  <select id="instanceBaseList2" resultType="map"> 
+
+  <!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+  <select id="instanceBaseList2" resultType="map">
     SELECT adapter_type_id
     , item
     , CASE WHEN a.setup_method = 'I1203' THEN '' ELSE a.value END as value
-    , essential_yn    
+    , essential_yn
     , (select code_nm from comm_code where code_id = a.value_type) AS value_type
     , item_described
     , setup_method
@@ -493,16 +468,16 @@ WHERE OB_DATAMODEL_ID = #{ob_datamodel_id}
     , use_purpose
     , value AS select_value
     , sector
-  FROM adapter_type_detail_conf a
-  WHERE adapter_type_id = #{id}
-  and sector = 'a'
+    FROM adapter_type_detail_conf a
+    WHERE adapter_type_id = #{id}
+    and sector = 'a'
   </select>
-  
-  <select id="instanceBaseList3" resultType="map"> 
+
+  <select id="instanceBaseList3" resultType="map">
     SELECT adapter_type_id
     , item
     , CASE WHEN a.setup_method = 'I1203' THEN '' ELSE a.value END as value
-    , essential_yn    
+    , essential_yn
     , (select code_nm from comm_code where code_id = a.value_type) AS value_type
     , item_described
     , setup_method
@@ -510,235 +485,239 @@ WHERE OB_DATAMODEL_ID = #{ob_datamodel_id}
     , use_purpose
     , value AS select_value
     , sector
-  FROM adapter_type_detail_conf a
-  WHERE adapter_type_id = #{id}
-  and sector = 'b'
+    FROM adapter_type_detail_conf a
+    WHERE adapter_type_id = #{id}
+    and sector = 'b'
   </select>
-  <!--   ///////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-  
-  <select id="getInstanceList" resultType="map"> 
-    SELECT instance_id, instance_nm, adapter_id, image_extra_use_yn, video_extra_use_yn, use_yn 
-    FROM instance_info 
+  <!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+  <select id="getInstanceList" resultType="map">
+    SELECT instance_id, instance_nm, adapter_id, image_extra_use_yn, video_extra_use_yn, use_yn
+    FROM instance_info
     WHERE adapter_id = #{adapter_id}
     order by instance_id
   </select>
-  
-  <select id="getInstanceInfo" resultType="map"> 
+
+  <select id="getInstanceInfo" resultType="map">
     SELECT a.instance_id, a.instance_nm, a.adapter_id, a.image_extra_use_yn, a.video_extra_use_yn, a.datamodel_conv_div, a.use_yn, b.adapter_type_id, a.etc_note
     , ob_datamodel_id
     , st_datamodel_id
-    , a.adapter_id , d.agent_id
-    , a.datamodel_tf_id 
-    FROM instance_info a 
-        inner join adapter_info d ON a.adapter_id = d.adapter_id
-        left outer join adapter_type_info b on a.adapter_type_id = b.adapter_type_id
-        left outer join dm_transform_info c on a.datamodel_tf_id = c.datamodel_tf_id and c.use_yn = 'Y'
+    , a.adapter_id
+    , d.agent_id
+    , a.datamodel_tf_id
+    FROM instance_info a
+    inner join adapter_info d ON a.adapter_id = d.adapter_id
+    left outer join adapter_type_info b on a.adapter_type_id = b.adapter_type_id
+    left outer join dm_transform_info c on a.datamodel_tf_id = c.datamodel_tf_id and c.use_yn = 'Y'
     WHERE 1=1
-        and a.instance_id = #{instance_id}
+    and a.instance_id = #{instance_id}
     order by a.instance_id
   </select>
-  
-  <select id="instanceItem" resultType="map"> 
+
+  <select id="instanceItem" resultType="map">
     SELECT a.instance_id
-        , 1 AS keyValueType
-        , c.essential_yn
-        , (SELECT code_nm FROM comm_code WHERE code_id = c.value_type) AS value_type
-        , c.item
-        , CASE WHEN c.setup_method = 'I1203' THEN d."value" ELSE COALESCE(d."value", c."value") END AS "value"
-        , case when d.item_described = '' then c.item_described else d.item_described end AS item_described
-        , c.change_able_yn
-        , c.setup_method
-        , c.use_purpose
-        , c."value" AS select_value
-        , c.display_seq
+    , 1 AS keyValueType
+    , c.essential_yn
+    , (SELECT code_nm FROM comm_code WHERE code_id = c.value_type) AS value_type
+    , c.item
+    , CASE WHEN c.setup_method = 'I1203' THEN d."value" ELSE COALESCE(d."value", c."value") END AS "value"
+    , case when d.item_described = '' then c.item_described else d.item_described end AS item_described
+    , c.change_able_yn
+    , c.setup_method
+    , c.use_purpose
+    , c."value" AS select_value
+    , c.display_seq
     FROM instance_info a
     INNER JOIN adapter_type_info b ON a.adapter_type_id = b.adapter_type_id AND b.use_yn = 'Y'
-    INNER JOIN adapter_type_detail_conf c ON a.adapter_type_id = c.adapter_type_id AND c.essential_yn = 'Y'
+    INNER JOIN adapter_type_detail_conf c ON a.adapter_type_id =
+    c.adapter_type_id AND c.essential_yn = 'Y'
     LEFT OUTER JOIN instance_detail_conf d ON a.instance_id = d.instance_id AND c.item = d.item
     WHERE a.instance_id = #{instance_id}
-    
+
     UNION ALL
-    
+
     SELECT a.instance_id
-        , 1 AS keyValueType
-        , c.essential_yn
-        , (SELECT code_nm FROM comm_code WHERE code_id = c.value_type) AS value_type
-        , c.item
-        , CASE WHEN c.setup_method = 'I1203' THEN d."value" else COALESCE(d."value", c."value") END AS "value"
-        , case when d.item_described = '' then c.item_described else d.item_described end  AS item_described
-        , c.change_able_yn
-        , c.setup_method
-        , c.use_purpose
-        , c."value" AS select_value
-        , c.display_seq
+    , 1 AS keyValueType
+    , c.essential_yn
+    , (SELECT code_nm FROM comm_code WHERE code_id = c.value_type) AS value_type
+    , c.item
+    , CASE WHEN c.setup_method = 'I1203' THEN d."value" else COALESCE(d."value", c."value") END AS "value"
+    , case when d.item_described = '' then c.item_described else d.item_described end AS item_described
+    , c.change_able_yn
+    , c.setup_method
+    , c.use_purpose
+    , c."value" AS select_value
+    , c.display_seq
     FROM instance_info a, adapter_type_info b, adapter_type_detail_conf c, instance_detail_conf d
-    WHERE a.adapter_type_id = b.adapter_type_id 
-      AND b.use_yn = 'Y'
-      AND a.adapter_type_id = c.adapter_type_id 
-      AND c.essential_yn = 'N'
-      AND a.instance_id = d.instance_id 
-      AND c.item = d.item
-      AND a.instance_id = #{instance_id}
-      
+    WHERE a.adapter_type_id = b.adapter_type_id
+    AND b.use_yn = 'Y'
+    AND a.adapter_type_id = c.adapter_type_id
+    AND c.essential_yn = 'N'
+    AND a.instance_id = d.instance_id
+    AND c.item = d.item
+    AND a.instance_id = #{instance_id}
+
     UNION ALL
-    
+
     SELECT b.instance_id
-        , 2 AS keyValueType
-        , 'N' AS essential_yn
-        , '사용자지정' AS value_type
-        , b.item
-        , b."value"
-        , b.item_described
-        , 'Y' AS change_able_yn
-        , 'I1201' AS setup_method
-        , '' AS use_purpose
-        , '' AS select_value
-        , b.display_seq
+    , 2 AS keyValueType
+    , 'N' AS essential_yn
+    , '사용자지정' AS value_type
+    , b.item
+    , b."value"
+    , b.item_described
+    , 'Y' AS change_able_yn
+    , 'I1201' AS setup_method
+    , '' AS use_purpose
+    , '' AS select_value
+    , b.display_seq
     FROM instance_info a, instance_detail_conf b
     WHERE a.instance_id = b.instance_id
-      AND a.instance_id = #{instance_id}
-      AND NOT EXISTS (SELECT 1 FROM adapter_type_detail_conf WHERE adapter_type_id = a.adapter_type_id AND item = b.item)
-  order by display_seq
-  </select>  
-  
-<!--   /////////////////////////////////////////////////////////////////////////////////// -->
-  <select id="instanceItem3" resultType="map"> 
+    AND a.instance_id = #{instance_id}
+    AND NOT EXISTS (SELECT 1 FROM adapter_type_detail_conf WHERE adapter_type_id = a.adapter_type_id AND item = b.item)
+    order by display_seq
+  </select>
+
+  <!-- /////////////////////////////////////////////////////////////////////////////////// -->
+  <select id="instanceItem3" resultType="map">
     SELECT a.instance_id
-        , 1 AS keyValueType
-        , c.essential_yn
-        , (SELECT code_nm FROM comm_code WHERE code_id = c.value_type) AS value_type
-        , c.item
-        , CASE WHEN c.setup_method = 'I1203' THEN d."value" ELSE COALESCE(d."value", c."value") END AS "value"
-        , case when d.item_described = '' then c.item_described else d.item_described end AS item_described
-        , c.change_able_yn
-        , c.setup_method
-        , c.use_purpose
-        , c."value" AS select_value
-        , c.display_seq
+    , 1 AS keyValueType
+    , c.essential_yn
+    , (SELECT code_nm FROM comm_code WHERE code_id = c.value_type) AS value_type
+    , c.item
+    , CASE WHEN c.setup_method = 'I1203' THEN d."value" ELSE COALESCE(d."value", c."value") END AS "value"
+    , case when d.item_described = '' then c.item_described else d.item_described end AS item_described
+    , c.change_able_yn
+    , c.setup_method
+    , c.use_purpose
+    , c."value" AS select_value
+    , c.display_seq
     FROM instance_info a
     INNER JOIN adapter_type_info b ON a.adapter_type_id = b.adapter_type_id AND b.use_yn = 'Y'
-    INNER JOIN adapter_type_detail_conf c ON a.adapter_type_id = c.adapter_type_id AND c.essential_yn = 'Y'
+    INNER JOIN adapter_type_detail_conf c ON a.adapter_type_id =
+    c.adapter_type_id AND c.essential_yn = 'Y'
     LEFT OUTER JOIN instance_detail_conf d ON a.instance_id = d.instance_id AND c.item = d.item
     WHERE a.instance_id = #{instance_id}
     AND c.sector = 'b'
-    
+
     UNION ALL
-    
+
     SELECT a.instance_id
-        , 1 AS keyValueType
-        , c.essential_yn
-        , (SELECT code_nm FROM comm_code WHERE code_id = c.value_type) AS value_type
-        , c.item
-        , CASE WHEN c.setup_method = 'I1203' THEN d."value" else COALESCE(d."value", c."value") END AS "value"
-        , case when d.item_described = '' then c.item_described else d.item_described end  AS item_described
-        , c.change_able_yn
-        , c.setup_method
-        , c.use_purpose
-        , c."value" AS select_value
-        , c.display_seq
+    , 1 AS keyValueType
+    , c.essential_yn
+    , (SELECT code_nm FROM comm_code WHERE code_id = c.value_type) AS value_type
+    , c.item
+    , CASE WHEN c.setup_method = 'I1203' THEN d."value" else COALESCE(d."value", c."value") END AS "value"
+    , case when d.item_described = '' then c.item_described else d.item_described end AS item_described
+    , c.change_able_yn
+    , c.setup_method
+    , c.use_purpose
+    , c."value" AS select_value
+    , c.display_seq
     FROM instance_info a, adapter_type_info b, adapter_type_detail_conf c, instance_detail_conf d
-    WHERE a.adapter_type_id = b.adapter_type_id 
-      AND b.use_yn = 'Y'
-      AND a.adapter_type_id = c.adapter_type_id 
-      AND c.essential_yn = 'N'
-      AND a.instance_id = d.instance_id 
-      AND c.item = d.item
-      AND a.instance_id = #{instance_id}
-      AND c.sector = 'b'
-      
+    WHERE a.adapter_type_id = b.adapter_type_id
+    AND b.use_yn = 'Y'
+    AND a.adapter_type_id = c.adapter_type_id
+    AND c.essential_yn = 'N'
+    AND a.instance_id = d.instance_id
+    AND c.item = d.item
+    AND a.instance_id = #{instance_id}
+    AND c.sector = 'b'
+
     UNION ALL
-    
+
     SELECT b.instance_id
-        , 2 AS keyValueType
-        , 'N' AS essential_yn
-        , '사용자지정' AS value_type
-        , b.item
-        , b."value"
-        , b.item_described
-        , 'Y' AS change_able_yn
-        , 'I1201' AS setup_method
-        , '' AS use_purpose
-        , '' AS select_value
-        , b.display_seq
+    , 2 AS keyValueType
+    , 'N' AS essential_yn
+    , '사용자지정' AS value_type
+    , b.item
+    , b."value"
+    , b.item_described
+    , 'Y' AS change_able_yn
+    , 'I1201' AS setup_method
+    , '' AS use_purpose
+    , '' AS select_value
+    , b.display_seq
     FROM instance_info a, instance_detail_conf b
     WHERE a.instance_id = b.instance_id
-      AND a.instance_id = #{instance_id}
-      AND NOT EXISTS (SELECT 1 FROM adapter_type_detail_conf WHERE adapter_type_id = a.adapter_type_id AND item = b.item)
-      AND b.sector = 'b'
-  order by display_seq
-  </select>  
-  
-  <select id="instanceItem2" resultType="map"> 
+    AND a.instance_id = #{instance_id}
+    AND NOT EXISTS (SELECT 1 FROM adapter_type_detail_conf WHERE adapter_type_id = a.adapter_type_id AND item = b.item)
+    AND b.sector = 'b'
+    order by display_seq
+  </select>
+
+  <select id="instanceItem2" resultType="map">
     SELECT a.instance_id
-        , 1 AS keyValueType
-        , c.essential_yn
-        , (SELECT code_nm FROM comm_code WHERE code_id = c.value_type) AS value_type
-        , c.item
-        , CASE WHEN c.setup_method = 'I1203' THEN d."value" ELSE COALESCE(d."value", c."value") END AS "value"
-        , case when d.item_described = '' then c.item_described else d.item_described end AS item_described
-        , c.change_able_yn
-        , c.setup_method
-        , c.use_purpose
-        , c."value" AS select_value
-        , c.display_seq
+    , 1 AS keyValueType
+    , c.essential_yn
+    , (SELECT code_nm FROM comm_code WHERE code_id = c.value_type) AS value_type
+    , c.item
+    , CASE WHEN c.setup_method = 'I1203' THEN d."value" ELSE COALESCE(d."value", c."value") END AS "value"
+    , case when d.item_described = '' then c.item_described else d.item_described end AS item_described
+    , c.change_able_yn
+    , c.setup_method
+    , c.use_purpose
+    , c."value" AS select_value
+    , c.display_seq
     FROM instance_info a
     INNER JOIN adapter_type_info b ON a.adapter_type_id = b.adapter_type_id AND b.use_yn = 'Y'
-    INNER JOIN adapter_type_detail_conf c ON a.adapter_type_id = c.adapter_type_id AND c.essential_yn = 'Y'
+    INNER JOIN adapter_type_detail_conf c ON a.adapter_type_id =
+    c.adapter_type_id AND c.essential_yn = 'Y'
     LEFT OUTER JOIN instance_detail_conf d ON a.instance_id = d.instance_id AND c.item = d.item
     WHERE a.instance_id = #{instance_id}
     AND c.sector = 'a'
-    
+
     UNION ALL
-    
+
     SELECT a.instance_id
-        , 1 AS keyValueType
-        , c.essential_yn
-        , (SELECT code_nm FROM comm_code WHERE code_id = c.value_type) AS value_type
-        , c.item
-        , CASE WHEN c.setup_method = 'I1203' THEN d."value" else COALESCE(d."value", c."value") END AS "value"
-        , case when d.item_described = '' then c.item_described else d.item_described end  AS item_described
-        , c.change_able_yn
-        , c.setup_method
-        , c.use_purpose
-        , c."value" AS select_value
-        , c.display_seq 
+    , 1 AS keyValueType
+    , c.essential_yn
+    , (SELECT code_nm FROM comm_code WHERE code_id = c.value_type) AS value_type
+    , c.item
+    , CASE WHEN c.setup_method = 'I1203' THEN d."value" else COALESCE(d."value", c."value") END AS "value"
+    , case when d.item_described = '' then c.item_described else d.item_described end AS item_described
+    , c.change_able_yn
+    , c.setup_method
+    , c.use_purpose
+    , c."value" AS select_value
+    , c.display_seq
     FROM instance_info a, adapter_type_info b, adapter_type_detail_conf c, instance_detail_conf d
-    WHERE a.adapter_type_id = b.adapter_type_id 
-      AND b.use_yn = 'Y'
-      AND a.adapter_type_id = c.adapter_type_id 
-      AND c.essential_yn = 'N'
-      AND a.instance_id = d.instance_id 
-      AND c.item = d.item
-      AND a.instance_id = #{instance_id}
-      AND c.sector = 'a'
-      
+    WHERE a.adapter_type_id = b.adapter_type_id
+    AND b.use_yn = 'Y'
+    AND a.adapter_type_id = c.adapter_type_id
+    AND c.essential_yn = 'N'
+    AND a.instance_id = d.instance_id
+    AND c.item = d.item
+    AND a.instance_id = #{instance_id}
+    AND c.sector = 'a'
+
     UNION ALL
-    
+
     SELECT b.instance_id
-        , 2 AS keyValueType
-        , 'N' AS essential_yn
-        , '사용자지정' AS value_type
-        , b.item
-        , b."value"
-        , b.item_described
-        , 'Y' AS change_able_yn
-        , 'I1201' AS setup_method
-        , '' AS use_purpose
-        , '' AS select_value
-        , b.display_seq
+    , 2 AS keyValueType
+    , 'N' AS essential_yn
+    , '사용자지정' AS value_type
+    , b.item
+    , b."value"
+    , b.item_described
+    , 'Y' AS change_able_yn
+    , 'I1201' AS setup_method
+    , '' AS use_purpose
+    , '' AS select_value
+    , b.display_seq
     FROM instance_info a, instance_detail_conf b
     WHERE a.instance_id = b.instance_id
-      AND a.instance_id = #{instance_id}
-      AND NOT EXISTS (SELECT 1 FROM adapter_type_detail_conf WHERE adapter_type_id = a.adapter_type_id AND item = b.item)
-      AND b.sector = 'a'
-  order by display_seq
-  </select> 
-  <!--   /////////////////////////////////////////////////////////////////////////////////// --> 
-  
+    AND a.instance_id = #{instance_id}
+    AND NOT EXISTS (SELECT 1 FROM adapter_type_detail_conf WHERE adapter_type_id = a.adapter_type_id AND item = b.item)
+    AND b.sector = 'a'
+    order by display_seq
+  </select>
+  <!-- /////////////////////////////////////////////////////////////////////////////////// -->
+
   <select id="newInstanceId" resultType="String">
     SELECT
-      #{adapter_id}||'_'||LPAD(CAST(CAST(RIGHT(COALESCE(MAX(distinct instance_id),'0'),  3) AS INT)+1 AS VARCHAR),3,'0') AS new_instance_id 
-    FROM instance_info 
+    #{adapter_id}||'_'||LPAD(CAST(CAST(RIGHT(COALESCE(MAX(distinct instance_id),'0'), 3) AS INT)+1 AS VARCHAR),3,'0') AS new_instance_id
+    FROM instance_info
     WHERE adapter_id = #{adapter_id}
   </select>
 </mapper>

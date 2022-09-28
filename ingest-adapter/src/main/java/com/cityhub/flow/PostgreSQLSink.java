@@ -93,7 +93,7 @@ public class PostgreSQLSink extends AbstractBaseSink {
       if (body.startsWith("[")) {
         JSONArray jarr = new JSONArray(body);
         for (Object obj : jarr) {
-          JSONObject json = (JSONObject)obj;
+          JSONObject json = (JSONObject) obj;
           Map<String, Object> param = json.toMap();
           if (json.has("header")) {
             param.put("tableName", json.getString("header"));
@@ -109,7 +109,7 @@ public class PostgreSQLSink extends AbstractBaseSink {
         }
         logger.info("Param: {}", param);
         logger.info("List: {}", session.selectList(postfix + "selectFirst", param));
-        //session.insert(postfix + "insertQuery", param);
+        // session.insert(postfix + "insertQuery", param);
 
       } else {
         logger.info("Logger: " + body);

@@ -94,7 +94,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     urlAddr = context.getString(DefaultConstants.URL_ADDR, "");
     topic = context.getString("TOPIC", "");
     metaInfo = context.getString("META_INFO", "");
-    reqTopic = context.getString("REQ_PREFIX", "") + topic ;
+    reqTopic = context.getString("REQ_PREFIX", "") + topic;
     respTopic = context.getString("RESP_PREFIX", "") + topic;
     setInvokeClass(context.getString(DefaultConstants.INVOKE_CLASS, ""));
     modelId = context.getString("MODEL_ID", "");
@@ -111,10 +111,11 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     } else {
       ConfItem = new JSONObject();
     }
-    if (getInit().has("daemonSrverLogApi") ) {
-      ConfItem.put("daemonSrverLogApi", getInit().getString("daemonSrverLogApi"));
+    String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "");
+    if (!"".equals(DAEMON_SERVER_LOGAPI)) {
+      ConfItem.put("daemonServerLogApi", context.getString("DAEMON_SERVER_LOGAPI", ""));
     } else {
-      ConfItem.put("daemonSrverLogApi", "http://localhost:8888/logToDbApi");
+      ConfItem.put("daemonServerLogApi", "http://localhost:8888/logToDbApi");
     }
     ConfItem.put("topic", topic);
     ConfItem.put("req_topic", reqTopic + "/#");
@@ -139,8 +140,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     this.objectMapper = new ObjectMapper();
     this.objectMapper.setSerializationInclusion(Include.NON_NULL);
     this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
-    this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE ));
-
+    this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
 
   }
 
@@ -149,7 +149,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     try {
       String clientid = DefaultConstants.VENDOR + "-" + topic + "-" + MqttClient.generateClientId();
 
-      log.debug("source: {} , UrlAddr: {} , clientid: {}" , this.getName() , urlAddr , clientid);
+      log.debug("source: {} , UrlAddr: {} , clientid: {}", this.getName(), urlAddr, clientid);
       mqttClient = new MqttClient(urlAddr, clientid, dataStore);
       mqttClient.setCallback(this);
 
@@ -160,7 +160,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     } catch (MqttException e) {
       log.error("Error connecting to the MQTT broker.", e);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       log.error("Please define a hostname to be used as clientId.", e);
     }
     execFirst();
@@ -172,13 +172,13 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     templateItem = new JSONObject();
     if (ArrModel != null) {
       for (String model : ArrModel) {
-        HttpResponse resp = OkUrlUtil.get(schemaSrv+"?id=" + model, "Accept", "application/json");
-        log.info("schema info: {},{},{}",model, resp.getStatusCode(), schemaSrv+"?id=" + model);
+        HttpResponse resp = OkUrlUtil.get(schemaSrv + "?id=" + model, "Accept", "application/json");
+        log.info("schema info: {},{},{}", model, resp.getStatusCode(), schemaSrv + "?id=" + model);
         if (resp.getStatusCode() == 200) {
           DataModelEx dm = new DataModelEx(resp.getPayload());
           if (dm.hasModelId(model)) {
             templateItem.put(model, dm.createModel(model));
-            log.info("schema server: {},{}",model, templateItem);
+            log.info("schema server: {},{}", model, templateItem);
           } else {
             templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
           }
@@ -187,20 +187,19 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
         }
       }
     } else {
-      log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId , getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
+      log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
     }
 
     if (log.isDebugEnabled()) {
-      //log.debug("ConfItem:{} -- {}", topic, ConfItem);
+      // log.debug("ConfItem:{} -- {}", topic, ConfItem);
       log.debug("templateItem:{} -- {}", topic, templateItem);
     }
     try {
-      reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass() ,  ConfItem, templateItem);
+      reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(), ConfItem, templateItem);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
-
 
   @Override
   public void messageArrived(String topic, MqttMessage mqttMessage) {
@@ -211,26 +210,27 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
 
     try {
       if (reflectExecuter == null) {
-        reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass() ,  ConfItem, templateItem);
+        reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(), ConfItem, templateItem);
       }
       if (mqttMessage.getPayload() != null && reflectExecuter != null) {
         JsonUtil je = new JsonUtil(new String(mqttMessage.getPayload()));
-        if (!"".equals(je.get("pc")) ) {
+        if (!"".equals(je.get("pc"))) {
           callback(mqttMessage.getPayload());
 
           String sb = reflectExecuter.doit(mqttMessage.getPayload());
 
-          if (sb != null  && !"".equals(sb) ) {
-            List<Map<String,Object>> entities = objectMapper.readValue(sb, new TypeReference<List<Map<String,Object>>>(){});
-            for (Map<String,Object> itm : entities) {
+          if (sb != null && !"".equals(sb)) {
+            List<Map<String, Object>> entities = objectMapper.readValue(sb, new TypeReference<List<Map<String, Object>>>() {
+            });
+            for (Map<String, Object> itm : entities) {
               int length = objectMapper.writeValueAsString(itm).getBytes().length;
-              log.info("`{}`{}`{}`{}`{}`{}",this.getName() ,itm.get("type"), getStr(SocketCode.DATA_SAVE_REQ) , itm.get("id"), length , adapterType);
-              StringBuilder l =  new StringBuilder();
+              log.info("`{}`{}`{}`{}`{}`{}", this.getName(), itm.get("type"), getStr(SocketCode.DATA_SAVE_REQ), itm.get("id"), length, adapterType);
+              StringBuilder l = new StringBuilder();
               l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
               l.append("`").append(ConfItem.getString("sourceName"));
               l.append("`").append(modelId);
               l.append("`").append(SocketCode.DATA_SAVE_REQ.getCode() + ";" + SocketCode.DATA_SAVE_REQ.getMessage());
-              l.append("`").append(itm.get("id")+"");
+              l.append("`").append(itm.get("id") + "");
               l.append("`").append(length);
               l.append("`").append(adapterType);
               l.append("`").append(ConfItem.getString("invokeClass"));
@@ -241,10 +241,10 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
               logVo.setType(modelId);
               logVo.setStep(SocketCode.DATA_SAVE_REQ.getCode());
               logVo.setDesc(SocketCode.DATA_SAVE_REQ.getMessage());
-              logVo.setId(itm.get("id")+"");
+              logVo.setId(itm.get("id") + "");
               logVo.setLength(String.valueOf(length));
               logVo.setAdapterType(ConfItem.getString("invokeClass"));
-              LogWriterToDb.logToDaemonApi(ConfItem,logVo);
+              LogWriterToDb.logToDaemonApi(ConfItem, logVo);
               for (int i = 0; i < ArrModel.length; i++) {
                 if (ArrModel[i].equals(itm.get("type") + "")) {
                   sendEventEx(itm, ArrDatasetId[i]);
@@ -258,43 +258,42 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
 
       }
     } catch (NullPointerException npe) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(npe));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(npe));
       log.error("NullPointerException", npe);
     } catch (ChannelException ex) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(ex));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(ex));
       log.error("Error writting to channel, event dropped", ex);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
-
-  public void sendEventEx(Map<String,Object> entity, String datasetId) {
+  public void sendEventEx(Map<String, Object> entity, String datasetId) {
     try {
-      List<Map<String,Object>> entities = new LinkedList<>();
+      List<Map<String, Object>> entities = new LinkedList<>();
       entities.add(entity);
-      Map<String,Object> body = new LinkedHashMap<>();
+      Map<String, Object> body = new LinkedHashMap<>();
       body.put("entities", entities);
       body.put("datasetId", datasetId);
       Event event = EventBuilder.withBody(objectMapper.writeValueAsString(body).getBytes(Charset.forName("UTF-8")));
       getChannelProcessor().processEvent(event);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
-
 
   public String getStr(SocketCode sc) {
     return sc.getCode() + ";" + sc.getMessage();
   }
-  public String getStr(SocketCode sc,String msg) {
+
+  public String getStr(SocketCode sc, String msg) {
     return sc.getCode() + ";" + sc.getMessage() + "-" + msg;
   }
 
   public void callback(byte[] msg) {
     try {
       JsonUtil je = new JsonUtil(new String(msg));
-      if( je.has("pc.m2m:sgn") == true) {
+      if (je.has("pc.m2m:sgn") == true) {
         JSONObject sub = je.getObject("pc.m2m:sgn");
 
         boolean vrq = sub.has("vrq") == false ? false : sub.getBoolean("vrq");
@@ -308,12 +307,9 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
         }
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
-
-
-
 
   @Override
   public void stop() {
@@ -322,7 +318,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
         mqttClient.disconnect();
         mqttClient.close();
       } catch (MqttException e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       }
     }
     super.stop();
@@ -332,10 +328,10 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
   public void connectComplete(boolean reconnect, String serverURI) {
     try {
       int Qos = 0;
-      log.info("Subscribing to topic: {}, QoS: {}", reqTopic+ "/#", Qos);
-      mqttClient.subscribe(reqTopic+ "/#", Qos);
+      log.info("Subscribing to topic: {}, QoS: {}", reqTopic + "/#", Qos);
+      mqttClient.subscribe(reqTopic + "/#", Qos);
     } catch (MqttException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       log.error("Error connecting to the MQTT broker.", e);
     }
   }
@@ -359,7 +355,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     try {
       log.debug("Topic - {} : Delivery complete.", Arrays.toString(token.getTopics()));
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -370,6 +366,5 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
   public void setInvokeClass(String invokeClass) {
     this.invokeClass = invokeClass;
   }
-
 
 } // end class

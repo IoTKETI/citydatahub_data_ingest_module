@@ -18,6 +18,7 @@ package com.cityhub.adapter.convert;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.exception.CoreException;
 import com.cityhub.utils.CommonUtil;
@@ -25,7 +26,7 @@ import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
 
-public class ConvWeatherLife  extends AbstractConvert {
+public class ConvWeatherLife extends AbstractConvert {
 
   @Override
   public void init(JSONObject ConfItem, JSONObject templateItem) {
@@ -33,7 +34,7 @@ public class ConvWeatherLife  extends AbstractConvert {
   }
 
   @Override
-  public String doit()  throws CoreException {
+  public String doit() throws CoreException {
     StringBuffer sendJson = new StringBuffer();
     try {
       JSONObject jTemplate = templateItem;
@@ -41,15 +42,15 @@ public class ConvWeatherLife  extends AbstractConvert {
 
       JSONArray serviceList = ConfItem.getJSONArray("serviceList");
 
-      for (int i = 0 ; i < serviceList.length(); i++) {
+      for (int i = 0; i < serviceList.length(); i++) {
         JSONObject iService = serviceList.getJSONObject(i);
 
-        JSONObject jData = (JSONObject) CommonUtil.getData(iService );
+        JSONObject jData = (JSONObject) CommonUtil.getData(iService);
 
         JsonUtil jh = new JsonUtil(jData);
         JSONObject jHeader = jh.getObject("Response.header");
 
-        if ( "Y".equals(jHeader.getString("successYN")) ) {
+        if ("Y".equals(jHeader.getString("successYN"))) {
           JSONObject jModel = jh.getObject("Response.body.indexModel");
 
           String dataObserved = DateUtil.getISOTime(jModel.getString("date"));
@@ -76,15 +77,10 @@ public class ConvWeatherLife  extends AbstractConvert {
       sendJson.append(jTemplate.toString() + ",");
 
     } catch (Exception e) {
-      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
     }
 
     return sendJson.toString();
   }
-
-
-
-
-
 
 } // end of class

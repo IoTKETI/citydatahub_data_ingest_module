@@ -22,7 +22,9 @@ import org.apache.flume.Context;
 import org.apache.flume.EventDeliveryException;
 import org.apache.flume.PollableSource;
 import org.apache.flume.source.PollableSourceConstants;
+
 import com.cityhub.environment.DefaultConstants;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -37,7 +39,6 @@ public abstract class LAbstractPollSource extends LAbstractBaseSource implements
     setup(context);
   }
 
-
   @Override
   public void start() {
     super.start();
@@ -49,8 +50,6 @@ public abstract class LAbstractPollSource extends LAbstractBaseSource implements
     exit();
     super.stop();
   }
-
-
 
   @Override
   public Status process() throws EventDeliveryException {
@@ -64,7 +63,7 @@ public abstract class LAbstractPollSource extends LAbstractBaseSource implements
     } catch (Exception e) {
       counterGroup.incrementAndGet("events.failed");
       status = Status.BACKOFF;
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return status;
@@ -76,8 +75,8 @@ public abstract class LAbstractPollSource extends LAbstractBaseSource implements
 
   public abstract void processing();
 
-  public void exit() {}
-
+  public void exit() {
+  }
 
   @Override
   public long getBackOffSleepIncrement() {

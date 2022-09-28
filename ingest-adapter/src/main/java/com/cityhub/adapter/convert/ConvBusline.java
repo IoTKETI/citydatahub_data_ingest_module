@@ -18,6 +18,7 @@ package com.cityhub.adapter.convert;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.exception.CoreException;
 import com.cityhub.utils.CommonUtil;
@@ -63,10 +64,9 @@ public class ConvBusline extends AbstractConvert {
       }
 
     } catch (Exception e) {
-      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
     }
     return sendJson.toString();
   }
-
 
 } // end of class

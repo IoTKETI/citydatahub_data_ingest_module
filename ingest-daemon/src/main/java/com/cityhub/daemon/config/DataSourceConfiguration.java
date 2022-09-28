@@ -26,31 +26,30 @@ import com.cityhub.daemon.code.Consts;
 @EnableTransactionManagement
 public class DataSourceConfiguration {
 
-	@Value("${spring.datasource.driver-class-name}")
-	private String driverClassName;
+  @Value("${spring.datasource.driver-class-name}")
+  private String driverClassName;
 
-	@Value("${spring.datasource.url}")
-	private String jdbcUrl;
+  @Value("${spring.datasource.url}")
+  private String jdbcUrl;
 
-	@Value("${spring.datasource.username}")
-	private String jdbcUserName;
+  @Value("${spring.datasource.username}")
+  private String jdbcUserName;
 
-	@Value("${spring.datasource.password}")
-	private String jdbcPassword;
-
+  @Value("${spring.datasource.password}")
+  private String jdbcPassword;
 
   @Bean
   @Primary
   @Qualifier("dataSource")
-	public DataSource dataSource() {
-		BasicDataSource dataSource = new BasicDataSource();
-		dataSource.setDriverClassName(driverClassName);
-		dataSource.setUrl(jdbcUrl);
-		dataSource.setUsername(jdbcUserName);
-		dataSource.setPassword(jdbcPassword);
+  public DataSource dataSource() {
+    BasicDataSource dataSource = new BasicDataSource();
+    dataSource.setDriverClassName(driverClassName);
+    dataSource.setUrl(jdbcUrl);
+    dataSource.setUsername(jdbcUserName);
+    dataSource.setPassword(jdbcPassword);
 
-		return dataSource;
-	}
+    return dataSource;
+  }
 
   @Bean
   @Primary

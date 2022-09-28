@@ -18,6 +18,7 @@ package com.cityhub.adapter.convert;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.exception.CoreException;
 import com.cityhub.utils.CommonUtil;
@@ -54,21 +55,19 @@ public class ConvWaterDaily extends AbstractConvert {
             jsonEx.put("id", ConfItem.getString("gs1Code"));
             jsonEx.put("taste.value", JsonUtil.nvl(jItem.getString("item1")));
             jsonEx.put("smell.value", JsonUtil.nvl(jItem.getString("item2")));
-            jsonEx.put("chromaticity.value", JsonUtil.nvl(jItem.get("item3"), DataType.FLOAT ));
+            jsonEx.put("chromaticity.value", JsonUtil.nvl(jItem.get("item3"), DataType.FLOAT));
             jsonEx.put("pH.value", JsonUtil.nvl(jItem.get("item4"), DataType.FLOAT));
             jsonEx.put("turbidity.value", JsonUtil.nvl(jItem.get("item5"), DataType.FLOAT));
-            jsonEx.put("residualChlorine.value", JsonUtil.nvl(jItem.get("item6") , DataType.FLOAT));
-
+            jsonEx.put("residualChlorine.value", JsonUtil.nvl(jItem.get("item6"), DataType.FLOAT));
 
             sendJson.append(jTemplate.toString() + ",");
           }
         }
       }
     } catch (Exception e) {
-      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
     }
     return sendJson.toString();
   }
-
 
 } // end of class

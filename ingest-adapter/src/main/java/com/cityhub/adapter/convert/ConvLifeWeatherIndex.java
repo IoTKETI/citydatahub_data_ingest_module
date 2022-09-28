@@ -42,63 +42,60 @@ public class ConvLifeWeatherIndex extends AbstractConvert {
     StringBuffer sendJson = new StringBuffer();
 
     try {
-            JSONArray svcList = ConfItem.getJSONArray("serviceList");
+      JSONArray svcList = ConfItem.getJSONArray("serviceList");
 
-            for (int i = 0; i < svcList.length(); i++) {
-            JSONObject iSvc = svcList.getJSONObject(i);
+      for (int i = 0; i < svcList.length(); i++) {
+        JSONObject iSvc = svcList.getJSONObject(i);
 
-            id = iSvc.getString("gs1Code");
-            JSONObject jTemplate = templateItem.getJSONObject(ConfItem.getString("model_id"));
-            JsonUtil jsonEx = new JsonUtil(jTemplate);
+        id = iSvc.getString("gs1Code");
+        JSONObject jTemplate = templateItem.getJSONObject(ConfItem.getString("model_id"));
+        JsonUtil jsonEx = new JsonUtil(jTemplate);
 
-            JSONArray urlC = iSvc.getJSONArray("url_addr");
+        JSONArray urlC = iSvc.getJSONArray("url_addr");
 
-                    for (int j = 0; j < urlC.length(); j++) {
-                    iSvc.put("url_addr", urlC.getString(j));
+        for (int j = 0; j < urlC.length(); j++) {
+          iSvc.put("url_addr", urlC.getString(j));
 
-                    JsonUtil ju = new JsonUtil((JSONObject) CommonUtil.getData(iSvc));
-                    Thread.sleep(100);
+          JsonUtil ju = new JsonUtil((JSONObject) CommonUtil.getData(iSvc));
+          Thread.sleep(100);
 
-                            if (ju.has("response.body.items.item")) {
-                              JSONArray arrList = ju.getArray("response.body.items.item");
-                              JSONObject item = arrList.getJSONObject(0);
+          if (ju.has("response.body.items.item")) {
+            JSONArray arrList = ju.getArray("response.body.items.item");
+            JSONObject item = arrList.getJSONObject(0);
 
-                              insertData(jsonEx, item);
+            insertData(jsonEx, item);
 
-                              jsonEx.put("@context", new JSONArray().put("http://uri.etsi.org/ngsi-ld/core-context.jsonld").put("http://datahub.kr/ngsi-ld/weather.jsonld"));
-                              jsonEx.put("id", iSvc.getString("gs1Code"));
-                              jsonEx.put("location.value.coordinates", iSvc.getJSONArray("location"));
-                              jsonEx.put("address.value.addressCountry", JsonUtil.nvl(iSvc.getString("addressCountry")));
-                              jsonEx.put("address.value.addressRegion", JsonUtil.nvl(iSvc.getString("addressRegion")));
-                              jsonEx.put("address.value.addressLocality", JsonUtil.nvl(iSvc.getString("addressLocality")));
-                              jsonEx.put("address.value.addressTown", JsonUtil.nvl(iSvc.getString("addressTown")));
-                              jsonEx.put("address.value.streetAddress", JsonUtil.nvl(iSvc.getString("streetAddress")));
+            jsonEx.put("@context", new JSONArray().put("http://uri.etsi.org/ngsi-ld/core-context.jsonld").put("http://datahub.kr/ngsi-ld/weather.jsonld"));
+            jsonEx.put("id", iSvc.getString("gs1Code"));
+            jsonEx.put("location.value.coordinates", iSvc.getJSONArray("location"));
+            jsonEx.put("address.value.addressCountry", JsonUtil.nvl(iSvc.getString("addressCountry")));
+            jsonEx.put("address.value.addressRegion", JsonUtil.nvl(iSvc.getString("addressRegion")));
+            jsonEx.put("address.value.addressLocality", JsonUtil.nvl(iSvc.getString("addressLocality")));
+            jsonEx.put("address.value.addressTown", JsonUtil.nvl(iSvc.getString("addressTown")));
+            jsonEx.put("address.value.streetAddress", JsonUtil.nvl(iSvc.getString("streetAddress")));
 
-                            } else {
-                              removeData(jsonEx, iSvc);
-                            }
+          } else {
+            removeData(jsonEx, iSvc);
+          }
 
-                    }
+        }
 
-            log(SocketCode.DATA_CONVERT_SUCCESS, id, jTemplate.toString().getBytes());
-            sendJson.append(jTemplate.toString() + ",");
-            }
+        log(SocketCode.DATA_CONVERT_SUCCESS, id, jTemplate.toString().getBytes());
+        sendJson.append(jTemplate.toString() + ",");
+      }
 
     } catch (CoreException e) {
-            if ("!C0099".equals(e.getErrorCode())) {
-              log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-            }
+      if ("!C0099".equals(e.getErrorCode())) {
+        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      }
 
     } catch (Exception e) {
-            log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-            throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
     }
 
     return sendJson.toString();
   }
-
-
-
 
   public void removeData(JsonUtil jsonEx, JSONObject iSvc) {
 

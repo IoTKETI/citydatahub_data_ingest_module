@@ -46,7 +46,7 @@ public class ConvAirForecast extends AbstractConvert {
     try {
       JSONObject jTemplate = new JSONObject(templateItem.getJSONObject(ConfItem.getString("model_id")).toString());
       JSONArray serviceList = ConfItem.getJSONArray("serviceList");
-      for (int k = 0 ; k < serviceList.length(); k++) {
+      for (int k = 0; k < serviceList.length(); k++) {
         JSONObject iSvc = serviceList.getJSONObject(k);
         id = iSvc.getString("gs1Code");
 
@@ -60,7 +60,7 @@ public class ConvAirForecast extends AbstractConvert {
           for (int i = 0; i < urlAddr.length(); i++) {
             iSvc.put("url_addr", urlAddr.getString(i));
             JSONObject obj = (JSONObject) CommonUtil.getData(iSvc);
-            objLength+= obj.toString();
+            objLength += obj.toString();
             if (!obj.has("list")) {
               throw new CoreException(ErrorCode.NORMAL_ERROR);
             }
@@ -72,7 +72,7 @@ public class ConvAirForecast extends AbstractConvert {
               for (String type : types) {
                 if (type.equals(item.getString("informCode").toLowerCase())) {
                   cnt++;
-                  String[] strs = item.getString("informGrade").replace(" ", "").split(",",-1);
+                  String[] strs = item.getString("informGrade").replace(" ", "").split(",", -1);
                   forecast.put(type + "Category", JsonUtil.nvl(getGrade(strs, iSvc.getString("zoneName"))));
                 }
               } // for (String type : types)
@@ -80,7 +80,7 @@ public class ConvAirForecast extends AbstractConvert {
                 throw new Exception(SocketCode.DATA_CONVERT_FAIL.getCode());
               }
             } else {
-              log(SocketCode.DATA_CONVERT_FAIL,  id, "파싱하기 위한 필수항목이 존재하지 않습니다");
+              log(SocketCode.DATA_CONVERT_FAIL, id, "파싱하기 위한 필수항목이 존재하지 않습니다");
             } // if (objarr.length() > 0)
           } // for (int i = 0; i < urlAddr.length(); j++)
           String add = DateUtil.addDate(dateCreated, ChronoUnit.HOURS, j + 1, "yyyyMMddHH");
@@ -88,7 +88,7 @@ public class ConvAirForecast extends AbstractConvert {
           aForecast.put(forecast);
         } // for (int j = 0; j < 2; j++)
 
-        log(SocketCode.DATA_RECEIVE, id,objLength.getBytes());
+        log(SocketCode.DATA_RECEIVE, id, objLength.getBytes());
 
         JsonUtil jsonEx = new JsonUtil(jTemplate);
         jsonEx.put("@context", new JSONArray().put("http://uri.etsi.org/ngsi-ld/core-context.jsonld").put("http://cityhub.kr/ngsi-ld/airquality.jsonld"));
@@ -104,12 +104,12 @@ public class ConvAirForecast extends AbstractConvert {
         jsonEx.put("airQualityIndexPrediction.value", aForecast);
         jsonEx.put("airQualityIndexPrediction.observedAt", dateCreated);
 
-        List<String> rmKeys = new ArrayList<String>();
+        List<String> rmKeys = new ArrayList<>();
         rmKeys.add("airQualityPrediction");
         rmKeys.add("name");
         JsonUtil.removeNullItem(jTemplate, "airQualityIndexPrediction.value", rmKeys);
 
-        log(SocketCode.DATA_CONVERT_SUCCESS, id,jTemplate.toString().getBytes());
+        log(SocketCode.DATA_CONVERT_SUCCESS, id, jTemplate.toString().getBytes());
         sendJson.append(jTemplate.toString() + ",");
 
       } // for (int k = 0 ; k < serviceList.length(); k++)

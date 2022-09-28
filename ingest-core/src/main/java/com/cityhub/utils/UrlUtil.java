@@ -51,7 +51,8 @@ public class UrlUtil {
   /**
    * put
    *
-   * <pre>example :
+   * <pre>
+   * example :
    *Header[] headers = {
    * new BasicHeader("Content-type", "application/x-www-form-urlencoded")
    * ,new BasicHeader("Accept", "text/html,text/xml,application/xml")
@@ -62,7 +63,7 @@ public class UrlUtil {
    */
   public static HttpResponse put(String urladdr, Header[] headers, String strJsonBody) throws Exception {
     if (log.isDebugEnabled()) {
-      log.debug(">>>{}" , strJsonBody);
+      log.debug(">>>{}", strJsonBody);
     }
     HttpPut request = new HttpPut(urladdr);
     request.setHeaders(headers);
@@ -71,11 +72,12 @@ public class UrlUtil {
     try (CloseableHttpClient httpclient = HttpClientBuilder.create().build()) {
       hr = createResponse(request, httpclient.execute(request));
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       throw new Exception(e.getMessage());
     }
     return hr;
   }
+
   /**
    * put
    *
@@ -87,36 +89,39 @@ public class UrlUtil {
    *HttpResp resp = UrlConnect.patch(urladdr, headers, strJsonBody);
    * </pre>
    */
-  public static HttpResponse put(String urladdr, ArrayList<Header> headers , String strJsonBody) {
+  public static HttpResponse put(String urladdr, ArrayList<Header> headers, String strJsonBody) {
     try {
       return put(urladdr, headers.toArray(new Header[0]), strJsonBody);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-      return new HttpResponse("", 9999, e.getMessage() , headers.toArray(new Header[0]));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      return new HttpResponse("", 9999, e.getMessage(), headers.toArray(new Header[0]));
     }
   }
+
   /**
    * put
    *
-   * <pre>example :
+   * <pre>
+   * example :
    *String strJsonBody = "{a:1}";
    *HttpResp resp = UrlConnect.put("http://localhost/item/?a=1&b1", "Content-type", "application/json", strJsonBody);
    * </pre>
    */
-  public static HttpResponse put(String urladdr, String headerType, String headerValue, String strJsonBody)  {
-    Header[] headers = {new BasicHeader(headerType, headerValue)};
+  public static HttpResponse put(String urladdr, String headerType, String headerValue, String strJsonBody) {
+    Header[] headers = { new BasicHeader(headerType, headerValue) };
     try {
       return put(urladdr, headers, strJsonBody);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-      return new HttpResponse("", 9999, e.getMessage() , headers);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      return new HttpResponse("", 9999, e.getMessage(), headers);
     }
   }
 
   /**
    * get
    *
-   * <pre>example :
+   * <pre>
+   * example :
    *Header[] headers = {
    * new BasicHeader("Content-type", "application/x-www-form-urlencoded")
    * ,new BasicHeader("Accept", "text/html,text/xml,application/xml")
@@ -138,11 +143,12 @@ public class UrlUtil {
     try (CloseableHttpClient httpclient = builder.build()) {
       hr = createResponse(request, httpclient.execute(request));
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       throw new Exception(e.getMessage());
     }
     return hr;
   }
+
   /**
    * get
    *
@@ -153,35 +159,38 @@ public class UrlUtil {
    *HttpResp resp = UrlConnect.get(urladdr, headers);
    * </pre>
    */
-  public static HttpResponse get(String urladdr, ArrayList<Header> headers )  {
+  public static HttpResponse get(String urladdr, ArrayList<Header> headers) {
     try {
       return get(urladdr, headers.toArray(new Header[0]));
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-      return new HttpResponse("", 9999, e.getMessage() , headers.toArray(new Header[0]));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      return new HttpResponse("", 9999, e.getMessage(), headers.toArray(new Header[0]));
     }
   }
+
   /**
    * get
    *
-   *<pre>example :
+   * <pre>
+   * example :
    * HttpResp resp = UrlConnect.get("http://localhost/item/?a=1&b1", "Content-type", "application/json" );
-   *</pre>
+   * </pre>
    */
   public static HttpResponse get(String urladdr, String headerType, String headerValue) {
-    Header[] headers = {new BasicHeader(headerType, headerValue)};
+    Header[] headers = { new BasicHeader(headerType, headerValue) };
     try {
       return get(urladdr, headers);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-      return new HttpResponse("", 9999, e.getMessage() , headers);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      return new HttpResponse("", 9999, e.getMessage(), headers);
     }
   }
 
   /**
    * patch
    *
-   * <pre>example :
+   * <pre>
+   * example :
    *Header[] headers = {
    * new BasicHeader("Content-type", "application/x-www-form-urlencoded")
    * ,new BasicHeader("Accept", "text/html,text/xml,application/xml")
@@ -193,7 +202,7 @@ public class UrlUtil {
    */
   public static HttpResponse patch(String urladdr, Header[] headers, String strJsonBody) throws Exception {
     if (log.isDebugEnabled()) {
-      log.debug(">>>{}" , strJsonBody);
+      log.debug(">>>{}", strJsonBody);
     }
     HttpPatch request = new HttpPatch(urladdr);
     request.setHeaders(headers);
@@ -209,11 +218,12 @@ public class UrlUtil {
     try (CloseableHttpClient httpclient = builder.build()) {
       hr = createResponse(request, httpclient.execute(request));
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       throw new Exception(e.getMessage());
     }
     return hr;
   }
+
   /**
    * patch
    *
@@ -225,36 +235,39 @@ public class UrlUtil {
    *HttpResp resp = UrlConnect.patch(urladdr, headers, strJsonBody);
    * </pre>
    */
-  public static HttpResponse patch(String urladdr, ArrayList<Header> headers , String strJsonBody)  {
+  public static HttpResponse patch(String urladdr, ArrayList<Header> headers, String strJsonBody) {
     try {
       return patch(urladdr, headers.toArray(new Header[0]), strJsonBody);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-      return new HttpResponse("", 9999, e.getMessage() , headers.toArray(new Header[0]));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      return new HttpResponse("", 9999, e.getMessage(), headers.toArray(new Header[0]));
     }
   }
+
   /**
    * patch
    *
-   *<pre>example :
+   * <pre>
+   * example :
    * String strJsonBody = "{a:1}";
    * HttpResp resp = UrlConnect.patch("http://localhost/item/?a=1&b1", "Content-type", "application/json" , strJsonBody);
-   *</pre>
+   * </pre>
    */
   public static HttpResponse patch(String urladdr, String headerType, String headerValue, String strJsonBody) {
-    Header[] headers = {new BasicHeader(headerType, headerValue)};
+    Header[] headers = { new BasicHeader(headerType, headerValue) };
     try {
       return patch(urladdr, headers, strJsonBody);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-      return new HttpResponse("", 9999, e.getMessage() , headers);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      return new HttpResponse("", 9999, e.getMessage(), headers);
     }
   }
 
   /**
    * post
    *
-   * <pre>example :
+   * <pre>
+   * example :
    *Header[] headers = {
    * new BasicHeader("Content-type", "application/x-www-form-urlencoded")
    * ,new BasicHeader("Accept", "text/html,text/xml,application/xml")
@@ -265,7 +278,7 @@ public class UrlUtil {
    */
   public static HttpResponse post(String urladdr, Header[] headers, String strJsonBody) throws Exception {
     if (log.isDebugEnabled()) {
-      log.debug(">>>{}" , strJsonBody);
+      log.debug(">>>{}", strJsonBody);
     }
     HttpPost request = new HttpPost(urladdr);
     request.setHeaders(headers);
@@ -281,11 +294,12 @@ public class UrlUtil {
     try (CloseableHttpClient httpclient = builder.build()) {
       hr = createResponse(request, httpclient.execute(request));
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       throw new Exception(e.getMessage());
     }
     return hr;
   }
+
   /**
    * post
    *
@@ -297,18 +311,20 @@ public class UrlUtil {
    *HttpResp resp = UrlConnect.post(urladdr, headers, strJsonBody);
    * </pre>
    */
-  public static HttpResponse post(String urladdr, ArrayList<Header> headers , String strJsonBody)  {
+  public static HttpResponse post(String urladdr, ArrayList<Header> headers, String strJsonBody) {
     try {
       return post(urladdr, headers.toArray(new Header[0]), strJsonBody);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-      return new HttpResponse("", 9999, e.getMessage() , headers.toArray(new Header[0]));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      return new HttpResponse("", 9999, e.getMessage(), headers.toArray(new Header[0]));
     }
   }
+
   /**
    * post
    *
-   * <pre>example :
+   * <pre>
+   * example :
    * Header[] headers = {
    *   new BasicHeader("Accept", "text/html,text/xml,application/xml")
    * };
@@ -316,20 +332,21 @@ public class UrlUtil {
    * HttpResp resp = UrlConnect.post("http://localhost/item/?a=1&b1", headers , strJsonBody);
    * </pre>
    */
-  public static HttpResponse post(String urladdr, String headerType, String headerValue, String strJsonBody)  {
-    Header[] headers = {new BasicHeader(headerType, headerValue)};
+  public static HttpResponse post(String urladdr, String headerType, String headerValue, String strJsonBody) {
+    Header[] headers = { new BasicHeader(headerType, headerValue) };
     try {
       return post(urladdr, headers, strJsonBody);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-      return new HttpResponse("", 9999, e.getMessage() , headers);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      return new HttpResponse("", 9999, e.getMessage(), headers);
     }
   }
 
   /**
    * delete
    *
-   * <pre>example :
+   * <pre>
+   * example :
    * Header[] headers = {
    *   new BasicHeader("Accept", "text/html,text/xml,application/xml")
    * };
@@ -350,12 +367,13 @@ public class UrlUtil {
     try (CloseableHttpClient httpclient = builder.build()) {
       hr = createResponse(request, httpclient.execute(request));
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       throw new Exception(e.getMessage());
     }
 
     return hr;
   }
+
   /**
    * delete
    *
@@ -366,28 +384,30 @@ public class UrlUtil {
    *HttpResp resp = UrlConnect.delete(urladdr, headers);
    * </pre>
    */
-  public static HttpResponse delete(String urladdr, ArrayList<Header> headers ) {
+  public static HttpResponse delete(String urladdr, ArrayList<Header> headers) {
     try {
       return delete(urladdr, headers.toArray(new Header[0]));
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-      return new HttpResponse("", 9999, e.getMessage() , headers.toArray(new Header[0]));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      return new HttpResponse("", 9999, e.getMessage(), headers.toArray(new Header[0]));
     }
   }
+
   /**
    * delete
    *
-   * <pre>example :
+   * <pre>
+   * example :
    * HttpResp resp = UrlConnect.delete("http://localhost/item/?a=1&b1", "Content-type", "application/json" );
    * </pre>
    */
   public static HttpResponse delete(String urladdr, String headerType, String headerValue) {
-    Header[] headers = {new BasicHeader(headerType, headerValue)};
+    Header[] headers = { new BasicHeader(headerType, headerValue) };
     try {
       return delete(urladdr, headers);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-      return new HttpResponse("", 9999, e.getMessage() , headers);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      return new HttpResponse("", 9999, e.getMessage(), headers);
     }
 
   }
@@ -395,7 +415,8 @@ public class UrlUtil {
   /**
    * connect
    *
-   * <pre>example :
+   * <pre>
+   * example :
    * Header[] headers = {
    *   new BasicHeader("Accept", "text/html,text/xml,application/xml")
    * };
@@ -407,26 +428,27 @@ public class UrlUtil {
   public static HttpResponse connect(String method, String urladdr, Header[] headers, String strJsonBody) throws Exception {
     HttpResponse resp = null;
     switch (method.toUpperCase()) {
-      case "PUT":
-        resp = put(urladdr, headers, strJsonBody);
-        break;
-      case "POST":
-        resp = post(urladdr, headers, strJsonBody);
-        break;
-      case "GET":
-        resp = get(urladdr, headers);
-        break;
-      case "DELETE":
-        resp = delete(urladdr, headers);
-        break;
-      case "PATCH":
-        resp = patch(urladdr, headers, strJsonBody);
-        break;
-      default:
-        throw new Exception("Http '" + method + "' method not supported");
+    case "PUT":
+      resp = put(urladdr, headers, strJsonBody);
+      break;
+    case "POST":
+      resp = post(urladdr, headers, strJsonBody);
+      break;
+    case "GET":
+      resp = get(urladdr, headers);
+      break;
+    case "DELETE":
+      resp = delete(urladdr, headers);
+      break;
+    case "PATCH":
+      resp = patch(urladdr, headers, strJsonBody);
+      break;
+    default:
+      throw new Exception("Http '" + method + "' method not supported");
     }
     return resp;
   }
+
   /**
    * connect
    *
@@ -442,17 +464,19 @@ public class UrlUtil {
   public static HttpResponse connect(String method, String urladdr, ArrayList<Header> headers, String strJsonBody) throws Exception {
     return connect(method, urladdr, headers.toArray(new Header[0]), strJsonBody);
   }
+
   /**
    * connect
    *
-   * <pre>example :
+   * <pre>
+   * example :
    * String strJsonBody = "{a:1}";
    * HttpResp resp = UrlConnect.connect(method, "http://localhost/item/?a=1&b1", "Content-type", "application/json" , strJsonBody  );
    * <code>method : PUT, POST, GET, DELETE, PATCH</code>
    * </pre>
    */
   public static HttpResponse connect(String method, String urladdr, String headerType, String headerValue, String strJsonBody) throws Exception {
-    Header[] headers = {new BasicHeader(headerType, headerValue)};
+    Header[] headers = { new BasicHeader(headerType, headerValue) };
     return connect(method, urladdr, headers, strJsonBody);
   }
 
@@ -468,7 +492,7 @@ public class UrlUtil {
         return null;
       }
       if (log.isDebugEnabled()) {
-        log.debug(">>>{}>>>{}>>>{}", request.getMethod(), httpRes.getStatusLine().toString(), request.getURI() );
+        log.debug(">>>{}>>>{}>>>{}", request.getMethod(), httpRes.getStatusLine().toString(), request.getURI());
       }
       HttpEntity entity = httpRes.getEntity();
       if (entity != null) {
@@ -483,7 +507,7 @@ public class UrlUtil {
       resHeaders = httpRes.getAllHeaders();
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       throw new Exception("Http Error, " + e.getMessage());
     }
 
@@ -500,7 +524,7 @@ public class UrlUtil {
         bl = false;
       }
     } catch (IOException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return bl;
   }

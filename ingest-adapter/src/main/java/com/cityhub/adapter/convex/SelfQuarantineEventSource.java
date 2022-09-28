@@ -55,6 +55,7 @@ public class SelfQuarantineEventSource extends AbstractSource implements Configu
   private Integer connTerm; // second
   private String urladdr;
   private String urladdr2;
+
   @Override
   public void configure(Context context) {
     connTerm = context.getInteger(DefaultConstants.CONN_TERM, 5);
@@ -64,8 +65,7 @@ public class SelfQuarantineEventSource extends AbstractSource implements Configu
     this.objectMapper = new ObjectMapper();
     this.objectMapper.setSerializationInclusion(Include.NON_NULL);
     this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
-    this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE ));
-
+    this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
 
   }
 
@@ -73,9 +73,9 @@ public class SelfQuarantineEventSource extends AbstractSource implements Configu
     log.info("Processing - {},{}", this.getName());
     try {
       String requestId = "SQ-";
-      if (!"".equals(urladdr)){
+      if (!"".equals(urladdr)) {
         log.info("지역별 자가격리자 현황:{}", urladdr);
-        String resultStr = httpConnection(urladdr,"GET", "");
+        String resultStr = httpConnection(urladdr, "GET", "");
         if (!resultStr.startsWith("ERROR") && resultStr.startsWith("{")) {
           ResponseType responseType = ResponseType.OK;
           requestId += DateUtil.getDate("yyyyMMddHHmmss");
@@ -88,14 +88,14 @@ public class SelfQuarantineEventSource extends AbstractSource implements Configu
           if (!"".equals(urladdr2)) {
             urladdr2 = urladdr2 + "?srch_quarantine_month=" + DateUtil.getTime("yyyyMM");
             log.info("일별 자가격리자 현황:{}", urladdr2);
-            String resultStr2 = httpConnection(urladdr2,"GET", "");
+            String resultStr2 = httpConnection(urladdr2, "GET", "");
             JSONObject content2 = new JSONObject(resultStr2);
             JSONArray ja = content2.optJSONArray("data");
-            if(ja != null ) {
-              for(int i=0; i< ja.length(); i++) {
+            if (ja != null) {
+              for (int i = 0; i < ja.length(); i++) {
                 JSONObject jo = ja.getJSONObject(i);
-                String pastOneday = DateUtil.addDate(DateUtil.getTime("yyyyMMdd"),ChronoUnit.DAYS,-1 ,"yyyyMMdd");
-                if (pastOneday.equals(jo.getString("quarantine_date")) ) {
+                String pastOneday = DateUtil.addDate(DateUtil.getTime("yyyyMMdd"), ChronoUnit.DAYS, -1, "yyyyMMdd");
+                if (pastOneday.equals(jo.getString("quarantine_date"))) {
                   JSONObject cont = content.getJSONObject("data");
                   cont.put("quarantine_date", jo.getString("quarantine_date"));
                   cont.put("quarantine_cnt", jo.getInt("quarantine_cnt"));
@@ -105,11 +105,11 @@ public class SelfQuarantineEventSource extends AbstractSource implements Configu
 
             }
           }
-          if (content.optJSONObject("data") != null ) {
+          if (content.optJSONObject("data") != null) {
             vo.setDetail(content.getJSONObject("data").toMap());
           }
 
-          log.info("sendKafka:{}",objectMapper.writeValueAsString(vo));
+          log.info("sendKafka:{}", objectMapper.writeValueAsString(vo));
           sendEvent(vo);
         } else {
           ResponseType responseType = ResponseType.SERVICE_UNAVAILABLE;
@@ -119,35 +119,36 @@ public class SelfQuarantineEventSource extends AbstractSource implements Configu
           vo.setRequestId(requestId);
           vo.setType(responseType.getDetail());
           vo.setTitle(responseType.getTitle());
-          log.info("sendKafka:{}",objectMapper.writeValueAsString(vo));
+          log.info("sendKafka:{}", objectMapper.writeValueAsString(vo));
           sendEvent(vo);
         }
       }
       Thread.sleep(connTerm * 1000); // second * 1000
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
-  public void sendEvent(SelfQuarantineEventVO vo ) {
+  public void sendEvent(SelfQuarantineEventVO vo) {
     try {
       byte[] bodyBytes = objectMapper.writeValueAsString(vo).getBytes(Charset.forName("UTF-8"));
       ByteBuffer byteBuffer = ByteBuffer.allocate(bodyBytes.length + 5);
-      byte version = 0x10;//4bit: Major version, 4bit: minor version
-      Integer bodyLength = bodyBytes.length;//length = 1234
+      byte version = 0x10;// 4bit: Major version, 4bit: minor version
+      Integer bodyLength = bodyBytes.length;// length = 1234
       byteBuffer.put(version);
       byteBuffer.putInt(bodyLength.byteValue());
       byteBuffer.put(bodyBytes);
       Event event = EventBuilder.withBody(byteBuffer.array());
       getChannelProcessor().processEvent(event);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
-  public String httpConnection(String targetUrl,String method,  String jsonBody)  {
+
+  public String httpConnection(String targetUrl, String method, String jsonBody) {
     String returnText = "";
     HttpURLConnection conn = null;
-    try  {
+    try {
       String jsonData = "";
       int responseCode;
       StringBuffer sb = null;
@@ -156,24 +157,19 @@ public class SelfQuarantineEventSource extends AbstractSource implements Configu
       conn.setRequestProperty("Accept", "application/json");
       conn.setRequestProperty("Content-Type", "application/json");
       conn.setRequestMethod(method);
-      conn.setConnectTimeout(1000*10); // 10초 커낵션 시도
-      conn.setReadTimeout(1000*60*1); // 1분 READ 대기
+      conn.setConnectTimeout(1000 * 10); // 10초 커낵션 시도
+      conn.setReadTimeout(1000 * 60 * 1); // 1분 READ 대기
 
       /*
-      if (!"".equals(jsonBody)) {
-        conn.setDoOutput(true);
-        try (OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());) {
-          wr.write(jsonBody);
-          wr.flush();
-        } catch (Exception e) {
-          log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-        }
-      }
+       * if (!"".equals(jsonBody)) { conn.setDoOutput(true); try (OutputStreamWriter
+       * wr = new OutputStreamWriter(conn.getOutputStream());) { wr.write(jsonBody);
+       * wr.flush(); } catch (Exception e) { log.error("Exception : " +
+       * ExceptionUtils.getStackTrace(e)); } }
        */
 
       responseCode = conn.getResponseCode();
       if (responseCode < 400) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")); ) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));) {
           sb = new StringBuffer();
 
           while ((jsonData = br.readLine()) != null) {
@@ -183,7 +179,7 @@ public class SelfQuarantineEventSource extends AbstractSource implements Configu
           log.error("Exception : " + ExceptionUtils.getStackTrace(e));
         }
       } else {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "UTF-8")); ) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "UTF-8"));) {
           sb = new StringBuffer();
           while ((jsonData = br.readLine()) != null) {
             sb.append(jsonData);
@@ -199,7 +195,7 @@ public class SelfQuarantineEventSource extends AbstractSource implements Configu
       returnText = sb.toString();
       log.info("responseData: {},{}", responseCode, returnText);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     } finally {
       if (conn != null) {
         conn.disconnect();
@@ -219,12 +215,11 @@ public class SelfQuarantineEventSource extends AbstractSource implements Configu
         }
         scanner.close();
       } catch (IOException e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       }
     }
     return result.toString();
   }
-
 
   @Override
   public void start() {
@@ -247,11 +242,10 @@ public class SelfQuarantineEventSource extends AbstractSource implements Configu
       status = Status.READY;
     } catch (Exception e) {
       status = Status.BACKOFF;
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return status;
   }
-
 
   @Override
   public long getBackOffSleepIncrement() {

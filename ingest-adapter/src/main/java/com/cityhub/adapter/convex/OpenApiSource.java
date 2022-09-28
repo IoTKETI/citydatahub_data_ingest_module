@@ -65,7 +65,7 @@ public class OpenApiSource extends AbstractPollSource {
     modelId = context.getString("MODEL_ID", "");
     datasetId = context.getString("DATASET_ID", "");
 
-    log.info("*****************************1datasetId:{}",datasetId);
+    log.info("*****************************1datasetId:{}", datasetId);
     String confFile = context.getString("CONF_FILE", "");
     adapterType = context.getString("type", "");
 
@@ -77,11 +77,14 @@ public class OpenApiSource extends AbstractPollSource {
     } else {
       configInfo = new JSONObject();
     }
-    if (getInit().has("daemonSrverLogApi") ) {
-      configInfo.put("daemonSrverLogApi", getInit().getString("daemonSrverLogApi"));
+
+    String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "");
+    if (!"".equals(DAEMON_SERVER_LOGAPI)) {
+      configInfo.put("daemonServerLogApi", context.getString("DAEMON_SERVER_LOGAPI", ""));
     } else {
-      configInfo.put("daemonSrverLogApi", "http://localhost:8888/logToDbApi");
+      configInfo.put("daemonServerLogApi", "http://localhost:8888/logToDbApi");
     }
+
     configInfo.put("modelId", modelId);
     configInfo.put("model_id", modelId);
     configInfo.put("datasetId", datasetId);
@@ -93,7 +96,7 @@ public class OpenApiSource extends AbstractPollSource {
     this.objectMapper = new ObjectMapper();
     this.objectMapper.setSerializationInclusion(Include.NON_NULL);
     this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
-    this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE ));
+    this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
 
   }
 
@@ -102,13 +105,13 @@ public class OpenApiSource extends AbstractPollSource {
     templateItem = new JSONObject();
     if (ArrModel != null) {
       for (String model : ArrModel) {
-        HttpResponse resp = OkUrlUtil.get(schemaSrv+"?id=" + model, "Accept", "application/json");
-        log.info("schema info: {},{},{}",model, resp.getStatusCode(), schemaSrv+"?id=" + model);
+        HttpResponse resp = OkUrlUtil.get(schemaSrv + "?id=" + model, "Accept", "application/json");
+        log.info("schema info: {},{},{}", model, resp.getStatusCode(), schemaSrv + "?id=" + model);
         if (resp.getStatusCode() == 200) {
           DataModelEx dm = new DataModelEx(resp.getPayload());
           if (dm.hasModelId(model)) {
             templateItem.put(model, dm.createModel(model));
-            log.info("schema server: {},{}",model, templateItem);
+            log.info("schema server: {},{}", model, templateItem);
           } else {
             templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
           }
@@ -117,15 +120,13 @@ public class OpenApiSource extends AbstractPollSource {
         }
       }
     } else {
-      log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId , getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
+      log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
     }
-
 
     if (log.isDebugEnabled()) {
       log.debug("Template : {},{}", modelId, templateItem);
     }
   }
-
 
   @Override
   public void processing() {
@@ -133,19 +134,20 @@ public class OpenApiSource extends AbstractPollSource {
     try {
       if (ArrModel != null) {
 
-        ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass() ,  configInfo, templateItem);
+        ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(), configInfo, templateItem);
         String sb = reflectExecuter.doit();
-        if (sb != null && !"".equals(sb) ) {
-          List<Map<String,Object>> entities = objectMapper.readValue(sb, new TypeReference<List<Map<String,Object>>>(){});
-          for (Map<String,Object> itm : entities) {
+        if (sb != null && !"".equals(sb)) {
+          List<Map<String, Object>> entities = objectMapper.readValue(sb, new TypeReference<List<Map<String, Object>>>() {
+          });
+          for (Map<String, Object> itm : entities) {
             int length = objectMapper.writeValueAsString(itm).getBytes().length;
-            log.info("`{}`{}`{}`{}`{}`{}",this.getName() ,itm.get("type"), getStr(SocketCode.DATA_SAVE_REQ) , itm.get("id"), length , adapterType);
-            StringBuilder l =  new StringBuilder();
+            log.info("`{}`{}`{}`{}`{}`{}", this.getName(), itm.get("type"), getStr(SocketCode.DATA_SAVE_REQ), itm.get("id"), length, adapterType);
+            StringBuilder l = new StringBuilder();
             l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
             l.append("`").append(configInfo.getString("sourceName"));
             l.append("`").append(modelId);
             l.append("`").append(SocketCode.DATA_SAVE_REQ.getCode() + ";" + SocketCode.DATA_SAVE_REQ.getMessage());
-            l.append("`").append(itm.get("id")+"");
+            l.append("`").append(itm.get("id") + "");
             l.append("`").append(length);
             l.append("`").append(adapterType);
             l.append("`").append(configInfo.getString("invokeClass"));
@@ -156,10 +158,10 @@ public class OpenApiSource extends AbstractPollSource {
             logVo.setType(modelId);
             logVo.setStep(SocketCode.DATA_SAVE_REQ.getCode());
             logVo.setDesc(SocketCode.DATA_SAVE_REQ.getMessage());
-            logVo.setId(itm.get("id")+"");
+            logVo.setId(itm.get("id") + "");
             logVo.setLength(String.valueOf(length));
             logVo.setAdapterType(configInfo.getString("invokeClass"));
-            LogWriterToDb.logToDaemonApi(configInfo,logVo);
+            LogWriterToDb.logToDaemonApi(configInfo, logVo);
 
           }
 
@@ -167,31 +169,30 @@ public class OpenApiSource extends AbstractPollSource {
           Thread.sleep(10);
         }
       } else {
-        log.error("`{}`{}`{}`{}`{}`{}",this.getName(), modelId , getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
+        log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
       }
     } catch (Exception e) {
-      log.error("`{}`{}`{}`{}`{}`{}",this.getName(), modelId , getStr(SocketCode.NORMAL_ERROR, e.getMessage()), "", 0, adapterType);
+      log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, getStr(SocketCode.NORMAL_ERROR, e.getMessage()), "", 0, adapterType);
     }
   }
 
-
-  public void sendEventEx(List<Map<String,Object>> entities) {
+  public void sendEventEx(List<Map<String, Object>> entities) {
     try {
-      Map<String,Object> body = new LinkedHashMap<>();
+      Map<String, Object> body = new LinkedHashMap<>();
       body.put("entities", entities);
       body.put("datasetId", datasetId);
       Event event = EventBuilder.withBody(objectMapper.writeValueAsString(body).getBytes(Charset.forName("UTF-8")));
       getChannelProcessor().processEvent(event);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
-
 
   public String getStr(SocketCode sc) {
     return sc.getCode() + ";" + sc.getMessage();
   }
-  public String getStr(SocketCode sc,String msg) {
+
+  public String getStr(SocketCode sc, String msg) {
     return sc.getCode() + ";" + sc.getMessage() + "-" + msg;
   }
 } // end of class

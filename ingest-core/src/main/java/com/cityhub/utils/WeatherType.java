@@ -17,9 +17,9 @@
 package com.cityhub.utils;
 
 public enum WeatherType {
-  clear("맑음", 0,  "clear"), rain("비", 1,  "rainy"), rainsnow("진눈깨비", 2,  "rainsnow"), snow("눈", 3,  "snowy"), rainshower("소나기", 4,  "shower"), Raindrop("빗방울", 5,  "Raindrop"),
-  Rainsnowfly("빗방울눈날림", 6,  "Rainsnowfly"),Snowfly("눈날림", 7,  "Snowfly"),
-  cleary("맑음", 11,  "clear"), cloudy("구름", 13,  "cloudy"), foggy("안개", 14,  "foggy"), rainy("비", 14,  "rainy"), snowy("눈", 15,  "snowy") , windy("바람", 16,  "windy");
+  clear("맑음", 0, "clear"), rain("비", 1, "rainy"), rainsnow("진눈깨비", 2, "rainsnow"), snow("눈", 3, "snowy"), rainshower("소나기", 4, "shower"), Raindrop("빗방울", 5, "Raindrop"),
+  Rainsnowfly("빗방울눈날림", 6, "Rainsnowfly"), Snowfly("눈날림", 7, "Snowfly"), cleary("맑음", 11, "clear"), cloudy("구름", 13, "cloudy"), foggy("안개", 14, "foggy"), rainy("비", 14, "rainy"),
+  snowy("눈", 15, "snowy"), windy("바람", 16, "windy");
 
   private int code;
   private String hanNm;
@@ -51,6 +51,7 @@ public enum WeatherType {
     }
     return null;
   }
+
   public static WeatherType findBy(String hanNm) {
     for (WeatherType wt : WeatherType.values()) {
       if (wt.hanNm.equals(hanNm)) {

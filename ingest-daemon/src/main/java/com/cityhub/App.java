@@ -35,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 public class App {
 
-
   @Value("${server.timezone:Asia/Seoul}")
   private String timeZone;
 
@@ -43,7 +42,7 @@ public class App {
   public void initApplication() {
     try {
       TimeZone.setDefault(TimeZone.getTimeZone(timeZone));
-    } catch(Exception e) {
+    } catch (Exception e) {
       log.error("initApplication set timezone error.", e);
       TimeZone.setDefault(TimeZone.getTimeZone(Consts.CONTENT_DATE_TIMEZONE));
     }
@@ -52,6 +51,5 @@ public class App {
   public static void main(String[] args) {
     SpringApplication.run(App.class, args);
   }
-
 
 }

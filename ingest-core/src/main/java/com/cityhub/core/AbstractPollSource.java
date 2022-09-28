@@ -56,7 +56,6 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
     setup(context);
   }
 
-
   @Override
   public void start() {
     super.start();
@@ -68,8 +67,6 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
     exit();
     super.stop();
   }
-
-
 
   @Override
   public Status process() throws EventDeliveryException {
@@ -83,7 +80,7 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
     } catch (Exception e) {
       counterGroup.incrementAndGet("events.failed");
       status = Status.BACKOFF;
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return status;
@@ -100,12 +97,11 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
         }
         scanner.close();
       } catch (IOException e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       }
     }
     return result.toString();
   }
-
 
   public byte[] createSendJson(JSONObject content) {
     String Uuid = "DATAINGEST_" + getUuid();
@@ -115,7 +111,7 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
     body.put("owner", getInit().getString("owner"));
     body.put("operation", getInit().getString("operation"));
     body.put("to", "DataCore/entities/" + (content.has("id") ? content.getString("id") : ""));
-    body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : "") );
+    body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : ""));
     body.put("queryString", "");
     body.put("eventTime", DateUtil.getTime());
     body.put("content", content);
@@ -129,7 +125,7 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
     body.put("owner", getInit().getString("owner"));
     body.put("operation", getInit().getString("operation"));
     body.put("to", "DataCore/entities/" + (content.has("id") ? content.getString("id") : ""));
-    body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : "") );
+    body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : ""));
     body.put("queryString", "");
     body.put("eventTime", DateUtil.getTime());
     body.put("content", content);
@@ -137,18 +133,17 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
   }
 
   public void createSendJson(String sb) {
-    JSONArray JSendArr = new JSONArray("[" + sb.substring(0 , sb.length() - 1) + "]");
+    JSONArray JSendArr = new JSONArray("[" + sb.substring(0, sb.length() - 1) + "]");
     try {
       for (Object itm : JSendArr) {
-        JSONObject content = (JSONObject)itm;
+        JSONObject content = (JSONObject) itm;
         sendEvent(createSendJson(content));
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
   }
-
 
   public abstract void setup(Context context);
 
@@ -156,8 +151,8 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
 
   public abstract void processing();
 
-  public void exit() {}
-
+  public void exit() {
+  }
 
   @Override
   public long getBackOffSleepIncrement() {
@@ -169,7 +164,6 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
     return PollableSourceConstants.DEFAULT_MAX_BACKOFF_SLEEP;
   }
 
-
   public String getUrlAddr() {
     return urlAddr;
   }
@@ -178,7 +172,6 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
     this.urlAddr = urlAddr;
   }
 
-
   public String getInvokeClass() {
     return invokeClass;
   }
@@ -186,7 +179,8 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
   public void setInvokeClass(String invokeClass) {
     this.invokeClass = invokeClass;
   }
-  public void listSendKafka(List<VerifyStatusVO> msg )  {
+
+  public void listSendKafka(List<VerifyStatusVO> msg) {
     for (int k = 0; k < msg.size(); k++) {
       try {
         VerifyStatusVO vo = msg.get(k);
@@ -197,22 +191,22 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
         body.put("owner", getInit().getString("owner"));
         body.put("operation", getInit().getString("operation"));
         body.put("to", "DataCore/entities/" + (content.has("id") ? content.getString("id") : ""));
-        body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : "") );
+        body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : ""));
         body.put("queryString", "");
         body.put("eventTime", DateUtil.getTime());
         body.put("content", content);
         sendEvent(body.toString().getBytes(Charset.forName("UTF-8")));
 
-        if (k % 10 == 0  ) {
+        if (k % 10 == 0) {
           Thread.sleep(1);
         }
       } catch (Exception e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       }
     }
   }
 
-  public byte[] progressSendKafka(String eventType, String modelType , String cid, String requestId, String personId ,String sdt) {
+  public byte[] progressSendKafka(String eventType, String modelType, String cid, String requestId, String personId, String sdt) {
     JSONObject ff = null;
     try {
       Thread.sleep(10);
@@ -231,11 +225,10 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
       log.info(ff.toString());
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return ff.toString().getBytes();
   }
-
 
   public String refineAddr(String addr) {
     if (addr != null && !"".equals(addr)) {
@@ -244,10 +237,10 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
       addr = addr.replaceAll("나대지", "");
       addr = addr.replaceAll("()", "");
 
-      if (addr.indexOf(")") <= 8 ) {
-        addr = addr.substring(addr.indexOf(")") + 1 , addr.length());
+      if (addr.indexOf(")") <= 8) {
+        addr = addr.substring(addr.indexOf(")") + 1, addr.length());
       } else {
-        addr = addr.substring(0 , addr.length());
+        addr = addr.substring(0, addr.length());
       }
     }
     return StrUtil.trim(addr);

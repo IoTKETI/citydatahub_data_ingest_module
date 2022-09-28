@@ -32,11 +32,11 @@ import com.cityhub.utils.DataCoreCode.SocketCode;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class LogWriterToDb  {
-  private final static String logServer =  "http://localhost:8888/logToDbApi";
+public class LogWriterToDb {
+  private final static String logServer = "http://localhost:8888/logToDbApi";
 
-  public static void logApi(String sourceName, String modelId, SocketCode sc, String id, byte[] byteBody, String adapterType, String invokeClass ) {
-    StringBuilder l =  new StringBuilder();
+  public static void logApi(String sourceName, String modelId, SocketCode sc, String id, byte[] byteBody, String adapterType, String invokeClass) {
+    StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(sourceName);
     l.append("`").append(modelId);
@@ -58,8 +58,9 @@ public class LogWriterToDb  {
     logVo.setAdapterType(invokeClass);
     logToDaemonApi(logVo);
   }
-  public static void logApi(JSONObject ConfItem, String sourceName, String modelId, SocketCode sc, String id, byte[] byteBody, String adapterType, String invokeClass ) {
-    StringBuilder l =  new StringBuilder();
+
+  public static void logApi(JSONObject ConfItem, String sourceName, String modelId, SocketCode sc, String id, byte[] byteBody, String adapterType, String invokeClass) {
+    StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(sourceName);
     l.append("`").append(modelId);
@@ -79,31 +80,30 @@ public class LogWriterToDb  {
     logVo.setId(id);
     logVo.setLength(String.valueOf(byteBody.length));
     logVo.setAdapterType(invokeClass);
-    logToDaemonApi(ConfItem,logVo);
+    logToDaemonApi(ConfItem, logVo);
   }
 
-  public static void logToDaemonApi( LogVO logVo) {
+  public static void logToDaemonApi(LogVO logVo) {
     JSONObject logJson = new JSONObject(logVo);
     String resultcode = httpConnection(logServer, logJson.toString());
-    log.info("####logJson####{}",resultcode);
+    log.info("####logJson####{}", resultcode);
   }
 
   public static void logToDaemonApi(JSONObject confItem, LogVO logVo) {
     JSONObject logJson = new JSONObject(logVo);
-    if (confItem.has("daemonSrverLogApi")) {
-      if (confItem.getString("daemonSrverLogApi") != null && !"".equals(confItem.getString("daemonSrverLogApi"))  && logJson != null) {
-        String resultcode = httpConnection(confItem.getString("daemonSrverLogApi"), logJson.toString());
-        log.info("####logJson####{}",resultcode);
+    if (confItem.has("daemonServerLogApi")) {
+      if (confItem.getString("daemonServerLogApi") != null && !"".equals(confItem.getString("daemonServerLogApi")) && logJson != null) {
+        String resultcode = httpConnection(confItem.getString("daemonServerLogApi"), logJson.toString());
+        log.info("####logJson####{}", resultcode);
       }
     } else {
       // default daemon Url
       String resultcode = httpConnection(logServer, logJson.toString());
-      log.info("####logJson####{}",resultcode);
+      log.info("####logJson####{}", resultcode);
     }
   }
 
-
-  public static  String httpConnection(String targetUrl, String jsonBody) {
+  public static String httpConnection(String targetUrl, String jsonBody) {
     URL url = null;
     HttpURLConnection conn = null;
     BufferedReader br = null;
@@ -142,7 +142,7 @@ public class LogWriterToDb  {
       }
       returnText = sb.toString();
 
-      log.debug("returnText:{}",returnText);
+      log.debug("returnText:{}", returnText);
     } catch (IOException e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     } finally {
@@ -155,6 +155,5 @@ public class LogWriterToDb  {
     }
     return returnText;
   }
-
 
 } // end of class

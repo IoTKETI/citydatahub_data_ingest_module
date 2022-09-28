@@ -60,7 +60,6 @@ public class LegacySQLSink extends AbstractBaseSink {
   /** 카프카메시지 바디 시작위치 */
   private int MESSAGE_BODY_START_INDEX = MESSAGE_VERSION_LENGTH + MESSAGE_LENGTH_LENGTH;
 
-
   @Override
   public void setup(Context context) {
     String url = context.getString("URL_ADDR");
@@ -85,7 +84,6 @@ public class LegacySQLSink extends AbstractBaseSink {
       session.close();
     }
   }
-
 
   @Override
   public void execFirst() {
@@ -131,21 +129,20 @@ public class LegacySQLSink extends AbstractBaseSink {
         requestMessageVO.setEntityType(entityType);
 
         Class<?> clz = Class.forName("com.cityhub.flow.conv." + entityType);
-        ReflectExecuterEx<RequestMessageVO, JSONObject> reflectExecuter  = (ReflectExecuterEx)clz.newInstance();
+        ReflectExecuterEx<RequestMessageVO, JSONObject> reflectExecuter = (ReflectExecuterEx) clz.newInstance();
         reflectExecuter.setInitial(requestMessageVO);
-        Map<String,Object> param =  reflectExecuter.doit();
+        Map<String, Object> param = reflectExecuter.doit();
 
         session.update(entityType + ".upsertFull", param);
         session.insert(entityType + ".insertHist", param);
 
-
       } else {
-        log.error("Not Exist Mapper. {}, {}", entityType , ErrorCode.NOT_EXIST_ENTITY);
+        log.error("Not Exist Mapper. {}, {}", entityType, ErrorCode.NOT_EXIST_ENTITY);
       }
 
     } catch (ClassNotFoundException cne) {
       session.rollback();
-      log.error("Invalid Entity Type {}, {}", entityType , ErrorCode.INVALID_ENTITY_TYPE);
+      log.error("Invalid Entity Type {}, {}", entityType, ErrorCode.INVALID_ENTITY_TYPE);
     } catch (Exception e) {
       session.rollback();
       logger.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -153,7 +150,5 @@ public class LegacySQLSink extends AbstractBaseSink {
       session.commit();
     }
   }
-
-
 
 }

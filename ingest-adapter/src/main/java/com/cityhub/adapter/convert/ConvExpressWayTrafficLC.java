@@ -46,9 +46,8 @@ public class ConvExpressWayTrafficLC extends AbstractConvert {
         JSONObject jTemplate = templateItem;
         JsonUtil jsonEx = new JsonUtil(jTemplate);
 
-        String[] sInOut = {"in", "out"};
-        String[] sTCS = {"TCS", "Hipass"};
-
+        String[] sInOut = { "in", "out" };
+        String[] sTCS = { "TCS", "Hipass" };
 
         JSONArray jList = jsonData.getJSONArray("trafficIc");
         for (int i = 0; i < jList.length(); i++) {
@@ -66,10 +65,9 @@ public class ConvExpressWayTrafficLC extends AbstractConvert {
       }
 
     } catch (Exception e) {
-      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
     }
     return sendJson.toString();
   }
-
 
 } // end of class

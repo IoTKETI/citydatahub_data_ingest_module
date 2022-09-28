@@ -34,7 +34,7 @@ import com.cityhub.web.config.ConfigEnv;
 
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @Slf4j
 @Service
 public class MainService {
@@ -42,7 +42,6 @@ public class MainService {
   MainMapper mapper;
   @Autowired
   ConfigEnv configEnv;
-
 
   public List<Map> select_adtType() throws Exception {
     return mapper.select_adtType();
@@ -53,7 +52,7 @@ public class MainService {
   }
 
   public boolean isExist(String id) throws Exception {
-    if (mapper.isExist(id) ) {
+    if (mapper.isExist(id)) {
       return true;
     } else {
       return false;
@@ -61,7 +60,7 @@ public class MainService {
   }
 
   public boolean isExistAdapter(String id) throws Exception {
-    if (mapper.isExistAdapter(id) ) {
+    if (mapper.isExistAdapter(id)) {
       return true;
     } else {
       return false;
@@ -110,7 +109,6 @@ public class MainService {
     return mapper.selectByAdaptorId(id);
   }
 
-
   @Transactional
   public Map insertAdaptor(Map param) throws Exception {
     int bl = mapper.insertAdaptor(param);
@@ -158,12 +156,10 @@ public class MainService {
 
   @Transactional
   public boolean deleteInstanceF(Map param) throws Exception {
-      mapper.deleteInstanceF(param);
-      log.debug("result : {}", param);
-      return true;
+    mapper.deleteInstanceF(param);
+    log.debug("result : {}", param);
+    return true;
   }
-
-
 
   @Transactional
   public boolean deleteInstanceEtc(String id) throws Exception {
@@ -207,8 +203,9 @@ public class MainService {
   public List<Map> selectInstanceDetail(Map param) throws Exception {
     return mapper.selectInstanceDetail(param);
   }
+
   public List<Map> selectKeywordInfo() throws Exception {
-	  return mapper.selectKeywordInfo();
+    return mapper.selectKeywordInfo();
   }
 
   public List<Map> selectAdaptorKeywordInfo(Map param) throws Exception {
@@ -241,7 +238,6 @@ public class MainService {
     return param;
   }
 
-
   public List<Map> selectAllInstance(String id) throws Exception {
     return mapper.selectAllInstance(id);
   }
@@ -251,12 +247,12 @@ public class MainService {
   }
 
   public List<Map> instanceBaseList2(String id) throws Exception {
-	    return mapper.instanceBaseList2(id);
-	  }
+    return mapper.instanceBaseList2(id);
+  }
 
   public List<Map> instanceBaseList3(String id) throws Exception {
-	    return mapper.instanceBaseList3(id);
-	  }
+    return mapper.instanceBaseList3(id);
+  }
 
   public List<Map> getInstanceList(String id) throws Exception {
     return mapper.getInstanceList(id);
@@ -268,7 +264,7 @@ public class MainService {
     List<Map> obList = mapper.selectObComboList();
 
     if (result.get("ob_datamodel_id") != null) {
-      for(Map rows : obList) {
+      for (Map rows : obList) {
         if (rows.get("ob_datamodel_id").equals(result.get("ob_datamodel_id"))) {
           result.put("ob_datamodel_nm", rows.get("ob_datamodel_nm"));
           break;
@@ -279,7 +275,7 @@ public class MainService {
     }
 
     if (result.get("st_datamodel_id") != null) {
-      HttpResponse resp = UrlUtil.get(configEnv.getDataModelApiUrl() + "?level=000" , "Content-type", "application/json");
+      HttpResponse resp = UrlUtil.get(configEnv.getDataModelApiUrl() + "?level=000", "Content-type", "application/json");
       JSONArray jsonarr = new JSONArray(resp.getPayload());
       for (int i = 0; i < jsonarr.length(); i++) {
         JSONObject jsonObject = jsonarr.getJSONObject(i);
@@ -295,7 +291,6 @@ public class MainService {
     return result;
   }
 
-
   public Map getInstanceInfo(String id) throws Exception {
     return mapper.getInstanceInfo(id);
   }
@@ -305,24 +300,25 @@ public class MainService {
   }
 
   public List<Map> instanceItem2(String id) throws Exception {
-	    return mapper.instanceItem2(id);
-	  }
+    return mapper.instanceItem2(id);
+  }
+
   public List<Map> instanceItem3(String id) throws Exception {
-	    return mapper.instanceItem3(id);
-	  }
+    return mapper.instanceItem3(id);
+  }
 
   @Transactional
   public Map instanceSave(Map param) throws Exception {
 
     List<?> list = new ArrayList<>();
-    list = (List)param.get("insItemsData");
+    list = (List) param.get("insItemsData");
     log.debug("list = " + list);
 
     String insId = (String) param.get("instance_id");
     String adtId = (String) param.get("adapter_id");
     log.debug("param = " + param);
 
-    if(!"".equals(param.get("obModel")) && !"".equals(param.get("stModel")) ) {
+    if (!"".equals(param.get("obModel")) && !"".equals(param.get("stModel"))) {
       log.debug("데이터 모델 시작");
       log.debug("obModel = " + param.get("obModel"));
       log.debug("stModel = " + param.get("stModel"));
@@ -331,7 +327,7 @@ public class MainService {
       tmpParam.put("st_datamodel_id", param.get("stModel"));
       List<Map> keyExList = mapper.selectDmTransform(tmpParam);
 
-      if(keyExList.size() > 0) {
+      if (keyExList.size() > 0) {
         log.debug("keyExList.size() 0보다 큼");
         Map tmpKeyMap = keyExList.get(0);
         param.put("datamodel_tf_id", tmpKeyMap.get("datamodel_tf_id"));
@@ -352,21 +348,21 @@ public class MainService {
       param.put("datamodel_tf_id", "");
     }
 
-    if("new_ins".equals(insId)) {
+    if ("new_ins".equals(insId)) {
       insId = mapper.newInstanceId(adtId);
-      param.put("instance_id",insId);
+      param.put("instance_id", insId);
       mapper.insertInstance(param);
     } else {
       mapper.updateInstance(param);
     }
 
     mapper.deleteInstanceConf(insId);
-    if(list != null && list.size() > 0) {
-      for(int i=0; i<list.size(); i++){
-        Map obj = (Map)list.get(i);
-        obj.put("seq", i+1);
-        obj.put("instance_id",insId);
-        log.debug("obj = "+obj);
+    if (list != null && list.size() > 0) {
+      for (int i = 0; i < list.size(); i++) {
+        Map obj = (Map) list.get(i);
+        obj.put("seq", i + 1);
+        obj.put("instance_id", insId);
+        log.debug("obj = " + obj);
         mapper.insertInstanceEtc(obj);
       }
     }
@@ -376,13 +372,11 @@ public class MainService {
   }
 
   public String getLastId() throws Exception {
-	  Map result = mapper.getLastId();
-	  if(result == null)
-		  return "";
-	  else
-		  return result.get("agent_id").toString();
+    Map result = mapper.getLastId();
+    if (result == null)
+      return "";
+    else
+      return result.get("agent_id").toString();
   }
-
-
 
 }

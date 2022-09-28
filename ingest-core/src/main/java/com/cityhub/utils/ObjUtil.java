@@ -28,12 +28,13 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 @Slf4j
 public class ObjUtil {
 
   /**
    * 오브젝트를 Map으로 변환
+   *
    * @param obj
    * @return
    */
@@ -47,16 +48,15 @@ public class ObjUtil {
         resultMap.put(fields[i].getName(), fields[i].get(obj));
       }
       return resultMap;
-    } catch (IllegalArgumentException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-    } catch (IllegalAccessException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+    } catch (IllegalArgumentException | IllegalAccessException e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return null;
   }
 
   /**
    * 맵을 오브젝트로 변환
+   *
    * @param map
    * @param objClass
    * @return
@@ -80,18 +80,11 @@ public class ObjUtil {
             methods[i].invoke(objClass, map.get(keyAttribute));
           }
         }
-      } catch (SecurityException e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-      } catch (IllegalAccessException e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-      } catch (IllegalArgumentException e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-      } catch (InvocationTargetException e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      } catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       }
     }
     return objClass;
   }
-
 
 } // end class

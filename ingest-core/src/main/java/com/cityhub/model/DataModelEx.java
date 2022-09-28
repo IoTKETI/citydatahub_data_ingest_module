@@ -52,43 +52,37 @@ public class DataModelEx {
   private static final byte DEFAULT_KAFKA_MESSAGE_MAIN_VERSION = 0X01;
   private static final byte DEFAULT_KAFKA_MESSAGE_SUB_VERSION = 0X00;
 
-
   public static enum GeoJsonValueType {
-      @JsonProperty("Point")
-      POINT("Point"),
-      @JsonProperty("MultiPoint")
-      MULTIPOINT("MultiPoint"),
-      @JsonProperty("LineString")
-      LINESTRING("LineString"),
-      @JsonProperty("MultiLineString")
-      MULTILINESTRING("MultiLineString"),
-      @JsonProperty("Polygon")
-      POLYGON("Polygon"),
-      @JsonProperty("MultiPolygon")
-      MULTIPOLYGON("MultiPolygon"),
+    @JsonProperty("Point")
+    POINT("Point"), @JsonProperty("MultiPoint")
+    MULTIPOINT("MultiPoint"), @JsonProperty("LineString")
+    LINESTRING("LineString"), @JsonProperty("MultiLineString")
+    MULTILINESTRING("MultiLineString"), @JsonProperty("Polygon")
+    POLYGON("Polygon"), @JsonProperty("MultiPolygon")
+    MULTIPOLYGON("MultiPolygon"),
 
-      ;
+    ;
 
-      private String code;
+    private String code;
 
-      @JsonCreator
-      private GeoJsonValueType(String code) {
-          this.code = code;
+    @JsonCreator
+    private GeoJsonValueType(String code) {
+      this.code = code;
+    }
+
+    public String getCode() {
+      return code;
+    }
+
+    @JsonValue
+    public static GeoJsonValueType parseType(String code) {
+      for (GeoJsonValueType geoJsonValueType : values()) {
+        if (geoJsonValueType.getCode().equals(code)) {
+          return geoJsonValueType;
+        }
       }
-
-      public String getCode() {
-          return code;
-      }
-
-      @JsonValue
-      public static GeoJsonValueType parseType(String code) {
-          for (GeoJsonValueType geoJsonValueType : values()) {
-              if (geoJsonValueType.getCode().equals(code)) {
-                  return geoJsonValueType;
-              }
-          }
-          return null;
-      }
+      return null;
+    }
   }
 
   private JSONArray schema;
@@ -134,7 +128,7 @@ public class DataModelEx {
     JSONObject tm = new JSONObject();
     for (Object models : schema) {
       JSONObject model = (JSONObject) models;
-      if (modelId.equals(model.get("type"))  ) {
+      if (modelId.equals(model.get("type"))) {
         tm = model;
         schemaModel = model;
         break;
@@ -142,6 +136,7 @@ public class DataModelEx {
     }
     return tm;
   }
+
   public JSONObject getAttributeInfo(String attributeName) {
     JSONObject attribute = new JSONObject();
     JSONArray attributes = schemaModel.getJSONArray("attributes");
@@ -161,12 +156,14 @@ public class DataModelEx {
     for (Object attr : attributes) {
       JSONObject item = (JSONObject) attr;
       if (attributeName.equalsIgnoreCase(item.getString("name"))) {
-        if (item.has("hasObservedAt") && item.getBoolean("hasObservedAt")) bl = true;
+        if (item.has("hasObservedAt") && item.getBoolean("hasObservedAt"))
+          bl = true;
         break;
       }
     }
     return bl;
   }
+
   public boolean isRequiredAttribute(String attributeName) {
     boolean bl = false;
 
@@ -174,7 +171,8 @@ public class DataModelEx {
     for (Object attr : attributes) {
       JSONObject item = (JSONObject) attr;
       if (attributeName.equalsIgnoreCase(item.getString("name"))) {
-        if (item.has("isRequired") && item.getBoolean("isRequired")) bl = true;
+        if (item.has("isRequired") && item.getBoolean("isRequired"))
+          bl = true;
         break;
       }
     }
@@ -187,21 +185,23 @@ public class DataModelEx {
     for (Object attr : attributes) {
       JSONObject item = (JSONObject) attr;
       if (attributeName.equalsIgnoreCase(item.getString("name"))) {
-        if (item.has("hasUnitCode") && item.getBoolean("hasUnitCode")) bl = true;
+        if (item.has("hasUnitCode") && item.getBoolean("hasUnitCode"))
+          bl = true;
         break;
       }
     }
     return bl;
   }
-  public List<Map<String,String>> listOfModel(){
-    List<Map<String,String>> list = new LinkedList<>();
+
+  public List<Map<String, String>> listOfModel() {
+    List<Map<String, String>> list = new LinkedList<>();
     for (Object models : schema) {
       JSONObject model = (JSONObject) models;
-      Map<String,String> item = new HashMap<>();
-      item.put("modelId",model.getString("type"));
+      Map<String, String> item = new HashMap<>();
+      item.put("modelId", model.getString("type"));
 
       if (model.has("id")) {
-        item.put("id",model.getString("id"));
+        item.put("id", model.getString("id"));
       }
       list.add(item);
     }
@@ -212,7 +212,7 @@ public class DataModelEx {
     JSONObject templateItem = new JSONObject();
     if (hasModelId(modelId)) {
       JSONObject jModel = getModel(modelId);
-      makeModel(templateItem,jModel);
+      makeModel(templateItem, jModel);
     } else {
 
     }
@@ -232,19 +232,19 @@ public class DataModelEx {
       if (item.has("hasObservedAt") && item.get("hasObservedAt") != JSONObject.NULL && item.getBoolean("hasObservedAt") == true) {
         subItem.put("observedAt", item.getString("valueType"));
       }
-      if ("String".equals(item.getString("valueType")) ) {
+      if ("String".equals(item.getString("valueType"))) {
         subItem.put("value", item.getString("valueType"));
-      } else if ("GeoJson".equals(item.getString("valueType")) ) {
+      } else if ("GeoJson".equals(item.getString("valueType"))) {
         JSONObject jMember = new JSONObject();
         jMember.put("type", GeoJsonValueType.POINT.getCode());
         jMember.put("coordinates", new JSONArray());
         subItem.put("value", jMember);
-      } else if ("Object".equals(item.getString("valueType")) ) {
-        if (item.has("objectMembers") ) {
+      } else if ("Object".equals(item.getString("valueType"))) {
+        if (item.has("objectMembers")) {
           JSONObject jMember = new JSONObject();
-          for(Object members : item.getJSONArray("objectMembers")) {
+          for (Object members : item.getJSONArray("objectMembers")) {
             JSONObject member = (JSONObject) members;
-            jMember.put(member.getString("name") , getValueType(member.getString("valueType")));
+            jMember.put(member.getString("name"), getValueType(member.getString("valueType")));
           }
           subItem.put("value", jMember);
         } else {
@@ -252,18 +252,18 @@ public class DataModelEx {
         }
       } else if ("ArrayString".equals(item.getString("valueType"))) {
         subItem.put("value", new JSONArray().put(item.getString("valueType")));
-      } else if ("Integer".equals(item.getString("valueType")) ) {
+      } else if ("Integer".equals(item.getString("valueType"))) {
         subItem.put("value", item.getString("valueType"));
-      } else if ("Double".equals(item.getString("valueType")) ) {
+      } else if ("Double".equals(item.getString("valueType"))) {
         subItem.put("value", item.getString("valueType"));
-      } else if ("Date".equals(item.getString("valueType")) ) {
+      } else if ("Date".equals(item.getString("valueType"))) {
         subItem.put("value", item.getString("valueType"));
-      } else if ("ArrayObject".equals(item.getString("valueType")) ) {
+      } else if ("ArrayObject".equals(item.getString("valueType"))) {
         if (item.has("objectMembers")) {
           JSONObject jMember = new JSONObject();
-          for(Object members : item.getJSONArray("objectMembers")) {
+          for (Object members : item.getJSONArray("objectMembers")) {
             JSONObject member = (JSONObject) members;
-            jMember.put(member.getString("name") , getValueType(member.getString("valueType")));
+            jMember.put(member.getString("name"), getValueType(member.getString("valueType")));
           }
           subItem.put("value", new JSONArray().put(jMember));
         } else {
@@ -293,7 +293,6 @@ public class DataModelEx {
     }
     return rtn;
   }
-
 
   /**
    * @param to
@@ -362,16 +361,16 @@ public class DataModelEx {
   public static EventType operationToEventType(Operation processOperation) {
 
     switch (processOperation) {
-      case CREATE:
-        return EventType.CREATED;
-      case PARTIAL_UPDATE:
-        return EventType.PARTIALLY_UPDATED;
-      case FULL_UPDATE:
-        return EventType.FULLY_UPDATED;
-      case DELETE:
-        return EventType.DELETED;
-      default:
-        return null;
+    case CREATE:
+      return EventType.CREATED;
+    case PARTIAL_UPDATE:
+      return EventType.PARTIALLY_UPDATED;
+    case FULL_UPDATE:
+      return EventType.FULLY_UPDATED;
+    case DELETE:
+      return EventType.DELETED;
+    default:
+      return null;
     }
   }
 

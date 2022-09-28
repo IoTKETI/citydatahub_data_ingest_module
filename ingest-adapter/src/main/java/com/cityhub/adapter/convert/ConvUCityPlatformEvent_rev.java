@@ -16,7 +16,6 @@
  */
 package com.cityhub.adapter.convert;
 
-
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,15 +42,13 @@ import lombok.extern.slf4j.Slf4j;
 public class ConvUCityPlatformEvent_rev extends AbstractConvert {
 
   @Override
-  public void init(JSONObject ConfItem, JSONObject templateItem) { //Source.java에서 설정한 내용들 (.conf & .template)
-    log.info("-----------------------------------init()-----------------------------------");
+  public void init(JSONObject ConfItem, JSONObject templateItem) { // Source.java에서 설정한 내용들 (.conf & .template)
     super.setup(ConfItem, templateItem);
-    log.info("TEMPPLATEITEM: {}",templateItem);
+    log.info("TEMPPLATEITEM: {}", templateItem);
   }
 
   @Override
-  public String doit() throws CoreException{
-    log.info("-----------------------------------doit()-----------------------------------");
+  public String doit() throws CoreException {
     StringBuffer strBuff = new StringBuffer();
 
     FileInputStream fis = null;
@@ -64,14 +61,14 @@ public class ConvUCityPlatformEvent_rev extends AbstractConvert {
       HSSFRow curRow;
 
       JsonUtil jsonEx = new JsonUtil(templateItem);
-      log.info("EXCEL_PARSING START: "+System.currentTimeMillis());
-      List<Map<String,String>> listOfExcel = new ArrayList<>();
-      for(int sheetIdx=0; sheetIdx<workbook.getNumberOfSheets(); sheetIdx++) {
-        curSheet = workbook.getSheetAt(sheetIdx); //첫 번째 시트안의 모든 데이터
-        for(int rowIdx=1; rowIdx<curSheet.getPhysicalNumberOfRows(); rowIdx++) {
+      log.info("EXCEL_PARSING START: " + System.currentTimeMillis());
+      List<Map<String, String>> listOfExcel = new ArrayList<>();
+      for (int sheetIdx = 0; sheetIdx < workbook.getNumberOfSheets(); sheetIdx++) {
+        curSheet = workbook.getSheetAt(sheetIdx); // 첫 번째 시트안의 모든 데이터
+        for (int rowIdx = 1; rowIdx < curSheet.getPhysicalNumberOfRows(); rowIdx++) {
           curRow = curSheet.getRow(rowIdx);
-          Map<String,String> row = new HashMap<>();
-          for(int cellIdx=0; cellIdx<curRow.getPhysicalNumberOfCells(); cellIdx++) {
+          Map<String, String> row = new HashMap<>();
+          for (int cellIdx = 0; cellIdx < curRow.getPhysicalNumberOfCells(); cellIdx++) {
 
             String type = curSheet.getRow(rowIdx).getCell(1).toString();
             String grade = curSheet.getRow(rowIdx).getCell(2).toString();
@@ -95,10 +92,10 @@ public class ConvUCityPlatformEvent_rev extends AbstractConvert {
           listOfExcel.add(row);
         } // end for rowIdx
       } // end for sheet
-      log.info("EXCEL_PARSING END: "+System.currentTimeMillis());
+      log.info("EXCEL_PARSING END: " + System.currentTimeMillis());
 
-      log.info("Model transfer start: "+System.currentTimeMillis());
-      for(Map<String,String> row : listOfExcel) {
+      log.info("Model transfer start: " + System.currentTimeMillis());
+      for (Map<String, String> row : listOfExcel) {
         jsonEx.put("address.value.addressCountry", "KR");
         jsonEx.put("address.value.addressRegion", "경기도");
         jsonEx.put("address.value.addressLocality", "시흥시");
@@ -114,18 +111,18 @@ public class ConvUCityPlatformEvent_rev extends AbstractConvert {
         jsonEx.put("finishedAt.value", DateUtil.getISOTime(row.get("finishedAt")));
         jsonEx.put("finishedAt.type", "Property");
 
-        jsonEx.put("eventType.value", JsonUtil.nvl(row.get("type") , DataType.STRING));
-        jsonEx.put("id", "urn:datahub:UCityPlatformEvent:4010000."+row.get("type"));
+        jsonEx.put("eventType.value", JsonUtil.nvl(row.get("type"), DataType.STRING));
+        jsonEx.put("id", "urn:datahub:UCityPlatformEvent:4010000." + row.get("type"));
 
         insertValue(row.get("type"), row.get("grade"), row.get("status"), jsonEx);
         jsonEx.toString();
-        strBuff.append(jsonEx+",");
+        strBuff.append(jsonEx + ",");
       }
-      log.info("Model transfer end: "+System.currentTimeMillis());
+      log.info("Model transfer end: " + System.currentTimeMillis());
 
-    }catch(CoreException e) {
+    } catch (CoreException e) {
       log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-    }catch(Exception e) {
+    } catch (Exception e) {
       log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
     }
@@ -133,12 +130,9 @@ public class ConvUCityPlatformEvent_rev extends AbstractConvert {
     return strBuff.toString();
   }
 
+  public static void insertValue(String type, String grade, String status, JsonUtil jsonEx) {
 
-
-
-public static void insertValue(String type, String grade, String status, JsonUtil jsonEx) {
-
-    switch(type) {
+    switch (type) {
     case "112UC001":
       jsonEx.put("eventName.value", JsonUtil.nvl("112긴급영상", DataType.STRING));
       break;
@@ -207,7 +201,7 @@ public static void insertValue(String type, String grade, String status, JsonUti
       break;
     }
 
-    switch(grade){ //이벤트 등급
+    switch (grade) { // 이벤트 등급
     case "10":
       jsonEx.put("grade.value", JsonUtil.nvl("긴급", DataType.STRING));
       break;
@@ -216,7 +210,7 @@ public static void insertValue(String type, String grade, String status, JsonUti
       break;
     }
 
-    switch(status){ //이벤트 진행상태
+    switch (status) { // 이벤트 진행상태
     case "10":
       jsonEx.put("status.value", JsonUtil.nvl("발생", DataType.STRING));
       break;
@@ -232,6 +226,5 @@ public static void insertValue(String type, String grade, String status, JsonUti
     }
 
   }
-
 
 } // end of class

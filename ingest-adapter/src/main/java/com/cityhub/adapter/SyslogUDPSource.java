@@ -108,7 +108,7 @@ public class SyslogUDPSource extends AbstractSource implements EventDrivenSource
 
         sourceCounter.incrementEventReceivedCount();
         logger.info("received:{}", e.getBody());
-        //getChannelProcessor().processEvent(e);
+        // getChannelProcessor().processEvent(e);
         sourceCounter.incrementEventAcceptedCount();
       } catch (ChannelException ex) {
         logger.error("Error writting to channel", ex);
@@ -131,8 +131,7 @@ public class SyslogUDPSource extends AbstractSource implements EventDrivenSource
     handler.setKeepFields(keepFields);
     handler.setClientIPHeader(clientIPHeader);
     handler.setClientHostnameHeader(clientHostnameHeader);
-    serverBootstrap.setOption("receiveBufferSizePredictorFactory",
-        new AdaptiveReceiveBufferSizePredictorFactory(DEFAULT_MIN_SIZE, DEFAULT_INITIAL_SIZE, maxsize));
+    serverBootstrap.setOption("receiveBufferSizePredictorFactory", new AdaptiveReceiveBufferSizePredictorFactory(DEFAULT_MIN_SIZE, DEFAULT_INITIAL_SIZE, maxsize));
     serverBootstrap.setPipelineFactory(new ChannelPipelineFactory() {
       @Override
       public ChannelPipeline getPipeline() {
@@ -175,8 +174,7 @@ public class SyslogUDPSource extends AbstractSource implements EventDrivenSource
     port = context.getInteger(SyslogSourceConfigurationConstants.CONFIG_PORT);
     host = context.getString(SyslogSourceConfigurationConstants.CONFIG_HOST);
     formaterProp = context.getSubProperties(SyslogSourceConfigurationConstants.CONFIG_FORMAT_PREFIX);
-    keepFields = SyslogUtils.chooseFieldsToKeep(
-        context.getString(SyslogSourceConfigurationConstants.CONFIG_KEEP_FIELDS, SyslogSourceConfigurationConstants.DEFAULT_KEEP_FIELDS));
+    keepFields = SyslogUtils.chooseFieldsToKeep(context.getString(SyslogSourceConfigurationConstants.CONFIG_KEEP_FIELDS, SyslogSourceConfigurationConstants.DEFAULT_KEEP_FIELDS));
     clientIPHeader = context.getString(SyslogSourceConfigurationConstants.CONFIG_CLIENT_IP_HEADER);
     clientHostnameHeader = context.getString(SyslogSourceConfigurationConstants.CONFIG_CLIENT_HOSTNAME_HEADER);
 
@@ -202,38 +200,38 @@ public class SyslogUDPSource extends AbstractSource implements EventDrivenSource
   public String byteArrayToBinaryString(byte[] b) {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < b.length; ++i) {
-        sb.append(byteToBinaryString(b[i]));
+      sb.append(byteToBinaryString(b[i]));
     }
     return sb.toString();
   }
+
   public String byteToBinaryString(byte n) {
     StringBuilder sb = new StringBuilder("00000000");
     for (int bit = 0; bit < 8; bit++) {
-        if (((n >> bit) & 1) > 0) {
-            sb.setCharAt(7 - bit, '1');
-        }
+      if (((n >> bit) & 1) > 0) {
+        sb.setCharAt(7 - bit, '1');
+      }
     }
     return sb.toString();
   }
 
   public byte[] binaryStringToByteArray(String s) {
-      int count = s.length() / 8;
-      byte[] b = new byte[count];
-      for (int i = 1; i < count; ++i) {
-          String t = s.substring((i - 1) * 8, i * 8);
-          b[i - 1] = binaryStringToByte(t);
-      }
-      return b;
+    int count = s.length() / 8;
+    byte[] b = new byte[count];
+    for (int i = 1; i < count; ++i) {
+      String t = s.substring((i - 1) * 8, i * 8);
+      b[i - 1] = binaryStringToByte(t);
+    }
+    return b;
   }
 
   public byte binaryStringToByte(String s) {
-      byte ret = 0, total = 0;
-      for (int i = 0; i < 8; ++i) {
-          ret = (s.charAt(7 - i) == '1') ? (byte) (1 << i) : 0;
-          total = (byte) (ret | total);
-      }
-      return total;
+    byte ret = 0, total = 0;
+    for (int i = 0; i < 8; ++i) {
+      ret = (s.charAt(7 - i) == '1') ? (byte) (1 << i) : 0;
+      total = (byte) (ret | total);
+    }
+    return total;
   }
-
 
 }

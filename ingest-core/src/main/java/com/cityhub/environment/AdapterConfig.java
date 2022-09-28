@@ -19,12 +19,13 @@ package com.cityhub.environment;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AdapterConfig {
 
-  private Map<String, String> prop = new HashMap<String, String>();
+  private Map<String, String> prop = new HashMap<>();
 
   public void put(String key, String value) {
     prop.put(key, value);
@@ -37,8 +38,6 @@ public class AdapterConfig {
   public static Properties getProp(String dbconn, String adapterId) {
     return new Properties();
   }
-
-
 
   public static String getRawDataModel(Properties prop) {
     return new String();

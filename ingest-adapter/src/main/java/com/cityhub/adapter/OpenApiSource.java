@@ -61,12 +61,12 @@ public class OpenApiSource extends AbstractPollSource {
     } else {
       ConfItem = new JSONObject();
     }
-    if (getInit().has("daemonSrverLogApi") ) {
-      ConfItem.put("daemonSrverLogApi", getInit().getString("daemonSrverLogApi"));
+    String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "");
+    if (!"".equals(DAEMON_SERVER_LOGAPI)) {
+      ConfItem.put("daemonServerLogApi", context.getString("DAEMON_SERVER_LOGAPI", ""));
     } else {
-      ConfItem.put("daemonSrverLogApi", "http://localhost:8888/logToDbApi");
+      ConfItem.put("daemonServerLogApi", "http://localhost:8888/logToDbApi");
     }
-
     ConfItem.put("model_id", modelId);
     ConfItem.put("schema_srv", schemaSrv);
     ConfItem.put("sourceName", this.getName());
@@ -83,7 +83,7 @@ public class OpenApiSource extends AbstractPollSource {
 
     if (ArrModel != null) {
       HttpResponse resp = OkUrlUtil.get(schemaSrv, "Content-type", "application/json");
-      log.debug("schema connected: {},{}",modelId, resp.getStatusCode());
+      log.debug("schema connected: {},{}", modelId, resp.getStatusCode());
       if (resp.getStatusCode() == 200) {
         DataModel dm = new DataModel(new JSONArray(resp.getPayload()));
         for (String model : ArrModel) {
@@ -100,17 +100,14 @@ public class OpenApiSource extends AbstractPollSource {
       }
 
     } else {
-      log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId , getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
+      log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
     }
-
 
     if (log.isDebugEnabled()) {
       log.debug("Template : {},{}", modelId, templateItem);
     }
 
-
   }
-
 
   @Override
   public void processing() {
@@ -118,16 +115,16 @@ public class OpenApiSource extends AbstractPollSource {
     try {
       if (ArrModel != null) {
 
-        ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass() ,  ConfItem, templateItem);
+        ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(), ConfItem, templateItem);
         String sb = reflectExecuter.doit();
         if (sb != null && sb.lastIndexOf(",") > 0) {
-          JSONArray JSendArr = new JSONArray("[" + sb.substring(0 , sb.length() - 1) + "]");
+          JSONArray JSendArr = new JSONArray("[" + sb.substring(0, sb.length() - 1) + "]");
           int cnt = 0;
           for (Object itm : JSendArr) {
-            JSONObject jo = (JSONObject)itm;
+            JSONObject jo = (JSONObject) itm;
             // 최소한의 검증 처리 (필수값 체크)
-            log.info("`{}`{}`{}`{}`{}`{}",this.getName() ,jo.getString("type"), getStr(SocketCode.DATA_SAVE_REQ) , jo.getString("id"), jo.toString().getBytes().length, adapterType);
-            StringBuilder l =  new StringBuilder();
+            log.info("`{}`{}`{}`{}`{}`{}", this.getName(), jo.getString("type"), getStr(SocketCode.DATA_SAVE_REQ), jo.getString("id"), jo.toString().getBytes().length, adapterType);
+            StringBuilder l = new StringBuilder();
             l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
             l.append("`").append(ConfItem.getString("sourceName"));
             l.append("`").append(modelId);
@@ -146,7 +143,7 @@ public class OpenApiSource extends AbstractPollSource {
             logVo.setId(jo.getString("id"));
             logVo.setLength(String.valueOf(jo.toString().getBytes().length));
             logVo.setAdapterType(ConfItem.getString("invokeClass"));
-            LogWriterToDb.logToDaemonApi(ConfItem,logVo);
+            LogWriterToDb.logToDaemonApi(ConfItem, logVo);
             cnt++;
             byte[] cont = createSendJson(jo);
 
@@ -157,17 +154,18 @@ public class OpenApiSource extends AbstractPollSource {
         }
 
       } else {
-        log.error("`{}`{}`{}`{}`{}`{}",this.getName(), modelId , getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
+        log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
       }
     } catch (Exception e) {
-      log.error("`{}`{}`{}`{}`{}`{}",this.getName(), modelId , getStr(SocketCode.NORMAL_ERROR, e.getMessage()), "", 0, adapterType);
+      log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, getStr(SocketCode.NORMAL_ERROR, e.getMessage()), "", 0, adapterType);
     }
   }
 
   public String getStr(SocketCode sc) {
     return sc.getCode() + ";" + sc.getMessage();
   }
-  public String getStr(SocketCode sc,String msg) {
+
+  public String getStr(SocketCode sc, String msg) {
     return sc.getCode() + ";" + sc.getMessage() + "-" + msg;
   }
 } // end of class

@@ -19,13 +19,16 @@ package com.cityhub.web.agent.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.cityhub.web.agent.mapper.CommMapper;
+
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @Slf4j
 @Service
 public class CommService {
@@ -47,15 +50,15 @@ public class CommService {
   @Transactional
   public Map insertCommType(Map param) throws Exception {
 
-    List<?> list = new ArrayList<Object>();
-    list = (List)param.get("comm_type_data");
+    List<?> list = new ArrayList<>();
+    list = (List) param.get("comm_type_data");
 
-    if(list != null && list.size() > 0) {
-      for(int i=0; i<list.size(); i++){
-        Map obj = (Map)list.get(i);
+    if (list != null && list.size() > 0) {
+      for (int i = 0; i < list.size(); i++) {
+        Map obj = (Map) list.get(i);
         String db_yn = (String) obj.get("db_yn");
         obj.remove("db_yn");
-        if("N".equals(db_yn)) {
+        if ("N".equals(db_yn)) {
           mapper.insertCommType(obj);
         } else {
           mapper.updateCommType(obj);
@@ -72,11 +75,11 @@ public class CommService {
     log.debug("id = " + id);
     log.debug("param = " + param);
     mapper.deleteCommCode(id);
-    List<?> list = new ArrayList<Object>();
-    list = (List)param.get("codesData");
-    if(list != null && list.size() > 0) {
-      for(int i=0; i<list.size(); i++){
-        Map obj = (Map)list.get(i);
+    List<?> list = new ArrayList<>();
+    list = (List) param.get("codesData");
+    if (list != null && list.size() > 0) {
+      for (int i = 0; i < list.size(); i++) {
+        Map obj = (Map) list.get(i);
         obj.put("code_type_id", id);
         log.debug("obj = " + obj);
         mapper.insertCommCode(obj);

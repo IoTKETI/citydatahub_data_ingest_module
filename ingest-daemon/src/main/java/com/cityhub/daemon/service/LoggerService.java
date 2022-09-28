@@ -33,9 +33,9 @@ public class LoggerService {
 
   private final SqlSessionTemplate sqlSession;
 
-  public void logToDbApi(Map<String,Object> parameter) {
+  public void logToDbApi(Map<String, Object> parameter) {
     JSONObject jobj = new JSONObject(parameter);
-    Map<String,Object> param = new HashMap<>();
+    Map<String, Object> param = new HashMap<>();
     String timestamp = jobj.get("timestamp").toString().replaceAll("\"", "");
     String payload = jobj.get("payload").toString().replaceAll("\"", "");
     String type = jobj.get("type").toString().replaceAll("\"", "");
@@ -73,6 +73,5 @@ public class LoggerService {
     }
     sqlSession.insert("loggerMapper.insertConnectivityLog", param);
   }
-
 
 }

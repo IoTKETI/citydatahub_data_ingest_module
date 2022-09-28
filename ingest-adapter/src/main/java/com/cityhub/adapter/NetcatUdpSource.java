@@ -75,7 +75,6 @@ public class NetcatUdpSource extends AbstractSource implements EventDrivenSource
   private String adapterType;
   private String savePathRawData;
 
-
   private static final Logger logger = LoggerFactory.getLogger(NetcatUdpSource.class);
 
   private CounterGroup counterGroup = new CounterGroup();
@@ -94,7 +93,7 @@ public class NetcatUdpSource extends AbstractSource implements EventDrivenSource
       byte[] resbody;
       byte b = 0;
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      //Event e = null;
+      // Event e = null;
       boolean doneReading = false;
       try {
         while (!doneReading && in.readable()) {
@@ -107,7 +106,7 @@ public class NetcatUdpSource extends AbstractSource implements EventDrivenSource
           }
         }
         resbody = baos.toByteArray();
-        ///e = EventBuilder.withBody(baos.toByteArray(), headers);
+        /// e = EventBuilder.withBody(baos.toByteArray(), headers);
       } finally {
         // no-op
       }
@@ -139,7 +138,7 @@ public class NetcatUdpSource extends AbstractSource implements EventDrivenSource
 
         jsonEx.remove("address");
 
-        logger.info("{}",jTemplate);
+        logger.info("{}", jTemplate);
         createFileRawData(rawdata, savePathRawData, modelId, port);
         byte[] cont = createSendJson(jTemplate);
         sendEvent(cont, mEvent.getRemoteAddress());
@@ -153,28 +152,28 @@ public class NetcatUdpSource extends AbstractSource implements EventDrivenSource
       }
     } // end messageReceived
   } // end class NetcatHandler
-  public void createFileRawData(String rawdata,String savePathRawData, String  modelId, int port) {
+
+  public void createFileRawData(String rawdata, String savePathRawData, String modelId, int port) {
     File d = new File(savePathRawData);
-    if(!d.exists()) {
+    if (!d.exists()) {
       d.mkdirs();
     }
     File file = new File(savePathRawData + modelId + "_" + port + "_" + DateUtil.getDate("yyyyMMdd") + ".txt");
-    try (FileWriter filewriter = new FileWriter(file, true);
-        BufferedWriter bufwriter = new BufferedWriter(filewriter);
-        ) {
+    try (FileWriter filewriter = new FileWriter(file, true); BufferedWriter bufwriter = new BufferedWriter(filewriter);) {
       bufwriter.write(rawdata);
       bufwriter.newLine();
       bufwriter.flush();
     } catch (Exception e) {
-      logger.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      logger.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
+
   public void sendEvent(byte[] bodyBytes, SocketAddress remoteAddress) {
-    Map<String, String> headers = new HashMap<String, String>();
+    Map<String, String> headers = new HashMap<>();
     headers.put(remoteHostHeader, remoteAddress.toString());
     ByteBuffer byteBuffer = ByteBuffer.allocate(bodyBytes.length + 5);
-    byte version = 0x10;//4bit: Major version, 4bit: minor version
-    Integer bodyLength = bodyBytes.length;//length = 1234
+    byte version = 0x10;// 4bit: Major version, 4bit: minor version
+    Integer bodyLength = bodyBytes.length;// length = 1234
     byteBuffer.put(version);
     byteBuffer.putInt(bodyLength.byteValue());
     byteBuffer.put(bodyBytes);
@@ -183,20 +182,20 @@ public class NetcatUdpSource extends AbstractSource implements EventDrivenSource
   } // end sendEvent
 
   public byte[] createSendJson(JSONObject content) {
-    String Uuid = "DATAINGEST_" + UUID.randomUUID().toString().replaceAll("-","");;
+    String Uuid = "DATAINGEST_" + UUID.randomUUID().toString().replaceAll("-", "");
+    ;
     JSONObject body = new JSONObject();
     body.put("requestId", Uuid);
     body.put("e2eRequestId", Uuid);
     body.put("owner", "dataingest");
     body.put("operation", "FULL_UPSERT");
     body.put("to", "DataCore/entities/" + (content.has("id") ? content.getString("id") : ""));
-    body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : "") );
+    body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : ""));
     body.put("queryString", "");
     body.put("eventTime", DateUtil.getTime());
     body.put("content", content);
     return body.toString().getBytes(Charset.forName("UTF-8"));
   } // end createSendJson
-
 
   public String byteArrayToBinaryString(byte[] b) {
     StringBuilder sb = new StringBuilder();
@@ -259,9 +258,6 @@ public class NetcatUdpSource extends AbstractSource implements EventDrivenSource
     super.start();
   } // end start
 
-
-
-
   @Override
   public void stop() {
     logger.info("Netcat UDP Source stopping...");
@@ -280,7 +276,6 @@ public class NetcatUdpSource extends AbstractSource implements EventDrivenSource
     super.stop();
   } // end stop
 
-
   @Override
   public void configure(Context context) {
     Configurables.ensureRequiredNonNull(context, CONFIG_PORT);
@@ -291,7 +286,7 @@ public class NetcatUdpSource extends AbstractSource implements EventDrivenSource
     String confFile = context.getString("CONF_FILE", "");
     adapterType = context.getString("type", "");
     savePathRawData = context.getString("savePathRawData", "");
-    savePathRawData = savePathRawData.lastIndexOf("/") !=  (savePathRawData.length() - 1) ? savePathRawData+= "/" : savePathRawData;
+    savePathRawData = savePathRawData.lastIndexOf("/") != (savePathRawData.length() - 1) ? savePathRawData += "/" : savePathRawData;
     if (!"".equals(confFile)) {
       ConfItem = new JsonUtil().getFileJsonObject(confFile);
     } else {
@@ -311,6 +306,5 @@ public class NetcatUdpSource extends AbstractSource implements EventDrivenSource
     }
     return 0;
   } // end getSourcePort
-
 
 }

@@ -18,6 +18,7 @@ package com.cityhub.adapter.convert;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.exception.CoreException;
 import com.cityhub.utils.CommonUtil;
@@ -43,13 +44,13 @@ public class ConvBankDailyIndex extends AbstractConvert {
 
       jsonEx.put("id", ConfItem.getString("gs1Code"));
 
-      for (int i = 0 ; i < serviceList.length(); i++) {
+      for (int i = 0; i < serviceList.length(); i++) {
         JSONObject iService = serviceList.getJSONObject(i);
-        JSONObject jsonData = (JSONObject) CommonUtil.getData(iService );
+        JSONObject jsonData = (JSONObject) CommonUtil.getData(iService);
         JSONArray jRow = JsonUtil.getArray(jsonData, "StatisticSearch.row");
 
         if (jRow.length() > 0) {
-          JSONObject jItem = (JSONObject)jRow.get(jRow.length() - 1);
+          JSONObject jItem = (JSONObject) jRow.get(jRow.length() - 1);
           jsonEx.put(iService.get("key") + ".value", JsonUtil.nvl(jItem.get("DATA_VALUE"), DataType.FLOAT));
           jsonEx.put(iService.get("key") + ".observedAt", JsonUtil.nvl(jItem.getString("TIME")));
         }
@@ -58,10 +59,9 @@ public class ConvBankDailyIndex extends AbstractConvert {
       }
 
     } catch (Exception e) {
-      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
     }
     return sendJson.toString();
   }
-
 
 } // end of class

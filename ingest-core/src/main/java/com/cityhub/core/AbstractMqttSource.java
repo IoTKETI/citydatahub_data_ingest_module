@@ -45,8 +45,6 @@ public abstract class AbstractMqttSource extends AbstractBaseSource implements E
   protected String respTopic;
   private String invokeClass;
 
-
-
   @Override
   public void configure(Context context) {
     super.configure(context);
@@ -54,7 +52,7 @@ public abstract class AbstractMqttSource extends AbstractBaseSource implements E
     setUrlAddr(context.getString(DefaultConstants.URL_ADDR, ""));
     topic = context.getString(DefaultConstants.TOPIC, "");
     reqTopic = "/oneM2M/req/+/" + topic + "/#";
-    respTopic = "/oneM2M/resp/" + context.getString("MQTT_PREFIX", "") +  "/" + topic + "/json";
+    respTopic = "/oneM2M/resp/" + context.getString("MQTT_PREFIX", "") + "/" + topic + "/json";
     invokeClass = context.getString(DefaultConstants.INVOKE_CLASS, "");
 
     setup(context);
@@ -80,7 +78,7 @@ public abstract class AbstractMqttSource extends AbstractBaseSource implements E
         mqttClient.disconnect();
         mqttClient.close();
       } catch (MqttException e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       }
     }
     exit();
@@ -93,7 +91,7 @@ public abstract class AbstractMqttSource extends AbstractBaseSource implements E
       mqttOptions = new MqttConnectOptions();
       mqttOptions.setCleanSession(true);
       mqttOptions.setKeepAliveInterval(30);
-      //mqttOptions.setAutomaticReconnect(true);
+      // mqttOptions.setAutomaticReconnect(true);
 
       String tmpDir = System.getProperty("java.io.tmpdir");
       MqttDefaultFilePersistence dataStore = new MqttDefaultFilePersistence(tmpDir);
@@ -152,7 +150,7 @@ public abstract class AbstractMqttSource extends AbstractBaseSource implements E
     try {
       log.debug("Topic - {} : Delivery complete.", Arrays.toString(token.getTopics()));
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -161,7 +159,7 @@ public abstract class AbstractMqttSource extends AbstractBaseSource implements E
       mqttClient.publish(getTopic(), new MqttMessage(resp));
       log.debug("publish: {} \t {}", respTopic, new String(resp));
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -171,7 +169,8 @@ public abstract class AbstractMqttSource extends AbstractBaseSource implements E
 
   public abstract void processing(String s, MqttMessage mqttMessage);
 
-  public void exit() {}
+  public void exit() {
+  }
 
   public String getTopic() {
     return topic;
@@ -196,6 +195,5 @@ public abstract class AbstractMqttSource extends AbstractBaseSource implements E
   public void setUrlAddr(String urlAddr) {
     this.urlAddr = urlAddr;
   }
-
 
 }

@@ -18,6 +18,7 @@ package com.cityhub.adapter.convert;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.exception.CoreException;
 import com.cityhub.utils.CommonUtil;
@@ -32,7 +33,6 @@ public class ConvWeatherWho extends AbstractConvert {
     super.setup(ConfItem, templateItem);
   }
 
-
   @Override
   public String doit() throws CoreException {
     StringBuffer sendJson = new StringBuffer();
@@ -42,17 +42,17 @@ public class ConvWeatherWho extends AbstractConvert {
 
       JSONArray serviceList = ConfItem.getJSONArray("serviceList");
 
-      for (int i = 0 ; i < serviceList.length(); i++) {
+      for (int i = 0; i < serviceList.length(); i++) {
         JSONObject iService = serviceList.getJSONObject(i);
 
-        JsonUtil jh = new JsonUtil((JSONObject) CommonUtil.getData(iService ));
+        JsonUtil jh = new JsonUtil((JSONObject) CommonUtil.getData(iService));
         JSONObject jHeader = jh.getObject("Response.header");
 
-        if ( "Y".equals(jHeader.getString("successYN")) ) {
+        if ("Y".equals(jHeader.getString("successYN"))) {
           JSONObject jModel = jh.getObject("Response.body.indexModel");
 
           String dataObserved = DateUtil.getISOTime(jModel.getString("date"));
-          //jsonEx.put("dataObserved.value", dataObserved);
+          // jsonEx.put("dataObserved.value", dataObserved);
 
           if (dataObserved.contains("T06:00:00")) { // 6시 발표
             jsonEx.put(iService.get("key") + ".value", JsonUtil.nvl(jModel.getString("today")));
@@ -71,7 +71,7 @@ public class ConvWeatherWho extends AbstractConvert {
       sendJson.append(jTemplate.toString() + ",");
 
     } catch (Exception e) {
-      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
     }
 
     return sendJson.toString();

@@ -36,12 +36,12 @@ public abstract class AbstractConvertSink<T1, T2> implements ReflectExecuterEx<T
   public SimpleDateFormat transFormat = new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT);
   public JSONObject ConfItem = null;
   public RequestMessageVO requestMessageVO = null;
-  public Map<String,Object> param = null;
+  public Map<String, Object> param = null;
 
   @Override
   public void setInitial(T1 t1) {
-    this.requestMessageVO = (RequestMessageVO)t1;
-    param = new HashMap<String,Object>();
+    this.requestMessageVO = (RequestMessageVO) t1;
+    param = new HashMap<>();
     param.put("id", requestMessageVO.getId());
     param.put("createdAt", requestMessageVO.getEventTime());
     param.put("modifiedAt", requestMessageVO.getEventTime());
@@ -50,22 +50,20 @@ public abstract class AbstractConvertSink<T1, T2> implements ReflectExecuterEx<T
 
     JsonUtil jsonEx = new JsonUtil(requestMessageVO.getContent());
     param.put("location4326", jsonEx.getObj("location.value"));
-    JsonUtil.objectToParam(param, (JSONObject)jsonEx.getObj("address.value") );
+    JsonUtil.objectToParam(param, (JSONObject) jsonEx.getObj("address.value"));
   }
 
   @Override
   public void setConfig(T2 t2) {
-    this.ConfItem = (JSONObject)t2;
+    this.ConfItem = (JSONObject) t2;
   }
 
-  public void log(SocketCode sc , String id ) {
-    log.info("`{}`{}`{}",requestMessageVO.getEntityType(),sc.getCode() + ";" + sc.getMessage() + "" , requestMessageVO.getId());
+  public void log(SocketCode sc, String id) {
+    log.info("`{}`{}`{}", requestMessageVO.getEntityType(), sc.getCode() + ";" + sc.getMessage() + "", requestMessageVO.getId());
   }
 
-  public void log(SocketCode sc , String msg , String id) {
-    log.info("`{}`{}`{}",requestMessageVO.getEntityType(),sc.getCode() + ";" + sc.getMessage() + "-" + msg , requestMessageVO.getId());
+  public void log(SocketCode sc, String msg, String id) {
+    log.info("`{}`{}`{}", requestMessageVO.getEntityType(), sc.getCode() + ";" + sc.getMessage() + "-" + msg, requestMessageVO.getId());
   }
-
-
 
 } // end of class

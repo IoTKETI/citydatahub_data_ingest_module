@@ -80,7 +80,6 @@ public class AuthService {
   @Value("${grantType.refresh}")
   private String grantRefreshToken;
 
-
   @Value("${publicKeyEndPoint}")
   private String publicKeyEndPoint;
   @Value("${getInfoEndPoint}")
@@ -124,9 +123,9 @@ public class AuthService {
     object.put("redirect_uri", redirectUri);
     object.put("code", code);
 
-    String url = tokenEndpoint+"?grant_type=authorization_code&client_id="+clientId+"&client_secret="+clientSecret+"&redirect_uri="+redirectUri+"&code="+code;
+    String url = tokenEndpoint + "?grant_type=authorization_code&client_id=" + clientId + "&client_secret=" + clientSecret + "&redirect_uri=" + redirectUri + "&code=" + code;
 
-    log.info("###url:{},{}",tokenEndpoint, object.toString());
+    log.info("###url:{},{}", tokenEndpoint, object.toString());
 
     RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), object.toString());
     Request okRequest = new Request.Builder().url(url).post(requestBody).build();
@@ -164,8 +163,8 @@ public class AuthService {
 
     object.put("grant_type", grantClientCredentials);
 
-    resMessage = httpConnection(tokenEndpoint,"POST", apiheader ,object.toString());
-    log.info("resMessage:{}",resMessage);
+    resMessage = httpConnection(tokenEndpoint, "POST", apiheader, object.toString());
+    log.info("resMessage:{}", resMessage);
     return resMessage;
 
   }
@@ -184,8 +183,8 @@ public class AuthService {
     String resMessage = "";
 
     object.put("grant_type", grantPasswordCredentials);
-    resMessage = httpConnection(tokenEndpoint,"POST", apiheader ,object.toString());
-    log.info("resMessage:{}",resMessage);
+    resMessage = httpConnection(tokenEndpoint, "POST", apiheader, object.toString());
+    log.info("resMessage:{}", resMessage);
     return resMessage;
 
   }
@@ -335,7 +334,7 @@ public class AuthService {
 
         String resMessage = "";
 
-        resMessage = httpConnection(logoutEndPoint,"POST", "Basic " + token.getString(target) ,bodyStr);
+        resMessage = httpConnection(logoutEndPoint, "POST", "Basic " + token.getString(target), bodyStr);
         log.info("resMessage:{}", resMessage);
 
       } catch (Exception e) {
@@ -391,7 +390,7 @@ public class AuthService {
     return token;
   }
 
-  public String httpConnection( String targetUrl, String method, String token, String jsonBody ) {
+  public String httpConnection(String targetUrl, String method, String token, String jsonBody) {
     URL url = null;
     HttpURLConnection conn = null;
     String result = "";
@@ -449,7 +448,7 @@ public class AuthService {
     log.info("apiheader :{},{}", publicKeyEndPoint, apiheader);
     String resMessage = "";
 
-    resMessage = httpConnection(publicKeyEndPoint,"GET", apiheader ,"");
+    resMessage = httpConnection(publicKeyEndPoint, "GET", apiheader, "");
     log.info("resMessage:{}", resMessage);
 
     return resMessage;
@@ -552,7 +551,7 @@ public class AuthService {
     object.put("grant_type", grantRefreshToken);
     object.put("refresh_token", refreshToken);
 
-    resMessage = httpConnection(tokenEndpoint,"POST", refreshHeader ,object.toString());
+    resMessage = httpConnection(tokenEndpoint, "POST", refreshHeader, object.toString());
 
     log.debug("리프레시 토큰 값 : " + refreshToken);
     log.debug("리프레시 토큰 응답 : " + resMessage);

@@ -32,35 +32,42 @@ public class RequestDtVerify {
 
   public RequestDtVerify(String personId, String requestStartDt, String requestEndDt) {
     this.personId = personId;
-    this.requestStartDt =  filteredDate(requestStartDt);
-    this.requestEndDt =  filteredDate(requestEndDt);
+    this.requestStartDt = filteredDate(requestStartDt);
+    this.requestEndDt = filteredDate(requestEndDt);
   }
 
   public String getPersonId() {
     return personId;
   }
+
   public void setPersonId(String personId) {
     this.personId = personId;
   }
+
   public LocalDateTime getRequestStartDt() {
     return requestStartDt;
   }
+
   public void setRequestStartDt(LocalDateTime requestStartDt) {
     this.requestStartDt = requestStartDt;
   }
+
   public LocalDateTime getRequestEndDt() {
     return requestEndDt;
   }
+
   public void setRequestEndDt(LocalDateTime requestEndDt) {
     this.requestEndDt = requestEndDt;
   }
+
   public boolean isWithinRange(String localdate) {
     LocalDateTime _date = filteredDate(localdate);
-    return ( ! _date.isBefore( requestStartDt ) ) && ( _date.isBefore( requestEndDt.plusDays(1) ) );
+    return (!_date.isBefore(requestStartDt)) && (_date.isBefore(requestEndDt.plusDays(1)));
   }
+
   public boolean isWithinRange(LocalDateTime localdate) {
     LocalDateTime _date = localdate;
-    return ( ! _date.isBefore( requestStartDt ) ) && ( _date.isBefore( requestEndDt.plusDays(1) ) );
+    return (!_date.isBefore(requestStartDt)) && (_date.isBefore(requestEndDt.plusDays(1)));
   }
 
   private LocalDateTime filteredDate(String st) {
@@ -73,7 +80,7 @@ public class RequestDtVerify {
         st = st.replaceAll("'", "");
         st = st.replaceAll("\\/", "");
         st = st.replaceAll("T", " ");
-        if (st.length() == 8 ) {
+        if (st.length() == 8) {
           DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
           _sdate = LocalDate.parse(st, formatter).atStartOfDay();
         } else {
@@ -83,12 +90,10 @@ public class RequestDtVerify {
 
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return _sdate;
   }
-
-
 
 }

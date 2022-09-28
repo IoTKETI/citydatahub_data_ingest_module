@@ -25,6 +25,7 @@ import org.apache.flume.Event;
 import org.apache.flume.conf.Configurable;
 import org.apache.flume.event.EventBuilder;
 import org.apache.flume.source.AbstractSource;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -55,21 +56,18 @@ public abstract class LAbstractBaseSource extends AbstractSource implements Conf
   }
 
   public String getUuid() {
-    return UUID.randomUUID().toString().replaceAll("-","");
+    return UUID.randomUUID().toString().replaceAll("-", "");
   }
 
   public void sendEvent(byte[] bodyBytes) {
     ByteBuffer byteBuffer = ByteBuffer.allocate(bodyBytes.length + 5);
-    byte version = 0x10;//4bit: Major version, 4bit: minor version
-    Integer bodyLength = bodyBytes.length;//length = 1234
+    byte version = 0x10;// 4bit: Major version, 4bit: minor version
+    Integer bodyLength = bodyBytes.length;// length = 1234
     byteBuffer.put(version);
     byteBuffer.putInt(bodyLength.byteValue());
     byteBuffer.put(bodyBytes);
     Event event = EventBuilder.withBody(byteBuffer.array());
     getChannelProcessor().processEvent(event);
   }
-
-
-
 
 } // end of class

@@ -63,16 +63,17 @@ public class DaemonController {
 
   /**
    * 아답터에서 생성된 로그 읽어오기
+   *
    * @param param
    * @return
    */
   @PostMapping(value = "/exec/logger")
-  public ResponseEntity<Map<String,Object>> getLogger(@RequestBody Map<String,Object> param) {
+  public ResponseEntity<Map<String, Object>> getLogger(@RequestBody Map<String, Object> param) {
     if (log.isDebugEnabled()) {
       log.debug("body: {}", param);
     }
 
-    Map<String,Object> logmap = new HashMap<>();
+    Map<String, Object> logmap = new HashMap<>();
 
     try {
       LoggerObject dto = svc.tail(param);
@@ -81,24 +82,26 @@ public class DaemonController {
       logmap.put("log", dto.getPayload());
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return new ResponseEntity<>(logmap, HttpStatus.OK);
 
   }
+
   /**
    * 아답터에서 생성된 특정 아이디의 로그 읽어오기
+   *
    * @param id
    * @param param
    * @return
    */
   @PostMapping(value = "/getlogger/{id}")
-  public ResponseEntity<List<LogVO>> logIngest(@PathVariable("id") String id, @RequestBody Map<String,Object> param) {
+  public ResponseEntity<List<LogVO>> logIngest(@PathVariable("id") String id, @RequestBody Map<String, Object> param) {
     if (log.isDebugEnabled()) {
-      log.debug("id: {},body:{}", id,param);
+      log.debug("id: {},body:{}", id, param);
     }
-    List<LogVO> l =  svc.getLinesMatchPatternInFile(id, param);
+    List<LogVO> l = svc.getLinesMatchPatternInFile(id, param);
 
     return new ResponseEntity<>(l, HttpStatus.OK);
 
@@ -106,23 +109,24 @@ public class DaemonController {
 
   /**
    * 아답터에서 생성된 전체 로그 읽어오기
+   *
    * @param param
    * @return
    */
   @PostMapping(value = "/getLoggerAll")
-  public ResponseEntity<List<LogVO>> getLoggerAll( @RequestBody Map<String,Object> param) {
+  public ResponseEntity<List<LogVO>> getLoggerAll(@RequestBody Map<String, Object> param) {
     if (log.isDebugEnabled()) {
       log.debug("{}", param);
     }
-    List<LogVO> l =  svc.getAllLinesMatchPatternInFile(param);
+    List<LogVO> l = svc.getAllLinesMatchPatternInFile(param);
 
     return new ResponseEntity<>(l, HttpStatus.OK);
 
   }
 
-
   /**
    * 서버의 현재 시간 가져오기
+   *
    * @return
    */
   @GetMapping(value = "/getSrvTime")
@@ -136,20 +140,20 @@ public class DaemonController {
 
   /**
    * 에이전트의 현재 상태 가져오기
+   *
    * @param status
    * @param param
    * @return
    */
   @PostMapping(value = "/exec/agent/{status}")
-  public ResponseEntity<Map<String,Object>> agentRun(@PathVariable("status") String status, @RequestBody Map<String,Object> param) {
-    Map<String,Object> json = new HashMap<>();
+  public ResponseEntity<Map<String, Object>> agentRun(@PathVariable("status") String status, @RequestBody Map<String, Object> param) {
+    Map<String, Object> json = new HashMap<>();
 
     try {
       if (log.isDebugEnabled()) {
         log.debug("body: {}", param);
       }
       json.put("id", param.get("id").toString());
-
 
       File f = new File(flumeHomePath + "/conf/" + param.get("id") + ".conf");
       if (!f.exists()) {
@@ -164,23 +168,23 @@ public class DaemonController {
       }
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return new ResponseEntity<>(json, HttpStatus.OK);
 
   }
 
-
   /**
    * 아답터의 현재 설정파일 내용 가져오기
+   *
    * @param type
    * @param param
    * @return
    */
   @PostMapping(value = "/exec/config/{type}")
-  public ResponseEntity<Map<String,Object>> setConfigAdapter(@PathVariable("type") String type, @RequestBody Map<String, Object> param) {
-    Map<String,Object> json = new HashMap<>();
+  public ResponseEntity<Map<String, Object>> setConfigAdapter(@PathVariable("type") String type, @RequestBody Map<String, Object> param) {
+    Map<String, Object> json = new HashMap<>();
     try {
       json.put("id", param.get("id"));
       json.put("status", "OK");
@@ -189,40 +193,40 @@ public class DaemonController {
       String path = "";
 
       switch (type) {
-        case "agent":
-          path = svc.isWindoowsOS() == true ? "/temp/": flumeHomePath + "/conf/";
-          svc.manageAgentConfFile(path, param);
-          break;
+      case "agent":
+        path = svc.isWindoowsOS() == true ? "/temp/" : flumeHomePath + "/conf/";
+        svc.manageAgentConfFile(path, param);
+        break;
 
-        case "adapter":
-          path = svc.isWindoowsOS() == true ? "/temp/": flumeHomePath + "/plugins.d/agent/lib/openapi/";
-          svc.manageAdapterConfFile(path, param);
-          break;
+      case "adapter":
+        path = svc.isWindoowsOS() == true ? "/temp/" : flumeHomePath + "/plugins.d/agent/lib/openapi/";
+        svc.manageAdapterConfFile(path, param);
+        break;
 
-        case "model":
-          path = svc.isWindoowsOS() == true ? "/temp/": flumeHomePath + "/plugins.d/agent/lib/openapi/";
-          svc.manageModelConfFile(path, param);
-          break;
+      case "model":
+        path = svc.isWindoowsOS() == true ? "/temp/" : flumeHomePath + "/plugins.d/agent/lib/openapi/";
+        svc.manageModelConfFile(path, param);
+        break;
 
-        case "validation":
-          path = svc.isWindoowsOS() == true ? "/temp/": flumeHomePath + "/plugins.d/agent/lib/openapi/";
-          svc.manageValidationConfFile(path, param);
-          break;
-        case "subscribe":
-          path = svc.isWindoowsOS() == true ? "/temp/": flumeHomePath + "/plugins.d/agent/lib/openapi/";
-          svc.manageSubscribeFile(path, param);
-          break;
+      case "validation":
+        path = svc.isWindoowsOS() == true ? "/temp/" : flumeHomePath + "/plugins.d/agent/lib/openapi/";
+        svc.manageValidationConfFile(path, param);
+        break;
+      case "subscribe":
+        path = svc.isWindoowsOS() == true ? "/temp/" : flumeHomePath + "/plugins.d/agent/lib/openapi/";
+        svc.manageSubscribeFile(path, param);
+        break;
 
-        default:
-          json.put("id", param.get("id"));
-          json.put("status", "NOT FOUND");
-          json.put("responseCode", "9999");
-          json.put("responseDescription", "NOT FOUND");
-          break;
+      default:
+        json.put("id", param.get("id"));
+        json.put("status", "NOT FOUND");
+        json.put("responseCode", "9999");
+        json.put("responseDescription", "NOT FOUND");
+        break;
       }
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       json.put("id", param.get("id"));
       json.put("status", e.getMessage());
       json.put("responseCode", "9999");
@@ -233,19 +237,19 @@ public class DaemonController {
 
   }
 
-
   /**
    * 웹 UI에서 작성된 내용을 컴파일하기
+   *
    * @param param
    * @return
    */
   @PostMapping(value = "/exec/compile")
-  public ResponseEntity<Map<String,Object>> getCompile(@RequestBody Map<String,Object> param) {
+  public ResponseEntity<Map<String, Object>> getCompile(@RequestBody Map<String, Object> param) {
     if (log.isDebugEnabled()) {
       log.debug("body: {}", param);
     }
 
-    Map<String,Object> logmap = new HashMap<>();
+    Map<String, Object> logmap = new HashMap<>();
 
     try {
       String dto = svc.sourceCodeCompile(param);
@@ -253,23 +257,25 @@ public class DaemonController {
       logmap.put("log", dto);
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return new ResponseEntity<>(logmap, HttpStatus.OK);
 
   }
+
   /**
    * 생성된 파일의 내용과 컴파일 여부 읽어오기
+   *
    * @param param
    * @return
    */
   @PostMapping(value = "/exec/read")
-  public ResponseEntity<Map<String,Object>> getReadJavaFile(@RequestBody Map<String,Object> param) {
+  public ResponseEntity<Map<String, Object>> getReadJavaFile(@RequestBody Map<String, Object> param) {
     if (log.isDebugEnabled()) {
       log.debug("body: {}", param);
     }
-    Map<String,Object> logmap = new HashMap<>();
+    Map<String, Object> logmap = new HashMap<>();
 
     try {
       String result = svc.readJavaFile(param);
@@ -279,22 +285,20 @@ public class DaemonController {
       logmap.put("isCompile", isCompile);
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return new ResponseEntity<>(logmap, HttpStatus.OK);
   }
 
-
-
-
   /**
    * 에이전트의 현재 상태 읽어오기
+   *
    * @param agentId
    * @return
    */
   @GetMapping(value = "/exec/status/{agentId}")
-  public ResponseEntity<Map<String,Object>> statusAgent(@PathVariable("agentId") String agentId) {
-    Map<String,Object> json = new HashMap<>();
+  public ResponseEntity<Map<String, Object>> statusAgent(@PathVariable("agentId") String agentId) {
+    Map<String, Object> json = new HashMap<>();
 
     try {
       String filename = agentId + ".conf";
@@ -304,12 +308,11 @@ public class DaemonController {
         json.put("status", "running");
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return new ResponseEntity<>(json, HttpStatus.OK);
 
   }
-
 
 }

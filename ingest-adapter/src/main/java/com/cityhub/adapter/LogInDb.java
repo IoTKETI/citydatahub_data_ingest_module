@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LogInDb {
   Connection conn = null;
   HikariDataSource ds = null;
+
   public LogInDb(String init) {
     JSONObject _init = new JSONObject(init);
     try {
@@ -40,8 +41,8 @@ public class LogInDb {
       ds.setUsername(_init.getString("db_username"));
       ds.setPassword(_init.getString("db_password"));
 
-    } catch(Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -52,7 +53,7 @@ public class LogInDb {
         conn.setAutoCommit(true);
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -72,6 +73,7 @@ public class LogInDb {
       }
     }
   }
+
   public void initSendDb() {
     try {
       getConnection();
@@ -80,7 +82,7 @@ public class LogInDb {
       psmt.executeUpdate();
       psmt.close();
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     } // end finally
 
   } // end method
@@ -97,7 +99,7 @@ public class LogInDb {
       q += " ) ";
 
       psmt = conn.prepareStatement(q);
-      for (int i=0; i< list.size(); i++) {
+      for (int i = 0; i < list.size(); i++) {
         VerifyStatusVO vo = list.get(i);
         psmt.setString(1, vo.getUniqueId());
         psmt.setString(2, vo.getGroupId());
@@ -107,9 +109,9 @@ public class LogInDb {
         psmt.setString(6, vo.getObservedTime());
         psmt.addBatch();
         psmt.clearParameters();
-        if( (i % 10000) == 0){
+        if ((i % 10000) == 0) {
           // Batch 실행
-          psmt.executeBatch() ;
+          psmt.executeBatch();
           // Batch 초기화
           psmt.clearBatch();
         }
@@ -118,21 +120,21 @@ public class LogInDb {
 
       psmt.close();
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-    } finally  {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    } finally {
       if (psmt != null) {
         try {
           psmt.close();
         } catch (Exception e) {
-          log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+          log.error("Exception : " + ExceptionUtils.getStackTrace(e));
         }
       }
     }
   } // end method
 
-
   public void inLogDb(VerifyStatusVO vo) {
-    PreparedStatement psmt = null;;
+    PreparedStatement psmt = null;
+    ;
     try {
       getConnection();
 
@@ -154,18 +156,17 @@ public class LogInDb {
 
       psmt.close();
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-    } finally  {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    } finally {
       if (psmt != null) {
         try {
           psmt.close();
         } catch (Exception e) {
-          log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+          log.error("Exception : " + ExceptionUtils.getStackTrace(e));
         }
       }
     }
 
   } // end method
-
 
 } // end class

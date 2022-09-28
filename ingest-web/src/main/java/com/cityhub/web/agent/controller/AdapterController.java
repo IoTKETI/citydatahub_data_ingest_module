@@ -98,7 +98,7 @@ public class AdapterController {
     List<Map> result = new ArrayList<>();
     try {
       result = as.getAll();
-      log.debug("result : {}",result);
+      log.debug("result : {}", result);
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
@@ -349,7 +349,6 @@ public class AdapterController {
       log.debug(jsonBody);
       String gatewayUrl = "";
       url = new URL(gatewayUrl + targetUrl);
-
 
       conn = (HttpURLConnection) url.openConnection();
       conn.setRequestProperty("Accept", "application/json");

@@ -19,6 +19,7 @@ package com.cityhub.flow;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
+
 import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.ibatis.session.SqlSession;
@@ -26,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.cityhub.core.AbstractBaseSink;
 import com.cityhub.utils.SqlUtil;
 import com.google.common.base.Preconditions;
@@ -89,7 +91,7 @@ public class MySqlSink extends AbstractBaseSink {
       if (body.startsWith("[")) {
         JSONArray jarr = new JSONArray(body);
         for (Object obj : jarr) {
-          JSONObject json = (JSONObject)obj;
+          JSONObject json = (JSONObject) obj;
           Map<String, Object> param = json.toMap();
           if (json.has("header")) {
             param.put("tableName", json.getString("header"));

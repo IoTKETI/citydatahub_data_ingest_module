@@ -38,119 +38,115 @@ import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.OkUrlUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ConvFiwareTest extends AbstractConvert {
-	private ObjectMapper objectMapper;
+  private ObjectMapper objectMapper;
 
+  @Override
+  public void init(JSONObject ConfItem, JSONObject templateItem) {
+    super.setup(ConfItem, templateItem);
+    this.objectMapper = new ObjectMapper();
+    this.objectMapper.setSerializationInclusion(Include.NON_NULL);
+    this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
+    this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
+  }
 
-	@Override
-	public void init(JSONObject ConfItem, JSONObject templateItem) {
-		super.setup(ConfItem, templateItem);
-		this.objectMapper = new ObjectMapper();
-		this.objectMapper.setSerializationInclusion(Include.NON_NULL);
-		this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
-		this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
-	}
+  @Override
+  public String doit() throws CoreException {
+    List<Map<String, Object>> rtnList = new LinkedList<>();
 
-	@Override
-	public String doit() throws CoreException {
-		List<Map<String, Object>> rtnList = new LinkedList<>();
+    String rtnStr = "";
+    try {
+      JSONArray svcList = ConfItem.getJSONArray("serviceList");
+      for (int i = 0; i < svcList.length(); i++) {
 
-		String rtnStr = "";
-		try {
-			JSONArray svcList = ConfItem.getJSONArray("serviceList");
-			for (int i = 0; i < svcList.length(); i++) {
+        JSONObject iSvc = svcList.getJSONObject(i); // Column별로 분리함
+        Object ju = getData("http://192.168.1.179:1026/v2/entities?type=CCTV");
+        JSONArray arrList = (JSONArray) ju;
 
-				JSONObject iSvc = svcList.getJSONObject(i); // Column별로 분리함
-				Object ju = getData("http://192.168.1.179:1026/v2/entities?type=CCTV");
-				JSONArray arrList = (JSONArray) ju;
+        if (arrList.length() > 0) {
+          for (Object obj : arrList) {
+            JSONObject item = (JSONObject) obj;
+            if (item != null) {
+              Map<String, Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String, Object>>() {
+              });
 
-				if (arrList.length() > 0) {
-					for (Object obj : arrList) {
-						JSONObject item = (JSONObject) obj;
-						if (item != null) {
-							Map<String, Object> tMap = objectMapper.readValue(
-									templateItem.getJSONObject(ConfItem.getString("modelId")).toString(),
-									new TypeReference<Map<String, Object>>() {
-									});
+              Overwrite(tMap, item, "address");
+              Overwrite(tMap, item, "distance");
+              Overwrite(tMap, item, "globalLocationNumber");
+              Overwrite(tMap, item, "installedAt");
+              Overwrite(tMap, item, "hasEmergencyBell");
+              Overwrite(tMap, item, "fieldOfView");
+              Overwrite(tMap, item, "typeOfCCTV");
+              Overwrite(tMap, item, "isRotatable");
+              Overwrite(tMap, item, "name");
+              Overwrite(tMap, item, "numberOfCCTV");
+              Overwrite(tMap, item, "location");
+              Overwrite(tMap, item, "dataProvider");
+              Overwrite(tMap, item, "pixel");
+              Overwrite(tMap, item, "direction");
+              Overwrite(tMap, item, "height");
+              Overwrite(tMap, item, "status");
 
-							Overwrite(tMap, item, "address");
-							Overwrite(tMap, item, "distance");
-							Overwrite(tMap, item, "globalLocationNumber");
-							Overwrite(tMap, item, "installedAt");
-							Overwrite(tMap, item, "hasEmergencyBell");
-							Overwrite(tMap, item, "fieldOfView");
-							Overwrite(tMap, item, "typeOfCCTV");
-							Overwrite(tMap, item, "isRotatable");
-							Overwrite(tMap, item, "name");
-							Overwrite(tMap, item, "numberOfCCTV");
-							Overwrite(tMap, item, "location");
-							Overwrite(tMap, item, "dataProvider");
-							Overwrite(tMap, item, "pixel");
-							Overwrite(tMap, item, "direction");
-							Overwrite(tMap, item, "height");
-							Overwrite(tMap, item, "status");
+              tMap.put("id", item.optString("id"));
+              log.info("tMap : " + tMap);
+              rtnList.add(tMap);
+              String str = objectMapper.writeValueAsString(tMap);
+              log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+            } else {
+              log(SocketCode.DATA_CONVERT_FAIL, id);
+            } // end if (arrList.length() > 0)
+          }
+        }
 
-							tMap.put("id", item.optString("id"));
-							log.info("tMap : " + tMap);
-							rtnList.add(tMap);
-							String str = objectMapper.writeValueAsString(tMap);
-							log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
-						} else {
-							log(SocketCode.DATA_CONVERT_FAIL, id);
-						} // end if (arrList.length() > 0)
-					}
-				}
+      } // end for
+      rtnStr = objectMapper.writeValueAsString(rtnList);
+    } catch (CoreException e) {
 
-			} // end for
-			rtnStr = objectMapper.writeValueAsString(rtnList);
-		} catch (CoreException e) {
+      if ("!C0099".equals(e.getErrorCode())) {
+        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      }
+    } catch (Exception e) {
+      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+    }
+    return rtnStr;
+  }
 
-			if ("!C0099".equals(e.getErrorCode())) {
-				log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-			}
-		} catch (Exception e) {
-			log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-			throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
-		}
-		return rtnStr;
-	}
+  public void Overwrite(Map<String, Object> tMap, JSONObject item, String name) {
+    Map<String, Object> wMap = new LinkedHashMap<>(); // 분리한 데이터를 넣어줄 map을 만듬
+    wMap = (Map) tMap.get(name);
+    try {
+      wMap.putAll(objectMapper.readValue(item.getJSONObject(name).getJSONObject("value").toString(), new TypeReference<Map<String, Object>>() {
+      }));
+    } catch (JSONException | IOException e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
+  }
 
-	public void Overwrite(Map<String, Object> tMap, JSONObject item, String name) {
-		Map<String, Object> wMap = new LinkedHashMap<>(); // 분리한 데이터를 넣어줄 map을 만듬
-		wMap = (Map) tMap.get(name);
-		try {
-			wMap.putAll(objectMapper.readValue(item.getJSONObject(name).getJSONObject("value").toString(),new TypeReference < Map < String, Object >> () {}));
-		} catch (JSONException | IOException e) {
-		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-		}
-	}
+  public static Object getData(String url) throws Exception {
+    Object obj = null;
 
-	public static Object getData(String url) throws Exception {
-		Object obj = null;
-
-		HttpResponse resp = OkUrlUtil.get(url, "Accept", "application/json");
-		String payload = resp.getPayload();
-		if (resp.getStatusCode() >= 200 && resp.getStatusCode() < 301) {
-			if (payload.startsWith("{")) {
-				obj = new JSONObject(resp.getPayload());
-			} else if (payload.startsWith("[")) {
-				obj = new JSONArray(resp.getPayload());
-			} else if (payload.toLowerCase().startsWith("<")) {
-				obj = XML.toJSONObject(resp.getPayload());
-			} else {
-				obj = resp.getPayload();
-			}
-		} else {
-			throw new Exception(resp.getStatusName());
-		}
-		return obj;
-	}
+    HttpResponse resp = OkUrlUtil.get(url, "Accept", "application/json");
+    String payload = resp.getPayload();
+    if (resp.getStatusCode() >= 200 && resp.getStatusCode() < 301) {
+      if (payload.startsWith("{")) {
+        obj = new JSONObject(resp.getPayload());
+      } else if (payload.startsWith("[")) {
+        obj = new JSONArray(resp.getPayload());
+      } else if (payload.toLowerCase().startsWith("<")) {
+        obj = XML.toJSONObject(resp.getPayload());
+      } else {
+        obj = resp.getPayload();
+      }
+    } else {
+      throw new Exception(resp.getStatusName());
+    }
+    return obj;
+  }
 } // end of class

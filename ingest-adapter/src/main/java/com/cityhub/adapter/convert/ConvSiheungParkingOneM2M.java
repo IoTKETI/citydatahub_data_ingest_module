@@ -45,26 +45,26 @@ public class ConvSiheungParkingOneM2M extends AbstractConvert {
   public void init(JSONObject ConfItem, JSONObject templateItem) {
     super.setup(ConfItem, templateItem);
 
-    Map<String,String> headers = new HashMap<String,String>();
+    Map<String, String> headers = new HashMap<>();
     headers.put(HttpHeaders.ACCEPT, "application/json");
     headers.put("X-M2M-Origin", "SW001");
     headers.put("X-M2M-RI", "cityhub");
 
     try {
       String u = ConfItem.getString("url_addr") + ConfItem.getString("ae_name");
-      log.debug("URL::{}",  u + "?fu=1&ty=3");
+      log.debug("URL::{}", u + "?fu=1&ty=3");
       HttpResponse res = OkUrlUtil.get(u + "?fu=1&ty=3", headers);
       if (res.getStatusCode() == 200) {
         JSONObject dis = new JSONObject(res.getPayload());
         for (Object obj : dis.getJSONArray("m2m:uril")) {
           String sp = (String) obj;
-          String[] args = sp.split("/",-1);
+          String[] args = sp.split("/", -1);
           if (args.length == 3) {
             String url = u + "/" + args[2] + "/meta/la";
             HttpResponse info = OkUrlUtil.get(url, headers);
             if (info.getStatusCode() == 200) {
               JsonUtil ju = new JsonUtil(info.getPayload());
-              if (ju.has("m2m:cin.con") ) {
+              if (ju.has("m2m:cin.con")) {
                 JSONObject jObj = ju.getObject("m2m:cin.con");
                 ConfItem.put(args[2], jObj);
               }
@@ -72,9 +72,9 @@ public class ConvSiheungParkingOneM2M extends AbstractConvert {
           }
         }
       }
-      log.info("{}",ConfItem );
+      log.info("{}", ConfItem);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -90,7 +90,7 @@ public class ConvSiheungParkingOneM2M extends AbstractConvert {
 
         log.debug(msg);
         JSONObject jo = null;
-        String[] Park = sur.split("/",-1);
+        String[] Park = sur.split("/", -1);
         if (Park.length == 4) {
           // 주차장
           JsonUtil parkInfo = null;
@@ -99,7 +99,6 @@ public class ConvSiheungParkingOneM2M extends AbstractConvert {
 
           id = "urn:datahub:" + jo.getString("type") + ":" + Park[2];
           log(SocketCode.DATA_RECEIVE, id, parkInfo.toString().getBytes());
-
 
           JsonUtil.put(jo, "@context", new JSONArray().put("http://uri.etsi.org/ngsi-ld/core-context.jsonld").put("http://cityhub.kr/ngsi-ld/parking.jsonld"));
           JsonUtil.put(jo, "id", "urn:datahub:" + jo.getString("type") + ":" + Park[2]);
@@ -123,24 +122,23 @@ public class ConvSiheungParkingOneM2M extends AbstractConvert {
           JsonUtil.put(jo, "availableSpotNumber.value", JsonUtil.nvl(contents, DataType.INTEGER));
           JsonUtil.put(jo, "availableSpotNumber.observedAt", DateUtil.getTime());
 
-          //JsonUtil.put(jo, "refParkingSpots.value", templateItem.getJSONArray(Park[2]));
+          // JsonUtil.put(jo, "refParkingSpots.value",
+          // templateItem.getJSONArray(Park[2]));
           JsonUtil.put(jo, "refParkingSpots.value", parkInfo.getArray("refParkingSpots"));
 
-          List<String> rmKeys = new ArrayList<String>();
+          List<String> rmKeys = new ArrayList<>();
           rmKeys.add("congestionIndexPrediction");
           JsonUtil.removeNullItem(jo, "contactPoint.value", rmKeys);
 
         } else {
           // 주차면
-          if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3]) ) {
+          if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3])) {
             JsonUtil parkInfo = null;
             parkInfo = new JsonUtil(ConfItem.getJSONObject(Park[2]));
             jo = templateItem.getJSONObject("ParkingSpot");
 
             id = "urn:datahub:" + jo.getString("type") + ":" + Park[3];
             log(SocketCode.DATA_RECEIVE, id, parkInfo.toString().getBytes());
-
-
 
             JsonUtil.put(jo, "@context", new JSONArray().put("http://uri.etsi.org/ngsi-ld/core-context.jsonld").put("http://cityhub.kr/ngsi-ld/parking.jsonld"));
             JsonUtil.put(jo, "id", "urn:datahub:" + jo.getString("type") + ":" + Park[3]);
@@ -150,7 +148,7 @@ public class ConvSiheungParkingOneM2M extends AbstractConvert {
 
             JsonUtil.put(jo, "length.value", 5.1);
             JsonUtil.put(jo, "width.value", 2.5);
-            JsonUtil.put(jo, "category.value", new JSONArray().put("forDisabled") );
+            JsonUtil.put(jo, "category.value", new JSONArray().put("forDisabled"));
             JsonUtil.put(jo, "refParkingLot.value", "urn:datahub:OffStreetParking:" + Park[2]);
 
             JsonUtil.put(jo, "name.value", JsonUtil.nvl(Park[3]));
@@ -164,15 +162,14 @@ public class ConvSiheungParkingOneM2M extends AbstractConvert {
       }
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, id,  e.getMessage());
+        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL, id , e.getMessage());
-      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
+      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
     }
 
     return sendJson.toString();
   }
-
 
 } // end of class

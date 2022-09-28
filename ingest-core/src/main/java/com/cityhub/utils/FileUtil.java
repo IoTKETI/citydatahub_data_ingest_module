@@ -19,6 +19,7 @@ package com.cityhub.utils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -34,6 +35,7 @@ public class FileUtil {
 
   /**
    * 파일의 경로 세팅하기
+   *
    * @param path
    * @throws Exception
    */
@@ -50,6 +52,7 @@ public class FileUtil {
 
   /**
    * 파일의 이름 세팅하기
+   *
    * @param name
    * @throws Exception
    */
@@ -62,6 +65,7 @@ public class FileUtil {
 
   /**
    * 파일을 열기
+   *
    * @throws Exception
    */
   public void open() throws Exception {
@@ -69,8 +73,9 @@ public class FileUtil {
   }
 
   /**
-   * 파일을 열기 
-   * @param append  
+   * 파일을 열기
+   *
+   * @param append
    * @throws Exception
    */
   public void open(boolean append) throws Exception {
@@ -85,6 +90,7 @@ public class FileUtil {
 
   /**
    * 파일에 내용 쓰기
+   *
    * @param data
    * @throws Exception
    */
@@ -98,6 +104,7 @@ public class FileUtil {
 
   /**
    * 버퍼 flush
+   *
    * @throws Exception
    */
   public void flush() throws Exception {
@@ -110,6 +117,7 @@ public class FileUtil {
 
   /**
    * 새 라인 추가
+   *
    * @throws Exception
    */
   public void newLine() throws Exception {
@@ -124,6 +132,7 @@ public class FileUtil {
 
   /**
    * 파일 닫기
+   *
    * @throws Exception
    */
   public void close() throws Exception {
@@ -133,4 +142,3 @@ public class FileUtil {
   }
 
 }
-

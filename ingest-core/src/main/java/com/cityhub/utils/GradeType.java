@@ -17,7 +17,7 @@
 package com.cityhub.utils;
 
 public enum GradeType {
-  verygood("매우좋음", 1,  "Very Good"), good("좋음", 2,  "Good"), normal("보통", 3,  "Normal"), wrong("나쁨", 4,  "Wrong"), verywrong("매우나쁨", 5,  "Very Wrong");
+  verygood("매우좋음", 1, "Very Good"), good("좋음", 2, "Good"), normal("보통", 3, "Normal"), wrong("나쁨", 4, "Wrong"), verywrong("매우나쁨", 5, "Very Wrong");
 
   private int code;
   private String value;
@@ -28,7 +28,6 @@ public enum GradeType {
     this.value = value;
     this.desc = desc;
   }
-
 
   public int getCode() {
     return code;
@@ -50,6 +49,7 @@ public enum GradeType {
     }
     return null;
   }
+
   public static GradeType findBy(String value) {
 
     for (GradeType gt : GradeType.values()) {
@@ -59,7 +59,5 @@ public enum GradeType {
     }
     return null;
   }
-
-
 
 }

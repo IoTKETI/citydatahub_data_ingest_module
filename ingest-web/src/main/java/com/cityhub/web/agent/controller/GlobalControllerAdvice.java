@@ -41,8 +41,8 @@ import com.cityhub.exception.LengthRequiredException;
 import com.cityhub.utils.DataCoreCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-
-@ControllerAdvice //(basePackages = {"kr.re.keti.sc.datacore.controller", "error"}) 404 에러 처리를 위해 주석처리
+@ControllerAdvice // (basePackages = {"kr.re.keti.sc.datacore.controller", "error"}) 404 에러 처리를 위해
+                  // 주석처리
 public class GlobalControllerAdvice {
 
   private final Logger logger = LoggerFactory.getLogger(GlobalControllerAdvice.class);
@@ -53,6 +53,7 @@ public class GlobalControllerAdvice {
 
   /**
    * URL not found 에러 공통 처리 (404)
+   *
    * @param request
    * @param e
    * @return
@@ -72,9 +73,9 @@ public class GlobalControllerAdvice {
     return new ResponseEntity<>(errorPayload, headers, ResponseCode.NOT_FOUND.getHttpStatusCode());
   }
 
-
   /**
    * 개발자 정의 에러 공통 처리
+   *
    * @param request
    * @param e
    * @return
@@ -115,6 +116,7 @@ public class GlobalControllerAdvice {
 
   /**
    * 잘 못된 HTTP Method 요청에 대한 에러 공통 처리 (405)
+   *
    * @param request
    * @param e
    * @return
@@ -135,6 +137,7 @@ public class GlobalControllerAdvice {
 
   /**
    * Unsupported Media Type 요청에 대한 공통 에러 처리 (415)
+   *
    * @param request
    * @param e
    * @return
@@ -156,6 +159,7 @@ public class GlobalControllerAdvice {
 
   /**
    * POST 요청 시, Content-Length header가 없을 경우 예외 처리
+   *
    * @param request
    * @param e
    * @return
@@ -176,6 +180,7 @@ public class GlobalControllerAdvice {
 
   /**
    * POST body가 오류가 있을 경우, 공통 에러 처리 (400)
+   *
    * @param request
    * @param e
    * @return
@@ -191,11 +196,12 @@ public class GlobalControllerAdvice {
       errorPayload.setDebugMessage(makeDebugMessage(e));
 
     }
-    return new ResponseEntity<ErrorPayload>(errorPayload, headers, ResponseCode.BAD_REQUEST_DATA.getHttpStatusCode());
+    return new ResponseEntity<>(errorPayload, headers, ResponseCode.BAD_REQUEST_DATA.getHttpStatusCode());
   }
 
   /**
    * 서버 내부 오류가 있을 경우, 공통 에러 처리 (500)
+   *
    * @param request
    * @param e
    * @return
@@ -216,6 +222,7 @@ public class GlobalControllerAdvice {
 
   /**
    * DB 커넥션 에러 시, 공통 처리 (500)
+   *
    * @param request
    * @param e
    * @return
@@ -226,7 +233,7 @@ public class GlobalControllerAdvice {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
 
-    logger.error("Exception : "+ExceptionUtils.getStackTrace(e));
+    logger.error("Exception : " + ExceptionUtils.getStackTrace(e));
 
     ErrorPayload errorPayload = new ErrorPayload(ResponseCode.INTERNAL_SERVER_ERROR.getDetailType(), ResponseCode.INTERNAL_SERVER_ERROR.getReasonPhrase(), "DB connection error");
     if (request.getHeader(debugMessageKey) != null) {
@@ -236,16 +243,15 @@ public class GlobalControllerAdvice {
     return new ResponseEntity<>(errorPayload, headers, ResponseCode.INTERNAL_SERVER_ERROR.getHttpStatusCode());
   }
 
-
   /**
    * JSON 파싱 시, 에러가 날 경우 공통 처리 (400)
+   *
    * @param request
    * @param e
    * @return
    */
   @ExceptionHandler(JsonProcessingException.class)
   public ResponseEntity<ErrorPayload> jsonParseException(HttpServletRequest request, JsonProcessingException e) {
-
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
@@ -260,17 +266,17 @@ public class GlobalControllerAdvice {
 
   /**
    * 상세 error message(debugMessage)를 포함하는 ErrorPayload 생성
+   *
    * @param e
    * @return
    */
   private String makeDebugMessage(Exception e) {
 
-
     StringBuilder errorMsg = new StringBuilder();
 
     List<Throwable> throwableList = ExceptionUtils.getThrowableList(e);
 
-    //발생한 throwable 레벨보다 application cause 레벨이 클 경우
+    // 발생한 throwable 레벨보다 application cause 레벨이 클 경우
     // 발생한 cause 레벨의 길이만큼만 조회함
     int throwableLevel;
     if (causeMessageLevel > throwableList.size()) {
@@ -286,6 +292,4 @@ public class GlobalControllerAdvice {
     return errorMsg.toString();
   }
 
-
 }
-

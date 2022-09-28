@@ -26,7 +26,7 @@ import com.cityhub.web.agent.mapper.MonitoringMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @Slf4j
 @Service
 public class MonitoringService {
@@ -41,12 +41,9 @@ public class MonitoringService {
     return mapper.selectAll();
   }
 
-
-
   public List<Map> selectAllAdaptorId(String id) {
     return mapper.selectAllAdaptorId(id);
   }
-
 
   public Map insertConnectivityLog(Map param) throws Exception {
     int bl = mapper.insertConnectivityLog(param);
@@ -54,21 +51,21 @@ public class MonitoringService {
     return param;
   }
 
-  public List<Map> selectHourSF(Map<String,String> param) {
+  public List<Map> selectHourSF(Map<String, String> param) {
     return mapper.selectHourSF(param);
   }
-  public List<Map> selectFailType(Map<String,String> param) {
+
+  public List<Map> selectFailType(Map<String, String> param) {
     return mapper.selectFailType(param);
   }
 
-
-  public List<Map> selectTypeSF(Map<String,String> param) {
+  public List<Map> selectTypeSF(Map<String, String> param) {
     return mapper.selectTypeSF(param);
   }
-  public List<Map> selectTypeCnt(Map<String,String> param) {
+
+  public List<Map> selectTypeCnt(Map<String, String> param) {
     return mapper.selectTypeCnt(param);
   }
-
 
   public Map selectLastLogDt() {
     return mapper.selectLastLogDt();

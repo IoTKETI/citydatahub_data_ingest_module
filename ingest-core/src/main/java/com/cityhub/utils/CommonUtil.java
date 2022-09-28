@@ -41,7 +41,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CommonUtil {
 
-
   public String getJarPath() {
     File JarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
     String JarFilePath = JarFile.getAbsolutePath();
@@ -68,13 +67,11 @@ public class CommonUtil {
     Map<String, Object> DbIdMap = new LinkedHashMap<>();
 
     while (rs.next()) {
-      if(!rs.wasNull()) {
+      if (!rs.wasNull()) {
         Map<String, Object> DbIdMapAddress = new LinkedHashMap<>();
 
-        if (rs.getString("address_addresscountry").equals("") || rs.getString("address_addressregion").equals("")
-            || rs.getString("address_addresslocality").equals("")
-            || rs.getString("address_addresstown").equals("")
-            || rs.getString("address_streetaddress").equals("")) {
+        if (rs.getString("address_addresscountry").equals("") || rs.getString("address_addressregion").equals("") || rs.getString("address_addresslocality").equals("")
+            || rs.getString("address_addresstown").equals("") || rs.getString("address_streetaddress").equals("")) {
           continue;
         }
 
@@ -90,10 +87,8 @@ public class CommonUtil {
     return DbIdMap;
   }
 
-  public static void KakaoMapCoord2regioncode(Map<String, Object> tMap, String key, Double x, Double y)
-      throws Exception {
-    JsonUtil KakaoMap = new JsonUtil((JSONObject) KakaoMap_getData(
-        "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?input_coord=WGS84&x=" + x + "&y=" + y, key));
+  public static void KakaoMapCoord2regioncode(Map<String, Object> tMap, String key, Double x, Double y) throws Exception {
+    JsonUtil KakaoMap = new JsonUtil((JSONObject) KakaoMap_getData("https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?input_coord=WGS84&x=" + x + "&y=" + y, key));
     if (KakaoMap.has("documents")) {
       JSONArray arrList = KakaoMap.getArray("documents");
 
@@ -115,12 +110,8 @@ public class CommonUtil {
     }
   }
 
-  public static void KakaoMapCoord2address(Map<String, Object> tMap, String key, Double x, Double y)
-      throws Exception {
-    JsonUtil KakaoMap = new JsonUtil((JSONObject) KakaoMap_getData(
-        "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?input_coord=WGS84&output_coord=WGS84&x=" + x
-            + "&y=" + y,
-        key));
+  public static void KakaoMapCoord2address(Map<String, Object> tMap, String key, Double x, Double y) throws Exception {
+    JsonUtil KakaoMap = new JsonUtil((JSONObject) KakaoMap_getData("https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?input_coord=WGS84&output_coord=WGS84&x=" + x + "&y=" + y, key));
     if (KakaoMap.has("documents")) {
       JSONArray arrList = KakaoMap.getArray("documents");
 
@@ -141,8 +132,7 @@ public class CommonUtil {
         if (address.getString("sub_address_no").equals("")) {
           addrValue.put("streetAddress", address.getString("main_address_no"));
         } else {
-          addrValue.put("streetAddress",
-              address.getString("main_address_no") + "-" + address.getString("sub_address_no"));
+          addrValue.put("streetAddress", address.getString("main_address_no") + "-" + address.getString("sub_address_no"));
         }
       }
 
@@ -170,9 +160,9 @@ public class CommonUtil {
     return obj;
   }
 
-
   /**
    * 동적 클래스 실행
+   *
    * @param clsNm
    * @param ConfItem
    * @param templateItem
@@ -185,17 +175,19 @@ public class CommonUtil {
     try {
       Class<?> clz = Class.forName(clsNm);
       Object instanceObject = clz.getDeclaredConstructor().newInstance();
-      Class[] methodParamClass = {JSONObject.class, JSONObject.class, byte[].class};
-      Object[] methodParamObject = {ConfItem, templateItem, message};
-      Method mth = clz.getDeclaredMethod("doit", methodParamClass );
-      rtn = (JSONArray) mth.invoke(instanceObject, methodParamObject );
+      Class[] methodParamClass = { JSONObject.class, JSONObject.class, byte[].class };
+      Object[] methodParamObject = { ConfItem, templateItem, message };
+      Method mth = clz.getDeclaredMethod("doit", methodParamClass);
+      rtn = (JSONArray) mth.invoke(instanceObject, methodParamObject);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtn;
   }
+
   /**
    * 동적 클래스 실행
+   *
    * @param clsNm
    * @param ConfItem
    * @param templateItem
@@ -207,17 +199,19 @@ public class CommonUtil {
     try {
       Class<?> clz = Class.forName(clsNm);
       Object instanceObject = clz.getDeclaredConstructor().newInstance();
-      Class[] methodParamClass = {JSONObject.class, JSONObject.class};
-      Object[] methodParamObject = {ConfItem, templateItem};
-      Method mth = clz.getDeclaredMethod("doit", methodParamClass );
-      rtn = (JSONArray) mth.invoke(instanceObject, methodParamObject );
+      Class[] methodParamClass = { JSONObject.class, JSONObject.class };
+      Object[] methodParamObject = { ConfItem, templateItem };
+      Method mth = clz.getDeclaredMethod("doit", methodParamClass);
+      rtn = (JSONArray) mth.invoke(instanceObject, methodParamObject);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtn;
   }
+
   /**
    * http connection 으로 데이터 가져오기
+   *
    * @param svc
    * @return
    */
@@ -231,7 +225,7 @@ public class CommonUtil {
     int responseCode;
     try {
       String targetUrl = urlAssemble(svc.getString("url_addr"), svc);
-      log.info("+++targetUrl:{}",targetUrl);
+      log.info("+++targetUrl:{}", targetUrl);
       url = new URL(targetUrl);
       conn = (HttpURLConnection) url.openConnection();
       conn.setRequestProperty("Accept", "application/json");
@@ -244,7 +238,7 @@ public class CommonUtil {
       conn.setReadTimeout(10);
 
       responseCode = conn.getResponseCode();
-      log.info("+++response:{}",responseCode);
+      log.info("+++response:{}", responseCode);
       if (responseCode < 400) {
         br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
       } else {
@@ -266,7 +260,7 @@ public class CommonUtil {
         obj = payload;
       }
     } catch (IOException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     } finally {
     }
     return obj;
@@ -274,6 +268,7 @@ public class CommonUtil {
 
   /**
    * url 커넥션으로 데이터 가져오기
+   *
    * @param svc
    * @return
    * @throws Exception
@@ -281,10 +276,10 @@ public class CommonUtil {
   public static Object getData(JSONObject svc) throws Exception {
     Object obj = null;
     String url = urlAssemble(svc.getString("url_addr"), svc);
-    log.info("+++url:{}",url);
+    log.info("+++url:{}", url);
     HttpResponse resp = OkUrlUtil.get(url, "Content-type", "application/json");
     String payload = resp.getPayload();
-    if (resp.getStatusCode() >= 200 && resp.getStatusCode() < 301 ) {
+    if (resp.getStatusCode() >= 200 && resp.getStatusCode() < 301) {
       if (payload.startsWith("{")) {
         obj = new JSONObject(resp.getPayload());
       } else if (payload.startsWith("[")) {
@@ -294,7 +289,7 @@ public class CommonUtil {
       } else {
         obj = resp.getPayload();
       }
-    }  else {
+    } else {
       throw new Exception(resp.getStatusName());
     }
     return obj;
@@ -302,6 +297,7 @@ public class CommonUtil {
 
   /**
    * url 커넥션으로 데이터 가져오기
+   *
    * @param svc
    * @param url_addr
    * @return
@@ -313,7 +309,7 @@ public class CommonUtil {
 
     HttpResponse resp = OkUrlUtil.get(url, "Content-type", "application/json");
     String payload = resp.getPayload();
-    if (resp.getStatusCode() >= 200 && resp.getStatusCode() < 301 ) {
+    if (resp.getStatusCode() >= 200 && resp.getStatusCode() < 301) {
       if (payload.startsWith("{")) {
         obj = new JSONObject(resp.getPayload());
       } else if (payload.startsWith("[")) {
@@ -323,7 +319,7 @@ public class CommonUtil {
       } else {
         obj = resp.getPayload();
       }
-    }  else {
+    } else {
       throw new Exception(resp.getStatusName());
     }
     return obj;
@@ -331,6 +327,7 @@ public class CommonUtil {
 
   /**
    * url 구성을 위한 규칙 파싱
+   *
    * @param url
    * @param svc
    * @return
@@ -341,13 +338,13 @@ public class CommonUtil {
     }
 
     if (svc.has("PathVariable")) {
-      String[] sp = svc.getString("PathVariable").split(",",-1);
+      String[] sp = svc.getString("PathVariable").split(",", -1);
       for (String it : sp) {
         if (!"".equals(it) && svc.has(it)) {
           String value = svc.getString(it);
 
           if (value.indexOf(",") > -1) {
-            String[] val = value.split(",",-1);
+            String[] val = value.split(",", -1);
             if (DateUtil.isPatternDate(val[0])) {
               url += DateUtil.addDate(DateUtil.getChronoUnit(val[1]), Integer.parseInt(val[2]), val[0]) + "/";
             }
@@ -365,14 +362,14 @@ public class CommonUtil {
 
     if (svc.has("ParamVariable")) {
 
-      String[] sp = svc.getString("ParamVariable").split(",",-1);
+      String[] sp = svc.getString("ParamVariable").split(",", -1);
       String value = "";
       try {
         for (String it : sp) {
           if (!"".equals(it) && svc.has(it)) {
             value = svc.getString(it) + "";
             if (value.indexOf(",") > -1) {
-              String[] val = value.split(",",-1);
+              String[] val = value.split(",", -1);
               if (DateUtil.isPatternDate(val[0])) {
                 url += "&" + it + "=" + DateUtil.addDate(DateUtil.getChronoUnit(val[1]), Integer.parseInt(val[2]), val[0]);
               }
@@ -387,19 +384,16 @@ public class CommonUtil {
             }
           } else {
             if (svc.has("key")) {
-              url += "&" + it + "=" + URLEncoder.encode(svc.getString("key"), "UTF-8") ;
+              url += "&" + it + "=" + URLEncoder.encode(svc.getString("key"), "UTF-8");
             }
           }
         }
       } catch (Exception e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       }
 
     }
     return url;
   }
-
-
-
 
 } // end class

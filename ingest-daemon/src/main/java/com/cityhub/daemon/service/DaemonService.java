@@ -44,7 +44,7 @@ import com.cityhub.utils.FileUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @Slf4j
 @Service
 public class DaemonService {
@@ -58,6 +58,7 @@ public class DaemonService {
 
   /**
    * 읽어온 로그 파싱
+   *
    * @param lines
    * @return
    */
@@ -69,40 +70,40 @@ public class DaemonService {
       String[] arr = lines.split("`", -1);
       vo.setSourceName(arr[1]);
       vo.setPayload(lines);
-      vo.setTimestamp(lines.substring(0,24).trim());
+      vo.setTimestamp(lines.substring(0, 24).trim());
       vo.setType(arr[2]);
       vo.setStep(arr[3].split(";", -1)[0]);
       vo.setDesc(arr[3].split(";", -1)[1]);
 
-      if (arr[4] != null && !"".equals(arr[4]) && !"{}".equals(arr[4]) ) {
+      if (arr[4] != null && !"".equals(arr[4]) && !"{}".equals(arr[4])) {
         vo.setId(arr[4]);
       }
       if (arr.length > 5) {
-        if (arr[5] != null && !"".equals(arr[5]) && !"{}".equals(arr[5]) ) {
+        if (arr[5] != null && !"".equals(arr[5]) && !"{}".equals(arr[5])) {
           vo.setLength(arr[5]);
         }
       }
       if (arr.length > 6) {
-        if (arr[6] != null && !"".equals(arr[6]) && !"{}".equals(arr[6]) ) {
+        if (arr[6] != null && !"".equals(arr[6]) && !"{}".equals(arr[6])) {
           vo.setAdapterType(arr[6]);
         }
       }
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return vo;
   }
 
-
   /**
    * 아답터 아이디의 로그를 파일에서 읽어오기
+   *
    * @param id
    * @param param
    * @return
    */
-  public List<LogVO> getLinesMatchPatternInFile(String id,Map param) {
+  public List<LogVO> getLinesMatchPatternInFile(String id, Map param) {
     String patternstr = "^[0-9]{4}\\-[0-9]{2}\\-[0-9]{2}\\s[0-9]{2}\\:[0-9]{2}\\:[0-9]{2}\\,[0-9]{0,3} [a-zA-Z]{0,5}\\s{1,2}-\\s\\`" + id;
 
     List<LogVO> lines = new ArrayList<>();
@@ -112,12 +113,12 @@ public class DaemonService {
       while (scanner.hasNextLine()) {
         String l = scanner.nextLine();
         Matcher m = p.matcher(l);
-        if (m.find() ) {
-          if (param.get("searchDate")  != null) {
+        if (m.find()) {
+          if (param.get("searchDate") != null) {
             // date is not null
-            String logdate = l.substring(0,24).trim();
+            String logdate = l.substring(0, 24).trim();
 
-            if (DateUtil.isAfter(param.get("searchDate") + "" , logdate ) ) {
+            if (DateUtil.isAfter(param.get("searchDate") + "", logdate)) {
               lines.add(parseLog(l));
             }
           } else {
@@ -135,6 +136,7 @@ public class DaemonService {
 
   /**
    * 임의의 날짜 이후의 로그를 파일에서 읽어오기
+   *
    * @param param
    * @return
    */
@@ -149,11 +151,11 @@ public class DaemonService {
       while (scanner.hasNextLine()) {
         String l = scanner.nextLine();
         Matcher m = p.matcher(l);
-        if (m.find() ) {
-          if (param.get("searchDate")  != null) {
+        if (m.find()) {
+          if (param.get("searchDate") != null) {
             // date is not null
-            String logdate = l.substring(0,24).trim();
-            if (DateUtil.isAfter(param.get("searchDate") + "" , logdate ) ) {
+            String logdate = l.substring(0, 24).trim();
+            if (DateUtil.isAfter(param.get("searchDate") + "", logdate)) {
               cnt++;
               if (limit == cnt) {
                 break;
@@ -181,6 +183,7 @@ public class DaemonService {
 
   /**
    * 아답터 소스의 로그를 파일에서 읽어오기
+   *
    * @param param
    * @return
    */
@@ -209,7 +212,7 @@ public class DaemonService {
       while ((str = file.readLine()) != null) {
         String l = new String(str.getBytes("ISO-8859-1"), "UTF-8");
         Matcher m = p.matcher(l);
-        if (m.find() ) {
+        if (m.find()) {
           logsb.append(l);
           logsb.append("\n");
         }
@@ -223,12 +226,12 @@ public class DaemonService {
       log.error("Exception : Not Found log file");
     } catch (Exception e) {
       logsb.append("Sorry. An error has occurred.");
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     } finally {
       try {
         file.close();
       } catch (Exception e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       }
     }
 
@@ -237,6 +240,7 @@ public class DaemonService {
 
   /**
    * 에이전트 시작, 중지, 재시작, 현재 상태를 관리
+   *
    * @param status
    * @param param
    * @return
@@ -252,7 +256,7 @@ public class DaemonService {
         // 시작
         if (getStatus(filename) == null) {
           cmd = flumeHomePath + "/bin/flume-ng agent -n " + id + " --conf " + flumeConfPath + " -f " + flumeConfPath + filename;
-          log.debug("cmd::::::::::::::::::::::::::"+ cmd);
+          log.debug("cmd::::::::::::::::::::::::::" + cmd);
           String[] command = cmd.split(" ", -1);
           exec(command);
           rtn = status;
@@ -292,14 +296,14 @@ public class DaemonService {
         log.debug(cmd);
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtn;
   }
 
-
   /**
    * 에이전트의 설정파일을 관리
+   *
    * @param path
    * @param param
    * @return
@@ -319,7 +323,7 @@ public class DaemonService {
       }
       fu.newLine();
 
-      String[] types = {"sources", "channels", "sinks"};
+      String[] types = { "sources", "channels", "sinks" };
       for (String type : types) {
         String[] typeArr = (agent.get(type) + "").split(" ", -1);
         for (String typeName : typeArr) {
@@ -336,13 +340,14 @@ public class DaemonService {
       fu.close();
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return "";
   }
 
   /**
    * 아답터의 설정파일을 관리
+   *
    * @param path
    * @param param
    * @return
@@ -361,13 +366,14 @@ public class DaemonService {
       fu.close();
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return "";
   }
 
   /**
    * 모델의 설정파일을 관리
+   *
    * @param path
    * @param param
    * @return
@@ -376,7 +382,6 @@ public class DaemonService {
     try {
       Map<String, ?> body = (Map) param.get("body");
       JSONObject jsonBody = new JSONObject(body);
-
 
       FileUtil fu = new FileUtil();
       fu.setPath(path);
@@ -387,13 +392,14 @@ public class DaemonService {
       fu.close();
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return "";
   }
 
   /**
    * 모델의 유효성 관리
+   *
    * @param path
    * @param param
    * @return
@@ -416,13 +422,14 @@ public class DaemonService {
       fu.close();
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return "";
   }
 
   /**
    * mqtt 의 구독 파일 관리
+   *
    * @param path
    * @param param
    * @return
@@ -434,21 +441,22 @@ public class DaemonService {
       fu.setFile(param.get("topic") + ".csv");
       fu.open(false);
 
-      List<Map<String,Object>> items = (List) param.get("items");
-      for (Map<String,Object> m : items) {
-        fu.write(param.get("ip") +","+ m.get("item").toString());
+      List<Map<String, Object>> items = (List) param.get("items");
+      for (Map<String, Object> m : items) {
+        fu.write(param.get("ip") + "," + m.get("item").toString());
       }
       fu.flush();
       fu.close();
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return "";
   }
 
   /**
    * OS 판별
+   *
    * @return
    */
   public boolean isWindoowsOS() {
@@ -457,14 +465,15 @@ public class DaemonService {
 
   /**
    * 아답터의 현재 상태 가져오기
+   *
    * @param filename
    * @return
    */
   public String getStatus(String filename) {
     String result = null;
     try {
-      String[] cmd2 = {"/bin/sh", "-c", "ps -ef | grep '" + filename + "' | grep -v grep | awk '{print $1}' "};
-      log.debug("status:{}",Arrays.toString(cmd2));
+      String[] cmd2 = { "/bin/sh", "-c", "ps -ef | grep '" + filename + "' | grep -v grep | awk '{print $1}' " };
+      log.debug("status:{}", Arrays.toString(cmd2));
       String pid = null;
       ProcessBuilder builder = new ProcessBuilder(cmd2);
       Process process = builder.start();
@@ -475,22 +484,23 @@ public class DaemonService {
           log.debug("process ID : {}", pid);
         }
       }
-      log.debug("result:{}",result);
+      log.debug("result:{}", result);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return result;
   }
 
   /**
    * 아답터 죽이기
+   *
    * @param filename
    * @return
    */
   private String killAgent(String filename) {
     String result = null;
     try {
-      String[] status = {"/bin/sh", "-c", "ps -ef | grep '" + filename + "' | grep -v grep | awk '{print $2}' "};
+      String[] status = { "/bin/sh", "-c", "ps -ef | grep '" + filename + "' | grep -v grep | awk '{print $2}' " };
 
       ProcessBuilder builder = new ProcessBuilder(status);
       Process process = builder.start();
@@ -499,9 +509,9 @@ public class DaemonService {
       while ((str = input.readLine()) != null) {
         result = str;
       }
-      log.info("pid info: {},{}",filename, result);
+      log.info("pid info: {},{}", filename, result);
 
-      boolean isNumeric =  result.matches("[+-]?\\d*(\\.\\d+)?");
+      boolean isNumeric = result.matches("[+-]?\\d*(\\.\\d+)?");
       String pid = "";
       if (isNumeric) {
         pid = "$2";
@@ -509,8 +519,8 @@ public class DaemonService {
         pid = "$1";
       }
 
-      String[] cmd2 = {"/bin/sh", "-c", "ps -ef | grep '" + filename + "' | grep -v grep | awk '{print " + pid + "}' | xargs kill -9"};
-      log.info("kill:{},{}", filename, pid );
+      String[] cmd2 = { "/bin/sh", "-c", "ps -ef | grep '" + filename + "' | grep -v grep | awk '{print " + pid + "}' | xargs kill -9" };
+      log.info("kill:{},{}", filename, pid);
 
       builder = new ProcessBuilder(cmd2);
       process = builder.start();
@@ -519,16 +529,16 @@ public class DaemonService {
       while ((str = input.readLine()) != null) {
         result = str;
       }
-      log.info("kill result:{},{},{}",filename , pid, result);
+      log.info("kill result:{},{},{}", filename, pid, result);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return result;
   }
 
-
   /**
    * 쉘스크립트 실행기
+   *
    * @param command
    */
   private void exec(String[] command) {
@@ -538,12 +548,13 @@ public class DaemonService {
       builder.redirectError(Redirect.INHERIT);
       builder.start();
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
   /**
    * .java 파일 컴파일
+   *
    * @param param
    * @return
    */
@@ -585,13 +596,14 @@ public class DaemonService {
         log.debug("Error Message : {}", msg);
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return result;
   }
 
   /**
    * java 파일 읽어오기
+   *
    * @param param
    * @return
    */
@@ -601,7 +613,7 @@ public class DaemonService {
     String agentLib = flumeHomePath + "/plugins.d/agent/lib/";
 
     StringBuffer result = new StringBuffer("");
-    try (Scanner scan = new Scanner(new File(agentLib + instanceId + ".java"))){
+    try (Scanner scan = new Scanner(new File(agentLib + instanceId + ".java"))) {
       while (scan.hasNextLine()) {
         result.append(scan.nextLine());
         result.append("\n");
@@ -609,14 +621,14 @@ public class DaemonService {
     } catch (FileNotFoundException e) {
       result.append("File Not Found!!");
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return result.toString();
   }
 
-
   /**
    * .java 파일 컴파일 여부
+   *
    * @param param
    * @return
    */
@@ -628,17 +640,17 @@ public class DaemonService {
     boolean result = false;
     StringBuffer str = new StringBuffer("");
     String classFile = "";
-    try (Scanner scan = new Scanner(new File(agentLib + instanceId + ".java"))){
+    try (Scanner scan = new Scanner(new File(agentLib + instanceId + ".java"))) {
       while (scan.hasNextLine()) {
         String line = scan.nextLine();
         str.append(line);
         str.append("\n");
-        if(line.indexOf("package") > -1) {
+        if (line.indexOf("package") > -1) {
           String classPath = line.split(" ", -1)[1];
-          classPath = classPath.replaceAll("\\." , "/").substring(0, classPath.length() - 1);
+          classPath = classPath.replaceAll("\\.", "/").substring(0, classPath.length() - 1);
           classFile = agentLib + classPath + "/" + instanceId + ".class";
           result = isExistFile(classFile);
-          if(log.isDebugEnabled()) {
+          if (log.isDebugEnabled()) {
             log.debug("instanceId : {}, {}", instanceId, classFile);
           }
           break;
@@ -648,7 +660,7 @@ public class DaemonService {
       if (result == false && str.toString().contains("package") == false) {
         classFile = agentLib + instanceId + ".class";
         result = isExistFile(classFile);
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
           log.debug("instanceId : {}, {}", instanceId, classFile);
         }
       }
@@ -656,13 +668,14 @@ public class DaemonService {
     } catch (FileNotFoundException e) {
       result = false;
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return result;
   }
 
   /**
    * 파일 존재여부
+   *
    * @param filePath
    * @return
    */

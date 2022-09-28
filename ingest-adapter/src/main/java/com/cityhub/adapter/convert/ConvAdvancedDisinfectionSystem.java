@@ -40,7 +40,6 @@ public class ConvAdvancedDisinfectionSystem extends AbstractConvert {
     PreparedStatement pstmt = null;
     ResultSet rs = null;
 
-
     StringBuffer sendJson = new StringBuffer();
     String sql = ConfItem.get("query").toString();
 
@@ -49,17 +48,16 @@ public class ConvAdvancedDisinfectionSystem extends AbstractConvert {
       JSONArray svcList = ConfItem.getJSONArray("serviceList");
       String model = ConfItem.getString("model_id");
 
-
-      for(int i = 0 ; i < svcList.length() ; i++) {
+      for (int i = 0; i < svcList.length(); i++) {
 
         // conf파일에서 serviceList를 가져옴.
         JSONObject iSvc = (JSONObject) svcList.get(i);
         // gs1Code의 콜론 뒷 부분으로 Id를 추출함.
         String gs1Code = iSvc.getString("gs1Code");
-        String deviceId = gs1Code.substring(gs1Code.lastIndexOf(":")+1);
+        String deviceId = gs1Code.substring(gs1Code.lastIndexOf(":") + 1);
         String encodedId = "";
         // Id Decode
-        for(int j = 0 ; j < deviceId.length() ; j++) {
+        for (int j = 0; j < deviceId.length(); j++) {
           char temp = deviceId.charAt(j);
           int tempInt = temp;
           String hexInt = Integer.toHexString(tempInt);
@@ -73,19 +71,18 @@ public class ConvAdvancedDisinfectionSystem extends AbstractConvert {
         rs = pstmt.executeQuery();
         JSONArray jsonArr = new JSONArray();
 
-        while(rs.next()) {
+        while (rs.next()) {
           JSONObject jobj = new JSONObject();
           jobj.put("con", rs.getString("con"));
           jobj.put("in_time", rs.getString("in_time"));
           jsonArr.put(jobj);
         }
 
-        if(jsonArr.length() < 1) {
+        if (jsonArr.length() < 1) {
           continue;
         }
 
         log(SocketCode.DATA_RECEIVE, id, jsonArr.toString().getBytes()); // 데이터 받음
-
 
         log(SocketCode.DATA_CONVERT_REQ, id, jsonArr.toString().getBytes()); // 데이터 요청(시작?)
 //        JSONObject template = templateItem.getJSONObject(model);
@@ -101,14 +98,11 @@ public class ConvAdvancedDisinfectionSystem extends AbstractConvert {
         templateJsonUtil.put("w3wplus", iSvc.get("w3wplus").toString());
         templateJsonUtil.put("globalLocationNumber", iSvc.get("globalLocationNumber").toString());
 
-
-
-        for(Object obj: jsonArr) {
+        for (Object obj : jsonArr) {
 
           JSONObject jData = (JSONObject) obj;
 
-
-          if(jData == null || jData.get("con") == null) {
+          if (jData == null || jData.get("con") == null) {
             continue;
           }
 
@@ -126,7 +120,7 @@ public class ConvAdvancedDisinfectionSystem extends AbstractConvert {
     } catch (Exception e) {
       log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
       throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
-    }finally {
+    } finally {
       disconnectDB(conn, pstmt, rs);
     }
 
@@ -145,65 +139,62 @@ public class ConvAdvancedDisinfectionSystem extends AbstractConvert {
 
     String _event = "";
 
-    for(int i = 0 ; i < byteLength.length() ; i++) {
+    for (int i = 0; i < byteLength.length(); i++) {
 
       String key = property.getString(i);
       int _byteLength = byteLength.getInt(i);
-      String value = con.substring(0, 2*_byteLength);
+      String value = con.substring(0, 2 * _byteLength);
 
-      if("event".equals(key)) {
+      if ("event".equals(key)) {
         _event = value;
       }
 
       inputDataToTemplate(key, value, templateJsonUtil);
 
-      con = con.substring(2*_byteLength);
+      con = con.substring(2 * _byteLength);
     }
 
     byteLength = ConfItem.getJSONObject("eventByteLength").getJSONArray(_event);
     property = ConfItem.getJSONObject("eventProperty").getJSONArray(_event);
 
-    for(int i = 0 ; i < byteLength.length() ; i++) {
+    for (int i = 0; i < byteLength.length(); i++) {
       String key = property.getString(i);
       int _byteLength = byteLength.getInt(i);
-      String value = con.substring(0, 2*_byteLength);
+      String value = con.substring(0, 2 * _byteLength);
 
       inputDataToTemplate(key, value, templateJsonUtil);
 
-      con = con.substring(2*_byteLength);
+      con = con.substring(2 * _byteLength);
     }
 
   }
 
-
   private void inputDataToTemplate(String key, String value, JsonUtil templateJsonUtil) {
 
-    if("id".equals(key)) {
+    if ("id".equals(key)) {
 
       String buffer = "";
       int valueLength = value.length();
-      for(int i = 0 ; i < valueLength ; i+=2) {
+      for (int i = 0; i < valueLength; i += 2) {
         int tempInt = Integer.parseInt(value.substring(0, 2), 16);
         value = value.substring(2);
         buffer += (char) tempInt;
       }
 
-    }else if("event".equals(key)) {
+    } else if ("event".equals(key)) {
 
       JSONObject eventType = ConfItem.getJSONObject("eventType");
       templateJsonUtil.put("event", eventType.getString(value));
 
-    }else if("createdAt".equals(key)) {
+    } else if ("createdAt".equals(key)) {
 
       String valueBuffer = "";
 
-      long hexToLong = Long.parseLong(value, 16) *1000;
+      long hexToLong = Long.parseLong(value, 16) * 1000;
       SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
       valueBuffer = DateUtil.getISOTime(sdf.format(new Date(hexToLong)));
 //      valueBuffer = new Date(hexToLong).toString();
 //      jsonEx.put("finishedAt.value", DateUtil.getISOTime(row.get("finishedAt")));
-
-
 
 //      JSONObject observedAt = new JSONObject();
 //      observedAt.put("type", "Property");
@@ -212,18 +203,18 @@ public class ConvAdvancedDisinfectionSystem extends AbstractConvert {
 
       templateJsonUtil.put("observedAt", valueBuffer);
 
-    } else if(!"id".equals(key) && templateJsonUtil.has(key)) {
+    } else if (!"id".equals(key) && templateJsonUtil.has(key)) {
 
       String valueBuffer = "";
 
       valueBuffer = Integer.parseInt(value, 16) + "";
 
       int valueBufferLength = valueBuffer.length();
-      for(int i = 0 ; i < valueBufferLength-1 ; i++) {
+      for (int i = 0; i < valueBufferLength - 1; i++) {
 
-        if("0".equals(valueBuffer.substring(0,1))) {
+        if ("0".equals(valueBuffer.substring(0, 1))) {
           valueBuffer = valueBuffer.substring(1);
-        }else {
+        } else {
           break;
         }
       } // end of for valueBufferLength
@@ -238,7 +229,6 @@ public class ConvAdvancedDisinfectionSystem extends AbstractConvert {
     ZoneOffset zo = ZonedDateTime.now().getOffset();
     return OffsetDateTime.of(ldt, zo).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,SSSXXX")).toString();
   }
-
 
   private Connection getConnection() {
 
@@ -255,25 +245,40 @@ public class ConvAdvancedDisinfectionSystem extends AbstractConvert {
       Class.forName(className);
       conn = DriverManager.getConnection(url, user, password);
 
-    }catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return conn;
 
   } // end of doit
 
-
   private void disconnectDB(Connection conn, PreparedStatement pstmt, ResultSet rs) {
-    try {if(rs != null) {rs.close();}}
-    catch (Exception e) {log.error("Exception : "+ExceptionUtils.getStackTrace(e));}
+    try {
+      if (rs != null) {
+        rs.close();
+      }
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
     disconnectDB(conn, pstmt);
   }
+
   private void disconnectDB(Connection conn, PreparedStatement pstmt) {
-    try {if(pstmt != null) {pstmt.close();}}
-    catch (Exception e) {log.error("Exception : "+ExceptionUtils.getStackTrace(e));}
-    try {if(conn != null) {conn.close();}}
-    catch (Exception e) {log.error("Exception : "+ExceptionUtils.getStackTrace(e));}
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
+    try {
+      if (conn != null) {
+        conn.close();
+      }
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
   }
 
 }

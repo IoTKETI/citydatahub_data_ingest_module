@@ -62,14 +62,14 @@ public class ConvWeatherForecast extends AbstractConvert {
         JsonUtil ju = new JsonUtil(jsonData);
         if (!ju.has("response.body.items.item") == true) {
           log(SocketCode.DATA_RECEIVE, id);
-          log(SocketCode.DATA_CONVERT_FAIL,  id ,"파싱하기 위한 필수항목이 존재하지 않습니다");
+          log(SocketCode.DATA_CONVERT_FAIL, id, "파싱하기 위한 필수항목이 존재하지 않습니다");
           throw new CoreException(ErrorCode.NORMAL_ERROR);
         } else {
           log(SocketCode.DATA_RECEIVE, id, jsonData.toString().getBytes());
           JSONArray arrList = ju.getArray("response.body.items.item");
 
           if (arrList.length() > 0) {
-         // 중복제거 시작
+            // 중복제거 시작
             ArrayList<String> tmpFcstTimeArray = new ArrayList<>();
             for (Object jitem : arrList) {
               JSONObject item = (JSONObject) jitem;
@@ -80,7 +80,7 @@ public class ConvWeatherForecast extends AbstractConvert {
             // 중복제거 종료
 
             // 중복제거 후 리스트를 가지고 기본형 시작
-            Map<String, Object> tmpMap = getBaseForeMap(rmList );
+            Map<String, Object> tmpMap = getBaseForeMap(rmList);
             // 중복제거 후 리스트를 가지고 기본형 종료
 
             // 기본형을 가지고 데이터 업데이트 시작
@@ -94,31 +94,31 @@ public class ConvWeatherForecast extends AbstractConvert {
 //              cTimeMap.put("rainType", WeatherType.findBy(item.getInt("fcstValue")).getEngNm() );기존
 //              cTimeMap.put("rainType", WeatherType.findBy(Integer.parseInt(item.get("fcstValue")+"")).getEngNm() );
 //              cTimeMap.put("rainType", WeatherType.findBy(item.getString("fcstValue")).getEngNm() );
-                cTimeMap.put("rainType", WeatherType.findBy(Integer.parseInt(item.get("fcstValue")+"")).getEngNm() );
-                if(WeatherType.findBy(Integer.parseInt(item.get("fcstValue")+"")).getEngNm().length()==0) {
-                  cTimeMap.put("rainType", WeatherType.findBy(0).getEngNm() );
+                cTimeMap.put("rainType", WeatherType.findBy(Integer.parseInt(item.get("fcstValue") + "")).getEngNm());
+                if (WeatherType.findBy(Integer.parseInt(item.get("fcstValue") + "")).getEngNm().length() == 0) {
+                  cTimeMap.put("rainType", WeatherType.findBy(0).getEngNm());
                 }
               }
               if ("T1H".equals(item.getString("category"))) {
-                cTimeMap.put("temperature", JsonUtil.nvl(item.get("fcstValue"), DataType.FLOAT) );
+                cTimeMap.put("temperature", JsonUtil.nvl(item.get("fcstValue"), DataType.FLOAT));
               }
               if ("RN1".equals(item.getString("category"))) {
-                cTimeMap.put("rainfall", JsonUtil.nvl(item.get("fcstValue"), DataType.FLOAT) );
+                cTimeMap.put("rainfall", JsonUtil.nvl(item.get("fcstValue"), DataType.FLOAT));
               }
               if ("WSD".equals(item.getString("category"))) {
-                cTimeMap.put("windSpeed", JsonUtil.nvl(item.get("fcstValue"), DataType.FLOAT) );
+                cTimeMap.put("windSpeed", JsonUtil.nvl(item.get("fcstValue"), DataType.FLOAT));
               }
               if ("REH".equals(item.getString("category"))) {
-                cTimeMap.put("humidity", JsonUtil.nvl(item.get("fcstValue"), DataType.FLOAT) );
+                cTimeMap.put("humidity", JsonUtil.nvl(item.get("fcstValue"), DataType.FLOAT));
               }
               if ("TMN".equals(item.getString("category"))) {
-                cTimeMap.put("lowestTemperature", JsonUtil.nvl(item.get("fcstValue"), DataType.FLOAT) );
+                cTimeMap.put("lowestTemperature", JsonUtil.nvl(item.get("fcstValue"), DataType.FLOAT));
               }
               if ("TMX".equals(item.getString("category"))) {
-                cTimeMap.put("highestTemperature", JsonUtil.nvl(item.get("fcstValue"), DataType.FLOAT) );
+                cTimeMap.put("highestTemperature", JsonUtil.nvl(item.get("fcstValue"), DataType.FLOAT));
               }
               if ("T3H".equals(item.getString("category"))) {
-                cTimeMap.put("feelsLikeTemperature", JsonUtil.nvl(item.get("fcstValue"), DataType.FLOAT) );
+                cTimeMap.put("feelsLikeTemperature", JsonUtil.nvl(item.get("fcstValue"), DataType.FLOAT));
               }
 
               cTimeMap.put("predictedAt", DateUtil.getISOTime(fcstDateTime));
@@ -134,22 +134,20 @@ public class ConvWeatherForecast extends AbstractConvert {
             jsonEx.put("@context", new JSONArray().put("http://uri.etsi.org/ngsi-ld/core-context.jsonld").put("http://cityhub.kr/ngsi-ld/weather.jsonld"));
             jsonEx.put("id", iSvc.get("gs1Code") + "");
             jsonEx.put("location.value.coordinates", iSvc.getJSONArray("location"));
-            jsonEx.put("address.value.addressCountry", JsonUtil.nvl(iSvc.getString("addressCountry")) );
-            jsonEx.put("address.value.addressRegion", JsonUtil.nvl(iSvc.getString("addressRegion")) );
-            jsonEx.put("address.value.addressLocality", JsonUtil.nvl(iSvc.getString("addressLocality")) );
-            jsonEx.put("address.value.addressTown", JsonUtil.nvl(iSvc.getString("addressTown")) );
-            jsonEx.put("address.value.streetAddress", JsonUtil.nvl(iSvc.getString("streetAddress")) );
-
+            jsonEx.put("address.value.addressCountry", JsonUtil.nvl(iSvc.getString("addressCountry")));
+            jsonEx.put("address.value.addressRegion", JsonUtil.nvl(iSvc.getString("addressRegion")));
+            jsonEx.put("address.value.addressLocality", JsonUtil.nvl(iSvc.getString("addressLocality")));
+            jsonEx.put("address.value.addressTown", JsonUtil.nvl(iSvc.getString("addressTown")));
+            jsonEx.put("address.value.streetAddress", JsonUtil.nvl(iSvc.getString("streetAddress")));
 
             jsonEx.put("weatherPrediction.value", forecastValueArray);
             jsonEx.put("weatherPrediction.observedAt", DateUtil.getTime());
 
             List<String> rmKeys = new ArrayList<>();
             rmKeys.add("name");
-            JsonUtil.removeNullItem(jTemplate,"weatherPrediction.value", rmKeys );
+            JsonUtil.removeNullItem(jTemplate, "weatherPrediction.value", rmKeys);
 
-
-            //sendJson.put(new JSONObject(jTemplate.toString()));
+            // sendJson.put(new JSONObject(jTemplate.toString()));
             log(SocketCode.DATA_CONVERT_SUCCESS, id, jTemplate.toString().getBytes());
             sendJson.append(jTemplate.toString() + ",");
           } else {
@@ -160,18 +158,17 @@ public class ConvWeatherForecast extends AbstractConvert {
 
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL,   id, e.getMessage());
+        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL,   id, e.getMessage());
-      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
+      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
     }
 
     return sendJson.toString();
   }
 
-
-  public Map<String, Object> getBaseForeMap(List<String>  fcstTimeList) {
+  public Map<String, Object> getBaseForeMap(List<String> fcstTimeList) {
 
     // 중복제거한 리스트를 가지고 기본형 시작
     Map<String, Object> tmpMap = new HashMap<>();
@@ -192,6 +189,5 @@ public class ConvWeatherForecast extends AbstractConvert {
 
     return tmpMap;
   }
-
 
 } // end of class

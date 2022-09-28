@@ -78,7 +78,7 @@ public class StatusProducer {
       this.producer.flush();
       Thread.sleep(10);
     } catch (InterruptedException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -94,7 +94,7 @@ public class StatusProducer {
       this.producer.flush();
       Thread.sleep(10);
     } catch (InterruptedException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 

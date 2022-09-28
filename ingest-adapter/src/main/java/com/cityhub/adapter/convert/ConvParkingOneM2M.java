@@ -16,7 +16,6 @@
  */
 package com.cityhub.adapter.convert;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,12 +41,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConvParkingOneM2M extends AbstractConvert {
 
-
   @Override
   public void init(JSONObject ConfItem, JSONObject templateItem) {
     super.setup(ConfItem, templateItem);
 
-    Map<String,String> headers = new HashMap<String,String>();
+    Map<String, String> headers = new HashMap<>();
     headers.put(HttpHeaders.ACCEPT, "application/json");
     headers.put("X-M2M-Origin", "SW001");
     headers.put("X-M2M-RI", "cityhub");
@@ -60,13 +58,13 @@ public class ConvParkingOneM2M extends AbstractConvert {
         JSONObject dis = new JSONObject(discovery.getPayload());
         for (Object obj : dis.getJSONArray("m2m:uril")) {
           String sp = (String) obj;
-          String[] args = sp.split("/",-1);
+          String[] args = sp.split("/", -1);
           if (args.length == 3) {
             String url = u + "/" + args[2] + "/meta/la";
             HttpResponse info = OkUrlUtil.get(url, headers);
             if (info.getStatusCode() == 200) {
               JsonUtil ju = new JsonUtil(info.getPayload());
-              if (ju.has("m2m:cin.con") ) {
+              if (ju.has("m2m:cin.con")) {
                 JSONObject jObj = ju.getObject("m2m:cin.con");
                 ConfItem.put(args[2], jObj);
               }
@@ -76,7 +74,7 @@ public class ConvParkingOneM2M extends AbstractConvert {
       }
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -87,12 +85,12 @@ public class ConvParkingOneM2M extends AbstractConvert {
     try {
       String msg = new String(message);
 
-      if ( JsonUtil.has(msg, "pc.m2m:sgn.nev.rep.m2m:cin.con") == true) {
+      if (JsonUtil.has(msg, "pc.m2m:sgn.nev.rep.m2m:cin.con") == true) {
         String sur = JsonUtil.get(msg, "pc.m2m:sgn.sur");
         String contents = JsonUtil.get(msg, "pc.m2m:sgn.nev.rep.m2m:cin.con");
 
         JSONObject jo = null;
-        String[] Park = sur.split("/",-1);
+        String[] Park = sur.split("/", -1);
         if (Park.length == 4) {
           // 주차장
           JsonUtil parkInfo = new JsonUtil(ConfItem.getJSONObject(Park[2]));
@@ -125,13 +123,13 @@ public class ConvParkingOneM2M extends AbstractConvert {
 
           JsonUtil.put(jo, "refParkingSpots.value", parkInfo.getArray("refParkingSpots"));
 
-          List<String> rmKeys = new ArrayList<String>();
+          List<String> rmKeys = new ArrayList<>();
           rmKeys.add("congestionIndexPrediction");
           JsonUtil.removeNullItem(jo, "contactPoint.value", rmKeys);
 
         } else {
           // 주차면
-          if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3]) ) {
+          if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3])) {
             JsonUtil parkInfo = new JsonUtil(ConfItem.getJSONObject(Park[2]));
             jo = templateItem.getJSONObject("ParkingSpot");
             id = "urn:datahub:" + jo.getString("type") + ":" + Park[3];
@@ -145,7 +143,7 @@ public class ConvParkingOneM2M extends AbstractConvert {
 
             JsonUtil.put(jo, "length.value", 5.1);
             JsonUtil.put(jo, "width.value", 2.5);
-            JsonUtil.put(jo, "category.value", new JSONArray().put("forDisabled") );
+            JsonUtil.put(jo, "category.value", new JSONArray().put("forDisabled"));
             JsonUtil.put(jo, "refParkingLot.value", "urn:datahub:OffStreetParking:" + Park[2]);
 
             JsonUtil.put(jo, "name.value", JsonUtil.nvl(Park[3]));
@@ -158,17 +156,16 @@ public class ConvParkingOneM2M extends AbstractConvert {
       }
 
     } catch (CoreException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, id,  e.getMessage());
+        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-      log(SocketCode.DATA_CONVERT_FAIL, id ,  e.getMessage());
-      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
     }
     return sendJson.toString();
   }
-
 
 } // end of class

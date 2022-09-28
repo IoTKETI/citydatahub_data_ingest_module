@@ -57,11 +57,10 @@ public class CallRestApiSink extends AbstractSink implements Configurable {
       try {
         Integer.parseInt(strMaxBytes);
       } catch (NumberFormatException e) {
-        logger.warn(String.format("Unable to convert %s to integer, using default value(%d) for maxByteToDump", strMaxBytes,
-            DEFAULT_MAX_BYTE_DUMP));
+        logger.warn(String.format("Unable to convert %s to integer, using default value(%d) for maxByteToDump", strMaxBytes, DEFAULT_MAX_BYTE_DUMP));
       }
     }
-    logger.info("{},{}",ingestApiUrl,ingestYn);
+    logger.info("{},{}", ingestApiUrl, ingestYn);
   }
 
   @Override
@@ -79,14 +78,13 @@ public class CallRestApiSink extends AbstractSink implements Configurable {
         String content = new String(event.getBody(), StandardCharsets.UTF_8);
         logger.info("Logger: " + content);
         if ("Y".equalsIgnoreCase(ingestYn)) {
-          if (!"".equals(content) ) {
+          if (!"".equals(content)) {
             if (content.startsWith("{") || content.startsWith("[")) {
               String resultConnect = httpConnection(ingestApiUrl, content);
               logger.info("{}", resultConnect);
             }
           }
         }
-
 
       } else {
         // No event found, request back-off semantics from the sink runner
@@ -143,7 +141,7 @@ public class CallRestApiSink extends AbstractSink implements Configurable {
       }
       returnText = sb.toString();
 
-      logger.debug("returnText:{}",returnText);
+      logger.debug("returnText:{}", returnText);
     } catch (IOException e) {
       logger.error("Exception : " + ExceptionUtils.getStackTrace(e));
     } finally {
@@ -156,6 +154,5 @@ public class CallRestApiSink extends AbstractSink implements Configurable {
     }
     return returnText;
   }
-
 
 }

@@ -49,7 +49,7 @@ import com.cityhub.utils.OkUrlUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MqttSubSource extends AbstractPollSource  {
+public class MqttSubSource extends AbstractPollSource {
 
   private String addr = "";
   private JsonUtil sub = null;
@@ -72,54 +72,52 @@ public class MqttSubSource extends AbstractPollSource  {
 
   }
 
-
   @Override
   public void processing() {
-    log.info("::::::::::::::::::{} - Processing :::::::::::::::::",this.getName() );
-    log.info("`{}`{}`{}`{}`{}",this.getName() ,"", "1000;Start Subscriptions" , "", "");
+    log.info("::::::::::::::::::{} - Processing :::::::::::::::::", this.getName());
+    log.info("`{}`{}`{}`{}`{}", this.getName(), "", "1000;Start Subscriptions", "", "");
     try {
-      Map<String,String> Subheaders = new LinkedHashMap<>();
+      Map<String, String> Subheaders = new LinkedHashMap<>();
       Subheaders.put(HttpHeaders.ACCEPT, "application/json");
       Subheaders.put("X-M2M-Origin", "SW001");
       Subheaders.put("X-M2M-RI", "cityhub");
 
       HttpResponse res = OkUrlUtil.get(addr + "?fu=1&ty=3", Subheaders);
       if (res.getStatusCode() == 200) {
-        //log.debug(res.getPayload());
+        // log.debug(res.getPayload());
         dis = new JSONObject(res.getPayload());
         crtsub();
         JSONObject jo = new JSONObject();
         jo.put("content", "Finished Subscriptions");
         sendEvent(createSendJson(jo));
-        log.info("`{}`{}`{}`{}`{}",this.getName() ,"", "10000;Finished Subscriptions" , "", "");
+        log.info("`{}`{}`{}`{}`{}", this.getName(), "", "10000;Finished Subscriptions", "", "");
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
   }
 
-
   public void crtsub() {
     if (dis != null) {
-      Map<String,String> headers = new LinkedHashMap<>();
+      Map<String, String> headers = new LinkedHashMap<>();
       headers.put(HttpHeaders.ACCEPT, "application/json");
       headers.put(HttpHeaders.CONTENT_TYPE, "application/json;ty=23");
       headers.put("X-M2M-Origin", "SW001");
       headers.put("X-M2M-RI", "cityhub");
-      String ip = url_addr.substring(url_addr.indexOf("//") + 2 ).split(":",-1)[0];
+      String ip = url_addr.substring(url_addr.indexOf("//") + 2).split(":", -1)[0];
       String nu = "mqtt://" + ip + ":1883/" + topic + "?ct=json";
       JSONArray ja = dis.getJSONArray("m2m:uril");
       for (Object obj : ja) {
         String line = (String) obj;
-        String[] l = line.split("/",-1);
+        String[] l = line.split("/", -1);
         try {
-          if (l.length == 3  ) {
-            if (!(line.indexOf("keepalive") > 0 || line.indexOf("meta") > 0) ){
+          if (l.length == 3) {
+            if (!(line.indexOf("keepalive") > 0 || line.indexOf("meta") > 0)) {
               sub.put("m2m:sub.rn", l[2] + "_subc");
             }
-          } else if (l.length == 4 ) {
-            if (!(line.indexOf("keepalive") > 0 || line.indexOf("meta") > 0) ){
+          } else if (l.length == 4) {
+            if (!(line.indexOf("keepalive") > 0 || line.indexOf("meta") > 0)) {
               sub.put("m2m:sub.rn", l[3] + "_subc");
             }
           }
@@ -127,9 +125,9 @@ public class MqttSubSource extends AbstractPollSource  {
           sub.put("m2m:sub.nu", new JSONArray().put(nu));
 
           String mqttAddr = url_addr + "/" + line + "?rcn=1";
-          //log.info("headers:{}", headers);
-          //log.info("mqttAddr:{}", mqttAddr);
-          //log.info("body:{}", sub.toString());
+          // log.info("headers:{}", headers);
+          // log.info("mqttAddr:{}", mqttAddr);
+          // log.info("body:{}", sub.toString());
 
           HttpPost httpPost = new HttpPost(mqttAddr);
           httpPost.setHeader("Accept", "application/json");
@@ -150,69 +148,71 @@ public class MqttSubSource extends AbstractPollSource  {
             int StatusCode = -1;
             String StatusName = null;
             CloseableHttpResponse httpRes = httpclient.execute(httpPost);
-            //log.info(">>>{}>>>{}>>>{}", httpPost.getMethod(), httpRes.getStatusLine().toString(), httpPost.getURI() );
+            // log.info(">>>{}>>>{}>>>{}", httpPost.getMethod(),
+            // httpRes.getStatusLine().toString(), httpPost.getURI() );
             HttpEntity entity = httpRes.getEntity();
             if (entity != null) {
               payload = EntityUtils.toString(httpRes.getEntity());
-              //log.info("<<<{}", payload);
+              // log.info("<<<{}", payload);
             }
             StatusCode = httpRes.getStatusLine().getStatusCode();
             StatusName = httpRes.getStatusLine().getReasonPhrase();
-            //log.info("{}",StatusCode + " , " + StatusName + " , " + httpPost.getMethod());
-            //log.info("{}",httpPost.getLastHeader("Content-Type"));
-            //log.info("{}",httpPost.getURI());
-            log.info("{}",payload);
+            // log.info("{}",StatusCode + " , " + StatusName + " , " +
+            // httpPost.getMethod());
+            // log.info("{}",httpPost.getLastHeader("Content-Type"));
+            // log.info("{}",httpPost.getURI());
+            log.info("{}", payload);
             Thread.sleep(500);
           } catch (Exception e) {
-            log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+            log.error("Exception : " + ExceptionUtils.getStackTrace(e));
           }
 
-
-          //httpConnection(mqttAddr,sub.toString());
+          // httpConnection(mqttAddr,sub.toString());
           /*
-          HttpResponse hr = OkUrlUtil.post(mqttAddr, headers, sub.toString());
-          log.info("`{}`{}`{}`{}`{}",this.getName() ,"", hr.getStatusCode() + ";" + hr.getPayload() , "", "");
-
-          if (log.isDebugEnabled()) {
-            log.debug("status :{} , addr: {} , result: {} ", hr.getStatusCode(), mqttAddr, hr.getPayload());
-          }
-          */
+           * HttpResponse hr = OkUrlUtil.post(mqttAddr, headers, sub.toString());
+           * log.info("`{}`{}`{}`{}`{}",this.getName() ,"", hr.getStatusCode() + ";" +
+           * hr.getPayload() , "", "");
+           *
+           * if (log.isDebugEnabled()) { log.debug("status :{} , addr: {} , result: {} ",
+           * hr.getStatusCode(), mqttAddr, hr.getPayload()); }
+           */
           Thread.sleep(100);
         } catch (Exception e) {
-          log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+          log.error("Exception : " + ExceptionUtils.getStackTrace(e));
         }
       }
     }
   }
 
   public void delsub() {
-    Map<String,String> headers = new LinkedHashMap<>();
+    Map<String, String> headers = new LinkedHashMap<>();
     headers.put(HttpHeaders.ACCEPT, "application/json");
     headers.put("X-M2M-Origin", "SW001");
     headers.put("X-M2M-RI", "cityhub");
 
-    String ContNm  = "";
+    String ContNm = "";
     JSONArray ja = dis.getJSONArray("m2m:uril");
     for (Object obj : ja) {
       String line = (String) obj;
-      String[] l = line.split("/",-1);
+      String[] l = line.split("/", -1);
 
       try {
 
-        if (l.length == 3 && (!(line.indexOf("keepalive") > 0) && !(line.indexOf("meta") > 0)) ) {
-          ContNm = line.split(",",-1)[2] + "_sub";
-        } else if (l.length == 4 && (!(line.indexOf("keepalive") > 0) && !(line.indexOf("meta") > 0)) ) {
-          ContNm = line.split(",",-1)[2] + "/" + line.split(",",-1)[3] + "_sub";
+        if (l.length == 3 && (!(line.indexOf("keepalive") > 0) && !(line.indexOf("meta") > 0))) {
+          ContNm = line.split(",", -1)[2] + "_sub";
+        } else if (l.length == 4 && (!(line.indexOf("keepalive") > 0) && !(line.indexOf("meta") > 0))) {
+          ContNm = line.split(",", -1)[2] + "/" + line.split(",", -1)[3] + "_sub";
         }
         String mqttAddr = addr + ContNm + "?rcn=0";
         HttpResponse hr = OkUrlUtil.delete(mqttAddr, headers);
         log.debug("status :{} , addr: {} ", hr.getStatusCode(), mqttAddr);
         Thread.sleep(500);
       } catch (Exception e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       }
     }
   }
+
   public String httpConnection(String targetUrl, String jsonBody) {
     URL url = null;
     HttpURLConnection conn = null;
@@ -255,20 +255,18 @@ public class MqttSubSource extends AbstractPollSource  {
       }
       returnText = sb.toString();
 
-      log.debug("returnText:{}",returnText);
+      log.debug("returnText:{}", returnText);
     } catch (IOException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     } finally {
       try {
         br.close();
         conn.disconnect();
       } catch (Exception e2) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e2));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e2));
       }
     }
     return returnText;
   }
-
-
 
 } // end of class

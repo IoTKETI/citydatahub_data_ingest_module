@@ -29,7 +29,7 @@ import com.cityhub.web.config.ConfigEnv;
 
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @Slf4j
 @Service
 public class AdapterService {
@@ -43,7 +43,6 @@ public class AdapterService {
     return mapper.getAll();
   }
 
-
   public List<Map> value_type_search() throws Exception {
     return mapper.value_type_search();
   }
@@ -52,14 +51,14 @@ public class AdapterService {
   public Map insertAdaptorType(Map param) throws Exception {
     log.debug("param = " + param);
     List<?> list = new ArrayList<>();
-    list = (List)param.get("adt_type_data");
+    list = (List) param.get("adt_type_data");
 
-    if(list != null && list.size() > 0) {
-      for(int i=0; i<list.size(); i++){
-        Map obj = (Map)list.get(i);
+    if (list != null && list.size() > 0) {
+      for (int i = 0; i < list.size(); i++) {
+        Map obj = (Map) list.get(i);
         log.debug(obj.toString());
         String adapter_type_id = (String) obj.get("adapter_type_id");
-        if("newAdd".equals(adapter_type_id)) {
+        if ("newAdd".equals(adapter_type_id)) {
           String new_adapter_type_id = mapper.new_code_id();
           String adapter_type_nm = (String) obj.get("adapter_type_nm");
           obj.put("adapter_type_id", new_adapter_type_id);
@@ -93,10 +92,10 @@ public class AdapterService {
 
     mapper.deleteAdtItem(id);
     List<?> list = new ArrayList<>();
-    list = (List)param.get("itemsData");
-    if(list != null && list.size() > 0) {
-      for(int i=0; i<list.size(); i++){
-        Map obj = (Map)list.get(i);
+    list = (List) param.get("itemsData");
+    if (list != null && list.size() > 0) {
+      for (int i = 0; i < list.size(); i++) {
+        Map obj = (Map) list.get(i);
         obj.put("adapter_type_id", id);
         log.debug("obj = " + obj);
         mapper.adtItemInsert(obj);
@@ -110,10 +109,10 @@ public class AdapterService {
 
     mapper.deleteAdtItem2(id);
     List<?> list = new ArrayList<>();
-    list = (List)param.get("itemsData");
-    if(list != null && list.size() > 0) {
-      for(int i=0; i<list.size(); i++){
-        Map obj = (Map)list.get(i);
+    list = (List) param.get("itemsData");
+    if (list != null && list.size() > 0) {
+      for (int i = 0; i < list.size(); i++) {
+        Map obj = (Map) list.get(i);
         obj.put("adapter_type_id", id);
         log.debug("obj = " + obj);
         mapper.adtItemInsert(obj);
@@ -127,10 +126,10 @@ public class AdapterService {
 
     mapper.deleteAdtItem3(id);
     List<?> list = new ArrayList<>();
-    list = (List)param.get("itemsData");
-    if(list != null && list.size() > 0) {
-      for(int i=0; i<list.size(); i++){
-        Map obj = (Map)list.get(i);
+    list = (List) param.get("itemsData");
+    if (list != null && list.size() > 0) {
+      for (int i = 0; i < list.size(); i++) {
+        Map obj = (Map) list.get(i);
         obj.put("adapter_type_id", id);
         log.debug("obj = " + obj);
         mapper.adtItemInsert(obj);
@@ -143,8 +142,8 @@ public class AdapterService {
     return mapper.type_search();
   }
 
-  public List<Map> type_search_gs1() throws Exception{
-	  return mapper.type_search_gs1();
+  public List<Map> type_search_gs1() throws Exception {
+    return mapper.type_search_gs1();
   }
 
   @Transactional
@@ -165,6 +164,5 @@ public class AdapterService {
   public void deleteAdtTypeInfo(String id) throws Exception {
     mapper.deleteAdtTypeInfo(id);
   }
-
 
 }

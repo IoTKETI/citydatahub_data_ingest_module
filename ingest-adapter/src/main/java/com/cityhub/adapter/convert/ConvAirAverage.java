@@ -18,6 +18,7 @@ package com.cityhub.adapter.convert;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.exception.CoreException;
 import com.cityhub.utils.CommonUtil;
@@ -25,7 +26,7 @@ import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataType;
 import com.cityhub.utils.JsonUtil;
 
-public class ConvAirAverage extends AbstractConvert  {
+public class ConvAirAverage extends AbstractConvert {
 
   @Override
   public void init(JSONObject ConfItem, JSONObject templateItem) {
@@ -38,16 +39,16 @@ public class ConvAirAverage extends AbstractConvert  {
     try {
       JSONArray serviceList = ConfItem.getJSONArray("serviceList");
 
-      for (int i = 0 ; i < serviceList.length(); i++) {
+      for (int i = 0; i < serviceList.length(); i++) {
         JSONObject iService = serviceList.getJSONObject(i);
-        JSONObject jsonData = (JSONObject) CommonUtil.getData(iService );
+        JSONObject jsonData = (JSONObject) CommonUtil.getData(iService);
 
         JSONObject jTemplate = templateItem;
         JsonUtil jsonEx = new JsonUtil(jTemplate);
         JSONArray jaSido = jsonData.getJSONArray("list");
         JSONObject jCity = null;
         for (Object jitem : jaSido) {
-          JSONObject item = (JSONObject)jitem;
+          JSONObject item = (JSONObject) jitem;
           if (ConfItem.getString("cityName").equals(item.getString("cityName"))) {
             jCity = new JSONObject(item.toString());
             break;
@@ -67,12 +68,10 @@ public class ConvAirAverage extends AbstractConvert  {
       }
 
     } catch (Exception e) {
-      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
     }
 
     return sendJson.toString();
   }
-
-
 
 } // end of class

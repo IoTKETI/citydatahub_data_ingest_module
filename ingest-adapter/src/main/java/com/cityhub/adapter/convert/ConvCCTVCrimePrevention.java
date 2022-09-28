@@ -35,144 +35,143 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConvCCTVCrimePrevention extends ConvCCTV2 {
 
-	@Override
-	protected JSONArray getData(Connection conn) {
+  @Override
+  protected JSONArray getData(Connection conn) {
 
-		StringBuffer strBuffer = new StringBuffer();
-		String sql = cctvInfo.getString("query");
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+    StringBuffer strBuffer = new StringBuffer();
+    String sql = cctvInfo.getString("query");
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
 
-		try {
-			pstmt = conn.prepareStatement(sql);
-			rs = pstmt.executeQuery();
+    try {
+      pstmt = conn.prepareStatement(sql);
+      rs = pstmt.executeQuery();
 
-			while(rs.next()) {
-				JSONObject jobj = new JSONObject();
-				jobj.put("id", rs.getString("id"));
-				jobj.put("addressLocality", rs.getString("addressLocality"));
-				jobj.put("addressTown", rs.getString("addressTown"));
-				jobj.put("streetAddress", rs.getString("streetAddress"));
-				jobj.put("name", rs.getString("name"));
-				jobj.put("installedAt", rs.getString("installedAt"));
-				jobj.put("hasEmergencyBell", rs.getString("hasEmergencyBell"));
-				jobj.put("numberOfCCTV", rs.getString("numberOfCCTV"));
-				jobj.put("isRotatable", rs.getString("isRotatable"));
-				jobj.put("pixel", rs.getString("pixel"));
+      while (rs.next()) {
+        JSONObject jobj = new JSONObject();
+        jobj.put("id", rs.getString("id"));
+        jobj.put("addressLocality", rs.getString("addressLocality"));
+        jobj.put("addressTown", rs.getString("addressTown"));
+        jobj.put("streetAddress", rs.getString("streetAddress"));
+        jobj.put("name", rs.getString("name"));
+        jobj.put("installedAt", rs.getString("installedAt"));
+        jobj.put("hasEmergencyBell", rs.getString("hasEmergencyBell"));
+        jobj.put("numberOfCCTV", rs.getString("numberOfCCTV"));
+        jobj.put("isRotatable", rs.getString("isRotatable"));
+        jobj.put("pixel", rs.getString("pixel"));
 
-				strBuffer.append(jobj.toString() + ",");
-			}
+        strBuffer.append(jobj.toString() + ",");
+      }
 
-		} catch (SQLException e) {
-		  log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-		}finally {
-			disconnectDB(conn, pstmt, rs);
-		}
+    } catch (SQLException e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    } finally {
+      disconnectDB(conn, pstmt, rs);
+    }
 
-		String tempResult = strBuffer.toString();
-		tempResult = "[" + tempResult.substring(0, tempResult.lastIndexOf(",")) + "]";
-		JSONArray result = new JSONArray(tempResult);
+    String tempResult = strBuffer.toString();
+    tempResult = "[" + tempResult.substring(0, tempResult.lastIndexOf(",")) + "]";
+    JSONArray result = new JSONArray(tempResult);
 
-		return result;
-	}
+    return result;
+  }
 
-	@Override
-	protected String getRefinedData(JSONArray jsonData){
-		int cnt = 0;
-		StringBuffer resultBuffer = new StringBuffer();
+  @Override
+  protected String getRefinedData(JSONArray jsonData) {
+    int cnt = 0;
+    StringBuffer resultBuffer = new StringBuffer();
 
-		for(Object obj : jsonData) {
-			JSONObject jobj = (JSONObject) obj;
+    for (Object obj : jsonData) {
+      JSONObject jobj = (JSONObject) obj;
 //			JSONObject refinedData = new JSONObject(strTemplate);
-			JsonUtil refinedData = new JsonUtil(_template.toString());
+      JsonUtil refinedData = new JsonUtil(_template.toString());
 
-			//변수 선언
-			String name = "";
-			String isRotatable = "";
-			String id = jobj.get("id").toString();
-			String hasEmergencyBell = jobj.get("hasEmergencyBell").toString();
-			String numberOfCCTV = jobj.get("numberOfCCTV").toString();
-			String pixel = jobj.get("pixel").toString();
-			String installedAt = jobj.get("installedAt").toString();
-			String addressCountry = cctvInfo.get("addressCountry").toString();
-			String addressRegion = cctvInfo.get("addressRegion").toString();
-			String addressLocality = jobj.get("addressLocality").toString();
-			String addressTown = jobj.get("addressTown").toString();
-			String streetAddress = jobj.get("streetAddress").toString();
+      // 변수 선언
+      String name = "";
+      String isRotatable = "";
+      String id = jobj.get("id").toString();
+      String hasEmergencyBell = jobj.get("hasEmergencyBell").toString();
+      String numberOfCCTV = jobj.get("numberOfCCTV").toString();
+      String pixel = jobj.get("pixel").toString();
+      String installedAt = jobj.get("installedAt").toString();
+      String addressCountry = cctvInfo.get("addressCountry").toString();
+      String addressRegion = cctvInfo.get("addressRegion").toString();
+      String addressLocality = jobj.get("addressLocality").toString();
+      String addressTown = jobj.get("addressTown").toString();
+      String streetAddress = jobj.get("streetAddress").toString();
 
-			Float height = 4.0f;
-			String status = "normal";
-			Float distance = 30.0f;
-			Float direction = 0f;
-			Float fieldOfView = 0f;
-			String typeOfCCTV = _cctvType;
-			String createdAt = getTimeInfo(LocalDate.now(), LocalTime.now());
+      Float height = 4.0f;
+      String status = "normal";
+      Float distance = 30.0f;
+      Float direction = 0f;
+      Float fieldOfView = 0f;
+      String typeOfCCTV = _cctvType;
+      String createdAt = getTimeInfo(LocalDate.now(), LocalTime.now());
 
-			ArrayList<Float> coordinates = new ArrayList<>();
-			coordinates.add(0f);
-			coordinates.add(0f);
+      ArrayList<Float> coordinates = new ArrayList<>();
+      coordinates.add(0f);
+      coordinates.add(0f);
 
-			//데이터 정제
-			try {
-				name = jobj.get("name").toString();
-			}catch (Exception e) {
-				name = null;
-			}
+      // 데이터 정제
+      try {
+        name = jobj.get("name").toString();
+      } catch (Exception e) {
+        name = null;
+      }
 
-			try {
-				isRotatable = jobj.get("isRotatable").toString();
-			} catch (Exception e) {}
+      try {
+        isRotatable = jobj.get("isRotatable").toString();
+      } catch (Exception e) {
+      }
 
-			id = cctvInfo.getString("idPrefix") + id.replace("-", "_") + cctvInfo.getString("idSurffix");
+      id = cctvInfo.getString("idPrefix") + id.replace("-", "_") + cctvInfo.getString("idSurffix");
 
+      if ("없음".equals(hasEmergencyBell) || hasEmergencyBell.trim().length() == 0) {
+        hasEmergencyBell = "FALSE";
+      } else {
+        hasEmergencyBell = "TRUE";
+      }
 
-			if("없음".equals(hasEmergencyBell) || hasEmergencyBell.trim().length() == 0){
-				hasEmergencyBell =  "FALSE";
-			}else {
-				hasEmergencyBell =  "TRUE";
-			}
+      if (pixel != null && !"".equals(pixel) && pixel.contains("만")) {
+        pixel = pixel.replace("만", "0000");
+      }
 
-			if(pixel != null && !"".equals(pixel) && pixel.contains("만")) {
-				pixel = pixel.replace("만", "0000");
-			}
+      installedAt = getTimeInfo(LocalDate.of(Integer.parseInt(installedAt), 1, 1), LocalTime.of(12, 0, 0));
 
-			installedAt = getTimeInfo(LocalDate.of(Integer.parseInt(installedAt), 1, 1), LocalTime.of(12, 0, 0));
+      if (isRotatable.trim().length() >= 1 && Integer.parseInt(isRotatable) >= 1) {
+        isRotatable = "TRUE";
+      } else {
+        isRotatable = "FALSE";
+      }
 
+      // 데이터 삽입
+      refinedData.put("name.value", name);
+      refinedData.put("id", id);
+      refinedData.put("hasEmergencyBell.value", hasEmergencyBell);
+      refinedData.put("numberOfCCTV.value", Integer.parseInt(numberOfCCTV));
+      refinedData.put("pixel.value", Float.parseFloat(pixel));
+      refinedData.put("installedAt.value", installedAt);
+      refinedData.put("isRotatable.value", isRotatable);
 
-			if(isRotatable.trim().length() >= 1 && Integer.parseInt(isRotatable) >= 1) {
-				isRotatable = "TRUE";
-			}else {
-				isRotatable = "FALSE";
-			}
+      refinedData.put("address.value.addressCountry", addressCountry);
+      refinedData.put("address.value.addressRegion", addressRegion);
+      refinedData.put("address.value.addressLocality", addressLocality);
+      refinedData.put("address.value.streetAddress", streetAddress);
+      refinedData.put("address.value.addressTown", addressTown);
 
-			//데이터 삽입
-			refinedData.put("name.value", name);
-			refinedData.put("id", id);
-			refinedData.put("hasEmergencyBell.value", hasEmergencyBell);
-			refinedData.put("numberOfCCTV.value", Integer.parseInt(numberOfCCTV));
-			refinedData.put("pixel.value", Float.parseFloat(pixel));
-			refinedData.put("installedAt.value", installedAt);
-			refinedData.put("isRotatable.value", isRotatable);
+      refinedData.put("height.value", height);
+      refinedData.put("status.value", status);
+      refinedData.put("distance.value", distance);
+      refinedData.put("direction.value", direction);
+      refinedData.put("fieldOfView.value", fieldOfView);
+      refinedData.put("typeOfCCTV.value", typeOfCCTV);
+      refinedData.put("createdAt", createdAt);
 
-			refinedData.put("address.value.addressCountry", addressCountry);
-			refinedData.put("address.value.addressRegion", addressRegion);
-			refinedData.put("address.value.addressLocality", addressLocality);
-			refinedData.put("address.value.streetAddress", streetAddress);
-			refinedData.put("address.value.addressTown", addressTown);
+      refinedData.put("location.value.coordinates", coordinates);
 
-			refinedData.put("height.value", height);
-			refinedData.put("status.value", status);
-			refinedData.put("distance.value", distance);
-			refinedData.put("direction.value", direction);
-			refinedData.put("fieldOfView.value", fieldOfView);
-			refinedData.put("typeOfCCTV.value", typeOfCCTV);
-			refinedData.put("createdAt", createdAt);
+      resultBuffer.append(refinedData + ", ");
+    }
 
-			refinedData.put("location.value.coordinates", coordinates);
-
-			resultBuffer.append(refinedData + ", ");
-		}
-
-		return resultBuffer.toString();
-	}
+    return resultBuffer.toString();
+  }
 }

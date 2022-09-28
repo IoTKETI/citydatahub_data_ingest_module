@@ -17,7 +17,8 @@
 package com.cityhub.utils;
 
 public enum RoadType {
-  no_information("정보없음", 0,  "no information"), free_flowing("원활", 1,  "free flowing"), slow("서행", 2,  "slow"), congested("정체", 3,  "congested");
+  no_information("정보없음", 0, "no information"), free_flowing("원활", 1, "free flowing"), slow("서행", 2, "slow"), congested("정체", 3, "congested");
+
   private int code;
   private String hanNm;
   private String engNm;
@@ -48,6 +49,7 @@ public enum RoadType {
     }
     return null;
   }
+
   public static RoadType findBy(String hanNm) {
     for (RoadType rt : RoadType.values()) {
       if (rt.hanNm.equals(hanNm)) {

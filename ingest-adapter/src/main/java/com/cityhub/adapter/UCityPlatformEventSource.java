@@ -45,40 +45,44 @@ public class UCityPlatformEventSource extends AbstractPollSource {
   private JSONObject templateItem = new JSONObject();
   private JSONObject ConfItem = new JSONObject();
 
-
   @Override
   public void setup(Context context) {
-    log.info("************************************setup()************************************");
 
-    modelId = context.getString("MODEL_ID"); //UCityPlatformEvent
-    adapterType = context.getString("type"); //com.cityhub.adapter.UCityPlatformEventSource
-    schemaSrv = super.getSchemaSrv(); //http: //192.168.1.33:9876/schema/schemas/
-    EXCEL_FILE_FULL_PATH = context.getString("EXCEL_FILE"); //event.xls
+    modelId = context.getString("MODEL_ID"); // UCityPlatformEvent
+    adapterType = context.getString("type"); // com.cityhub.adapter.UCityPlatformEventSource
+    schemaSrv = super.getSchemaSrv(); // http: //192.168.1.33:9876/schema/schemas/
+    EXCEL_FILE_FULL_PATH = context.getString("EXCEL_FILE"); // event.xls
     ConfItem.put("EXCEL", EXCEL_FILE_FULL_PATH);
     ConfItem.put("sourceName", this.getName());
     ConfItem.put("model_id", modelId);
     ConfItem.put("schema_srv", schemaSrv);
     ConfItem.put("adapterType", adapterType);
+
+    String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "");
+    if (!"".equals(DAEMON_SERVER_LOGAPI)) {
+      ConfItem.put("daemonServerLogApi", context.getString("DAEMON_SERVER_LOGAPI", ""));
+    } else {
+      ConfItem.put("daemonServerLogApi", "http://localhost:8888/logToDbApi");
+    }
+
   }
 
   @Override
   public void execFirst() {
-    log.info("************************************execFirst()************************************");
     HttpResponse resp = OkUrlUtil.get(schemaSrv, "content-type", "application/json");
-    if(resp.getStatusCode() == 200) {
+    if (resp.getStatusCode() == 200) {
       DataModel dm = new DataModel(new JSONArray(resp.getPayload()));
-      //DataModel(schema = [{ ... }])
+      // DataModel(schema = [{ ... }])
 
-      if(dm.hasModelId(modelId)) {
+      if (dm.hasModelId(modelId)) {
         templateItem = dm.createTamplate(modelId);
-      }else {
-        templateItem = new JsonUtil().getFileJsonObject("openapi/"+modelId+".template");
+      } else {
+        templateItem = new JsonUtil().getFileJsonObject("openapi/" + modelId + ".template");
       }
 
-  }else {
-    templateItem.put(modelId, new JsonUtil().getFileJsonObject("openapi/"+modelId+".template"));
-  }
-
+    } else {
+      templateItem.put(modelId, new JsonUtil().getFileJsonObject("openapi/" + modelId + ".template"));
+    }
 
     if (log.isDebugEnabled()) {
       log.debug("Template : {},{}", modelId, templateItem);
@@ -88,44 +92,42 @@ public class UCityPlatformEventSource extends AbstractPollSource {
 
   @Override
   public void processing() {
-    log.info("************************************processing()************************************");
-
     try {
       ReflectExecuter exec = ReflectExecuterManager.getInstance(getInvokeClass(), ConfItem, templateItem);
       String sb = exec.doit();
 
-      if(sb != null && sb.lastIndexOf(",")>0) {
-        JSONArray jsonAr = new JSONArray("[" + sb.substring(0, sb.length()-1) + "]");
+      if (sb != null && sb.lastIndexOf(",") > 0) {
+        JSONArray jsonAr = new JSONArray("[" + sb.substring(0, sb.length() - 1) + "]");
         int cnt = 0;
 
-        for(Object itm : jsonAr) {
-          JSONObject jo = (JSONObject)itm;
-          log.info(""+jo);
+        for (Object itm : jsonAr) {
+          JSONObject jo = (JSONObject) itm;
+          log.info("" + jo);
 
           cnt++;
 
-          //byte[] cont = createSendJson(jo);
+          // byte[] cont = createSendJson(jo);
           JSONObject body = new JSONObject();
           body.put("content", jo);
-          byte[] cont= body.toString().getBytes(Charset.forName("UTF-8"));
+          byte[] cont = body.toString().getBytes(Charset.forName("UTF-8"));
 
-          //sendEvent(cont);
+          // sendEvent(cont);
           ByteBuffer byteBuffer = ByteBuffer.allocate(cont.length + 5);
           byteBuffer.put(cont);
 
-
-          //Thread.sleep(1000);
+          // Thread.sleep(1000);
         }
       }
-  }catch(Exception e) {
-    log.info("ERROR");
-  }
+    } catch (Exception e) {
+      log.info("ERROR");
+    }
   }
 
   public String getStr(SocketCode sc) {
     return sc.getCode() + ";" + sc.getMessage();
   }
-  public String getStr(SocketCode sc,String msg) {
+
+  public String getStr(SocketCode sc, String msg) {
     return sc.getCode() + ";" + sc.getMessage() + "-" + msg;
   }
 

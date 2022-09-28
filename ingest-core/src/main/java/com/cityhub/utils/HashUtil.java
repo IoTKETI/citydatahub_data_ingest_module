@@ -28,6 +28,7 @@ public class HashUtil {
 
   /**
    * 문자열 SHA-256으로 해쉬 변환하기
+   *
    * @param str
    * @return
    */
@@ -44,7 +45,7 @@ public class HashUtil {
       SHA = sb.toString();
     } catch (NoSuchAlgorithmException e) {
       SHA = null;
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return SHA;
   }

@@ -50,66 +50,59 @@ public class OkUrlUtil {
   public static final MediaType JSON = MediaType.get("application/json;charset=UTF-8");
 
   public static OkHttpClient getClient() {
-    return new OkHttpClient.Builder()
-        .addInterceptor(new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-              Request request = chain.request();
+    return new OkHttpClient.Builder().addInterceptor(new Interceptor() {
+      @Override
+      public Response intercept(Chain chain) throws IOException {
+        Request request = chain.request();
 
-              // try the request
-              Response response = null;
-              int tryCount = 1;
-              while (tryCount <= MAX_TRY_COUNT) {
-                try {
-                  response = chain.proceed(request);
-                  break;
-                } catch (Exception e) {
-                  log.error("tryCount: {}, msg: {}",tryCount, ExceptionUtils.getStackTrace(e));
-                  if ("Canceled".equalsIgnoreCase(e.getMessage())) {
-                      // Request canceled, do not retry
-                      throw e;
-                  }
-                  if (tryCount >= MAX_TRY_COUNT) {
-                      // max retry count reached, giving up
-                      throw e;
-                  }
-                  try {
-                      // sleep delay * try count (e.g. 1st retry after 3000ms, 2nd after 6000ms, etc.)
-                      Thread.sleep(RETRY_BACKOFF_DELAY * tryCount);
-                  } catch (InterruptedException e1) {
-                      throw new RuntimeException(e1);
-                  }
-                  tryCount++;
-                }
-              }
-              // otherwise just pass the original response on
-              return response;
+        // try the request
+        Response response = null;
+        int tryCount = 1;
+        while (tryCount <= MAX_TRY_COUNT) {
+          try {
+            response = chain.proceed(request);
+            break;
+          } catch (Exception e) {
+            log.error("tryCount: {}, msg: {}", tryCount, ExceptionUtils.getStackTrace(e));
+            if ("Canceled".equalsIgnoreCase(e.getMessage())) {
+              // Request canceled, do not retry
+              throw e;
             }
-          })
-        .connectTimeout(timeout , TimeUnit.SECONDS)
-        .writeTimeout(timeout  * 10, TimeUnit.SECONDS)
-        .readTimeout(timeout  * 10, TimeUnit.SECONDS)
-        .build();
+            if (tryCount >= MAX_TRY_COUNT) {
+              // max retry count reached, giving up
+              throw e;
+            }
+            try {
+              // sleep delay * try count (e.g. 1st retry after 3000ms, 2nd after 6000ms, etc.)
+              Thread.sleep(RETRY_BACKOFF_DELAY * tryCount);
+            } catch (InterruptedException e1) {
+              throw new RuntimeException(e1);
+            }
+            tryCount++;
+          }
+        }
+        // otherwise just pass the original response on
+        return response;
+      }
+    }).connectTimeout(timeout, TimeUnit.SECONDS).writeTimeout(timeout * 10, TimeUnit.SECONDS).readTimeout(timeout * 10, TimeUnit.SECONDS).build();
   }
 
   public static OkHttpClient getUnsafeOkHttpClient() {
     try {
-      final TrustManager[] trustAllCerts = new TrustManager[] {
-        new X509TrustManager() {
-          @Override
-          public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-          }
-
-          @Override
-          public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-          }
-
-          @Override
-          public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-            return new java.security.cert.X509Certificate[] {};
-          }
+      final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+        @Override
+        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
         }
-      };
+
+        @Override
+        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+        }
+
+        @Override
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+          return new java.security.cert.X509Certificate[] {};
+        }
+      } };
 
       final SSLContext sslContext = SSLContext.getInstance("SSL");
       sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
@@ -126,46 +119,41 @@ public class OkUrlUtil {
         }
       });
 
-      return builder
-          .addInterceptor(new Interceptor() {
-              @Override
-              public Response intercept(Chain chain) throws IOException {
-                Request request = chain.request();
+      return builder.addInterceptor(new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+          Request request = chain.request();
 
-                // try the request
-                Response response = null;
-                int tryCount = 1;
-                while (tryCount <= MAX_TRY_COUNT) {
-                  try {
-                    response = chain.proceed(request);
-                    break;
-                  } catch (Exception e) {
-                    log.error("tryCount: {}, msg: {}",tryCount, ExceptionUtils.getStackTrace(e));
-                    if ("Canceled".equalsIgnoreCase(e.getMessage())) {
-                        // Request canceled, do not retry
-                        throw e;
-                    }
-                    if (tryCount >= MAX_TRY_COUNT) {
-                        // max retry count reached, giving up
-                        throw e;
-                    }
-                    try {
-                        // sleep delay * try count (e.g. 1st retry after 3000ms, 2nd after 6000ms, etc.)
-                        Thread.sleep(RETRY_BACKOFF_DELAY * tryCount);
-                    } catch (InterruptedException e1) {
-                        throw new RuntimeException(e1);
-                    }
-                    tryCount++;
-                  }
-                }
-                // otherwise just pass the original response on
-                return response;
+          // try the request
+          Response response = null;
+          int tryCount = 1;
+          while (tryCount <= MAX_TRY_COUNT) {
+            try {
+              response = chain.proceed(request);
+              break;
+            } catch (Exception e) {
+              log.error("tryCount: {}, msg: {}", tryCount, ExceptionUtils.getStackTrace(e));
+              if ("Canceled".equalsIgnoreCase(e.getMessage())) {
+                // Request canceled, do not retry
+                throw e;
               }
-            })
-          .connectTimeout(timeout , TimeUnit.SECONDS)
-          .writeTimeout(timeout  * 10, TimeUnit.SECONDS)
-          .readTimeout(timeout  * 10, TimeUnit.SECONDS)
-          .build();
+              if (tryCount >= MAX_TRY_COUNT) {
+                // max retry count reached, giving up
+                throw e;
+              }
+              try {
+                // sleep delay * try count (e.g. 1st retry after 3000ms, 2nd after 6000ms, etc.)
+                Thread.sleep(RETRY_BACKOFF_DELAY * tryCount);
+              } catch (InterruptedException e1) {
+                throw new RuntimeException(e1);
+              }
+              tryCount++;
+            }
+          }
+          // otherwise just pass the original response on
+          return response;
+        }
+      }).connectTimeout(timeout, TimeUnit.SECONDS).writeTimeout(timeout * 10, TimeUnit.SECONDS).readTimeout(timeout * 10, TimeUnit.SECONDS).build();
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -174,7 +162,8 @@ public class OkUrlUtil {
   /**
    * http GET 메소드
    *
-   * <pre>example :
+   * <pre>
+   * example :
    * Map h = new HashMap();
    * h.put("Content-type", "application/x-www-form-urlencoded");
    * h.put("Accept", "text/html,text/xml,application/xml");
@@ -183,77 +172,82 @@ public class OkUrlUtil {
    * </pre>
    */
   public static HttpResponse get(String urladdr, String headerType, String headerValue) {
-    Map<String,String> h = new HashMap<String,String>();
-    h.put(headerType,headerValue);
-    try  {
+    Map<String, String> h = new HashMap<>();
+    h.put(headerType, headerValue);
+    try {
       return get(urladdr, h);
     } catch (Exception e) {
       return new HttpResponse(urladdr, 9999, e.getMessage());
     }
   }
+
   /**
    * http GET 메소드
+   *
    * @param urladdr
    * @param headers
    * @return
    * @throws Exception
    */
-  public static HttpResponse get(String urladdr, Map<String,String> headers) throws Exception {
+  public static HttpResponse get(String urladdr, Map<String, String> headers) throws Exception {
     Headers headerbuild = Headers.of(headers);
     Request request = new Request.Builder().url(urladdr).get().headers(headerbuild).build();
 
     try (Response response = getClient().newCall(request).execute()) {
-      String msg =  response.body().string();
+      String msg = response.body().string();
       if (log.isTraceEnabled()) {
-        log.trace("<<<{}" , msg);
+        log.trace("<<<{}", msg);
       }
       return new HttpResponse(msg, response.code(), HttpStatus.valueOf(response.code()).getReasonPhrase());
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       return new HttpResponse(urladdr, 9999, e.getMessage());
     }
   }
+
   /**
    * http GET SSL 메소드
+   *
    * @param urladdr
    * @param headers
    * @return
    * @throws Exception
    */
-  public static HttpResponse getSSL(String urladdr, Map<String,String> headers) throws Exception {
+  public static HttpResponse getSSL(String urladdr, Map<String, String> headers) throws Exception {
     Headers headerbuild = Headers.of(headers);
     Request request = new Request.Builder().url(urladdr).get().headers(headerbuild).build();
 
     try (Response response = getUnsafeOkHttpClient().newCall(request).execute()) {
-      String msg =  response.body().string();
+      String msg = response.body().string();
       if (log.isTraceEnabled()) {
-        log.trace("<<<{}" , msg);
+        log.trace("<<<{}", msg);
       }
       return new HttpResponse(msg, response.code(), HttpStatus.valueOf(response.code()).getReasonPhrase());
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       return new HttpResponse(urladdr, 9999, e.getMessage());
     }
   }
 
   /**
    * http POST 메소드
+   *
    * @param urladdr
    * @param headers
    * @param strJsonBody
    * @return
    * @throws Exception
    */
-  public static HttpResponse post(String urladdr, Map<String,String> headers, String strJsonBody) throws Exception {
+  public static HttpResponse post(String urladdr, Map<String, String> headers, String strJsonBody) throws Exception {
 
     if (log.isTraceEnabled()) {
-      log.trace(">>>{}" , strJsonBody);
+      log.trace(">>>{}", strJsonBody);
     }
     RequestBody body = null;
     try {
       body = RequestBody.create(JSON, strJsonBody);
     } catch (NullPointerException npe) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(npe));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(npe));
       return new HttpResponse("{\"resultCode\":4105, \"resultMsg\":\"UNSUPPORTED MEDIA TYPE\"}", 4105, npe.getMessage());
     }
 
@@ -262,31 +256,33 @@ public class OkUrlUtil {
       Request request = new Request.Builder().url(urladdr).post(body).headers(headerbuild).build();
 
       try (Response response = getClient().newCall(request).execute()) {
-        String msg =  response.body().string();
+        String msg = response.body().string();
         if (log.isTraceEnabled()) {
-          log.trace("<<<{}" , msg);
+          log.trace("<<<{}", msg);
         }
         return new HttpResponse(msg, response.code(), response.message());
       } catch (Exception e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
         return new HttpResponse(null, 9999, e.getMessage());
       }
     } else {
       return new HttpResponse("{\"resultCode\":4000, \"resultMsg\":\"BAD REQUEST\"}", 4000, "");
     }
   }
+
   /**
    * http POST SSL 메소드
+   *
    * @param urladdr
    * @param headers
    * @param strJsonBody
    * @return
    * @throws Exception
    */
-  public static HttpResponse postSSL(String urladdr, Map<String,String> headers, String strJsonBody) throws Exception {
+  public static HttpResponse postSSL(String urladdr, Map<String, String> headers, String strJsonBody) throws Exception {
 
     if (log.isTraceEnabled()) {
-      log.trace(">>>{}" , strJsonBody);
+      log.trace(">>>{}", strJsonBody);
     }
     RequestBody body = null;
     try {
@@ -300,13 +296,13 @@ public class OkUrlUtil {
       Request request = new Request.Builder().url(urladdr).post(body).headers(headerbuild).build();
 
       try (Response response = getUnsafeOkHttpClient().newCall(request).execute()) {
-        String msg =  response.body().string();
+        String msg = response.body().string();
         if (log.isTraceEnabled()) {
-          log.trace("<<<{}" , msg);
+          log.trace("<<<{}", msg);
         }
         return new HttpResponse(msg, response.code(), response.message());
       } catch (Exception e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
         return new HttpResponse(null, 9999, e.getMessage());
       }
     } else {
@@ -316,15 +312,16 @@ public class OkUrlUtil {
 
   /**
    * http PUT 메소드
+   *
    * @param urladdr
    * @param headers
    * @param strJsonBody
    * @return
    * @throws Exception
    */
-  public static HttpResponse put(String urladdr, Map<String,String> headers, String strJsonBody) throws Exception {
+  public static HttpResponse put(String urladdr, Map<String, String> headers, String strJsonBody) throws Exception {
     if (log.isTraceEnabled()) {
-      log.trace(">>>{}" , strJsonBody);
+      log.trace(">>>{}", strJsonBody);
     }
     RequestBody body = null;
     try {
@@ -339,13 +336,13 @@ public class OkUrlUtil {
       Request request = new Request.Builder().url(urladdr).put(body).headers(headerbuild).build();
 
       try (Response response = getClient().newCall(request).execute()) {
-        String msg =  response.body().string();
+        String msg = response.body().string();
         if (log.isTraceEnabled()) {
-          log.trace("<<<{}" , msg);
+          log.trace("<<<{}", msg);
         }
         return new HttpResponse(msg, response.code(), response.message());
       } catch (Exception e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
         return new HttpResponse(null, 9999, e.getMessage());
       }
     } else {
@@ -353,18 +350,20 @@ public class OkUrlUtil {
     }
 
   }
+
   /**
    * http PATCH 메소드
+   *
    * @param urladdr
    * @param headers
    * @param strJsonBody
    * @return
    * @throws Exception
    */
-  public static HttpResponse patch(String urladdr, Map<String,String> headers, String strJsonBody) throws Exception {
+  public static HttpResponse patch(String urladdr, Map<String, String> headers, String strJsonBody) throws Exception {
 
     if (log.isTraceEnabled()) {
-      log.trace(">>>{}" , strJsonBody);
+      log.trace(">>>{}", strJsonBody);
     }
     RequestBody body = null;
     try {
@@ -377,13 +376,13 @@ public class OkUrlUtil {
       Request request = new Request.Builder().url(urladdr).patch(body).headers(headerbuild).build();
 
       try (Response response = getClient().newCall(request).execute()) {
-        String msg =  response.body().string();
+        String msg = response.body().string();
         if (log.isTraceEnabled()) {
-          log.trace("<<<{}" , msg);
+          log.trace("<<<{}", msg);
         }
         return new HttpResponse(msg, response.code(), response.message());
       } catch (Exception e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
         return new HttpResponse(null, 9999, e.getMessage());
       }
     } else {
@@ -392,32 +391,32 @@ public class OkUrlUtil {
 
   }
 
-
   /**
-   * http DELETE 메소드 
+   * http DELETE 메소드
+   *
    * @param urladdr
    * @param headers
    * @return
    * @throws Exception
    */
-  public static HttpResponse delete(String urladdr, Map<String,String> headers) throws Exception {
+  public static HttpResponse delete(String urladdr, Map<String, String> headers) throws Exception {
 
     Headers headerbuild = Headers.of(headers);
     Request request = new Request.Builder().url(urladdr).delete().headers(headerbuild).build();
 
     try (Response response = getClient().newCall(request).execute()) {
-      String msg =  response.body().string();
+      String msg = response.body().string();
       if (log.isTraceEnabled()) {
-        log.trace("<<<{}" , msg);
+        log.trace("<<<{}", msg);
       }
       return new HttpResponse(msg, response.code(), response.message());
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       return new HttpResponse(null, 9999, e.getMessage());
     }
   }
 
-  public static boolean isExist(String urladdr, Map<String,String> headers) throws Exception {
+  public static boolean isExist(String urladdr, Map<String, String> headers) throws Exception {
     boolean bl = false;
     try {
       HttpResponse resp = get(urladdr, headers);
@@ -427,10 +426,9 @@ public class OkUrlUtil {
         bl = false;
       }
     } catch (IOException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return bl;
   }
-
 
 } // end class

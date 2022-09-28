@@ -48,10 +48,10 @@ public class ConvVData extends AbstractConvert {
     try {
       JSONArray svcList = ConfItem.getJSONArray("serviceList");
 
-      for (int i = 0 ; i < svcList.length(); i++) {
+      for (int i = 0; i < svcList.length(); i++) {
         JSONObject iSvc = svcList.getJSONObject(i);
         id = iSvc.getString("gs1Code");
-        JSONObject jsonData = (JSONObject) CommonUtil.getData(iSvc );
+        JSONObject jsonData = (JSONObject) CommonUtil.getData(iSvc);
         if (!jsonData.has("list")) {
           throw new CoreException(ErrorCode.NORMAL_ERROR);
         } else {
@@ -69,62 +69,60 @@ public class ConvVData extends AbstractConvert {
               jsonEx.put("id", iSvc.get("gs1Code") + "");
               jsonEx.put("location.value.coordinates", iSvc.getJSONArray("location"));
               jsonEx.put("location.observedAt", DateUtil.getTime());
-              jsonEx.put("indexRef.value", "https://www.airkorea.or.kr/web/khaiInfo" );
-              jsonEx.put("address.value.addressCountry", JsonUtil.nvl(iSvc.getString("addressCountry")) );
-              jsonEx.put("address.value.addressRegion", JsonUtil.nvl(iSvc.getString("addressRegion")) );
-              jsonEx.put("address.value.addressLocality", JsonUtil.nvl(iSvc.getString("addressLocality")) );
-              jsonEx.put("address.value.addressTown", JsonUtil.nvl(iSvc.getString("addressTown")) );
-              jsonEx.put("address.value.streetAddress", JsonUtil.nvl(iSvc.getString("streetAddress")) );
+              jsonEx.put("indexRef.value", "https://www.airkorea.or.kr/web/khaiInfo");
+              jsonEx.put("address.value.addressCountry", JsonUtil.nvl(iSvc.getString("addressCountry")));
+              jsonEx.put("address.value.addressRegion", JsonUtil.nvl(iSvc.getString("addressRegion")));
+              jsonEx.put("address.value.addressLocality", JsonUtil.nvl(iSvc.getString("addressLocality")));
+              jsonEx.put("address.value.addressTown", JsonUtil.nvl(iSvc.getString("addressTown")));
+              jsonEx.put("address.value.streetAddress", JsonUtil.nvl(iSvc.getString("streetAddress")));
 
+              jsonEx.put("airQualityObservation.value.so2", JsonUtil.nvl(item.get("so2Value"), DataType.FLOAT));
+              jsonEx.put("airQualityObservation.value.co", JsonUtil.nvl(item.get("coValue"), DataType.FLOAT));
+              jsonEx.put("airQualityObservation.value.o3", JsonUtil.nvl(item.get("o3Value"), DataType.FLOAT));
+              jsonEx.put("airQualityObservation.value.no2", JsonUtil.nvl(item.get("no2Value"), DataType.FLOAT));
+              jsonEx.put("airQualityObservation.value.pm10", JsonUtil.nvl(item.get("pm10Value"), DataType.FLOAT));
+              jsonEx.put("airQualityObservation.value.pm25", JsonUtil.nvl(item.get("pm25Value"), DataType.FLOAT));
+              jsonEx.put("airQualityObservation.observedAt", DateUtil.getISOTime((String) JsonUtil.nvl(item.get("dataTime"), DataType.STRING)));
 
-              jsonEx.put("airQualityObservation.value.so2", JsonUtil.nvl(item.get("so2Value") , DataType.FLOAT));
-              jsonEx.put("airQualityObservation.value.co", JsonUtil.nvl(item.get("coValue") , DataType.FLOAT));
-              jsonEx.put("airQualityObservation.value.o3", JsonUtil.nvl(item.get("o3Value") , DataType.FLOAT));
-              jsonEx.put("airQualityObservation.value.no2", JsonUtil.nvl(item.get("no2Value") , DataType.FLOAT));
-              jsonEx.put("airQualityObservation.value.pm10", JsonUtil.nvl(item.get("pm10Value") , DataType.FLOAT));
-              jsonEx.put("airQualityObservation.value.pm25", JsonUtil.nvl(item.get("pm25Value") , DataType.FLOAT));
-              jsonEx.put("airQualityObservation.observedAt", DateUtil.getISOTime((String)JsonUtil.nvl(item.get("dataTime") , DataType.STRING)) );
-
-              jsonEx.put("airQualityIndexObservation.observedAt", DateUtil.getISOTime((String)JsonUtil.nvl(item.get("dataTime") , DataType.STRING)) );
-              if (JsonUtil.nvl(item.getString("so2Grade")) != JSONObject.NULL ) {
-                int o = (int)JsonUtil.nvl(item.getString("so2Grade"), DataType.INTEGER);
+              jsonEx.put("airQualityIndexObservation.observedAt", DateUtil.getISOTime((String) JsonUtil.nvl(item.get("dataTime"), DataType.STRING)));
+              if (JsonUtil.nvl(item.getString("so2Grade")) != JSONObject.NULL) {
+                int o = (int) JsonUtil.nvl(item.getString("so2Grade"), DataType.INTEGER);
                 jsonEx.put("airQualityIndexObservation.value.so2Category", JsonUtil.nvl(GradeType.findBy(o).getValue()));
               }
-              if (JsonUtil.nvl(item.getString("coGrade")) != JSONObject.NULL ) {
-                int o = (int)JsonUtil.nvl(item.getString("coGrade"), DataType.INTEGER);
+              if (JsonUtil.nvl(item.getString("coGrade")) != JSONObject.NULL) {
+                int o = (int) JsonUtil.nvl(item.getString("coGrade"), DataType.INTEGER);
                 jsonEx.put("airQualityIndexObservation.value.coCategory", JsonUtil.nvl(GradeType.findBy(o).getValue()));
               }
-              if (JsonUtil.nvl(item.getString("o3Grade")) != JSONObject.NULL ) {
-                int o = (int)JsonUtil.nvl(item.getString("o3Grade"), DataType.INTEGER);
+              if (JsonUtil.nvl(item.getString("o3Grade")) != JSONObject.NULL) {
+                int o = (int) JsonUtil.nvl(item.getString("o3Grade"), DataType.INTEGER);
                 jsonEx.put("airQualityIndexObservation.value.o3Category", JsonUtil.nvl(GradeType.findBy(o).getValue()));
               }
-              if (JsonUtil.nvl(item.getString("no2Grade")) != JSONObject.NULL ) {
-                int o = (int)JsonUtil.nvl(item.getString("no2Grade"), DataType.INTEGER);
+              if (JsonUtil.nvl(item.getString("no2Grade")) != JSONObject.NULL) {
+                int o = (int) JsonUtil.nvl(item.getString("no2Grade"), DataType.INTEGER);
                 jsonEx.put("airQualityIndexObservation.value.no2Category", JsonUtil.nvl(GradeType.findBy(o).getValue()));
               }
-              if (JsonUtil.nvl(item.getString("pm10Grade")) != JSONObject.NULL ) {
-                int o = (int)JsonUtil.nvl(item.getString("pm10Grade"), DataType.INTEGER);
+              if (JsonUtil.nvl(item.getString("pm10Grade")) != JSONObject.NULL) {
+                int o = (int) JsonUtil.nvl(item.getString("pm10Grade"), DataType.INTEGER);
                 jsonEx.put("airQualityIndexObservation.value.pm10Category", JsonUtil.nvl(GradeType.findBy(o).getValue()));
               }
-              if (JsonUtil.nvl(item.getString("pm25Grade")) != JSONObject.NULL ) {
-                int o = (int)JsonUtil.nvl(item.getString("pm25Grade"), DataType.INTEGER);
+              if (JsonUtil.nvl(item.getString("pm25Grade")) != JSONObject.NULL) {
+                int o = (int) JsonUtil.nvl(item.getString("pm25Grade"), DataType.INTEGER);
                 jsonEx.put("airQualityIndexObservation.value.pm25Category", JsonUtil.nvl(GradeType.findBy(o).getValue()));
               }
-              if (JsonUtil.nvl(item.getString("khaiValue")) != JSONObject.NULL ) {
-                int o = (int)JsonUtil.nvl(item.getString("khaiValue"), DataType.INTEGER);
-                jsonEx.put("airQualityIndexObservation.value.totalIndex", JsonUtil.nvl(o , DataType.INTEGER));
+              if (JsonUtil.nvl(item.getString("khaiValue")) != JSONObject.NULL) {
+                int o = (int) JsonUtil.nvl(item.getString("khaiValue"), DataType.INTEGER);
+                jsonEx.put("airQualityIndexObservation.value.totalIndex", JsonUtil.nvl(o, DataType.INTEGER));
               }
-              if (JsonUtil.nvl(item.getString("khaiGrade")) != JSONObject.NULL ) {
-                int o = (int)JsonUtil.nvl(item.getString("no2Grade"), DataType.INTEGER);
+              if (JsonUtil.nvl(item.getString("khaiGrade")) != JSONObject.NULL) {
+                int o = (int) JsonUtil.nvl(item.getString("no2Grade"), DataType.INTEGER);
                 jsonEx.put("airQualityIndexObservation.value.totalCategory", JsonUtil.nvl(GradeType.findBy(o).getValue()));
               }
 
-              List<String> rmKeys = new ArrayList<String>();
+              List<String> rmKeys = new ArrayList<>();
               rmKeys.add("name");
-              JsonUtil.removeNullItem(jTemplate,new String[] {"airQualityIndexObservation.value","airQualityObservation.value"}, rmKeys);
+              JsonUtil.removeNullItem(jTemplate, new String[] { "airQualityIndexObservation.value", "airQualityObservation.value" }, rmKeys);
 
-
-              log(SocketCode.DATA_CONVERT_SUCCESS, id,jTemplate.toString().getBytes());
+              log(SocketCode.DATA_CONVERT_SUCCESS, id, jTemplate.toString().getBytes());
               sendJson.append(jTemplate.toString() + ",");
             }
           } else {
@@ -136,15 +134,14 @@ public class ConvVData extends AbstractConvert {
 
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL,  id,e.getMessage() );
+        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage() );
-      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage() + "`" + id  , e);
+      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
     }
 
     return sendJson.toString();
   }
-
 
 } // end of class

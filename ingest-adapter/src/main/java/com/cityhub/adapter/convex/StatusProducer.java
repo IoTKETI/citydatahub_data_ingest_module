@@ -42,7 +42,7 @@ public class StatusProducer {
     init = new JSONObject(str);
     Properties props = new Properties();
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, init.getString("kafkaServers"));
-    props.put(ProducerConfig.CLIENT_ID_CONFIG, "PINICNI_" + UUID.randomUUID().toString().replaceAll("-",""));
+    props.put(ProducerConfig.CLIENT_ID_CONFIG, "PINICNI_" + UUID.randomUUID().toString().replaceAll("-", ""));
     props.put(ProducerConfig.ACKS_CONFIG, "0");
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class.getName());
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
@@ -77,7 +77,7 @@ public class StatusProducer {
       this.producer.flush();
       Thread.sleep(10);
     } catch (InterruptedException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 

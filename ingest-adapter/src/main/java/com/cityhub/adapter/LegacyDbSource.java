@@ -68,6 +68,14 @@ public class LegacyDbSource extends AbstractPollSource {
     } else {
       ConfItem = new JSONObject();
     }
+
+    String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "");
+    if (!"".equals(DAEMON_SERVER_LOGAPI)) {
+      ConfItem.put("daemonServerLogApi", context.getString("DAEMON_SERVER_LOGAPI", ""));
+    } else {
+      ConfItem.put("daemonServerLogApi", "http://localhost:8888/logToDbApi");
+    }
+
     ConfItem.put("username", username);
     ConfItem.put("password", password);
     ConfItem.put("model_id", modelId);
@@ -104,9 +112,8 @@ public class LegacyDbSource extends AbstractPollSource {
         log.debug("templateItem:{} -- {}", getName(), templateItem);
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
-
 
   }
 
@@ -118,7 +125,7 @@ public class LegacyDbSource extends AbstractPollSource {
   @Override
   public void processing() {
     log.info("::::::::::::::::::{} - Processing :::::::::::::::::", this.getName());
-    HikariDataSource  ds = null;
+    HikariDataSource ds = null;
     Connection conn = null;
     Statement st = null;
 
@@ -132,19 +139,18 @@ public class LegacyDbSource extends AbstractPollSource {
       conn.setAutoCommit(true);
       st = conn.createStatement();
 
-      ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass() ,  ConfItem, templateItem);
+      ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(), ConfItem, templateItem);
       String sb = reflectExecuter.doit(st);
 
       if (sb != null && sb.lastIndexOf(",") > 0) {
-        JSONArray JSendArr = new JSONArray("[" + sb.substring(0 , sb.length() - 1) + "]");
+        JSONArray JSendArr = new JSONArray("[" + sb.substring(0, sb.length() - 1) + "]");
         for (Object itm : JSendArr) {
-          JSONObject jo = (JSONObject)itm;
-          log.info("`{}`{}`{}`{}`{}`{}",this.getName() ,jo.getString("type"), getStr(SocketCode.DATA_SAVE_REQ) , jo.getString("id"), jo.toString().getBytes().length, adapterType);
+          JSONObject jo = (JSONObject) itm;
+          log.info("`{}`{}`{}`{}`{}`{}", this.getName(), jo.getString("type"), getStr(SocketCode.DATA_SAVE_REQ), jo.getString("id"), jo.toString().getBytes().length, adapterType);
           sendEvent(createSendJson(jo));
           Thread.sleep(10);
         }
       }
-
 
       if (st != null) {
         st.close();
@@ -161,11 +167,11 @@ public class LegacyDbSource extends AbstractPollSource {
 
   }
 
-
   public String getStr(SocketCode sc) {
     return sc.getCode() + ";" + sc.getMessage();
   }
-  public String getStr(SocketCode sc,String msg) {
+
+  public String getStr(SocketCode sc, String msg) {
     return sc.getCode() + ";" + sc.getMessage() + "-" + msg;
   }
 

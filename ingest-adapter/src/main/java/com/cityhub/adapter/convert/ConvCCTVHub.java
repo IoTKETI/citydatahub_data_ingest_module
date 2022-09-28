@@ -27,47 +27,46 @@ import com.cityhub.utils.DataCoreCode.SocketCode;
 
 public class ConvCCTVHub extends AbstractConvert {
 
-	@Override
-	public void init(JSONObject ConfItem, JSONObject templateItem) {
-		super.setup(ConfItem, templateItem);
-	}
+  @Override
+  public void init(JSONObject ConfItem, JSONObject templateItem) {
+    super.setup(ConfItem, templateItem);
+  }
 
-	@Override
-	public String doit() throws CoreException {
-		StringBuffer sendJson = new StringBuffer();
+  @Override
+  public String doit() throws CoreException {
+    StringBuffer sendJson = new StringBuffer();
 
-		String model_id = ConfItem.get("model_id").toString();
-		String template = templateItem.get(model_id).toString();
-		Iterator<String> cctvTypeIter = new JSONObject(ConfItem.get("cctvs").toString()).keys();
+    String model_id = ConfItem.get("model_id").toString();
+    String template = templateItem.get(model_id).toString();
+    Iterator<String> cctvTypeIter = new JSONObject(ConfItem.get("cctvs").toString()).keys();
 
+    try {
 
-		try {
+      while (cctvTypeIter.hasNext()) {
 
-			while(cctvTypeIter.hasNext()) {
+        String cctvType = cctvTypeIter.next();
+        String fullClassName = this.getClass().getName().toString();
+        String extClassName = fullClassName.substring(0, fullClassName.lastIndexOf(".")) + ".ConvCCTV" + cctvType.replace(" ", "");
 
-				String cctvType = cctvTypeIter.next();
-				String fullClassName = this.getClass().getName().toString();
-				String extClassName = fullClassName.substring(0, fullClassName.lastIndexOf(".")) + ".ConvCCTV" + cctvType.replace(" ", "");
+        Class<?> extClass = Class.forName(extClassName);
+        ConvCCTV2 convClass = (ConvCCTV2) extClass.newInstance();
+        convClass.init(ConfItem, template, cctvType);
 
-				Class<?> extClass = Class.forName(extClassName);
-				ConvCCTV2 convClass = (ConvCCTV2) extClass.newInstance();
-				convClass.init(ConfItem, template, cctvType);
+        String resultData = convClass.getResult();
 
-				String resultData = convClass.getResult();
+        sendJson.append(resultData);
+      }
 
-				sendJson.append(resultData);
-			}
+    } catch (CoreException e) {
+      if ("!C0099".equals(e.getErrorCode())) {
+        log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
+      }
+    } catch (Exception e) {
+      log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+    }
 
-		} catch (CoreException e) {
-			if ("!C0099".equals(e.getErrorCode())) {
-				log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
-			}
-		} catch (Exception e) {
-			log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
-			throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
-		}
-
-		return sendJson.toString();
-	} // end of doit
+    return sendJson.toString();
+  } // end of doit
 }
 // end of class

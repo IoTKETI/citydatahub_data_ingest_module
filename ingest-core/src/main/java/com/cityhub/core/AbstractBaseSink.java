@@ -93,10 +93,11 @@ public abstract class AbstractBaseSink extends AbstractSink implements Configura
   }
 
   public abstract void setup(Context context);
+
   public abstract void execFirst();
+
   public abstract void exit();
+
   public abstract void processing(Event event);
-
-
 
 }

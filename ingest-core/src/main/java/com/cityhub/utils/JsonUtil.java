@@ -118,7 +118,7 @@ public class JsonUtil {
         }
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnValue;
   }
@@ -164,7 +164,7 @@ public class JsonUtil {
       }
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return StrUtil.nvl(rtnValue);
   }
@@ -181,7 +181,7 @@ public class JsonUtil {
     try {
       return getObjectFindLoop(_jsonObject, ids);
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       return null;
     }
   }
@@ -201,7 +201,7 @@ public class JsonUtil {
       }
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnValue;
   }
@@ -227,7 +227,7 @@ public class JsonUtil {
       }
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
 
     }
     return rtnValue;
@@ -344,7 +344,7 @@ public class JsonUtil {
         }
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
 
     }
 
@@ -410,7 +410,7 @@ public class JsonUtil {
         }
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return rtnAry;
@@ -518,7 +518,7 @@ public class JsonUtil {
         }
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -656,7 +656,7 @@ public class JsonUtil {
         }
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -673,7 +673,7 @@ public class JsonUtil {
       }
       scanner.close();
     } catch (IOException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     log.info("+++++++++++++++{}", result.toString());
     return result.toString();
@@ -702,7 +702,7 @@ public class JsonUtil {
         }
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -725,7 +725,7 @@ public class JsonUtil {
         }
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -749,7 +749,7 @@ public class JsonUtil {
         JSONObject rm = jEx.getObject(k);
 
         for (String key : rm.keySet()) {
-          if ("value".equals(key)  ) {
+          if ("value".equals(key)) {
             if (rm.get(key) == JSONObject.NULL) {
               rmKeys.add(k);
             }
@@ -820,7 +820,7 @@ public class JsonUtil {
         return true;
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       return false;
     }
   }
@@ -839,7 +839,7 @@ public class JsonUtil {
         return true;
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       return false;
     }
   }
@@ -910,6 +910,7 @@ public class JsonUtil {
     result.put("resultMsg", hs.getMessage());
     return result.toMap();
   }
+
   public static Map toMap(ResponseCode hs, Object data) {
     JSONObject result = new JSONObject();
     result.put("resultCode", hs.getCode());
@@ -917,7 +918,6 @@ public class JsonUtil {
     result.put("resultData", data);
     return result.toMap();
   }
-
 
   public static Map toMap(HttpStatus hs) {
     JSONObject result = new JSONObject();
@@ -942,7 +942,6 @@ public class JsonUtil {
     return result;
   }
 
-
   public static Object toMapC(String code, String msg, Object data) {
     JSONObject result = new JSONObject();
     result.put("responseCode", code);
@@ -957,12 +956,14 @@ public class JsonUtil {
     result.put("responseDescription", msg);
     return result;
   }
+
   public static Map toMapC(ResponseCode hs) {
     JSONObject result = new JSONObject();
     result.put("responseCode", hs.getCode());
     result.put("responseDescription", hs.getMessage());
     return result.toMap();
   }
+
   public static Map toMapC(ResponseCode hs, Object data) {
     JSONObject result = new JSONObject();
     result.put("responseCode", hs.getCode());
@@ -970,7 +971,6 @@ public class JsonUtil {
     result.put("resultData", data);
     return result.toMap();
   }
-
 
   public static Map toMapC(HttpStatus hs) {
     JSONObject result = new JSONObject();
@@ -986,8 +986,6 @@ public class JsonUtil {
     result.put("resultData", data);
     return result.toMap();
   }
-
-
 
   public static String result(Object data) {
     return data.toString();
@@ -1097,6 +1095,7 @@ public class JsonUtil {
       return Integer.parseInt(val + "");
     }
   }
+
   public static Object parseLong(Object val) {
     if (val == null || "-".equals(val) || "".equals(val) || "null".equals(val)) {
       return JSONObject.NULL;
@@ -1104,6 +1103,7 @@ public class JsonUtil {
       return Long.parseLong(val + "");
     }
   }
+
   public static Object parseFloat(Object val) {
     if (val == null || "-".equals(val) || "".equals(val) || "null".equals(val)) {
       return JSONObject.NULL;
@@ -1111,6 +1111,7 @@ public class JsonUtil {
       return Float.parseFloat(val + "");
     }
   }
+
   public static Object parseDouble(Object val) {
     if (val == null || "-".equals(val) || "".equals(val) || "null".equals(val)) {
       return JSONObject.NULL;
@@ -1118,6 +1119,7 @@ public class JsonUtil {
       return Double.parseDouble(val + "");
     }
   }
+
   public static Object parseString(Object val) {
     if (val == null || "-".equals(val) || "".equals(val) || "null".equals(val)) {
       return JSONObject.NULL;
@@ -1125,6 +1127,7 @@ public class JsonUtil {
       return String.valueOf(val);
     }
   }
+
   public static Object parseDecimal(Object val) {
     if (val == null || "-".equals(val) || "".equals(val) || "null".equals(val)) {
       return JSONObject.NULL;
@@ -1145,7 +1148,7 @@ public class JsonUtil {
     try {
       map = new ObjectMapper().readValue(jsonObj.toString(), Map.class);
     } catch (IOException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return map;
   }

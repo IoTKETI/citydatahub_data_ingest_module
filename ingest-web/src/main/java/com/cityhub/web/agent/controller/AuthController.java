@@ -49,31 +49,28 @@ public class AuthController {
   @Autowired
   private AuthService authService;
 
-
   @MessageMapping("/sendMessage")
   @SendTo("/topic/broadMessage")
-  public Map<String,String> broadMessage(@RequestBody Map<String,String> param) throws Exception {
+  public Map<String, String> broadMessage(@RequestBody Map<String, String> param) throws Exception {
     Thread.sleep(10); // simulated delay
     return param;
   }
-
 
   @RequestMapping("/")
   public String index(HttpServletRequest request, HttpServletResponse response) {
 
     HttpSession session = request.getSession();
     // 권한 없는 사용자 로그아웃 처리
-    if("adminSystem".equals(session.getAttribute("type"))  && !"Connectivity_Admin".equals(session.getAttribute("role"))   ) {
+    if ("adminSystem".equals(session.getAttribute("type")) && !"Connectivity_Admin".equals(session.getAttribute("role"))) {
       return "redirect:/logout";
     } else {
       return "redirect:/monitor/dashView";
     }
   }
 
-
   @RequestMapping("/login")
   public void moveLogin(HttpServletRequest request, HttpServletResponse response) {
-    if ("Y".equalsIgnoreCase(authYn) ) {
+    if ("Y".equalsIgnoreCase(authYn)) {
       String tokenCheck = authService.getTokenFromCookie(request);
       try {
         if (tokenCheck == null) {
@@ -106,7 +103,6 @@ public class AuthController {
     return "redirect:lo";
   }
 
-
   @RequestMapping("/callClient")
   public void callClientCredentials(HttpServletRequest request, HttpServletResponse response) {
 
@@ -116,7 +112,7 @@ public class AuthController {
         String token = authService.getTokenByClientCredentials();
         if (token != null) {
           authService.cookieAddTokenByString(response, authService.getTokenFromResponse(token));
-          authService.createTokenSession(token, request,response);
+          authService.createTokenSession(token, request, response);
           response.sendRedirect("moveTestA");
         } else {
           response.sendRedirect("");
@@ -130,13 +126,10 @@ public class AuthController {
     }
   }
 
-
   @ResponseBody
   @RequestMapping("/getInfo")
   public String getInfo(HttpServletRequest request, HttpServletResponse response) {
     return authService.callGetInfo(authService.getTokenFromCookie(request));
   }
-
-
 
 }

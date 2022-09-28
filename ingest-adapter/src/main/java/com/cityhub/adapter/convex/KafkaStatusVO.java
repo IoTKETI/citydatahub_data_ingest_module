@@ -36,6 +36,6 @@ public class KafkaStatusVO {
   private String eventDataEndTime;
   private long eventDataTotalCount;
   private long requestedDataTotalCount;
-  private String  eventDescription;
+  private String eventDescription;
 
 } // end class

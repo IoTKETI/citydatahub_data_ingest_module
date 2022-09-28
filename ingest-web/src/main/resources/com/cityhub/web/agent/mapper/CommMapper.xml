@@ -4,54 +4,54 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.cityhub.web.agent.mapper.CommMapper">
-  
-    <select id="getAll" resultType="map">
-      SELECT code_type_id, code_type_nm, use_yn 
-      FROM comm_type 
-      ORDER BY code_type_id
-    </select>
-    
-    <select id="selectId" resultType="map">
-      SELECT code_type_id, code_type_nm, use_yn, to_char(last_update_dt, 'YYYY-MM-DD HH24:MI:SS') AS last_update_dt
-      FROM comm_type
-      WHERE code_type_id = #{code_type_id}
-    </select>
-    
-    <select id="selectItem" resultType="map">
-      SELECT code_id, code_nm, use_yn
-      FROM comm_code
-      WHERE code_type_id = #{code_type_id}
-      ORDER BY code_id ASC
-    </select>
-    
-    <insert id="insertCommType" parameterType="map" useGeneratedKeys="true" keyProperty="code_type_id">
-      INSERT INTO comm_type(code_type_id, code_type_nm, use_yn, first_create_dt, first_create_id, last_update_dt, last_update_id) 
-      VALUES (#{code_type_id}, #{code_type_nm}, #{use_yn}, now(), null, now(), null)
-    </insert>
-    
-    <update id="updateCommType" parameterType="map" >
-      UPDATE comm_type 
-      SET last_update_dt = now()
-      , use_yn = #{use_yn}
-      <if test="code_type_nm != null and code_type_nm != '' ">
-      , code_type_nm  = #{code_type_nm}
-      </if>
-      <if test="user_id != null and user_id != '' ">
-      , last_update_id  = #{user_id}
-      </if>      
-      <if test="user_id != null and user_id != '' ">
-      , last_update_id = #{user_id}
-      </if>
-      WHERE code_type_id = #{code_type_id}
-    </update>
 
-    
-    <delete id="deleteCommCode" parameterType="map">
-      DELETE FROM comm_code 
-      WHERE code_type_id = #{code_type_id}      
-    </delete>
-    <insert id="insertCommCode" parameterType="map" useGeneratedKeys="true" keyProperty="code_id">
-      INSERT INTO comm_code(code_type_id, code_id, code_nm, use_yn, first_create_dt, first_create_id, last_update_dt, last_update_id) 
-      VALUES (#{code_type_id}, #{code_id}, #{code_nm}, #{use_yn}, now(), null, now(), null) 
-    </insert>
+  <select id="getAll" resultType="map">
+    SELECT code_type_id, code_type_nm, use_yn
+    FROM comm_type
+    ORDER BY code_type_id
+  </select>
+
+  <select id="selectId" resultType="map">
+    SELECT code_type_id, code_type_nm, use_yn, to_char(last_update_dt, 'YYYY-MM-DD HH24:MI:SS') AS last_update_dt
+    FROM comm_type
+    WHERE code_type_id = #{code_type_id}
+  </select>
+
+  <select id="selectItem" resultType="map">
+    SELECT code_id, code_nm, use_yn
+    FROM comm_code
+    WHERE code_type_id = #{code_type_id}
+    ORDER BY code_id ASC
+  </select>
+
+  <insert id="insertCommType" parameterType="map" useGeneratedKeys="true" keyProperty="code_type_id">
+    INSERT INTO comm_type(code_type_id, code_type_nm, use_yn, first_create_dt, first_create_id, last_update_dt, last_update_id)
+    VALUES (#{code_type_id}, #{code_type_nm}, #{use_yn}, now(), null, now(), null)
+  </insert>
+
+  <update id="updateCommType" parameterType="map">
+    UPDATE comm_type
+    SET last_update_dt = now()
+    , use_yn = #{use_yn}
+    <if test="code_type_nm != null and code_type_nm != '' ">
+      , code_type_nm = #{code_type_nm}
+    </if>
+    <if test="user_id != null and user_id != '' ">
+      , last_update_id = #{user_id}
+    </if>
+    <if test="user_id != null and user_id != '' ">
+      , last_update_id = #{user_id}
+    </if>
+    WHERE code_type_id = #{code_type_id}
+  </update>
+
+
+  <delete id="deleteCommCode" parameterType="map">
+    DELETE FROM comm_code
+    WHERE code_type_id = #{code_type_id}
+  </delete>
+  <insert id="insertCommCode" parameterType="map" useGeneratedKeys="true" keyProperty="code_id">
+    INSERT INTO comm_code(code_type_id, code_id, code_nm, use_yn, first_create_dt, first_create_id, last_update_dt, last_update_id)
+    VALUES (#{code_type_id}, #{code_id}, #{code_nm}, #{use_yn}, now(), null, now(), null)
+  </insert>
 </mapper>

@@ -230,7 +230,6 @@ public class ObController {
         }
       }
 
-
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }

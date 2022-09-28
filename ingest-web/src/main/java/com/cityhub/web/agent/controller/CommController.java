@@ -37,7 +37,7 @@ import com.cityhub.web.agent.service.CommService;
 
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @Slf4j
 @RestController
 public class CommController {
@@ -47,11 +47,11 @@ public class CommController {
   @Autowired
   CommService cs;
 
-  @GetMapping({"/commList"})
-  public ModelAndView CommListView(){
+  @GetMapping({ "/commList" })
+  public ModelAndView CommListView() {
     log.debug("----- CommController.CommListView() -----");
     return new ModelAndView("commList");
-   }
+  }
 
   @GetMapping("/commDataList")
   public ResponseEntity<List<Map>> commDataListView() {
@@ -75,10 +75,10 @@ public class CommController {
     modelAndView.setViewName("commDetail");
     modelAndView.addObject("code_type_id", code_type_id);
     return modelAndView;
-   }
+  }
 
   @GetMapping("/commCodeView/{id}")
-  public ResponseEntity <Map> commCodeView(@PathVariable("id") String id) {
+  public ResponseEntity<Map> commCodeView(@PathVariable("id") String id) {
     log.debug("----- CommController.CommCodeView() -----");
     Map map = new HashMap<>();
     try {
@@ -90,7 +90,7 @@ public class CommController {
   }
 
   @GetMapping("/commDetailView/{id}")
-  public ResponseEntity <List<Map>> commDetailView(@PathVariable("id") String id) {
+  public ResponseEntity<List<Map>> commDetailView(@PathVariable("id") String id) {
     log.debug("----- CommController.CommDetailView() -----");
     List map = new ArrayList<>();
     try {

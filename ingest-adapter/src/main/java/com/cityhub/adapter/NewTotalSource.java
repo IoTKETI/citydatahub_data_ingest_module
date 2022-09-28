@@ -347,10 +347,9 @@ public class NewTotalSource extends AbstractSource implements Configurable, Even
 
             // build event object
             /***
-            byte[] body = new byte[bytes.remaining()];
-            bytes.get(body);
-            Event event = EventBuilder.withBody(body);
-            ***/
+             * byte[] body = new byte[bytes.remaining()]; bytes.get(body); Event event =
+             * EventBuilder.withBody(body);
+             ***/
             byte[] body = new byte[bytes.remaining()];
             bytes.get(body);
             String telegram = new String(body);
@@ -363,14 +362,10 @@ public class NewTotalSource extends AbstractSource implements Configurable, Even
 
             String tHeader = array[0];
             String[] arHeader = tHeader.split(FIELD_HEX);
-            String[] keyHeader = {"event", "headCnt", "bodyCnt", "telegramOrder", "linkType", "sendCode",
-                                  "receiveCode", "encryptYN", "sendType", "rrKey", "reqDate", "dataLen"};
+            String[] keyHeader = { "event", "headCnt", "bodyCnt", "telegramOrder", "linkType", "sendCode", "receiveCode", "encryptYN", "sendType", "rrKey", "reqDate", "dataLen" };
             for (int i = 0; i < arHeader.length; i++) {
 
-              if ( keyHeader[i].equals("telegramOrder")
-                      || keyHeader[i].equals("receiveCode")
-                      || keyHeader[i].equals("encryptYN")
-                      || keyHeader[i].equals("sendType") ) {
+              if (keyHeader[i].equals("telegramOrder") || keyHeader[i].equals("receiveCode") || keyHeader[i].equals("encryptYN") || keyHeader[i].equals("sendType")) {
                 String[] arStr = arHeader[i].split(ARRAY_HEX);
                 JSONArray aArray = new JSONArray();
                 for (String element : arStr) {
@@ -388,17 +383,11 @@ public class NewTotalSource extends AbstractSource implements Configurable, Even
             tBody = tBody.replaceAll(END_HEX, "");
             tBody = tBody.replaceAll("\r", "");
             String[] arBody = tBody.split(FIELD_HEX);
-            String[] keyBody = {"eventId", "eventName", "eventGrade", "eventNum", "progress",
-                                "eventPoint", "eventPointName", "eventContent", "eventDate", "progressContent",
-                                "progressUser", "progressDate", "endDate", "eventItemCnt", "eventItemName",
-                                "eventDtlCode", "sendHis"};
+            String[] keyBody = { "eventId", "eventName", "eventGrade", "eventNum", "progress", "eventPoint", "eventPointName", "eventContent", "eventDate", "progressContent", "progressUser",
+                "progressDate", "endDate", "eventItemCnt", "eventItemName", "eventDtlCode", "sendHis" };
             for (int i = 0; i < arBody.length; i++) {
 
-              if ( keyBody[i].equals("eventPoint")
-                      || keyBody[i].equals("progressContent")
-                      || keyBody[i].equals("progressUser")
-                      || keyBody[i].equals("eventItemName")
-                      || keyBody[i].equals("sendHis") ) {
+              if (keyBody[i].equals("eventPoint") || keyBody[i].equals("progressContent") || keyBody[i].equals("progressUser") || keyBody[i].equals("eventItemName") || keyBody[i].equals("sendHis")) {
                 String[] arStr = arBody[i].split(ARRAY_HEX);
                 JSONArray aArray = new JSONArray();
                 for (String element : arStr) {

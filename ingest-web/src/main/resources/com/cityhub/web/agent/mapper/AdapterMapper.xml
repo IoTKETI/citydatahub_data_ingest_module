@@ -4,142 +4,142 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.cityhub.web.agent.mapper.AdapterMapper">
-  
-    <select id="getAll" resultType="map">
-      SELECT a.adapter_type_id, a.adapter_type_nm, a.adapter_type_div, b.code_nm as adapter_type_div_nm, a.use_yn 
-      FROM adapter_type_info a, comm_code b
-      WHERE 1=1
-      AND a.adapter_type_div = b.code_id
-      ORDER BY adapter_type_id
-    </select>
-    
-    <!-- <select id="code_detail" resultType="map">
-      SELECT adapter_type_id, item, value, essential_yn, item_described, value_type, display_seq
-      FROM adapter_type_detail_conf
-      WHERE adapter_type_id = #{code_id}
-    </select> -->
-    
-    <select id="value_type_search" resultType="map">
-      SELECT code_id, code_nm 
-      FROM comm_code 
-      WHERE code_type_id = 'I07'
-      ORDER BY code_id
-    </select>
-    
-    <select id="new_code_id" resultType="string">
+
+  <select id="getAll" resultType="map">
+    SELECT a.adapter_type_id, a.adapter_type_nm, a.adapter_type_div, b.code_nm as adapter_type_div_nm, a.use_yn
+    FROM adapter_type_info a, comm_code b
+    WHERE 1=1
+    AND a.adapter_type_div = b.code_id
+    ORDER BY adapter_type_id
+  </select>
+
+  <select id="value_type_search" resultType="map">
+    SELECT code_id, code_nm
+    FROM comm_code
+    WHERE code_type_id = 'I07'
+    ORDER BY code_id
+  </select>
+
+  <select id="new_code_id" resultType="string">
       <![CDATA[ 
       SELECT 'A' || LPAD(cast(cast(substr(COALESCE(max(adapter_type_id),'A000000000'), 2,9) as int)+1 as varchar),9, '0')
       FROM adapter_type_info 
         ]]>
-    </select>
-    
-    <insert id="insertAdaptorType" parameterType="map" useGeneratedKeys="true" keyProperty="code_id">
-      INSERT INTO adapter_type_info(adapter_type_id, adapter_type_nm, adapter_type_div, use_yn, first_create_dt, first_create_id, last_update_dt, last_update_id) 
-      VALUES (#{adapter_type_id},#{adapter_type_nm},#{adapter_type_div},#{use_yn},now(),null,now(),null)
-    </insert>
-    
-    <update id="updateAdaptorType" parameterType="map" >
-      UPDATE adapter_type_info 
-      SET last_update_dt = now()
-      <if test="user_id != null and user_id != '' ">
-      , last_update_id  = #{user_id}
-      </if>
-      <if test="adapter_type_nm != null and adapter_type_nm != '' ">
-      , adapter_type_nm  = #{adapter_type_nm}
-      </if>
-      <if test="adapter_type_div != null and adapter_type_div != '' ">
-      , adapter_type_div  = #{adapter_type_div}
-      </if>
-      <if test="use_yn != null and use_yn != '' ">
-      , use_yn  = #{use_yn}
-      </if>
-      <if test="user_id != null and user_id != '' ">
+  </select>
+
+  <insert id="insertAdaptorType" parameterType="map" useGeneratedKeys="true" keyProperty="code_id">
+    INSERT INTO adapter_type_info(adapter_type_id, adapter_type_nm, adapter_type_div, use_yn, first_create_dt, first_create_id, last_update_dt, last_update_id)
+    VALUES (#{adapter_type_id},#{adapter_type_nm},#{adapter_type_div},#{use_yn},now(),null,now(),null)
+  </insert>
+
+  <update id="updateAdaptorType" parameterType="map">
+    UPDATE adapter_type_info
+    SET last_update_dt = now()
+    <if test="user_id != null and user_id != '' ">
       , last_update_id = #{user_id}
-      </if>
-      WHERE adapter_type_id = #{adapter_type_id}
-    </update>
-    
-    <select id="itemSelect" resultType="map">
-      SELECT a.adapter_type_id, b.item, c.value, 'Y' AS essential_yn, c.item_described, c.value_type, 0 AS display_seq, c.setup_method, c.change_able_yn, c.use_purpose, 'Y' AS keyword_yn, adapter_type_nm AS adapter_type_nm
-      FROM adapter_type_info a 
-      INNER JOIN keyword_info b ON a.adapter_type_div = b.relation_code_id
-      LEFT OUTER JOIN adapter_type_detail_conf c ON a.adapter_type_id = c.adapter_type_id AND b.item = c.item
-      WHERE a.adapter_type_id = #{adapter_type_id}
-      
-      UNION ALL
-      
-      SELECT adapter_type_id, item, value, essential_yn, item_described, value_type, CASE WHEN display_seq=0 THEN display_seq+1 ELSE display_seq END AS display_seq, setup_method, change_able_yn, use_purpose, 'N' AS keyword_yn, '' AS adapter_type_nm
-      FROM adapter_type_detail_conf a
-      WHERE adapter_type_id = #{adapter_type_id}
-        AND NOT EXISTS (SELECT 1 FROM adapter_type_info t1, keyword_info t2 WHERE t1.adapter_type_div = t2.relation_code_id AND t1.adapter_type_id = a.adapter_type_id AND t2.item = a.item)
-      ORDER BY display_seq
-    </select>
-    
-    <select id="itemSelect2" resultType="map">
-    select a.adapter_type_id, b.item, b.value, 'Y' AS essential_yn,  b.item_described, b.value_type, b.display_seq, b.setup_method, b.change_able_yn, b.use_purpose, 'Y' AS keyword_yn, adapter_type_nm AS adapter_type_nm 
+    </if>
+    <if test="adapter_type_nm != null and adapter_type_nm != '' ">
+      , adapter_type_nm = #{adapter_type_nm}
+    </if>
+    <if test="adapter_type_div != null and adapter_type_div != '' ">
+      , adapter_type_div = #{adapter_type_div}
+    </if>
+    <if test="use_yn != null and use_yn != '' ">
+      , use_yn = #{use_yn}
+    </if>
+    <if test="user_id != null and user_id != '' ">
+      , last_update_id = #{user_id}
+    </if>
+    WHERE adapter_type_id = #{adapter_type_id}
+  </update>
+
+  <select id="itemSelect" resultType="map">
+    SELECT a.adapter_type_id, b.item, c.value, 'Y' AS essential_yn, c.item_described, c.value_type, 0 AS display_seq, c.setup_method, c.change_able_yn, c.use_purpose, 'Y' AS keyword_yn, adapter_type_nm AS
+    adapter_type_nm
+    FROM adapter_type_info a
+    INNER JOIN keyword_info b ON a.adapter_type_div = b.relation_code_id
+    LEFT OUTER JOIN adapter_type_detail_conf c ON a.adapter_type_id = c.adapter_type_id AND b.item = c.item
+    WHERE a.adapter_type_id = #{adapter_type_id}
+
+    UNION ALL
+
+    SELECT adapter_type_id, item, value, essential_yn, item_described, value_type, CASE WHEN display_seq=0 THEN display_seq+1 ELSE display_seq END AS display_seq, setup_method, change_able_yn, use_purpose,
+    'N' AS keyword_yn, '' AS adapter_type_nm
+    FROM adapter_type_detail_conf a
+    WHERE adapter_type_id = #{adapter_type_id}
+    AND NOT EXISTS (SELECT 1 FROM adapter_type_info t1, keyword_info t2 WHERE t1.adapter_type_div = t2.relation_code_id AND t1.adapter_type_id = a.adapter_type_id AND t2.item = a.item)
+    ORDER BY display_seq
+  </select>
+
+  <select id="itemSelect2" resultType="map">
+    select a.adapter_type_id, b.item, b.value, 'Y' AS essential_yn, b.item_described, b.value_type, b.display_seq, b.setup_method, b.change_able_yn,
+    b.use_purpose, 'Y' AS keyword_yn, adapter_type_nm AS adapter_type_nm
     from adapter_type_info a
-    inner join adapter_type_detail_conf b on  a.adapter_type_id = b.adapter_type_id and sector = 'a'
+    inner join adapter_type_detail_conf b on a.adapter_type_id = b.adapter_type_id and sector = 'a'
     where a.adapter_type_id = #{adapter_type_id}
     order by display_seq asc
-    </select>
-    
-    <select id="itemSelect3" resultType="map"> 
-    SELECT a.adapter_type_id, b.item, c.value, 'Y' AS essential_yn, c.item_described, c.value_type, 0 AS display_seq, c.setup_method, c.change_able_yn, c.use_purpose, 'Y' AS keyword_yn, adapter_type_nm AS adapter_type_nm
-        FROM adapter_type_info a 
-    INNER JOIN keyword_info b ON a.adapter_type_div = b.relation_code_id
-        LEFT OUTER JOIN adapter_type_detail_conf c ON a.adapter_type_id = c.adapter_type_id AND b.item = c.item
-    WHERE a.adapter_type_id = #{adapter_type_id}
-  
-   union all   
-  
-    select b.adapter_type_id, b.item, b.value, 'Y' AS essential_yn,  b.item_described, b.value_type, 0 AS display_seq, b.setup_method, b.change_able_yn, b.use_purpose, 'N' AS keyword_yn, '' AS adapter_type_nm
-    from adapter_type_detail_conf b 
-    where b.adapter_type_id = #{adapter_type_id} and sector = 'b'
-      AND not EXISTS (SELECT 1 FROM adapter_type_info t1, keyword_info t2 WHERE t1.adapter_type_div = t2.relation_code_id AND t1.adapter_type_id = b.adapter_type_id AND t2.item = b.item)
-    ORDER BY display_seq
-    </select>
-    
-    <delete id="deleteAdtItem" parameterType="map">
-      DELETE FROM adapter_type_detail_conf 
-      WHERE adapter_type_id = #{adapter_type_id}      
-    </delete>
-    
-    <delete id="deleteAdtItem2" parameterType="map">
-      DELETE FROM adapter_type_detail_conf 
-      WHERE adapter_type_id = #{adapter_type_id}    
-      and sector = 'a'  
-    </delete>
-    
-    <delete id="deleteAdtItem3" parameterType="map">
-      DELETE FROM adapter_type_detail_conf 
-      WHERE adapter_type_id = #{adapter_type_id}    
-      and sector = 'b'  
-    </delete>
-    
-    <insert id="adtItemInsert" parameterType="map" useGeneratedKeys="true" keyProperty="adapter_type">
-      INSERT INTO adapter_type_detail_conf(adapter_type_id, item, value, essential_yn, item_described, value_type, display_seq, first_create_dt, first_create_id, last_update_dt, last_update_id, use_purpose, change_able_yn, setup_method, sector) 
-      VALUES (#{adapter_type_id}, #{item}, #{value}, #{essential_yn}, #{item_described}, #{value_type}, cast(#{display_seq} as int), now(), null, now(), null, #{use_purpose}, #{change_able_yn}, #{setup_method}, #{sector}) 
-    </insert>
-    
-    <select id="type_search" resultType="map">
-      SELECT code_type_id, code_id, code_nm 
-      FROM comm_code 
-      WHERE code_type_id in ('I07','I11','I12','I13')
-      ORDER BY code_id
-    </select>
-    
-    <select id="type_search_gs1" resultType="map">
-      select * from gs1_code_mapping
-    </select>
-    
-    <select id="isExistAdapterType" resultType="boolean">
-      SELECT CASE WHEN COUNT(1) > 0 THEN TRUE ELSE FALSE END
-      FROM adapter_type_info
-      WHERE adapter_type_id = #{adapter_type_id}
   </select>
-  
+
+  <select id="itemSelect3" resultType="map">
+    SELECT a.adapter_type_id, b.item, c.value, 'Y' AS essential_yn, c.item_described, c.value_type, 0 AS display_seq, c.setup_method, c.change_able_yn, c.use_purpose, 'Y' AS keyword_yn, adapter_type_nm AS
+    adapter_type_nm
+    FROM adapter_type_info a
+    INNER JOIN keyword_info b ON a.adapter_type_div = b.relation_code_id
+    LEFT OUTER JOIN adapter_type_detail_conf c ON a.adapter_type_id = c.adapter_type_id AND b.item = c.item
+    WHERE a.adapter_type_id = #{adapter_type_id}
+
+    union all
+
+    select b.adapter_type_id, b.item, b.value, 'Y' AS essential_yn, b.item_described, b.value_type, 0 AS display_seq, b.setup_method, b.change_able_yn, b.use_purpose, 'N' AS keyword_yn, '' AS adapter_type_nm
+    from adapter_type_detail_conf b
+    where b.adapter_type_id = #{adapter_type_id} and sector = 'b'
+    AND not EXISTS (SELECT 1 FROM adapter_type_info t1, keyword_info t2 WHERE t1.adapter_type_div = t2.relation_code_id AND t1.adapter_type_id = b.adapter_type_id AND t2.item = b.item)
+    ORDER BY display_seq
+  </select>
+
+  <delete id="deleteAdtItem" parameterType="map">
+    DELETE FROM adapter_type_detail_conf
+    WHERE adapter_type_id = #{adapter_type_id}
+  </delete>
+
+  <delete id="deleteAdtItem2" parameterType="map">
+    DELETE FROM adapter_type_detail_conf
+    WHERE adapter_type_id = #{adapter_type_id}
+    and sector = 'a'
+  </delete>
+
+  <delete id="deleteAdtItem3" parameterType="map">
+    DELETE FROM adapter_type_detail_conf
+    WHERE adapter_type_id = #{adapter_type_id}
+    and sector = 'b'
+  </delete>
+
+  <insert id="adtItemInsert" parameterType="map" useGeneratedKeys="true" keyProperty="adapter_type">
+    INSERT INTO adapter_type_detail_conf(adapter_type_id, item, value, essential_yn, item_described, value_type, display_seq, first_create_dt, first_create_id, last_update_dt, last_update_id, use_purpose,
+    change_able_yn, setup_method, sector)
+    VALUES (#{adapter_type_id}, #{item}, #{value}, #{essential_yn}, #{item_described}, #{value_type}, cast(#{display_seq} as int), now(), null, now(), null, #{use_purpose}, #{change_able_yn}, #{setup_method},
+    #{sector})
+  </insert>
+
+  <select id="type_search" resultType="map">
+    SELECT code_type_id, code_id, code_nm
+    FROM comm_code
+    WHERE code_type_id in ('I07','I11','I12','I13')
+    ORDER BY code_id
+  </select>
+
+  <select id="type_search_gs1" resultType="map">
+    select * from gs1_code_mapping
+  </select>
+
+  <select id="isExistAdapterType" resultType="boolean">
+    SELECT CASE WHEN COUNT(1) > 0 THEN TRUE ELSE FALSE END
+    FROM adapter_type_info
+    WHERE adapter_type_id = #{adapter_type_id}
+  </select>
+
   <delete id="deleteAdtTypeInfo" parameterType="map">
-      DELETE FROM adapter_type_info 
-      WHERE adapter_type_id = #{adapter_type_id}      
-    </delete>
+    DELETE FROM adapter_type_info
+    WHERE adapter_type_id = #{adapter_type_id}
+  </delete>
 </mapper>

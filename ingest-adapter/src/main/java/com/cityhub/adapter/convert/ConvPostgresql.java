@@ -38,20 +38,19 @@ public class ConvPostgresql extends AbstractConvert {
   @Override
   public String doit(Statement st) throws CoreException {
     StringBuffer sendJson = new StringBuffer();
-    String q = ConfItem.getString("query") ;
+    String q = ConfItem.getString("query");
 
     try (ResultSet rs = st.executeQuery(q)) {
       while (rs.next()) {
-        log.info("{}",rs);
-        log.info("{}",rs.toString());
+        log.info("{}", rs);
+        log.info("{}", rs.toString());
       }
 
     } catch (Exception e) {
-      throw new CoreException(ErrorCode.NORMAL_ERROR,e.getMessage(), e);
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
     }
 
     return sendJson.toString();
   }
-
 
 } // end of class

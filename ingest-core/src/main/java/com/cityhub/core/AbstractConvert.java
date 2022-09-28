@@ -64,7 +64,7 @@ public abstract class AbstractConvert implements ReflectExecuter {
 
   public void log(SocketCode sc, String id) {
     log.info("`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("model_id"), sc.getCode() + ";" + sc.getMessage() + "", id, 0, ConfItem.getString("adapterType"));
-    StringBuilder l =  new StringBuilder();
+    StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(ConfItem.getString("sourceName"));
     l.append("`").append(ConfItem.getString("model_id"));
@@ -83,12 +83,12 @@ public abstract class AbstractConvert implements ReflectExecuter {
     logVo.setId(id);
     logVo.setLength("0");
     logVo.setAdapterType(ConfItem.getString("invokeClass"));
-    LogWriterToDb.logToDaemonApi(ConfItem,logVo);
+    LogWriterToDb.logToDaemonApi(ConfItem, logVo);
   }
 
   public void log(SocketCode sc, String id, String msg) {
     log.info("`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("model_id"), sc.getCode() + ";" + sc.getMessage() + "-" + msg, id, 0, ConfItem.getString("adapterType"));
-    StringBuilder l =  new StringBuilder();
+    StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(ConfItem.getString("sourceName"));
     l.append("`").append(ConfItem.getString("model_id"));
@@ -107,12 +107,13 @@ public abstract class AbstractConvert implements ReflectExecuter {
     logVo.setId(id);
     logVo.setLength("0");
     logVo.setAdapterType(ConfItem.getString("invokeClass"));
-    LogWriterToDb.logToDaemonApi(ConfItem,logVo);
+    LogWriterToDb.logToDaemonApi(ConfItem, logVo);
 
   }
+
   public void log(SocketCode sc, String id, String msg, String modelId) {
     log.info("`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), modelId, sc.getCode() + ";" + sc.getMessage() + "-" + msg, id, 0, ConfItem.getString("adapterType"));
-    StringBuilder l =  new StringBuilder();
+    StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(ConfItem.getString("sourceName"));
     l.append("`").append(modelId);
@@ -132,12 +133,12 @@ public abstract class AbstractConvert implements ReflectExecuter {
     logVo.setId(id);
     logVo.setLength("0");
     logVo.setAdapterType(ConfItem.getString("invokeClass"));
-    LogWriterToDb.logToDaemonApi(ConfItem,logVo);
+    LogWriterToDb.logToDaemonApi(ConfItem, logVo);
   }
 
   public void log(SocketCode sc, String id, byte[] byteBody) {
     log.info("`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("model_id"), sc.getCode() + ";" + sc.getMessage() + "", id, byteBody.length, ConfItem.getString("adapterType"));
-    StringBuilder l =  new StringBuilder();
+    StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(ConfItem.getString("sourceName"));
     l.append("`").append(ConfItem.getString("model_id"));
@@ -157,12 +158,13 @@ public abstract class AbstractConvert implements ReflectExecuter {
     logVo.setId(id);
     logVo.setLength(String.valueOf(byteBody.length));
     logVo.setAdapterType(ConfItem.getString("invokeClass"));
-    LogWriterToDb.logToDaemonApi(ConfItem,logVo);
+    LogWriterToDb.logToDaemonApi(ConfItem, logVo);
 
   }
+
   public void log(SocketCode sc, String id, byte[] byteBody, String modelId) {
     log.info("`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), modelId, sc.getCode() + ";" + sc.getMessage() + "", id, byteBody.length, ConfItem.getString("adapterType"));
-    StringBuilder l =  new StringBuilder();
+    StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(ConfItem.getString("sourceName"));
     l.append("`").append(ConfItem.getString("model_id"));
@@ -182,17 +184,18 @@ public abstract class AbstractConvert implements ReflectExecuter {
     logVo.setId(id);
     logVo.setLength(String.valueOf(byteBody.length));
     logVo.setAdapterType(ConfItem.getString("invokeClass"));
-    LogWriterToDb.logToDaemonApi(ConfItem,logVo);
+    LogWriterToDb.logToDaemonApi(ConfItem, logVo);
 
   }
 
   public void log(SocketCode sc, String id, String msg, byte[] byteBody) {
-    log.info("`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("model_id"), sc.getCode() + ";" + sc.getMessage() + "-" + msg, id, byteBody.length,ConfItem.getString("adapterType"));
-    StringBuilder l =  new StringBuilder();
+    log.info("`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("model_id"), sc.getCode() + ";" + sc.getMessage() + "-" + msg, id, byteBody.length,
+        ConfItem.getString("adapterType"));
+    StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(ConfItem.getString("sourceName"));
     l.append("`").append(ConfItem.getString("model_id"));
-    l.append("`").append(sc.getCode() + ";" + sc.getMessage()+ "-" + msg);
+    l.append("`").append(sc.getCode() + ";" + sc.getMessage() + "-" + msg);
     l.append("`").append(id);
     l.append("`").append(byteBody.length);
     l.append("`").append(ConfItem.getString("adapterType"));
@@ -203,16 +206,17 @@ public abstract class AbstractConvert implements ReflectExecuter {
     logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     logVo.setType(ConfItem.getString("model_id"));
     logVo.setStep(sc.getCode());
-    logVo.setDesc(sc.getMessage()+ "-" + msg);
+    logVo.setDesc(sc.getMessage() + "-" + msg);
     logVo.setId(id);
     logVo.setLength(String.valueOf(byteBody.length));
     logVo.setAdapterType(ConfItem.getString("invokeClass"));
-    LogWriterToDb.logToDaemonApi(ConfItem,logVo);
+    LogWriterToDb.logToDaemonApi(ConfItem, logVo);
   }
 
   public void logger(SocketCode sc, String modelId, String id, byte[] byteBody) {
-    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), modelId, sc.getCode() + ";" + sc.getMessage() + "", id, byteBody.length, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
-    StringBuilder l =  new StringBuilder();
+    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), modelId, sc.getCode() + ";" + sc.getMessage() + "", id, byteBody.length, ConfItem.getString("adapterType"),
+        ConfItem.getString("invokeClass"));
+    StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(ConfItem.getString("sourceName"));
     l.append("`").append(modelId);
@@ -232,11 +236,13 @@ public abstract class AbstractConvert implements ReflectExecuter {
     logVo.setId(id);
     logVo.setLength(String.valueOf(byteBody.length));
     logVo.setAdapterType(ConfItem.getString("invokeClass"));
-    LogWriterToDb.logToDaemonApi(ConfItem,logVo);
+    LogWriterToDb.logToDaemonApi(ConfItem, logVo);
   }
+
   public void logger(SocketCode sc, String modelId, String id, byte[] byteBody, String msg) {
-    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), modelId, sc.getCode() + ";" + sc.getMessage() + "-" + msg, id, byteBody.length, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
-    StringBuilder l =  new StringBuilder();
+    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), modelId, sc.getCode() + ";" + sc.getMessage() + "-" + msg, id, byteBody.length, ConfItem.getString("adapterType"),
+        ConfItem.getString("invokeClass"));
+    StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(ConfItem.getString("sourceName"));
     l.append("`").append(modelId);
@@ -256,9 +262,8 @@ public abstract class AbstractConvert implements ReflectExecuter {
     logVo.setId(id);
     logVo.setLength(String.valueOf(byteBody.length));
     logVo.setAdapterType(ConfItem.getString("invokeClass"));
-    LogWriterToDb.logToDaemonApi(ConfItem,logVo);
+    LogWriterToDb.logToDaemonApi(ConfItem, logVo);
   }
-
 
   private final String REQUEST_MESSAGE_TO_SEPARATOR = "/";
   private String regex = "([a-z])([A-Z]+)";

@@ -64,6 +64,7 @@ public class DateUtil {
    * <p>
    * <code>DateUtil.getTime()</code>
    * <p>
+   *
    * @return
    */
   public static String getTime() {
@@ -91,7 +92,6 @@ public class DateUtil {
     return Timestamp.valueOf(LocalDateTime.now());
   }
 
-
   /**
    * <p>
    * time : 2018-12-12 17:18:00 , 2018-12-12 , 2018-12-12 01:20
@@ -117,7 +117,7 @@ public class DateUtil {
           _date = LocalDateTime.parse(atime, DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
         } else if (atime.length() == 14) {
           _date = LocalDateTime.parse(atime, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-        } else if (atime.length() > 14  && atime.length() <= 17 ) {
+        } else if (atime.length() > 14 && atime.length() <= 17) {
           DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("yyyyMMddHHmmss").appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
           _date = LocalDateTime.parse(atime, formatter);
         } else {
@@ -130,7 +130,7 @@ public class DateUtil {
       }
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return sDate;
   }
@@ -167,11 +167,11 @@ public class DateUtil {
         sDate = _date.format(DateTimeFormatter.ofPattern(pattern)).toString();
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return sDate;
   }
-  
+
   /**
    * <p>
    * time : 20181212171800 , 20181212 , 201812120120
@@ -202,31 +202,34 @@ public class DateUtil {
         } else {
           DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("yyyyMMddHHmmss").appendValue(ChronoField.NANO_OF_SECOND, 6).toFormatter();
           _date = LocalDateTime.parse(atime, formatter);
-          //_date = LocalDateTime.parse(atime, DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSSSSS"));
+          // _date = LocalDateTime.parse(atime,
+          // DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSSSSS"));
         }
-        //sDate = OffsetDateTime.of(_date, zo).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,SSSXXX")).toString();
+        // sDate = OffsetDateTime.of(_date,
+        // zo).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss,SSSXXX")).toString();
 
       } else {
-        //sDate = null;
+        // sDate = null;
       }
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return _date;
   }
 
-
   /**
    * 현재 시간 가져오기
+   *
    * @return
    */
   public static int getHour() {
     return LocalTime.now().getHour();
   }
-  
+
   /**
    * 현재 분 가져오기
+   *
    * @return
    */
   public static int getMinute() {
@@ -235,12 +238,12 @@ public class DateUtil {
 
   /**
    * 현재 초 가져오기
+   *
    * @return
    */
   public static int getSecond() {
     return LocalTime.now().getSecond();
   }
-
 
   /**
    * <p>
@@ -256,7 +259,8 @@ public class DateUtil {
    * <p>
    * pattern : yyyyMMdd , yyyyMMdd HH:mm.
    * <p>
-   * dateType : ChronoUnit.YEARS, ChronoUnit.MONTHS ,ChronoUnit.DAYS , ChronoUnit.HOURS, ChronoUnit.MINUTES, ChronoUnit.SECONDS
+   * dateType : ChronoUnit.YEARS, ChronoUnit.MONTHS ,ChronoUnit.DAYS ,
+   * ChronoUnit.HOURS, ChronoUnit.MINUTES, ChronoUnit.SECONDS
    * <p>
    * num : +- Ingeter.
    *
@@ -275,7 +279,8 @@ public class DateUtil {
    * <p>
    * pattern : yyyyMMdd , yyyyMMdd HH:mm.
    * <p>
-   * dateType : ChronoUnit.YEARS, ChronoUnit.MONTHS ,ChronoUnit.DAYS , ChronoUnit.HOURS, ChronoUnit.MINUTES, ChronoUnit.SECONDS
+   * dateType : ChronoUnit.YEARS, ChronoUnit.MONTHS ,ChronoUnit.DAYS ,
+   * ChronoUnit.HOURS, ChronoUnit.MINUTES, ChronoUnit.SECONDS
    * <p>
    * num : +- Ingeter.
    *
@@ -303,7 +308,7 @@ public class DateUtil {
         _date = LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
       }
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return _date.plus(num, dateType).format(DateTimeFormatter.ofPattern(pattern)).toString();
   }
@@ -312,33 +317,34 @@ public class DateUtil {
     ChronoUnit cu = null;
     str = str.toUpperCase();
     switch (str) {
-      case "YEAR":
-        cu = ChronoUnit.YEARS;
-        break;
-      case "MONTH":
-        cu = ChronoUnit.MONTHS;
-        break;
-      case "DAY":
-        cu = ChronoUnit.DAYS;
-        break;
-      case "HOUR":
-        cu = ChronoUnit.HOURS;
-        break;
-      case "MINUTE":
-        cu = ChronoUnit.MINUTES;
-        break;
-      case "SECONDE":
-        cu = ChronoUnit.SECONDS;
-        break;
-      default:
-        cu = ChronoUnit.DAYS;
-        break;
+    case "YEAR":
+      cu = ChronoUnit.YEARS;
+      break;
+    case "MONTH":
+      cu = ChronoUnit.MONTHS;
+      break;
+    case "DAY":
+      cu = ChronoUnit.DAYS;
+      break;
+    case "HOUR":
+      cu = ChronoUnit.HOURS;
+      break;
+    case "MINUTE":
+      cu = ChronoUnit.MINUTES;
+      break;
+    case "SECONDE":
+      cu = ChronoUnit.SECONDS;
+      break;
+    default:
+      cu = ChronoUnit.DAYS;
+      break;
     }
     return cu;
   }
 
   /**
    * 입력 문자의 패턴 확인
+   *
    * @param str
    * @return
    */
@@ -379,6 +385,7 @@ public class DateUtil {
 
   /**
    * 날짜비교
+   *
    * @param raw
    * @param prevTime
    * @return
@@ -387,13 +394,14 @@ public class DateUtil {
     LocalDateTime _date = LocalDateTime.parse(raw, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     LocalDateTime comparedate = LocalDateTime.now().minus(prevTime, ChronoUnit.MINUTES);
     if (log.isDebugEnabled()) {
-      //  log.debug("{} < {} = {}" , _date ,comparedate, comparedate.compareTo(_date));
+      // log.debug("{} < {} = {}" , _date ,comparedate, comparedate.compareTo(_date));
     }
     return comparedate.compareTo(_date);
   }
 
   /**
    * 두 날자 사이이 비교
+   *
    * @param baseDate
    * @param compareDate
    * @return
@@ -413,9 +421,9 @@ public class DateUtil {
     }
   }
 
-  
   /**
    * 두 날짜 사이의 비교 이후
+   *
    * @param baseDate
    * @param compareDate
    * @return
@@ -426,9 +434,10 @@ public class DateUtil {
     LocalDateTime cDate = LocalDateTime.parse(compareDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss,SSS"));
     return cDate.isAfter(bDate);
   }
-  
-  /** 
+
+  /**
    * 두 날짜 사이의 비교 이전
+   *
    * @param baseDate
    * @param compareDate
    * @return
@@ -439,9 +448,10 @@ public class DateUtil {
     LocalDateTime cDate = LocalDateTime.parse(compareDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss,SSS"));
     return cDate.isBefore(bDate);
   }
-  
-  /** 
+
+  /**
    * 두 날짜가 같은지 비교
+   *
    * @param baseDate
    * @param compareDate
    * @return
@@ -453,9 +463,9 @@ public class DateUtil {
     return cDate.isEqual(bDate);
   }
 
-
   /**
    * ISO 시간을 변환
+   *
    * @param isoTime
    * @return yyyy-MM-dd HH:mm:ss,SSS
    */
@@ -471,13 +481,14 @@ public class DateUtil {
         .optionalStart().appendOffset("+HH", "Z").optionalEnd()
         // create formatter
         .toFormatter();
-    OffsetDateTime odt = OffsetDateTime.parse( isoTime, format);
+    OffsetDateTime odt = OffsetDateTime.parse(isoTime, format);
     DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss,").appendValue(ChronoField.MILLI_OF_SECOND, 3).toFormatter();
     return odt.format(formatter);
   }
-  
-  /** 
+
+  /**
    * 입력 받은 날짜 형식을 LocalDateTime 로 파싱
+   *
    * @param st
    * @return
    */
@@ -492,11 +503,13 @@ public class DateUtil {
       st = st.replaceAll("T", " ");
       st = st.replaceAll(",", ".");
       if (st.lastIndexOf("+") > 0) {
-        st = st.substring(0, st.lastIndexOf("+"));;
+        st = st.substring(0, st.lastIndexOf("+"));
+        ;
       }
-      if (st.length() == 8 ) {
+      if (st.length() == 8) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        _sdate = LocalDate.parse(st, formatter).atStartOfDay();;
+        _sdate = LocalDate.parse(st, formatter).atStartOfDay();
+        ;
       } else {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd [HH][H][:mm][:ss][.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]");
         _sdate = LocalDateTime.parse(st, formatter);
@@ -507,6 +520,7 @@ public class DateUtil {
 
   /**
    * 입력받은 LocalDateTime 을 OffsetDateTime으로 변환
+   *
    * @param _sdate
    * @return
    */
@@ -514,17 +528,20 @@ public class DateUtil {
     ZoneOffset zo = ZonedDateTime.now().getOffset();
     return OffsetDateTime.of(_sdate, zo).format(isoformatter).toString();
   }
-  
+
   /**
    * 입력 받은 LocalDateTime을 EpochMillis 로 변환
+   *
    * @param _sdate
    * @return
    */
   public static long getEpochMillis(LocalDateTime _sdate) {
     return _sdate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
   }
+
   /**
    * 입력 받은 문자열(날짜형식) 을 EpochMillis 로 변환
+   *
    * @param st
    * @return
    */
@@ -532,9 +549,10 @@ public class DateUtil {
     LocalDateTime _sdate = DateUtil.filteredDate(st);
     return _sdate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
   }
-  
+
   /**
    * 입력 받은 날짜가 오류가 났을 경우 replaceDate 로 치환
+   *
    * @param date
    * @param replaceDate
    * @return

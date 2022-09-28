@@ -66,17 +66,19 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * <p>
- * A netcat-like source that listens on a given port and turns each line of text into an event.
+ * A netcat-like source that listens on a given port and turns each line of text
+ * into an event.
  * </p>
  * <p>
- * This source, primarily built for testing and exceedingly simple systems, acts like
- * <tt>nc -k -l [host] [port]</tt>. In other words, it opens a specified port and listens for data.
- * The expectation is that the supplied data is newline separated text. Each line of text is turned
- * into a Flume event and sent via the connected channel.
+ * This source, primarily built for testing and exceedingly simple systems, acts
+ * like <tt>nc -k -l [host] [port]</tt>. In other words, it opens a specified
+ * port and listens for data. The expectation is that the supplied data is
+ * newline separated text. Each line of text is turned into a Flume event and
+ * sent via the connected channel.
  * </p>
  * <p>
- * Most testing has been done by using the <tt>nc</tt> client but other, similarly implemented,
- * clients should work just fine.
+ * Most testing has been done by using the <tt>nc</tt> client but other,
+ * similarly implemented, clients should work just fine.
  * </p>
  * <p>
  * <b>Configuration options</b>
@@ -179,6 +181,7 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
   public void setInit(JSONObject init) {
     this.init = init;
   }
+
   public JSONObject getInit() {
     return init;
   }
@@ -226,7 +229,7 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
       log.info("Created serverSocket:{}", serverSocket);
 
     } catch (IOException e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       counterGroup.incrementAndGet("open.errors");
       log.error("Unable to bind to socket. Exception follows.", e);
       stop();
@@ -252,7 +255,6 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
     acceptRunnable.name = this.getName();
     acceptRunnable.ArrModel = ArrModel;
     acceptRunnable.init = init;
-
 
     acceptThread = new Thread(acceptRunnable);
 
@@ -366,7 +368,6 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
           request.ArrModel = ArrModel;
           request.init = init;
 
-
           handlerService.submit(request);
 
           counterGroup.incrementAndGet("accept.succeeded");
@@ -438,7 +439,7 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
               // than the size of the buffer. Response: Drop the connection.
               log.warn("Client sent event exceeding the maximum length");
               counterGroup.incrementAndGet("events.failed");
-              sendClient(writer, SocketCode.SYSTEM_ERROR , "" + "FAILED: Event exceeds the maximum length (" + buffer.capacity() + " chars, including newline)\n");
+              sendClient(writer, SocketCode.SYSTEM_ERROR, "" + "FAILED: Event exceeds the maximum length (" + buffer.capacity() + " chars, including newline)\n");
               break;
             }
           }
@@ -458,28 +459,32 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
 
       log.debug("Connection handler exiting");
     }
+
     public void sendClient(Writer writer, SocketCode sc) {
       try {
-        writer.write( getStr(sc) );
+        writer.write(getStr(sc));
         writer.flush();
         log.debug("{}", getStr(sc));
       } catch (Exception e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       }
     }
-    public void sendClient(Writer writer, SocketCode sc,String msg) {
+
+    public void sendClient(Writer writer, SocketCode sc, String msg) {
       try {
-        writer.write( getStr(sc, msg) );
+        writer.write(getStr(sc, msg));
         writer.flush();
         log.debug("{}", getStr(sc, msg));
       } catch (Exception e) {
-        log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       }
     }
+
     public String getStr(SocketCode sc) {
       return sc.getCode() + ";" + sc.getMessage() + "\n";
     }
-    public String getStr(SocketCode sc,String msg) {
+
+    public String getStr(SocketCode sc, String msg) {
       return sc.getCode() + ";" + sc.getMessage() + " [" + msg + "]\n";
     }
 
@@ -520,33 +525,31 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
 
             ChannelException ex = null;
             log.debug("받은 데이터 : {}", new String(body));
-            //if(!new String(body).startsWith("{"))
-
+            // if(!new String(body).startsWith("{"))
 
             if (ArrModel != null) {
 
               log.info("::::::::::::::::::{} - Processing - {}:::::::::::::::::", this.name, this.modelId);
-              sendClient(writer, SocketCode.DATA_CONVERT_REQ );
-
+              sendClient(writer, SocketCode.DATA_CONVERT_REQ);
 
               String sb = "";
               try {
-                ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(this.invokeClass ,  ConfItem, templateItem);
+                ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(this.invokeClass, ConfItem, templateItem);
                 sb = reflectExecuter.doit(body);
-                sendClient(writer, SocketCode.DATA_CONVERT_SUCCESS );
+                sendClient(writer, SocketCode.DATA_CONVERT_SUCCESS);
               } catch (Exception e) {
-                log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-                sendClient(writer, SocketCode.DATA_CONVERT_FAIL, e.getMessage() );
-                sendClient(writer, SocketCode.SOCKET_END );
+                log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+                sendClient(writer, SocketCode.DATA_CONVERT_FAIL, e.getMessage());
+                sendClient(writer, SocketCode.SOCKET_END);
               }
 
               if (sb != null && sb.lastIndexOf(",") > 0) {
-                JSONArray JSendArr = new JSONArray("[" + sb.substring(0 , sb.length() - 1) + "]");
+                JSONArray JSendArr = new JSONArray("[" + sb.substring(0, sb.length() - 1) + "]");
                 for (Object itm : JSendArr) {
-                  byte[] bodyBytes = createSendJson((JSONObject)itm);
+                  byte[] bodyBytes = createSendJson((JSONObject) itm);
                   ByteBuffer byteBuffer = ByteBuffer.allocate(bodyBytes.length + 5);
-                  byte version = 0x10;//4bit: Major version, 4bit: minor version
-                  Integer bodyLength = bodyBytes.length;//length = 1234
+                  byte version = 0x10;// 4bit: Major version, 4bit: minor version
+                  Integer bodyLength = bodyBytes.length;// length = 1234
                   byteBuffer.put(version);
                   byteBuffer.putInt(bodyLength.byteValue());
                   byteBuffer.put(bodyBytes);
@@ -554,7 +557,7 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
                   try {
                     Event event = EventBuilder.withBody(byteBuffer.array());
                     source.getChannelProcessor().processEvent(event);
-                    sendClient(writer, SocketCode.DATA_SAVE );
+                    sendClient(writer, SocketCode.DATA_SAVE);
                   } catch (ChannelException chEx) {
                     ex = chEx;
                   }
@@ -562,11 +565,11 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
                     counterGroup.incrementAndGet("events.processed");
                     numProcessed++;
                     if (true == ackEveryEvent) {
-                      sendClient(writer, SocketCode.SOCKET_END );
+                      sendClient(writer, SocketCode.SOCKET_END);
                     }
                   } else {
-                    sendClient(writer, SocketCode.SYSTEM_ERROR, ex.getMessage() );
-                    sendClient(writer, SocketCode.SOCKET_END );
+                    sendClient(writer, SocketCode.SYSTEM_ERROR, ex.getMessage());
+                    sendClient(writer, SocketCode.SOCKET_END);
                     counterGroup.incrementAndGet("events.failed");
                     log.warn("Error processing event. Exception follows.", ex);
                   }
@@ -574,8 +577,8 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
                 }
               }
             } else {
-              sendClient(writer, SocketCode.DATA_NOT_EXIST_MODEL , modelId );
-              sendClient(writer, SocketCode.SOCKET_END );
+              sendClient(writer, SocketCode.DATA_NOT_EXIST_MODEL, modelId);
+              sendClient(writer, SocketCode.SOCKET_END);
             }
 
             // advance position after data is consumed
@@ -592,21 +595,20 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
     }
 
     public byte[] createSendJson(JSONObject content) {
-      String Uuid = "DATAINGEST_" + UUID.randomUUID().toString().replaceAll("-","");
+      String Uuid = "DATAINGEST_" + UUID.randomUUID().toString().replaceAll("-", "");
       JSONObject body = new JSONObject();
       body.put("requestId", Uuid);
       body.put("e2eRequestId", Uuid);
       body.put("owner", init.getString("owner"));
       body.put("operation", init.getString("operation"));
       body.put("to", "DataCore/entities/" + (content.has("id") ? content.getString("id") : ""));
-      body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : "") );
+      body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : ""));
       body.put("queryString", "");
       body.put("eventTime", DateUtil.getTime());
       body.put("content", content);
 
       return body.toString().getBytes(Charset.forName("UTF-8"));
     }
-
 
     /**
      * <p>

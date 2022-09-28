@@ -155,7 +155,7 @@ public class DataModel {
         } else {
           if ("type".equals(c.getString("id"))) {
             if (c.has("possibleValues")) {
-              if (c.getJSONArray("possibleValues").length() > 0 ) {
+              if (c.getJSONArray("possibleValues").length() > 0) {
                 if (!"".equals(c.getJSONArray("possibleValues").getString(0))) {
                   subM.put(c.getString("id"), c.getJSONArray("possibleValues").getString(0));
                 } else {
@@ -286,16 +286,16 @@ public class DataModel {
   public static EventType operationToEventType(Operation processOperation) {
 
     switch (processOperation) {
-      case CREATE:
-        return EventType.CREATED;
-      case PARTIAL_UPDATE:
-        return EventType.PARTIALLY_UPDATED;
-      case FULL_UPDATE:
-        return EventType.FULLY_UPDATED;
-      case DELETE:
-        return EventType.DELETED;
-      default:
-        return null;
+    case CREATE:
+      return EventType.CREATED;
+    case PARTIAL_UPDATE:
+      return EventType.PARTIALLY_UPDATED;
+    case FULL_UPDATE:
+      return EventType.FULLY_UPDATED;
+    case DELETE:
+      return EventType.DELETED;
+    default:
+      return null;
     }
   }
 

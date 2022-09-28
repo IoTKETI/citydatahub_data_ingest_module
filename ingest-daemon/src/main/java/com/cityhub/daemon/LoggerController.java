@@ -34,13 +34,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class LoggerController {
 
-
   private final LoggerService svc;
 
   @PostMapping(value = "/logToDbApi")
-  public ResponseEntity<String> logToDbApi(@RequestBody Map<String,Object> param) {
+  public ResponseEntity<String> logToDbApi(@RequestBody Map<String, Object> param) {
     log.info("########logToDbApilogToDbApi");
-    if(!param.isEmpty()) {
+    if (!param.isEmpty()) {
       svc.logToDbApi(param);
     } else {
       log.error("body is empty");
@@ -48,6 +47,5 @@ public class LoggerController {
     return new ResponseEntity<>("OK", HttpStatus.OK);
 
   }
-
 
 }

@@ -69,7 +69,7 @@ public class SqlUtil {
       sessionFactory.setTypeHandlers(new TypeHandler[] { new DateTypeHandler(), new BooleanTypeHandler() });
 
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     } finally {
       lock.unlock();
     }
@@ -78,6 +78,7 @@ public class SqlUtil {
 
   /**
    * 세션 가져오기
+   *
    * @param autoCommit
    * @return
    * @throws Exception
@@ -88,6 +89,7 @@ public class SqlUtil {
 
   /**
    * 데이터 소스 가져오기
+   *
    * @param config
    * @return
    * @throws ClassNotFoundException
@@ -116,19 +118,18 @@ public class SqlUtil {
     try {
       // TODO
     } catch (Exception e) {
-      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
   /**
    * 인젝션 처리
+   *
    * @param s
    * @return
    */
   public static String escapeSQL(String s) {
     return s.replaceAll("'", "\\'");
   }
-
-
 
 } // end class

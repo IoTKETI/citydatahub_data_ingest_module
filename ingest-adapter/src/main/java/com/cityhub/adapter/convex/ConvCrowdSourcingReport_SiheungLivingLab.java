@@ -43,166 +43,159 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ConvCrowdSourcingReport_SiheungLivingLab extends AbstractConvert {
-	private ObjectMapper objectMapper;
+  private ObjectMapper objectMapper;
 
-	@Override
-	public void init(JSONObject ConfItem, JSONObject templateItem) {
-		super.setup(ConfItem, templateItem);
-		this.objectMapper = new ObjectMapper();
-		this.objectMapper.setSerializationInclusion(Include.NON_NULL);
-		this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
-		this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
-	}
+  @Override
+  public void init(JSONObject ConfItem, JSONObject templateItem) {
+    super.setup(ConfItem, templateItem);
+    this.objectMapper = new ObjectMapper();
+    this.objectMapper.setSerializationInclusion(Include.NON_NULL);
+    this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
+    this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
+  }
 
-	@Override
-	public String doit() throws CoreException {
-		List<Map<String, Object>> rtnList = new LinkedList<>();
-		String rtnStr = "";
-		try {
+  @Override
+  public String doit() throws CoreException {
+    List<Map<String, Object>> rtnList = new LinkedList<>();
+    String rtnStr = "";
+    try {
 
-			JSONArray svcList = ConfItem.getJSONArray("serviceList");
-			for (int i = 0; i < svcList.length(); i++) {
-				JSONObject iSvc = svcList.getJSONObject(i); // Column별로 분리함
-				id = iSvc.getString("gs1Code"); // 분리한 데이터의 gs1Code 값을 is에 넣어줌
-				JsonUtil ju = new JsonUtil((JSONObject) CommonUtil.getData(iSvc));
-				JSONArray arrList = ju.getArray("data.findAllPosts");
+      JSONArray svcList = ConfItem.getJSONArray("serviceList");
+      for (int i = 0; i < svcList.length(); i++) {
+        JSONObject iSvc = svcList.getJSONObject(i); // Column별로 분리함
+        id = iSvc.getString("gs1Code"); // 분리한 데이터의 gs1Code 값을 is에 넣어줌
+        JsonUtil ju = new JsonUtil((JSONObject) CommonUtil.getData(iSvc));
+        JSONArray arrList = ju.getArray("data.findAllPosts");
 
-				if (arrList.length() > 0) {
-					for (Object obj : arrList) {
-						JSONObject item = (JSONObject) obj;
-						if (item != null) {
-							
-							if ((item.optDouble("longitude", 0.0f) == 0.0f)
-									|| (item.optDouble("latitude", 0.0f) == 0.0f))
-								continue;
-							
-							log(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
-							
-							Map<String, Object> wMap = new LinkedHashMap<>(); // 분리한 데이터를 넣어줄 map을 만듬
-							Map<String, Object> tMap = objectMapper.readValue(
-									templateItem.getJSONObject(ConfItem.getString("modelId")).toString(),
-									new TypeReference<Map<String, Object>>() {
-									});
+        if (arrList.length() > 0) {
+          for (Object obj : arrList) {
+            JSONObject item = (JSONObject) obj;
+            if (item != null) {
 
-							if (item.has("post_id")) {
-								Find_wMap(tMap, "postId").put("value", item.optString("post_id"));
-							} else {
-								Delete_wMap(tMap, "postId");
-							}
-							if (item.has("sourcing_title")) {
-								Find_wMap(tMap, "sourcingTitle").put("value", item.optString("sourcing_title"));
-							} else {
-								Delete_wMap(tMap, "sourcingTitle");
-							}
-							if (item.has("sourcing_description")) {
-								Find_wMap(tMap, "sourcingDescription").put("value", item.optString("sourcing_description"));
-							} else {
-								Delete_wMap(tMap, "sourcingDescription");
-							}
-							if (item.has("latitude")) {
-								Find_wMap(tMap, "latitude").put("value", item.optString("latitude"));
-							} else {
-								Delete_wMap(tMap, "latitude");
-							}
-							if (item.has("longitude")) {
-								Find_wMap(tMap, "longitude").put("value", item.optString("longitude"));
-							} else {
-								Delete_wMap(tMap, "longitude");
-							}
-							if (item.has("file_data")) {
-								Find_wMap(tMap, "fileData").put("value", item.optString("file_data"));
-							} else {
-								Delete_wMap(tMap, "fileData");
-							}
-							if (item.has("dislikeCount")) {
-								Find_wMap(tMap, "dislikeCount").put("value", item.optInt("dislikeCount"));
-							} else {
-								Delete_wMap(tMap, "dislikeCount");
-							}
-							if (item.has("obstacle")) {
-								Find_wMap(tMap, "obstacle").put("value", item.optString("obstacle"));
-							} else {
-								Delete_wMap(tMap, "obstacle");
-							}
-							if (item.has("post_date")) {
-								Find_wMap(tMap, "postDate").put("value", item.optString("post_date"));
-							} else {
-								Delete_wMap(tMap, "postDate");
-							}
-							if (item.has("update_date")) {
-								Find_wMap(tMap, "updateDate").put("value", DateUtil.getISOTime(item.optString("update_date").substring(0, 14)));
-							} else {
-								Delete_wMap(tMap, "updateDate");
-							}
-							if (item.has("upload_date")) {
-								Find_wMap(tMap, "uploadDate").put("value", DateUtil.getISOTime(item.optString("upload_date")));
-							} else {
-								Delete_wMap(tMap, "uploadDate");
-							}
-							
+              if ((item.optDouble("longitude", 0.0f) == 0.0f) || (item.optDouble("latitude", 0.0f) == 0.0f))
+                continue;
 
+              log(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
 
-							wMap = (Map) tMap.get("dataProvider");
-							wMap.put("value", iSvc.optString("dataProvider", "http://healthcare.livinglab.siheung.kr/mobility/crowdSourcing"));
+              Map<String, Object> wMap = new LinkedHashMap<>(); // 분리한 데이터를 넣어줄 map을 만듬
+              Map<String, Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String, Object>>() {
+              });
 
-							wMap = (Map) tMap.get("globalLocationNumber");
-							wMap.put("value", id);
+              if (item.has("post_id")) {
+                Find_wMap(tMap, "postId").put("value", item.optString("post_id"));
+              } else {
+                Delete_wMap(tMap, "postId");
+              }
+              if (item.has("sourcing_title")) {
+                Find_wMap(tMap, "sourcingTitle").put("value", item.optString("sourcing_title"));
+              } else {
+                Delete_wMap(tMap, "sourcingTitle");
+              }
+              if (item.has("sourcing_description")) {
+                Find_wMap(tMap, "sourcingDescription").put("value", item.optString("sourcing_description"));
+              } else {
+                Delete_wMap(tMap, "sourcingDescription");
+              }
+              if (item.has("latitude")) {
+                Find_wMap(tMap, "latitude").put("value", item.optString("latitude"));
+              } else {
+                Delete_wMap(tMap, "latitude");
+              }
+              if (item.has("longitude")) {
+                Find_wMap(tMap, "longitude").put("value", item.optString("longitude"));
+              } else {
+                Delete_wMap(tMap, "longitude");
+              }
+              if (item.has("file_data")) {
+                Find_wMap(tMap, "fileData").put("value", item.optString("file_data"));
+              } else {
+                Delete_wMap(tMap, "fileData");
+              }
+              if (item.has("dislikeCount")) {
+                Find_wMap(tMap, "dislikeCount").put("value", item.optInt("dislikeCount"));
+              } else {
+                Delete_wMap(tMap, "dislikeCount");
+              }
+              if (item.has("obstacle")) {
+                Find_wMap(tMap, "obstacle").put("value", item.optString("obstacle"));
+              } else {
+                Delete_wMap(tMap, "obstacle");
+              }
+              if (item.has("post_date")) {
+                Find_wMap(tMap, "postDate").put("value", item.optString("post_date"));
+              } else {
+                Delete_wMap(tMap, "postDate");
+              }
+              if (item.has("update_date")) {
+                Find_wMap(tMap, "updateDate").put("value", DateUtil.getISOTime(item.optString("update_date").substring(0, 14)));
+              } else {
+                Delete_wMap(tMap, "updateDate");
+              }
+              if (item.has("upload_date")) {
+                Find_wMap(tMap, "uploadDate").put("value", DateUtil.getISOTime(item.optString("upload_date")));
+              } else {
+                Delete_wMap(tMap, "uploadDate");
+              }
 
-							Map<String, Object> addrValue = (Map) ((Map) tMap.get("address")).get("value");
-							addrValue.put("addressCountry", iSvc.optString("addressCountry", ""));
-							addrValue.put("addressRegion", iSvc.optString("addressRegion", ""));
-							addrValue.put("addressLocality", iSvc.optString("addressLocality", ""));
-							addrValue.put("addressTown", item.optString("sourcing_description", ""));
-							addrValue.put("streetAddress", iSvc.optString("streetAddress", ""));
+              wMap = (Map) tMap.get("dataProvider");
+              wMap.put("value", iSvc.optString("dataProvider", "http://healthcare.livinglab.siheung.kr/mobility/crowdSourcing"));
 
-							Map<String, Object> locMap = (Map) tMap.get("location");
-							locMap.put("observedAt", DateUtil.getTime());
-							Map<String, Object> locValueMap = (Map) locMap.get("value");
+              wMap = (Map) tMap.get("globalLocationNumber");
+              wMap.put("value", id);
 
-							ArrayList<Double> location = new ArrayList<>();
-							location.add(item.optDouble("longitude"));
-							location.add(item.optDouble("latitude"));
+              Map<String, Object> addrValue = (Map) ((Map) tMap.get("address")).get("value");
+              addrValue.put("addressCountry", iSvc.optString("addressCountry", ""));
+              addrValue.put("addressRegion", iSvc.optString("addressRegion", ""));
+              addrValue.put("addressLocality", iSvc.optString("addressLocality", ""));
+              addrValue.put("addressTown", item.optString("sourcing_description", ""));
+              addrValue.put("streetAddress", iSvc.optString("streetAddress", ""));
 
-							locValueMap.put("coordinates", location);
+              Map<String, Object> locMap = (Map) tMap.get("location");
+              locMap.put("observedAt", DateUtil.getTime());
+              Map<String, Object> locValueMap = (Map) locMap.get("value");
 
-							tMap.put("id", iSvc.optString("gs1Code"));
+              ArrayList<Double> location = new ArrayList<>();
+              location.add(item.optDouble("longitude"));
+              location.add(item.optDouble("latitude"));
 
-							rtnList.add(tMap);
-							String str = objectMapper.writeValueAsString(tMap);
-							log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
-						} else {
-							log(SocketCode.DATA_CONVERT_FAIL, id);
-						} // end if (arrList.length() > 0)
-					}
-				}
-			} // end for
-			rtnStr = objectMapper.writeValueAsString(rtnList);
-			if (rtnStr.length() < 10) {
-				throw new CoreException(ErrorCode.NORMAL_ERROR);
-			}
+              locValueMap.put("coordinates", location);
 
-		} catch (CoreException e) {
+              tMap.put("id", iSvc.optString("gs1Code"));
 
-			if ("!C0099".equals(e.getErrorCode())) {
-				log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-			}
-		} catch (Exception e) {
-			log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-			throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
-		}
-		return rtnStr;
-	}
-	
+              rtnList.add(tMap);
+              String str = objectMapper.writeValueAsString(tMap);
+              log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+            } else {
+              log(SocketCode.DATA_CONVERT_FAIL, id);
+            } // end if (arrList.length() > 0)
+          }
+        }
+      } // end for
+      rtnStr = objectMapper.writeValueAsString(rtnList);
+      if (rtnStr.length() < 10) {
+        throw new CoreException(ErrorCode.NORMAL_ERROR);
+      }
 
-	Map<String, Object> Find_wMap(Map<String, Object> tMap, String Name) {
-		Map<String, Object> ValueMap = (Map) tMap.get(Name);
-		ValueMap.put("observedAt", DateUtil.getTime());
-		return ValueMap;
-	}
+    } catch (CoreException e) {
 
-	void Delete_wMap(Map<String, Object> tMap, String Name) {
-		tMap.remove(Name);
-	}
+      if ("!C0099".equals(e.getErrorCode())) {
+        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      }
+    } catch (Exception e) {
+      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+    }
+    return rtnStr;
+  }
 
+  Map<String, Object> Find_wMap(Map<String, Object> tMap, String Name) {
+    Map<String, Object> ValueMap = (Map) tMap.get(Name);
+    ValueMap.put("observedAt", DateUtil.getTime());
+    return ValueMap;
+  }
+
+  void Delete_wMap(Map<String, Object> tMap, String Name) {
+    tMap.remove(Name);
+  }
 
 } // end of class

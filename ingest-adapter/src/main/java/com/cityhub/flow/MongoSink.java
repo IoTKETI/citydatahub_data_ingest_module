@@ -61,8 +61,6 @@ public class MongoSink extends AbstractBaseSink {
     dbcollection = context.getString("dbcollection");
     ssltype = Boolean.parseBoolean(context.getString("ssltype"));
 
-
-
     Preconditions.checkState(username != null, "No username specified");
     Preconditions.checkState(password != null, "No password specified");
     Preconditions.checkState(url != null, "No url specified");
@@ -94,32 +92,31 @@ public class MongoSink extends AbstractBaseSink {
     System.arraycopy(event.getBody(), 5, bodyBytes, 0, event.getBody().length - 5);
     String body = new String(bodyBytes);
 
-
 //    String body = new String(event.getBody(), StandardCharsets.UTF_8).substring(5); //20201229 1차변형
 
 //    String body = new String(event.getBody(), StandardCharsets.UTF_8); //20201228 원형
 
-    List<Document> jsonList = new ArrayList<>();  //insertMany
+    List<Document> jsonList = new ArrayList<>(); // insertMany
 
     if (body.startsWith("[")) {
       JSONArray jarr = new JSONArray(body);
       for (Object obj : jarr) {
-        JSONObject json = (JSONObject)obj;
+        JSONObject json = (JSONObject) obj;
 //        collection = db.getCollection(json.getString("header"));
         collection = db.getCollection(dbcollection);
 //        collection.insertOne(Document.parse(json.toString()));
 
-        Document jsnObject = Document.parse(json.getJSONObject("content").toString()); //insertMany
-        jsonList.add(jsnObject);  //insertMany
+        Document jsnObject = Document.parse(json.getJSONObject("content").toString()); // insertMany
+        jsonList.add(jsnObject); // insertMany
 
       }
-      collection.insertMany(jsonList);  //insertMany
+      collection.insertMany(jsonList); // insertMany
 
     } else if (body.startsWith("{")) {
       JSONObject json = new JSONObject(body);
 //      collection = db.getCollection(json.getString("header"));
       collection = db.getCollection(dbcollection);
-      collection.insertOne(Document.parse(json.getJSONObject("content").toString()));  //기존insertOne
+      collection.insertOne(Document.parse(json.getJSONObject("content").toString())); // 기존insertOne
 
 //      Document jsnObject = Document.parse(json.toString()); //insertMany
 //      jsonList.add(jsnObject);  //insertMany
@@ -129,7 +126,6 @@ public class MongoSink extends AbstractBaseSink {
     }
 
   }
-
 
   private List<ServerAddress> getSeeds(String seedsString) {
     List<ServerAddress> seeds = new LinkedList<>();
@@ -149,6 +145,5 @@ public class MongoSink extends AbstractBaseSink {
 
     return seeds;
   }
-
 
 }

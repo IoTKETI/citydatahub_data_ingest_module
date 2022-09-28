@@ -16,7 +16,6 @@
  */
 package com.cityhub.adapter.convex;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -33,6 +32,5 @@ public class KafkaResponse {
   private String to; // Mandatory
   private String title; // Optional
   private Object detail; // Mandatory
-
 
 }
