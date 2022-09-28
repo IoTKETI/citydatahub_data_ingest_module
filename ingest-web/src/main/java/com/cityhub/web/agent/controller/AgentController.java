@@ -618,8 +618,9 @@ public class AgentController {
 
           bodyAgentSink.put("channel", "logCh");
           bodyAgentSink.put("type", "com.cityhub.flow.CallRestApiSink");
-          bodyAgentSink.put("INGEST_API_URL", configEnv.getInterfaceApiUrl());
-          bodyAgentSink.put("INGEST_YN", configEnv.getInterfaceApiUrlUseYn().toUpperCase());
+          bodyAgentSink.put("INGEST_INTERFACE_API_URL", configEnv.getInterfaceApiUrl());
+          bodyAgentSink.put("INGEST_INTERFACE_YN", configEnv.getInterfaceApiUrlUseYn().toUpperCase());
+          bodyAgentSink.put("DAEMON_SERVER_LOGAPI", configEnv.getDaemonSrv() + "/logToDbApi");
 
           body.put(adapter_id, bodyAgentTop);
           body.put("logCh", bodyAgentChannel);
@@ -652,7 +653,6 @@ public class AgentController {
         }
 
         body.put((String) curMap.get("instance_id"), bodyInstance);
-        log.debug(body.toString());
 
         JSONObject adtConf = new JSONObject();
         JSONObject insBody = new JSONObject();
@@ -663,56 +663,59 @@ public class AgentController {
 
         for (int j = 0; j < insDetail.size(); j++) {
           Map curMap3 = insDetail.get(j);
-          if ("location".equals(curMap3.get("item"))) {
+          if ( "a".equalsIgnoreCase(curMap3.get("sector").toString())) {
+            if ("location".equals(curMap3.get("item"))) {
+              String locString = (String) curMap3.get("value");
+              String[] words = locString.replaceAll("\\[", "").replaceAll("\\]", "").split(",");
+              JSONArray locArr = new JSONArray();
+              for (String wo : words) {
+                locArr.put(Float.parseFloat(wo));
+              }
+              insDetailObj.put((String) curMap3.get("item"), locArr);
 
-            String locString = (String) curMap3.get("value");
-            String[] words = locString.replaceAll("\\[", "").replaceAll("\\]", "").split(",");
-            JSONArray locArr = new JSONArray();
-            for (String wo : words) {
-              locArr.put(Float.parseFloat(wo));
             }
-            insDetailObj.put((String) curMap3.get("item"), locArr);
+            ////////////////////////////////////////////////////
+            else if ("headers".equals(curMap3.get("item"))) {
+              String locString = (String) curMap3.get("value");
+              String[] words = locString.replaceAll("\"\\[", "\\[").replaceAll("\\]\"", "\\]").split(",");
+              JSONArray locArr = new JSONArray();
+              for (String wo : words) {
+                JSONObject jsonObject = new JSONObject(wo);
+                locArr.put(jsonObject);
+              }
+              insDetailObj.put((String) curMap3.get("item"), locArr);
+            } else if ("address".equals(curMap3.get("item"))) {
+              String locString = (String) curMap3.get("value");
+              String[] words = locString.replaceAll("\"\\[", "\\[").replaceAll("\\]\"", "\\]").split("\\},");
+              JSONArray locArr = new JSONArray();
+              for (String wo : words) {
+                wo += '}';
+                JSONObject jsonObject = new JSONObject(wo);
+                locArr.put(jsonObject);
+              }
+              insDetailObj.put((String) curMap3.get("item"), locArr);
+            } else if ("databaseInfo".equals(curMap3.get("item"))) {
+              String locString = (String) curMap3.get("value");
+              String[] words = locString.replaceAll("\"\\[", "\\[").replaceAll("\\]\"", "\\]").split("\\},");
+              JSONArray locArr = new JSONArray();
+              for (String wo : words) {
+                wo += '}';
+                JSONObject jsonObject = new JSONObject(wo);
+                locArr.put(jsonObject);
+              }
+              insDetailObj.put((String) curMap3.get("item"), locArr.toString().replaceAll("[", "\"").replaceAll("]", "\""));
+            }
+            //////////////////////////////////////////////////
+            else {
+              if ("MODEL_ID".equals(curMap3.get("item")) || "INVOKE_CLASS".equals(curMap3.get("item")) || "DATASET_ID".equals(curMap3.get("item")) || "CONN_TERM".equals(curMap3.get("item"))) {
+                bodyInstance.put((String) curMap3.get("item"), curMap3.get("value"));
+              } else {
+                insDetailObj.put((String) curMap3.get("item"), curMap3.get("value"));
+              }
+            }
 
           }
-          ////////////////////////////////////////////////////
-          else if ("headers".equals(curMap3.get("item"))) {
-            String locString = (String) curMap3.get("value");
-            String[] words = locString.replaceAll("\"\\[", "\\[").replaceAll("\\]\"", "\\]").split(",");
-            JSONArray locArr = new JSONArray();
-            for (String wo : words) {
-              JSONObject jsonObject = new JSONObject(wo);
-              locArr.put(jsonObject);
-            }
-            insDetailObj.put((String) curMap3.get("item"), locArr);
-          } else if ("address".equals(curMap3.get("item"))) {
-            String locString = (String) curMap3.get("value");
-            String[] words = locString.replaceAll("\"\\[", "\\[").replaceAll("\\]\"", "\\]").split("\\},");
-            JSONArray locArr = new JSONArray();
-            for (String wo : words) {
-              wo += '}';
-              JSONObject jsonObject = new JSONObject(wo);
-              locArr.put(jsonObject);
-            }
-            insDetailObj.put((String) curMap3.get("item"), locArr);
-          } else if ("databaseInfo".equals(curMap3.get("item"))) {
-            String locString = (String) curMap3.get("value");
-            String[] words = locString.replaceAll("\"\\[", "\\[").replaceAll("\\]\"", "\\]").split("\\},");
-            JSONArray locArr = new JSONArray();
-            for (String wo : words) {
-              wo += '}';
-              JSONObject jsonObject = new JSONObject(wo);
-              locArr.put(jsonObject);
-            }
-            insDetailObj.put((String) curMap3.get("item"), locArr.toString().replaceAll("[", "\"").replaceAll("]", "\""));
-          }
-          //////////////////////////////////////////////////
-          else {
-            if ("MODEL_ID".equals(curMap3.get("item")) || "INVOKE_CLASS".equals(curMap3.get("item")) || "DATASET_ID".equals(curMap3.get("item")) || "CONN_TERM".equals(curMap3.get("item"))) {
-              bodyInstance.put((String) curMap3.get("item"), curMap3.get("value"));
-            } else {
-              insDetailObj.put((String) curMap3.get("item"), curMap3.get("value"));
-            }
-          }
+
         }
         jsonarr.put(insDetailObj);
         insServiceList.put("serviceList", jsonarr);

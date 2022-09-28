@@ -16,19 +16,14 @@
  */
 package com.cityhub.adapter;
 
-import java.sql.Connection;
-import java.sql.Statement;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flume.Context;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cityhub.core.AbstractPollSource;
-import com.cityhub.environment.DefaultConstants;
-import com.cityhub.environment.ReflectExecuter;
-import com.cityhub.environment.ReflectExecuterManager;
-import com.cityhub.model.DataModel;
+import com.cityhub.model.DataModelEx;
+import com.cityhub.source.core.ReflectLegacySystem;
+import com.cityhub.source.core.ReflectLegacySystemManager;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
@@ -41,28 +36,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LegacyDbSource extends AbstractPollSource {
 
-  private String password;
-  private String username;
-  private String url_addr;
   private String modelId;
   private JSONObject templateItem;
   private JSONObject ConfItem;
   private String[] ArrModel = null;
   private String adapterType;
+  private String schemaSrv;
 
   @Override
   public void setup(Context context) {
     log.info("source Name:::{}", this.getName());
-    url_addr = context.getString(DefaultConstants.URL_ADDR, "");
-    username = context.getString("USERNAME", "");
-    password = context.getString("PASSWORD", "");
     modelId = context.getString("MODEL_ID", "");
     ArrModel = StrUtil.strToArray(modelId, ",");
-    adapterType = context.getString("type", "");
-
+    schemaSrv = context.getString("DATAMODEL_API_URL", "");
     String confFile = context.getString("CONF_FILE", "");
-    setInvokeClass(context.getString(DefaultConstants.INVOKE_CLASS, "com.cityhub.adapter.convert.ConvPostgresql"));
-
     if (!"".equals(confFile)) {
       ConfItem = new JsonUtil().getFileJsonObject(confFile);
     } else {
@@ -76,10 +63,16 @@ public class LegacyDbSource extends AbstractPollSource {
       ConfItem.put("daemonServerLogApi", "http://localhost:8888/logToDbApi");
     }
 
-    ConfItem.put("username", username);
-    ConfItem.put("password", password);
-    ConfItem.put("model_id", modelId);
+    ConfItem.put("DATAMODEL_API_URL", context.getString("DATAMODEL_API_URL", ""));
+    ConfItem.put("username", context.getString("DB_USERNAME", ""));
+    ConfItem.put("password", context.getString("DB_PASSWORD", ""));
+    ConfItem.put("driverClassName", context.getString("DB_DRIVER_CLASS_NAME", ""));
+    ConfItem.put("jdbcUrl", context.getString("DB_JDBC_URL", ""));
+    ConfItem.put("model_id", context.getString("MODEL_ID", ""));
+    ConfItem.put("invokeClass", context.getString("INVOKE_CLASS", ""));
     ConfItem.put("adapterType", adapterType);
+    ConfItem.put("sourceName", this.getName());
+    ConfItem.put("datasetId", context.getString("DATASET_ID", ""));
   }
 
   @Override
@@ -87,34 +80,31 @@ public class LegacyDbSource extends AbstractPollSource {
 
     try {
       templateItem = new JSONObject();
-
       if (ArrModel != null) {
-        HttpResponse resp = OkUrlUtil.get(getSchemaSrv(), "Content-type", "application/json");
-        log.info("schema connected: {}", resp.getStatusCode());
-        if (resp.getStatusCode() == 200) {
-          DataModel dm = new DataModel(new JSONArray(resp.getPayload()));
-          for (String model : ArrModel) {
+        for (String model : ArrModel) {
+          HttpResponse resp = OkUrlUtil.get(schemaSrv + "?id=" + model, "Accept", "application/json");
+          log.info("schema info: {},{},{}", model, resp.getStatusCode(), schemaSrv + "?id=" + model);
+          if (resp.getStatusCode() == 200) {
+            DataModelEx dm = new DataModelEx(resp.getPayload());
             if (dm.hasModelId(model)) {
-              templateItem.put(model, dm.createTamplate(model));
+              templateItem.put(model, dm.createModel(model));
+              log.info("schema server: {},{}", model, templateItem);
             } else {
               templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
             }
-          }
-        } else {
-          for (String model : ArrModel) {
+          } else {
             templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
           }
         }
       } else {
-        log.error("{} : SCHEMA MODEL-ID NOT FOUND ", modelId);
+        log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
       }
-      if (log.isDebugEnabled()) {
-        log.debug("templateItem:{} -- {}", getName(), templateItem);
-      }
+
+      ConfItem.put("MODEL_TEMPLATE",templateItem);
+
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
-
   }
 
   @Override
@@ -125,46 +115,31 @@ public class LegacyDbSource extends AbstractPollSource {
   @Override
   public void processing() {
     log.info("::::::::::::::::::{} - Processing :::::::::::::::::", this.getName());
-    HikariDataSource ds = null;
-    Connection conn = null;
-    Statement st = null;
 
-    try {
-      ds = new HikariDataSource();
-      ds.setJdbcUrl(url_addr);
-      ds.setUsername(username);
-      ds.setPassword(password);
+    try (HikariDataSource ds = new HikariDataSource();){
 
-      conn = ds.getConnection();
-      conn.setAutoCommit(true);
-      st = conn.createStatement();
+      ds.setJdbcUrl(ConfItem.getString("jdbcUrl"));
+      ds.setUsername(ConfItem.getString("username"));
+      ds.setPassword(ConfItem.getString("password"));
 
-      ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(), ConfItem, templateItem);
-      String sb = reflectExecuter.doit(st);
+      ReflectLegacySystem reflectExecuter = ReflectLegacySystemManager.getInstance(getInvokeClass());
+      reflectExecuter.init(getChannelProcessor(), ConfItem);
 
+      String sb = reflectExecuter.doit(ds);
+      /*
       if (sb != null && sb.lastIndexOf(",") > 0) {
         JSONArray JSendArr = new JSONArray("[" + sb.substring(0, sb.length() - 1) + "]");
         for (Object itm : JSendArr) {
           JSONObject jo = (JSONObject) itm;
           log.info("`{}`{}`{}`{}`{}`{}", this.getName(), jo.getString("type"), getStr(SocketCode.DATA_SAVE_REQ), jo.getString("id"), jo.toString().getBytes().length, adapterType);
-          sendEvent(createSendJson(jo));
+          //sendEventEx(createSendJson(jo));
           Thread.sleep(10);
         }
       }
-
-      if (st != null) {
-        st.close();
-      }
-      if (conn != null) {
-        conn.close();
-      }
-      if (ds != null) {
-        ds.close();
-      }
+       */
     } catch (Exception e) {
       log.error(e.getMessage());
     }
-
   }
 
   public String getStr(SocketCode sc) {

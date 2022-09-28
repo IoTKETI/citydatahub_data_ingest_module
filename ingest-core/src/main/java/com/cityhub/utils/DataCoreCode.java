@@ -375,6 +375,9 @@ public class DataCoreCode {
       }
       return null;
     }
+    public String toMessage() {
+      return this.code + ";" + this.message;
+    }
 
   }
 
@@ -412,5 +415,7 @@ public class DataCoreCode {
       }
       return null;
     }
+
+
   }
 }

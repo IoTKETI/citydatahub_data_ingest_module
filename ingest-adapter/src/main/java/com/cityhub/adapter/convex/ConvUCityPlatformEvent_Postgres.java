@@ -16,78 +16,51 @@
  */
 package com.cityhub.adapter.convex;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 
-import com.cityhub.core.AbstractConvert;
-import com.cityhub.environment.Constants;
 import com.cityhub.exception.CoreException;
+import com.cityhub.source.core.AbstractLegacySystemSource;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zaxxer.hikari.HikariDataSource;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ConvUCityPlatformEvent_Postgres extends AbstractConvert {
-  private ObjectMapper objectMapper;
+public class ConvUCityPlatformEvent_Postgres extends AbstractLegacySystemSource {
 
   @Override
-  public void init(JSONObject ConfItem, JSONObject templateItem) {
-    super.setup(ConfItem, templateItem);
-    this.objectMapper = new ObjectMapper();
-    this.objectMapper.setSerializationInclusion(Include.NON_NULL);
-    this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
-    this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
-  }
+  public String doit(HikariDataSource datasource)  {
 
-  @Override
-  public String doit() throws CoreException {
-
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
     List<Map<String, Object>> rtnList = new LinkedList<>();
+    int count = 1;
+    final int bufferCount = 1000;
     String rtnStr = "";
 
-    try {
-      JSONObject databaseInfo = ConfItem.getJSONObject("databaseInfo");
-      String className = databaseInfo.getString("className");
-      String url = databaseInfo.getString("url");
-      String user = databaseInfo.getString("user");
-      String password = databaseInfo.getString("password");
+    String sql = ConfItem.getString("query");
 
-      Class.forName(className);
-      log(SocketCode.SOCKET_CONNECT_TRY, id);
-      conn = DriverManager.getConnection(url, user, password);
-      String sql = ConfItem.getString("query");
+    String id = ConfItem.getString("id_prefix");
+    JSONObject templateItem = ConfItem.getJSONObject("MODEL_TEMPLATE");
+    toLogger(SocketCode.SOCKET_CONNECT, id, id.getBytes());
+    try (PreparedStatement pstmt = datasource.getConnection().prepareStatement(sql);
+        ResultSet rs = pstmt.executeQuery();
+        ){
 
-      pstmt = conn.prepareStatement(sql);
-      pstmt.setInt(1, ConfItem.getInt("limitNum"));
-      pstmt.setInt(2, ConfItem.getInt("offsetNum"));
-      rs = pstmt.executeQuery();
-      id = ConfItem.getString("id_prefix");
-      log(SocketCode.SOCKET_CONNECT, id);
       int gs1number = 0;
       while (rs.next()) {
-        log(SocketCode.DATA_RECEIVE, id);
-        Map<String, Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String, Object>>() {
-        });
+        toLogger(SocketCode.DATA_RECEIVE, id, id.getBytes());
+        Map<String, Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String, Object>>() {});
         Map<String, Object> wMap;
         ArrayList<Double> coordinates = new ArrayList<>();
 
@@ -133,39 +106,36 @@ public class ConvUCityPlatformEvent_Postgres extends AbstractConvert {
         locValueMap.put("coordinates", coordinates);
 
         tMap.put("id", id);
-
         rtnList.add(tMap);
+        count++;
+
+
         String str = objectMapper.writeValueAsString(tMap);
-        log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+
+        if (count == bufferCount) {
+          sendEvent(rtnList, ConfItem.getString("datasetId"));
+          toLogger(SocketCode.DATA_SAVE_REQ, id, objectMapper.writeValueAsBytes(rtnList));
+          count = 0;
+          rtnList = new LinkedList<>();
+        }
       }
-      rtnStr = objectMapper.writeValueAsString(rtnList);
-      if (rtnStr.length() < 10) {
-        throw new CoreException(ErrorCode.NORMAL_ERROR);
+
+      if (rtnList.size() < bufferCount) {
+        sendEvent(rtnList, ConfItem.getString("datasetId"));
+        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, objectMapper.writeValueAsBytes(rtnList));
       }
+
+
     } catch (SQLException e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
+        toLogger(SocketCode.DATA_CONVERT_FAIL, ConfItem.getString("id_prefix"), "".getBytes());
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
-    } finally {
-      try {
-        if (rs != null) {
-          rs.close();
-        }
-        if (pstmt != null) {
-          pstmt.close();
-        }
-        if (conn != null) {
-          conn.close();
-        }
-      } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      }
+      toLogger(SocketCode.DATA_CONVERT_FAIL, ConfItem.getString("id_prefix"), "".getBytes());
+      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + ConfItem.getString("id_prefix"), e);
     }
 
     return rtnStr;
@@ -178,41 +148,28 @@ public class ConvUCityPlatformEvent_Postgres extends AbstractConvert {
   }
 
   String ExponentialStage(Integer Exponential, Object[][] arrList) {
-
     Integer Min = 0;
-
     String resultName = "";
-
     for (Integer i = 0; i < arrList.length; i++) {
-
       Integer _arrayNumber = (Integer) arrList[i][0];
       String _arrayName = (String) arrList[i][1];
-
       if ((Exponential >= _arrayNumber) && (_arrayNumber >= Min)) {
         Min = _arrayNumber;
         resultName = _arrayName;
-
       }
     }
-
     return resultName;
   }
 
   String ExponentialStage(String Exponential, Object[][] arrList) {
-
     String resultName = "";
-
     for (Integer i = 0; i < arrList.length; i++) {
-
       String _arrayString = (String) arrList[i][0];
       String _arrayName = (String) arrList[i][1];
-
       if (Exponential.equals(_arrayString)) {
         return _arrayName;
-
       }
     }
-
     return resultName;
   }
 

@@ -1,3 +1,5 @@
+package com.cityhub.source.core;
+
 /**
  *
  * Copyright 2021 PINE C&I CO., LTD
@@ -14,21 +16,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cityhub.adapter.convex;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
-import lombok.Data;
+import java.util.List;
+import java.util.Map;
 
-@Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class SelfQuarantineEventVO {
+import org.apache.flume.channel.ChannelProcessor;
+import org.json.JSONObject;
 
-  private String requestId; // Optional
-  private String type; // Optional
-  private String title; // Optional
-  private Object detail; // Mandatory
+import com.zaxxer.hikari.HikariDataSource;
 
-}
+public interface ReflectLegacySystem  {
+
+  public void init(ChannelProcessor channelProcessor , JSONObject configEnv);
+
+  public String doit(HikariDataSource ds) ;
+
+  public void sendEvent(List<Map<String, Object>> bodyMap,String DATASET_ID) ;
+
+
+} // end of class

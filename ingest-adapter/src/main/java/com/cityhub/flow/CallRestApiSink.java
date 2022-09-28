@@ -50,8 +50,8 @@ public class CallRestApiSink extends AbstractSink implements Configurable {
 
   @Override
   public void configure(Context context) {
-    ingestApiUrl = context.getString("INGEST_API_URL", "");
-    ingestYn = context.getString("INGEST_YN", "N").toUpperCase();
+    ingestApiUrl = context.getString("INGEST_INTERFACE_API_URL", "");
+    ingestYn = context.getString("INGEST_INTERFACE_YN", "N").toUpperCase();
     String strMaxBytes = context.getString(MAX_BYTES_DUMP_KEY);
     if (!Strings.isNullOrEmpty(strMaxBytes)) {
       try {

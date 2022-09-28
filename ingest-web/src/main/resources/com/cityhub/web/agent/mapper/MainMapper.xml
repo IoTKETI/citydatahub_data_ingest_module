@@ -365,6 +365,7 @@
     , C.instance_nm
     , D.item
     , D.value
+    , D.sector
     FROM agent_info A
     INNER JOIN adapter_info B ON A.agent_id = B.agent_id
     INNER JOIN instance_info C ON B.adapter_id = C.adapter_id
