@@ -67,7 +67,7 @@ public class DaemonController {
    * @return
    */
   @PostMapping(value = "/exec/logger")
-  public ResponseEntity<Map<String,Object>> getLogger(@RequestBody Map<String,String> param) {
+  public ResponseEntity<Map<String,Object>> getLogger(@RequestBody Map<String,Object> param) {
     if (log.isDebugEnabled()) {
       log.debug("body: {}", param);
     }
@@ -94,7 +94,7 @@ public class DaemonController {
    * @return
    */
   @PostMapping(value = "/getlogger/{id}")
-  public ResponseEntity<List<LogVO>> logIngest(@PathVariable("id") String id, @RequestBody Map<String,String> param) {
+  public ResponseEntity<List<LogVO>> logIngest(@PathVariable("id") String id, @RequestBody Map<String,Object> param) {
     if (log.isDebugEnabled()) {
       log.debug("id: {},body:{}", id,param);
     }
@@ -110,7 +110,7 @@ public class DaemonController {
    * @return
    */
   @PostMapping(value = "/getLoggerAll")
-  public ResponseEntity<List<LogVO>> getLoggerAll( @RequestBody Map<String,String> param) {
+  public ResponseEntity<List<LogVO>> getLoggerAll( @RequestBody Map<String,Object> param) {
     if (log.isDebugEnabled()) {
       log.debug("{}", param);
     }
@@ -141,7 +141,7 @@ public class DaemonController {
    * @return
    */
   @PostMapping(value = "/exec/agent/{status}")
-  public ResponseEntity<Map<String,Object>> agentRun(@PathVariable("status") String status, @RequestBody Map<String,String> param) {
+  public ResponseEntity<Map<String,Object>> agentRun(@PathVariable("status") String status, @RequestBody Map<String,Object> param) {
     Map<String,Object> json = new HashMap<>();
 
     try {
@@ -179,7 +179,7 @@ public class DaemonController {
    * @return
    */
   @PostMapping(value = "/exec/config/{type}")
-  public ResponseEntity<Map<String,Object>> setConfigAdapter(@PathVariable("type") String type, @RequestBody Map<String, String> param) {
+  public ResponseEntity<Map<String,Object>> setConfigAdapter(@PathVariable("type") String type, @RequestBody Map<String, Object> param) {
     Map<String,Object> json = new HashMap<>();
     try {
       json.put("id", param.get("id"));
@@ -240,7 +240,7 @@ public class DaemonController {
    * @return
    */
   @PostMapping(value = "/exec/compile")
-  public ResponseEntity<Map<String,Object>> getCompile(@RequestBody Map<String,String> param) {
+  public ResponseEntity<Map<String,Object>> getCompile(@RequestBody Map<String,Object> param) {
     if (log.isDebugEnabled()) {
       log.debug("body: {}", param);
     }
@@ -265,7 +265,7 @@ public class DaemonController {
    * @return
    */
   @PostMapping(value = "/exec/read")
-  public ResponseEntity<Map<String,Object>> getReadJavaFile(@RequestBody Map<String,String> param) {
+  public ResponseEntity<Map<String,Object>> getReadJavaFile(@RequestBody Map<String,Object> param) {
     if (log.isDebugEnabled()) {
       log.debug("body: {}", param);
     }

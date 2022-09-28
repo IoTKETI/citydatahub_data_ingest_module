@@ -106,8 +106,6 @@ public class MainController {
 
 				Map<String, Object> tMap = new LinkedHashMap<>();
 				tMapSet(tMap);
-				log.info("param : " + param);
-				log.info("tMap : " + tMap);
 
 				if (param.containsKey("height")) {
 					Map<String, Object> height = (Map) tMap.get("height");
@@ -406,11 +404,6 @@ public class MainController {
 
 				tMap.put("type", "HealthMeasurement");
 
-//				Map<String, Object> name = new LinkedHashMap<>();
-//				name.put("value", "건강 측정");
-//				name.put("type", "Property");
-//				tMap.put("name", name);
-
 				Map<String, Object> addrValue = (Map) ((Map) tMap.get("address")).get("value");
 				addrValue.put("addressCountry", param.get("addressCountry"));
 				addrValue.put("addressRegion", param.get("addressRegion"));
@@ -463,14 +456,9 @@ public class MainController {
 
 	public static Object postData(String url, String body) throws Exception {
 		Object obj = null;
-		log.info("+++url:{}", url);
-		log.info("+++body:{}", body);
-
 		Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
 		HttpResponse resp = UrlUtil.post(url, headers, body);
-		log.info("+++resp:{}", resp);
 		String payload = resp.getPayload();
-		log.info("+++payload:{}", payload);
 		if (resp.getStatusCode() >= 200 && resp.getStatusCode() < 301) {
 			if (payload.startsWith("{")) {
 				obj = new JSONObject(resp.getPayload());
@@ -717,7 +705,6 @@ public class MainController {
 			body.put("id", param.get("id"));
 
 			Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
-			log.debug(":::::::::::::::" + configEnv.getAgentUrl());
 			resp = UrlUtil.post(configEnv.getAgentUrl() + "/start", headers, body.toString());
 			param.put("result", resp.getPayload());
 		} catch (Exception e) {

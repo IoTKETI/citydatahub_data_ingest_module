@@ -22,14 +22,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -52,22 +48,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cityhub.environment.Constants;
-import com.cityhub.model.DataModelEx;
 import com.cityhub.utils.DataCoreCode.ResponseCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
-import com.cityhub.utils.OkUrlUtil;
-import com.cityhub.utils.StrUtil;
 import com.cityhub.utils.UrlUtil;
 import com.cityhub.web.agent.service.AdapterService;
 import com.cityhub.web.agent.service.MainService;
 import com.cityhub.web.config.ConfigEnv;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -254,17 +243,6 @@ public class AgentController {
 		}
 	}
 
-//@PostMapping("/adapterSave")
-//public ResponseEntity<Map> adapterSave(@RequestBody Map param) {
-//  log.debug("----- AgentController.adapterSave() -----");
-//  try {
-//    log.debug("param = " + param);
-//    svc.insertAdaptor(param);
-//  } catch (Exception e) {
-//    log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-//  }
-//  return new ResponseEntity<Map>(JsonUtil.toMap(HttpStatus.OK, param), HttpStatus.OK);
-//}
 
 	@GetMapping({ "/agentDetail/{agentId}/adaptor", "/agents/{agentId}/adaptors" })
 	public ResponseEntity<List<Map>> agentDetailAdaptor(@PathVariable("agentId") String agentId) {
@@ -577,30 +555,24 @@ public class AgentController {
 					Map param2 = new HashMap();
 					param2.put("instance_id", instanceId);
 					svc.deleteInstanceF(param2);
-					// return new ResponseEntity<Map>(JsonUtil.toMapE("4004","NOT FOUND", "리소스 식별
-					// 실패"), HttpStatus.NOT_FOUND);
 					return new ResponseEntity<>(JsonUtil.toMapC(ResponseCode.DELETED), HttpStatus.OK);
 				}
 			} else {
 				Map param2 = new HashMap();
 				param2.put("instance_id", instanceId);
 				svc.deleteInstanceF(param2);
-				// return new ResponseEntity<Map>(JsonUtil.toMapE("4004","NOT FOUND", "리소스 식별
-				// 실패"), HttpStatus.NOT_FOUND);
 				return new ResponseEntity<>(JsonUtil.toMapC(ResponseCode.DELETED), HttpStatus.OK);
 			}
-//      param.put("instance_id", instanceId);
-//      svc.deleteInstanceF(param);
-//      return new ResponseEntity<Map>(JsonUtil.toMapC(ResponseCode.DELETED), HttpStatus.OK);
 		} catch (Exception e) {
 			log.error("Exception : " + ExceptionUtils.getStackTrace(e));
 		}
 		return new ResponseEntity<>(JsonUtil.toMapE("4004", "NOT FOUND", "리소스 식별 실패"), HttpStatus.NOT_FOUND);
 	}
 
+
+
 	@GetMapping({ "/pushConf/{agent_id}/{adapter_id}", "/restApi/pushConf/{agent_id}/{adapter_id}" })
-	public ResponseEntity<String> pushConf(@PathVariable("agent_id") String agent_id,
-			@PathVariable("adapter_id") String adapter_id) {
+	public ResponseEntity<String> pushConf(@PathVariable("agent_id") String agent_id, @PathVariable("adapter_id") String adapter_id) {
 
 		HttpResponse resp = null;
 		try {
@@ -649,15 +621,7 @@ public class AgentController {
 						}
 					}
 					bodyAgentTop.put("sources", instanceStr);
-					/*
-					if (hdfsYn == true) {
-						bodyAgentTop.put("channels", "logCh hdfsCh");
-						bodyAgentTop.put("sinks", "logSink hdfsSink");
-					} else {
-						bodyAgentTop.put("channels", "logCh");
-						bodyAgentTop.put("sinks", "logSink");
-					}
-					*/
+
 					bodyAgentTop.put("channels", "logCh");
           bodyAgentTop.put("sinks", "logSink");
 
@@ -671,40 +635,7 @@ public class AgentController {
 					bodyAgentSink.put("INGEST_API_URL", configEnv.getInterfaceApiUrl());
 					bodyAgentSink.put("INGEST_YN", configEnv.getInterfaceApiUrlUseYn().toUpperCase());
 
-					/*
-					if (hdfsYn == true) {
-						bodyAgenthdfsCh.put("type", "memory");
-						bodyAgenthdfsCh.put("capacity", "100000");
-						bodyAgenthdfsCh.put("transactionCapacity", "10000");
 
-						bodyAgenthdfsSink.put("channel", "hdfsCh");
-						bodyAgenthdfsSink.put("type", "hdfs");
-
-						bodyAgenthdfsSink.put("hdfs.fileType", "DataStream");
-						bodyAgenthdfsSink.put("hdfs.writeFormat", "Text");
-						bodyAgenthdfsSink.put("hdfs.batchSize", "1000");
-						bodyAgenthdfsSink.put("hdfs.rollSize", "0");
-						bodyAgenthdfsSink.put("hdfs.rollCount", "10000");
-						bodyAgenthdfsSink.put("hdfs.useLocalTimeStamp", "true");
-
-						param.put("instance_id", curMap.get("instance_id"));
-						List<Map> insDetail = svc.selectInstanceDetail(param);
-						for (int j = 0; j < insDetail.size(); j++) {
-							Map curMap3 = insDetail.get(j);
-							if ("MODEL_ID".equals(curMap3.get("item"))) {
-								bodyAgenthdfsSink.put("hdfs.path",
-										hdfsServer + "/analysis/data/" + curMap3.get("value") + "/%Y/%m/%d");
-							}
-							if ("DATASET_ID".equals(curMap3.get("item"))) {
-								bodyAgenthdfsSink.put("hdfs.filePrefix", curMap3.get("value") + "_%Y_%m_%d_%H_%M_%S");
-
-							}
-						}
-
-						body.put("hdfsCh", bodyAgenthdfsCh);
-						body.put("hdfsSink", bodyAgenthdfsSink);
-					}
-					 */
 					body.put(adapter_id, bodyAgentTop);
 					body.put("logCh", bodyAgentChannel);
 					body.put("logSink", bodyAgentSink);
@@ -718,23 +649,14 @@ public class AgentController {
 				List<Map<String, String>> keywordInfoList = (List) svc.selectAdaptorKeywordInfo(param);
 				List<Map> insDetail = svc.selectInstanceDetail(param);
 
-				log.info("keywordInfoList:{}", keywordInfoList);
-				log.info("insDetail:{}", insDetail);
-
 				JSONObject bodyInstance = new JSONObject();
-				/*
-				if (hdfsYn == true) {
-					bodyInstance.put("channels", "logCh hdfsCh");
-				} else {
-					bodyInstance.put("channels", "logCh");
-				}
-				*/
+
 				bodyInstance.put("channels", "logCh");
 
-				log.info("type : " + curMap.get("type"));
 				bodyInstance.put("type", curMap.get("type"));
 				bodyInstance.put("CONF_FILE", "openapi/" + curMap.get("instance_id") + ".conf");
 				bodyInstance.put("DATAMODEL_API_URL", configEnv.getDataModelApiUrl());
+				bodyInstance.put("daemonSrverLogApi", configEnv.getDaemonSrv()+ "/logToDbApi");
 				bodyInstance.put("INVOKE_CLASS", "com.cityhub.adapter.convex." + curMap.get("instance_id"));
 				for (Map<String, String> keyword : keywordInfoList) {
 					for (Map<String, String> vMp : insDetail) {
@@ -819,20 +741,19 @@ public class AgentController {
 				adtConf.put("body", insServiceList);
 
 				Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
-				log.debug(adtConf.toString());
+				log.info("###{}",adtConf.toString());
 				resp = UrlUtil.post(configEnv.getConfigUrl() + "/adapter", headers, adtConf.toString()); /// plugins.d/agent/lib/openapi/
 
 			}
 
 			Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
-			log.debug(agentHashMap.get(adapter_id).toString());
+			log.info("###{}",agentHashMap.get(adapter_id).toString());
 			resp = UrlUtil.post(configEnv.getConfigUrl() + "/agent", headers, agentHashMap.get(adapter_id).toString()); /// conf/
 
 		} catch (Exception e) {
 			log.error("Exception : " + ExceptionUtils.getStackTrace(e));
 		}
 
-//    return new ResponseEntity<String>("", HttpStatus.OK);
 		return new ResponseEntity<>(resp.getPayload(), HttpStatus.OK);
 	}
 
@@ -904,12 +825,8 @@ public class AgentController {
 
 			Map<String, Object> param = new HashMap<>();
 			param.put("datamodel_tf_id", datamodel_tf_id);
-//    if(!"null".equals(ob_datamodel_id)) {
 			param.put("ob_datamodel_id", ob_datamodel_id);
-//    }
-//    if(!"null".equals(st_datamodel_id)) {
 			param.put("st_datamodel_id", st_datamodel_id);
-//    }
 
 			result = svc.updateDmTransform(param);
 		} catch (Exception e) {
@@ -978,12 +895,8 @@ public class AgentController {
 
 			String token = (String) json.get("access_token");
 			log.debug(jsonBody);
-			/*
-       * TODO 게이트웨이 주소
-       */
       String gatewayUrl = "";
 			url = new URL(gatewayUrl + targetUrl);
-//      url = new URL("http://13.124.164.104:8080"+targetUrl);
 			conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestProperty("Accept", "application/json");
 			conn.setRequestProperty("Content-Type", "application/json");
@@ -1291,215 +1204,6 @@ public class AgentController {
 		return temp;
 	}
 
-//	@Scheduled(cron = "0 0/30 * * * *")
-	@GetMapping({ "/FiwarePost" })
-	public ResponseEntity<String> FiwarePost() {
-	  log.debug("----- MonitoringController.FiwarePost() -----");
-    HttpResponse resp = null;
-
-    ObjectMapper objectMapper;
-    JSONObject templateItem = null;
-    String modelId = "WeatherMeasurement";
-    String adapterType = "com.cityhub.adapter.convex.OpenApiSource";
-    String[] ArrModel = StrUtil.strToArray(modelId, ",");
-
-    templateItem = new JSONObject();
-    if (ArrModel != null) {
-      resp = OkUrlUtil.get(configEnv.getDataModelApiUrl(), "Accept", "application/json");
-      log.debug("model info: {},{}", modelId, resp.getStatusCode());
-      if (resp.getStatusCode() == 200) {
-        DataModelEx dm = new DataModelEx(resp.getPayload());
-        for (String model : ArrModel) {
-          if (dm.hasModelId(model)) {
-            templateItem.put(model, dm.createModel(model));
-          } else {
-            log.error("`{}`{}`{}`{}`{}`{}", "FiwarePost1", modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL),
-                "", 0, adapterType);
-          }
-        }
-      } else {
-        for (String model : ArrModel) {
-          templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
-        }
-      }
-
-    } else {
-      log.error("`{}`{}`{}`{}`{}`{}", "FiwarePost2", modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0,
-          adapterType);
-    }
-
-    if (log.isDebugEnabled()) {
-      log.debug("Template : {},{}", modelId, templateItem);
-    }
-
-//    resp = OkUrlUtil.get(schemaSrv, "Accept", "application/json");
-
-    objectMapper = new ObjectMapper();
-    objectMapper.setSerializationInclusion(Include.NON_NULL);
-    objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
-    objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
-
-    Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
-
-    Map<String, Object> tMap = new LinkedHashMap<>();
-    Map<String, Object> wMap = new LinkedHashMap<>();
-
-    try {
-      tMap = objectMapper.readValue(templateItem.getJSONObject(modelId).toString(),
-          new TypeReference<Map<String, Object>>() {
-          });
-
-      tMap.put("id", "WeatherMeasurement_Fiware_ID_001");
-      tMap.put("type", "WeatherMeasurement_Fiware_TYPE_001");
-
-      Map<String, Object> addrValue = (Map) ((Map) tMap.get("address")).get("value");
-      addrValue.put("addressCountry", "KR");
-      addrValue.put("addressRegion", "Gyeonggi-do");
-      addrValue.put("addressLocality", "Seongnam-si");
-      addrValue.put("addressTown", "8th Seungin-ro");
-      addrValue.put("streetAddress", "Yatap-dong");
-
-      String[] context = new String[2];
-      context[0] = "http://uri.etsi.org/ngsi-ld/core-context.jsonld";
-      context[1] = "http://citydatahub.siheung.kr/ngsi-ld/environment.jsonld";
-      tMap.put("@context", context);
-
-      tMap.put("createdAt", DateUtil.getTime());
-
-      Map<String, Object> locMap = (Map) tMap.get("location");
-      locMap.put("observedAt", DateUtil.getTime());
-      Map<String, Object> locValueMap = (Map) locMap.get("value");
-      ArrayList<Float> location = new ArrayList<>();
-      location.add(127.1293735f);
-      location.add(37.4114423f);
-      locValueMap.put("coordinates", location);
-
-      long seed; // 1970년 1월 1일부터 현재까지 타임스템프를 가져옵니다.
-      Random rand; // 현재시간을 씨앗으로 한 랜덤 인스턴스를 만듭니다.
-
-      Find_wMap(tMap, "altitude").put("value", 95.78d);
-
-      // 0 ~ 360
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      Find_wMap(tMap, "windDirection").put("value", rand.nextDouble() * 360.0d);
-
-      // 0 ~ 14
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      Find_wMap(tMap, "windSpeed").put("value", rand.nextDouble() * 14.0d);
-
-      // 기온(℃) 20 ~ 35
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      Double temperature = (rand.nextDouble() * 15.0d) + 20.0d;
-      Find_wMap(tMap, "temperature").put("value", temperature);
-
-      // 습도(%) 50 ~ 85
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      Double humidity = (rand.nextDouble() * 35.0d) + 50.0d;
-      Find_wMap(tMap, "humidity").put("value", humidity);
-
-      // 985 ~ 1035
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      Find_wMap(tMap, "atmosphericPressure").put("value", (rand.nextDouble() * 50.0d) + 985.0d);
-
-      // 990 ~ 1030
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      Find_wMap(tMap, "seaLevelPressure").put("value", (rand.nextDouble() * 40.0d) + 990.0d);
-
-      // 0~7 없음 8~9 빗방울 10 비
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      Integer RandomRainfall = rand.nextInt(10);
-      Object[][] rainfall = { { 7, "없음" }, { 9, "빗방울" }, { 10, "비" } };
-      String rainfallValue = ExponentialStage(RandomRainfall, rainfall);
-      Find_wMap(tMap, "rainfall").put("value", rainfallValue);
-
-      // 0~45
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      if (rainfallValue.equals("비")) {
-        Find_wMap(tMap, "hourlyRainfall").put("value", (rand.nextDouble() * 40.0d) + 5.0d);
-      } else if (rainfallValue.equals("빗방울")) {
-        Find_wMap(tMap, "hourlyRainfall").put("value", (rand.nextDouble() * 5.0d));
-      } else {
-        Find_wMap(tMap, "hourlyRainfall").put("value", 0.0d);
-      }
-
-      // 0~35
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      if (rainfallValue.equals("비")) {
-        Find_wMap(tMap, "dailyRainfall").put("value", (rand.nextDouble() * 30.0d) + 5.0d);
-      } else if (rainfallValue.equals("빗방울")) {
-        Find_wMap(tMap, "dailyRainfall").put("value", (rand.nextDouble() * 4.0d) + 1.0d);
-      } else {
-        Find_wMap(tMap, "dailyRainfall").put("value", 0.0d);
-      }
-
-      // 0~20
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      Find_wMap(tMap, "vaporPressure").put("value", (rand.nextDouble() * 20.0d));
-
-      // 이슬점온도(℃) (f/100)^(1/8)*(112+0.9T)+(0.1*T)-112 f = 현재습도 T = 현재온도
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      Find_wMap(tMap, "dewPoint").put("value",
-          (Math.pow((humidity / 100.0d), (1.0d / 8.0d)) * (112.0d + (0.9d * temperature))
-              + ((0.1d * temperature))) - 112.0d);
-
-      // 2.5 ~ 4.5
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      Find_wMap(tMap, "sunshine").put("value", ((rand.nextDouble() * 2.0d) + 2.5d));
-
-      // 704.54~ 1378.26
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      Find_wMap(tMap, "insolation").put("value", (rand.nextDouble() * 673.72d) + 704.54d);
-
-      // 0~10
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      Find_wMap(tMap, "snowfall").put("value", (rand.nextDouble() * 10.0d));
-
-      // 0~5
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      Find_wMap(tMap, "snowfallHour3").put("value", (rand.nextDouble() * 5.0d));
-
-      // 1094.9 ~ 1603.9
-      seed = System.currentTimeMillis();
-      rand = new Random(seed);
-      Find_wMap(tMap, "visibility").put("value", (rand.nextDouble() * 504.0d) + 1094.9d);
-
-      Find_wMap(tMap, "deviceType").put("value", "Static");
-
-      wMap = (Map) tMap.get("dataProvider");
-      wMap.put("value", "https://www.weather.go.kr");
-
-      wMap = (Map) tMap.get("globalLocationNumber");
-      wMap.put("value", "urn:epc:id:giai:880969104.140001.0108");
-
-      JSONArray entities = new JSONArray();
-      entities.put(tMap);
-
-      JSONObject Body = new JSONObject();
-      Body.put("actionType", "append");
-      Body.put("entities", entities);
-
-      resp = UrlUtil.post("http://192.168.1.179:1026/v2/op/update?options=keyValues", headers, Body.toString());
-
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
-    return new ResponseEntity<>(resp.getPayload(), HttpStatus.OK);
-	}
 
 	Map<String, Object> Find_wMap(Map<String, Object> tMap, String Name) {
 		Map<String, Object> ValueMap = (Map) tMap.get(Name);

@@ -356,9 +356,7 @@ public class MonitoringController {
 		try {
 
 			log.debug(jsonBody);
-			log.debug("########{}",targetUrl);
 			url = new URL(targetUrl);
-//        url = new URL("http://13.124.164.104:8080"+targetUrl);
 
 			conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestProperty("Accept", "application/json");

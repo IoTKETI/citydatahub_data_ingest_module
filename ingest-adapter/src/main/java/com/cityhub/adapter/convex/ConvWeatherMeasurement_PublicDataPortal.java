@@ -67,7 +67,7 @@ public class ConvWeatherMeasurement_PublicDataPortal extends AbstractConvert {
 				JSONObject iSvc = svcList.getJSONObject(i);
 
 				JsonUtil ju = new JsonUtil((JSONObject) CommonUtil.getData(iSvc));
-				System.out.println("ju : " + ju);
+				log.info("ju : " + ju);
 
 				if (ju.has("response.body.items.item")) {
 					JSONArray arrList = ju.getArray("response.body.items.item");

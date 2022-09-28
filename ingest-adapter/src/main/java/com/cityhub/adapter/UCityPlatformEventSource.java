@@ -28,10 +28,10 @@ import com.cityhub.core.AbstractPollSource;
 import com.cityhub.environment.ReflectExecuter;
 import com.cityhub.environment.ReflectExecuterManager;
 import com.cityhub.model.DataModel;
+import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.OkUrlUtil;
-import com.cityhub.utils.DataCoreCode.SocketCode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -100,7 +100,7 @@ public class UCityPlatformEventSource extends AbstractPollSource {
 
         for(Object itm : jsonAr) {
           JSONObject jo = (JSONObject)itm;
-          System.out.println(jo);
+          log.info(""+jo);
 
           cnt++;
 

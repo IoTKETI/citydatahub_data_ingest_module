@@ -79,7 +79,7 @@ public class ConvEnergy extends AbstractConvert {
 			while(etype.hasNext()) {
 
 				String energytype = etype.next();
-				System.out.println(energytype);
+				log.info(energytype);
 
 				JSONObject energyInfo = new JSONObject(new JsonUtil(ConfItem).get("energy." + energytype).toString());
 

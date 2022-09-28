@@ -76,7 +76,7 @@ public class ConvEnergyBemsElecTest_by extends AbstractConvert {
 
 		try {
 			String model = ConfItem.getString("model_id");
-			System.out.println("model : "+model);
+			log.info("model : "+model);
 
 			rtnStr = getResult();
 

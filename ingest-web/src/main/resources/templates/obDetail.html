@@ -260,7 +260,6 @@
   }
   
   function _cbAfterFireAjaxSubmit(data) {
-    console.log(data);
     if(!data.hasOwnProperty("resultCode")){
       data.resultCode = data.type;
       data.resultMsg = data.detail;
@@ -297,7 +296,6 @@
   }
 
 function _cbAfterFireAjaxDelSubmit(data) {
-  console.log(data);
   
   if(!data.hasOwnProperty("responseCode")){
     data.resultCode = data.type;

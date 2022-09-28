@@ -54,7 +54,6 @@ public class LoggerService {
     param.put("sourceName", sourceName);
     if ("null".equals(length)) {
       length = "0";
-      log.info("length : " + length);
     }
     param.put("length", Integer.parseInt(length));
     param.put("desc", desc);

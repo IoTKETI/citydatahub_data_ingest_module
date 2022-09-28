@@ -34,12 +34,12 @@ import com.cityhub.environment.Constants;
 import com.cityhub.exception.CoreException;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.cityhub.utils.DataType;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
@@ -51,7 +51,7 @@ import okhttp3.Response;
 public class ConvEnergyBemsElec extends AbstractConvert {
 
 	private ObjectMapper objectMapper;
-	
+
 	@Override
 	public void init(JSONObject ConfItem, JSONObject templateItem) {
 		super.setup(ConfItem, templateItem);
@@ -64,21 +64,21 @@ public class ConvEnergyBemsElec extends AbstractConvert {
 	@Override
 	public String doit() throws CoreException {
 //		StringBuffer sendJson = new StringBuffer();
-		List<Map<String,Object>> rtnList = new LinkedList<>(); // buffer대신 List로 데이터 받을예정 
+		List<Map<String,Object>> rtnList = new LinkedList<>(); // buffer대신 List로 데이터 받을예정
 		String rtnStr =""; // list로 받은것 string으로 변환해서 적재할거임
-		
+
 		try {
 			JSONArray svcList = ConfItem.getJSONArray("serviceList");
 			log.info("svcList:{}",svcList.toString());
-			
+
 			String model = ConfItem.getString("model_id");
-			System.out.println("model : "+model);
-			
+			log.info("model : "+model);
+
 			for (int i = 0; i < svcList.length(); i++) {
 
 				Map<String,Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String,Object>>(){});
 		        Map<String,Object> wMap = new LinkedHashMap<>();
-				
+
 				JSONObject iSvc = (JSONObject) svcList.get(i);
 				iSvc.put("measureTime", LocalTime.now().getHour() + "");
 
@@ -139,18 +139,18 @@ public class ConvEnergyBemsElec extends AbstractConvert {
 		templateJsonUtil.put("measurementType.value", JsonUtil.nvl(iSvc.getString("measurementType"), DataType.STRING));
 		templateJsonUtil.put("id", JsonUtil.nvl(iSvc.getString("gs1Code"), DataType.STRING) + "." + JsonUtil.nvl(jobj.get("ctagCode"), DataType.STRING));
 
-//		Map<String,Object> addrValue = (Map)((Map)tMap.get("address")).get("value");						
+//		Map<String,Object> addrValue = (Map)((Map)tMap.get("address")).get("value");
 //        addrValue.put("addressCountry",addressCountry);
 //        addrValue.put("addressRegion", addressRegion);
 //        addrValue.put("addressLocality", addressLocality );
 //        addrValue.put("addressTown", addressTown );
 //        addrValue.put("streetAddress",streetAddress);
-//        		        
+//
 //        Map<String,Object> locMap = (Map)tMap.get("location");
 //        locMap.put("observedAt",createdAt);
 //        Map<String,Object> locValueMap  = (Map)locMap.get("value");
 //        locValueMap.put("coordinates", location);
-		
+
 	}
 
 	private JSONObject getData(JSONObject svc) throws Exception {

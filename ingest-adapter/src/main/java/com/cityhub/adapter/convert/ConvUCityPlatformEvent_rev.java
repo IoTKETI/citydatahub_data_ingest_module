@@ -64,7 +64,7 @@ public class ConvUCityPlatformEvent_rev extends AbstractConvert {
       HSSFRow curRow;
 
       JsonUtil jsonEx = new JsonUtil(templateItem);
-      System.out.println("EXCEL_PARSING START: "+System.currentTimeMillis());
+      log.info("EXCEL_PARSING START: "+System.currentTimeMillis());
       List<Map<String,String>> listOfExcel = new ArrayList<>();
       for(int sheetIdx=0; sheetIdx<workbook.getNumberOfSheets(); sheetIdx++) {
         curSheet = workbook.getSheetAt(sheetIdx); //첫 번째 시트안의 모든 데이터
@@ -95,9 +95,9 @@ public class ConvUCityPlatformEvent_rev extends AbstractConvert {
           listOfExcel.add(row);
         } // end for rowIdx
       } // end for sheet
-      System.out.println("EXCEL_PARSING END: "+System.currentTimeMillis());
+      log.info("EXCEL_PARSING END: "+System.currentTimeMillis());
 
-      System.out.println("Model transfer start: "+System.currentTimeMillis());
+      log.info("Model transfer start: "+System.currentTimeMillis());
       for(Map<String,String> row : listOfExcel) {
         jsonEx.put("address.value.addressCountry", "KR");
         jsonEx.put("address.value.addressRegion", "경기도");
@@ -121,7 +121,7 @@ public class ConvUCityPlatformEvent_rev extends AbstractConvert {
         jsonEx.toString();
         strBuff.append(jsonEx+",");
       }
-      System.out.println("Model transfer end: "+System.currentTimeMillis());
+      log.info("Model transfer end: "+System.currentTimeMillis());
 
     }catch(CoreException e) {
       log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());

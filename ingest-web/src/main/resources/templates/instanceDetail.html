@@ -10,7 +10,7 @@
 
 <div class="container" layout:fragment="content">
        <h3 class="content__title">Adaptor 설정</h3>
-
+          
         <form  onSubmit="return false;">
           <fieldset>
             <legend>Adaptor 정보</legend>
@@ -56,6 +56,8 @@
         </form>
         
         <form  onSubmit="return false;">
+          <input id="ins_agent_id" type="hidden">
+          <input id="ins_adapter_id" type="hidden">
           <fieldset>
             <legend>Instance 목록</legend>
             <section class="section">
@@ -83,7 +85,8 @@
                   </tbody>           
                 </table>
               </div>
-              <div class="button__group">                
+              <div class="button__group">
+                  <button class="button__util " type="button" id="ins_sending" onfocus="this.blur()">전송</button>
                   <button class="button__util button__util--add material-icons" type="button" id="new_ins" onfocus="this.blur()">신규추가</button>
                   <button class="button__primary" type="button" id="ins_save" onfocus="this.blur()" >저장</button>
               </div>
@@ -311,78 +314,7 @@
                 </section>
               </fieldset>
             </div>
-            
-<!--             <div id="instance_info2"> -->
-<!--                <fieldset > -->
-<!--                 <legend>인스턴스 추가 옵션 등록 / 변경</legend> -->
-<!--                   <section class="section"> -->
-<!--                    <div class="section__header" > -->
-<!--                       <h4 class="section__title">인스턴스 추가 옵션 등록 / 변경</h4> -->
-<!--                   </div> -->
-<!--                   <div class="section__content"> -->
-<!--                     <table class="table--column instanceList" id="instanceList2" > -->
-<!--                       <caption>테이블 제목</caption> -->
-<!--                       <colgroup> -->
-<!--                         <col style="width:40px"> -->
-<!--                         <col style="width:60px"> -->
-<!--                         <col style="width:80px"> -->
-<!--                         <col style="width:170px"> -->
-<!--                         <col style="width:60px"> -->
-<!--                         <col style="width:auto"> -->
-<!--                         <col style="width:350px">    -->
-<!--                         <col style="width:40px">                  -->
-<!--                       </colgroup> -->
-<!--                       <thead> -->
-<!--                         <tr> -->
-<!--                           <th>선택</th> -->
-<!--                           <th>필수여부</th> -->
-<!--                           <th>값 유형</th> -->
-<!--                           <th>항목명(key)</th> -->
-<!--                           <th>변경여부</th> -->
-<!--                           <th>항목값(value)</th> -->
-<!--                           <th>항목설명</th> -->
-<!--                           <th>순서</th> -->
-<!--                         </tr> -->
-<!--                       </thead> -->
-<!--                       <tbody> -->
-<!--                       </tbody> -->
-<!--                     </table> -->
-<!--                   </div> -->
-<!--                   <div class="button__group">                 -->
-<!--                     <button class="button__util button__util--add material-icons" id="plus" onclick="addrow2('instanceList2')" onfocus="this.blur()" type="button">추가</button> -->
-<!--                     <button class="button__util button__util--remove material-icons" id="minus" onclick="delrow2('instanceList2')" onfocus="this.blur()" type="button">삭제</button> -->
-<!-- 					<button class="button__util" onclick="rowMoveEvent('up');">▲</button> -->
-<!-- 					<button class="button__util" onclick="rowMoveEvent('down');">▼</button> -->
-                    
-<!--                   </div> -->
-<!--                   <div id="keyValueRow2" style="display:none"> -->
-<!--                     <table> -->
-<!--                       <tr class="keyValueClass" style="height:34px"> -->
-<!--                         <td> -->
-<!--                           <input type="checkbox" name="chk_info2" class="input__checkbox" id="chk_info2" value="del"><label class="label__checkbox" for="chk_info2" > -->
-<!--                           <input name="display_seq" type="hidden"> -->
-<!--                           <input name="setup_method" type="hidden"> -->
-<!--                         </td> -->
-<!--                         <td><input name="essential_yn" type="text" class="input__text" readonly style="text-align:center;text-indent:0px"></td> -->
-<!--                         <td><input name="value_type" type="text" class="input__text" readonly style="text-align:center;text-indent:0px"></td>                       -->
-<!--                         <td><input name="key" type="text" class="input__text"></td> -->
-<!--                         <td><input name="change_able_yn" type="text" class="input__text" readonly style="text-align:center;text-indent:0px"></td> -->
-<!--                         <td> -->
-<!--                             <input name="value" type="text" class="input__text"> -->
-<!--                             <textarea name="textarea_value" class="textarea" style="height: 30px; display: none" readonly></textarea> -->
-<!--                             <select label="항목값(value)" class="select select--full"  name="select_value" style="display: none"> -->
-<!--                               <option value="">선택</option> -->
-<!--                             </select> -->
-<!--                         </td> -->
-<!--                         <td><input name="item_described" type="text" class="input__text"></td> -->
-<!--                         <td style="display:none" id="rownumber"><input name="rownumber"></td> -->
-<!--                         <td><input type="radio" class="chkRadio" name="chkRadio"></td> -->
-<!--                       </tr> -->
-<!--                     </table>         -->
-<!--                   </div> -->
-<!--                 </section> -->
-<!--               </fieldset> -->
-<!--             </div> -->
+       
           </div>
         </form>
         
@@ -408,12 +340,31 @@
   var ins_id = "";
   
   $(document).ready(function() {
+    $("#ins_sending").hide();
     adpInfo();
   });
   
   $("#new_ins").click(function(event) {
     newInsAdd();
   });
+  
+  $("#ins_sending").click(function(event) {
+    if (confirm("전송하시겠습니까?")){
+      event.preventDefault();
+      insSending();
+    }
+  });
+  
+  function insSending(){
+    var method = "GET";
+    var param = "/restApi/pushConf/"+$("#ins_agent_id").val()+"/"+$("#ins_adapter_id").val();
+    cmUtl.exeAjax(method, param, null , "_cbAfterInsSending");
+  }
+  
+  function _cbAfterInsSending(data) {
+    $("#ins_sending").prop("disabled", false);
+    alert("전송되었습니다.");
+  }
   
   $("#ins_save").click(function(event) {
     if (validation("inst_form_div")) {
@@ -423,6 +374,8 @@
       }
     }      
   });
+  
+  
   
   function rowMoveEvent(direction){		//순서 변경
 	  if(jQuery(".chkRadio:checked").val()){
@@ -457,9 +410,11 @@
   }
   
   function _cbAfterinsAdpInfo(data){
+    $("#ins_agent_id").val(data.agent_id);
+    $("#ins_adapter_id").val(data.adapter_id);
+    
     var url = "/agentDetail/" + data.agent_id;
     setNavi("Agent 관리```/agentList/","Agent 설정```/agentList/","Agent 상세```"+url,"Adaptor 설정");
-
     
     var row = new RowData( $("#adtInfo > tbody") );
     row.setValue("adapter_id",data.adapter_id);
@@ -468,14 +423,15 @@
     row.setValue("use_yn",yn(data.use_yn));
     row.setValue("ins_cnt",data.ins_cnt);
     
-    //var url = "/instanceControl/" + id + "/insList/";
-    
-    
     var url = "/agents/" + data.adapter_id + "/adaptors/"+ data.adapter_id + "/instance";
     cmUtl.exeAjaxDynamic("GET", url, " ", "", "_cbAfterinstanceControl");
   }
   
   function _cbAfterinstanceControl(data){
+    if (data.length > 0 ) {
+      $("#ins_sending").show();
+    }
+    
      for (var i = 0; i < data.length; i++) {
       var index = i+1;
       var html = '<tr>'    
@@ -489,7 +445,7 @@
     }
     $("#ins_list").procEmptyLine(); // 검색 된 데이터가 없을 경우
   }
- 
+
   
   function yn(val){
     var rtn = "";
@@ -525,6 +481,10 @@
     $("input:radio[name=video_yn]:input[value=Y]").prop("checked", true);
     $("input:radio[name=datamodel_yn]:input[value=N]").prop("checked", true);
   }
+  
+
+  
+  
   
   function insSave(){
     
@@ -674,7 +634,6 @@
             $(tmpObj).find("input[name=key]").attr("readonly",true); 
           }
           
-          //console.log($(tmpIns).find('.instanceList'));
           $("#instanceList > tbody:last").append($(tmpObj));
           if("Y" == data[i].essential_yn){
             $("#"+chk_id).attr("disabled", true);
@@ -749,7 +708,6 @@
 	            $(tmpObj).find("input[name=key]").attr("readonly",true); 
 	          }
 	          
-	          //console.log($(tmpIns).find('.instanceList'));
 	          $("#instanceList > tbody:last").append($(tmpObj));
 	          if("Y" == data[i].essential_yn){
 	            $("#"+chk_id).attr("disabled", true);
@@ -824,7 +782,6 @@
 	            $(tmpObj).find("input[name=key]").attr("readonly",true); 
 	          }
 	          
-	          //console.log($(tmpIns).find('.instanceList'));
 	          $("#instanceList2 > tbody:last").append($(tmpObj));
 	          if("Y" == data[i].essential_yn){
 	            $("#"+chk_id).attr("disabled", true);
@@ -966,7 +923,6 @@
   }
   
   function _cbAfterPopup(data){
-    //console.log("data.value =" + data.value)
     var afterValue = data.value;
     var afterSeq = data.seq;
     item = $("#instanceList > tbody > tr");
@@ -1013,7 +969,6 @@
   }
 
 function _cbAfterFireAjaxDelSubmit(data) {
-  //console.log(data);
   
   if(!data.hasOwnProperty("responseCode")){
     data.resultCode = data.type;

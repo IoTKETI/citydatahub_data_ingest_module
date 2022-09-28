@@ -198,7 +198,6 @@ var id = /*[[ ${id} ]]*/;
   }
   
   function _cbAfterdataModel_info(data){
-    console.log(data);
     var agentUrl = "/agentDetail/" + data.agent_id;
     var adapterUrl = "/instanceDetail/" + data.adapter_id;
     setNavi("Agent 관리```/agentList/","Agent 목록```/agentList/","Agent 상세```"+ agentUrl,"Instance 관리```"+ adapterUrl,"데이터모델 변환 관리");
@@ -279,11 +278,7 @@ var id = /*[[ ${id} ]]*/;
               $(tmpObj).find("input[name=key]").attr("readonly",true); 
             }
             
-            console.log($(tmpIns).find('.instanceList'));
             $("#instanceList > tbody:last").append($(tmpObj));
-//             if("Y" == data[i].essential_yn){
-//               $("#"+chk_id).attr("disabled", true);
-//             }
             $(tmpObj).find("input[name=key]").attr("required", true);
             $(tmpObj).find("input[name=value]").attr("required", true);
             

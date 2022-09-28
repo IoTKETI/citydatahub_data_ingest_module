@@ -135,18 +135,6 @@ public class Gs1Controller {
 	    return new ResponseEntity<>(JsonUtil.toMap(HttpStatus.CREATED), HttpStatus.CREATED);
 	  }
 
-//	  @PostMapping("/gs1TypeDelete")
-//	  public ResponseEntity<Map> gs1TypeDelete(@RequestBody Map param){
-//		  log.debug("----- Gs1troller.Gs1TypeDelete() -----");
-//		  try {
-//			  gs.deleteGs1Type(param);
-//		  } catch (Exception e) {
-//			  log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-//		  }
-//
-//		  return new ResponseEntity<Map>(JsonUtil.toMap(HttpStatus.CREATED), HttpStatus.CREATED);
-//	  }
-
 	  @PostMapping("/gs1modelSave")
 	  public ResponseEntity<Map> gs1modelSave(@RequestBody Map param) {
 	    log.debug("----- Gs1troller.gs1modelSave() -----");

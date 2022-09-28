@@ -18,11 +18,16 @@ package com.cityhub.adapter.convert;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
+
 import org.json.JSONObject;
+
 import com.cityhub.core.AbstractConvert;
 import com.cityhub.exception.CoreException;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ConvPostgresql extends AbstractConvert {
 
   @Override
@@ -37,8 +42,8 @@ public class ConvPostgresql extends AbstractConvert {
 
     try (ResultSet rs = st.executeQuery(q)) {
       while (rs.next()) {
-        System.out.println(rs);
-        System.out.println(rs.toString());
+        log.info("{}",rs);
+        log.info("{}",rs.toString());
       }
 
     } catch (Exception e) {

@@ -65,13 +65,11 @@
   }
   
   function _cbAfterObListView (data){
-    console.log(data);
     if (data.length == 0) {
       cmUtl.showEmptyLine('obListView', true);
     }
   
     for (var i = 0; i < data.length; i++) {
-      console.log(data[i].use_yn);
       var index = i+1;
       var html = '<tr>';
       html += '<td>'+index+'</td>';

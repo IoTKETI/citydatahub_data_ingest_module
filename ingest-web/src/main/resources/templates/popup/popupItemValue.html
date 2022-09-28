@@ -62,7 +62,6 @@ var timer
     $("#item_nm").text("[ "+item_nm + " ] 항목 값 설정");
     $(".button__modal--close").click(function(data) {
       var data = {"value": $("#tailConsole").val(), "seq":$("#seq").val()};
-      console.log(data);
       $("#divLayerPopup").empty();
       clearTimeout(timer);
       if ( _cbFunc != "" ) {

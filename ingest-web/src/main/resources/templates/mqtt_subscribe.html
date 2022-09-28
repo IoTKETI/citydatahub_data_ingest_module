@@ -249,7 +249,6 @@ function _cbAfterSaveSubscribe(data) {
         var str = item.find("input[name=subscribeList]").val();
         for(var j=0 ; j< data.length; j++) {
           if (str == data[j].addr) {
-            console.log(data[j]);
             if(data[j].status == 200){
               item.find("input[name=subscribeBigo]").val("success");
             } else {

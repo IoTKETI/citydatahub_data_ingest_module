@@ -55,7 +55,9 @@ public class WebInterceptor implements HandlerInterceptor {
         String name = (String)params.nextElement();
         try {
           request.setAttribute(name, request.getParameter(name));
-        } catch (Exception e) {}
+        } catch (Exception e) {
+          continue;
+        }
     }
 
     if ("Y".equalsIgnoreCase(authYn)) {

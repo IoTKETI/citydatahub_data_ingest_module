@@ -123,13 +123,11 @@
     });
   
   function commCodeView(){
-    console.log($("#code_type_id").val());
     var param = "/commCodeView/" + $("#code_type_id").val();
     cmUtl.exeAjax("GET", param, null, "_cbAfterCommCodeView");
   }
   
   function _cbAfterCommCodeView(data){
-    console.log(data);
     var html = '';
     
     html += '<tr>';
@@ -162,8 +160,6 @@
       cmUtl.showEmptyLine('commCode', false);
     }
     
-   
-    console.log(data);
     for (var i = 0; i < data.length; i++){
       var html = '<tr>';
       html += '<td><input type="checkbox" name="chk_info" class="input__checkbox" id="item_chk'+i+'"><label class="label__checkbox" for="item_chk'+i+'"></label></td>';
@@ -193,7 +189,6 @@
     $("#btn-save2").prop("disabled", true);
     var code_type_id = $("#code_type_id").val();
     var codelength = $("#commCode").getLength();
-    console.log("codelength = " + codelength);
     var codesData = new Array();
     if (codelength > 0) {
       for (var i = 0; i < codelength; i++) {

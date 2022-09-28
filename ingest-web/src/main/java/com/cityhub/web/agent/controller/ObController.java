@@ -230,14 +230,6 @@ public class ObController {
         }
       }
 
-      /* 디버그 종료 후 주석처리 해야 함 - 시작 */
-      for (Map key : pathList) {
-        log.debug(key.get("property_path") + "." + key.get("property"));
-        log.debug("" + key.get("property_structure"));
-      }
-      /* 디버그 종료 후 주석처리 해야 함 - 끝 */
-      // ob_datamodel_id, ob_datamodel_seq, property_nm, property, property_path,
-      // property_structure, type, option, described
 
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -248,13 +240,11 @@ public class ObController {
   public void recursiveFunc(List pathList, String path, String nodeType, String pk, JSONObject jo) {
     for (String k : jo.keySet()) {
       if (jo.get(k) instanceof JSONObject) {
-        // log.debug(path + "." + k);
         recursiveFunc(pathList, path + "." + k, nodeType + ".Object", k, jo.getJSONObject(k));
       } else if (jo.get(k) instanceof JSONArray) {
         int i = 0;
         for (Object o : jo.getJSONArray(k)) {
           if (i == 0) {
-            // log.debug(path + "." + k);
             recursiveFunc(pathList, path + "." + k, nodeType + ".Array", k, (JSONObject) o);
           }
           i++;
@@ -373,9 +363,7 @@ public class ObController {
 
       String token = (String) json.get("access_token");
       log.debug(jsonBody);
-      /*
-       * TODO 게이트웨이 주소
-       */
+
       String gatewayUrl = "";
       url = new URL(gatewayUrl + targetUrl);
 

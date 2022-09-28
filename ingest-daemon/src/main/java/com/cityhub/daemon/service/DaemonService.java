@@ -32,6 +32,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -39,8 +41,6 @@ import com.cityhub.daemon.dto.LogVO;
 import com.cityhub.daemon.dto.LoggerObject;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.FileUtil;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -350,12 +350,12 @@ public class DaemonService {
   public String manageAdapterConfFile(String path, Map param) {
     try {
       Map<String, ?> body = (Map) param.get("body");
-      Gson gson = new GsonBuilder().setPrettyPrinting().create();
+      JSONObject jsonBody = new JSONObject(body);
       FileUtil fu = new FileUtil();
       fu.setPath(path);
       fu.setFile(param.get("id") + ".conf");
       fu.open(false);
-      fu.write(gson.toJson(body));
+      fu.write(jsonBody.toString());
       fu.newLine();
       fu.flush();
       fu.close();
@@ -375,15 +375,14 @@ public class DaemonService {
   public String manageModelConfFile(String path, Map param) {
     try {
       Map<String, ?> body = (Map) param.get("body");
-
-      Gson gson = new GsonBuilder().setPrettyPrinting().create();
+      JSONObject jsonBody = new JSONObject(body);
 
 
       FileUtil fu = new FileUtil();
       fu.setPath(path);
       fu.setFile(param.get("apdater_id") + ".template");
       fu.open(false);
-      fu.write(gson.toJson(body));
+      fu.write(jsonBody.toString());
       fu.flush();
       fu.close();
 
@@ -402,18 +401,15 @@ public class DaemonService {
   @Deprecated
   public String manageValidationConfFile(String path, Map param) {
     try {
-
-      Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
       FileUtil fu = new FileUtil();
       fu.setPath(path);
       fu.setFile(param.get("apdater_id") + ".valid");
       fu.open(false);
 
       if (param.get("body") instanceof Map) {
-        fu.write(gson.toJson(param.get("body")));
+        fu.write(new JSONObject(param.get("body")).toString());
       } else if (param.get("body") instanceof List) {
-        fu.write(gson.toJson(param.get("body")));
+        fu.write(new JSONArray(param.get("body")).toString());
       }
 
       fu.flush();
@@ -438,8 +434,8 @@ public class DaemonService {
       fu.setFile(param.get("topic") + ".csv");
       fu.open(false);
 
-      List<Map<String,String>> items = (List) param.get("items");
-      for (Map<String,String> m : items) {
+      List<Map<String,Object>> items = (List) param.get("items");
+      for (Map<String,Object> m : items) {
         fu.write(param.get("ip") +","+ m.get("item").toString());
       }
       fu.flush();
@@ -468,7 +464,7 @@ public class DaemonService {
     String result = null;
     try {
       String[] cmd2 = {"/bin/sh", "-c", "ps -ef | grep '" + filename + "' | grep -v grep | awk '{print $1}' "};
-      log.info("status:{}",Arrays.toString(cmd2));
+      log.debug("status:{}",Arrays.toString(cmd2));
       String pid = null;
       ProcessBuilder builder = new ProcessBuilder(cmd2);
       Process process = builder.start();
@@ -479,7 +475,7 @@ public class DaemonService {
           log.debug("process ID : {}", pid);
         }
       }
-      log.info("result:{}",result);
+      log.debug("result:{}",result);
     } catch (Exception e) {
       log.error("Exception : "+ExceptionUtils.getStackTrace(e));
     }
@@ -503,8 +499,9 @@ public class DaemonService {
       while ((str = input.readLine()) != null) {
         result = str;
       }
+      log.info("pid info: {},{}",filename, result);
+
       boolean isNumeric =  result.matches("[+-]?\\d*(\\.\\d+)?");
-      log.info("{},{}",result, isNumeric);
       String pid = "";
       if (isNumeric) {
         pid = "$2";
@@ -512,8 +509,8 @@ public class DaemonService {
         pid = "$1";
       }
 
-      String[] cmd2 = {"/bin/sh", "-c", "ps -ef | grep '" + filename + "' | grep -v grep | awk '{print " + pid + "}' | xargs kill"};
-      log.info("kill:{}", Arrays.toString(cmd2));
+      String[] cmd2 = {"/bin/sh", "-c", "ps -ef | grep '" + filename + "' | grep -v grep | awk '{print " + pid + "}' | xargs kill -9"};
+      log.info("kill:{},{}", filename, pid );
 
       builder = new ProcessBuilder(cmd2);
       process = builder.start();
@@ -521,11 +518,8 @@ public class DaemonService {
       str = "";
       while ((str = input.readLine()) != null) {
         result = str;
-        if (log.isDebugEnabled()) {
-          log.debug("str : {}", str);
-        }
       }
-      log.info("result:{}",result);
+      log.info("kill result:{},{},{}",filename , pid, result);
     } catch (Exception e) {
       log.error("Exception : "+ExceptionUtils.getStackTrace(e));
     }
@@ -557,14 +551,14 @@ public class DaemonService {
     String result = null;
     try {
       String body = (String) param.get("sourceCode");
-      log.info("body : {}", body);
+      log.debug("body : {}", body);
       String agentLib = flumeHomePath + "/plugins.d/agent/lib/";
       String flumeLib = flumeHomePath + "/lib/";
       String agentLibext = flumeHomePath + "/plugins.d/agent/libext/";
 
-      log.info("agentLib : {}", agentLib);
-      log.info("flumeLib : {}", flumeLib);
-      log.info("agentLibext : {}", agentLibext);
+      log.debug("agentLib : {}", agentLib);
+      log.debug("flumeLib : {}", flumeLib);
+      log.debug("agentLibext : {}", agentLibext);
 
       FileUtil fu = new FileUtil();
       fu.setPath(agentLib);
@@ -574,8 +568,8 @@ public class DaemonService {
       fu.flush();
       fu.close();
 
-      log.info("javac" + " -d " + agentLib + " " + agentLib + param.get("instance_id") + ".java");
-      log.info("process: {}", agentLib + "compile.sh", param.get("instance_id") + ".java");
+      log.debug("javac" + " -d " + agentLib + " " + agentLib + param.get("instance_id") + ".java");
+      log.debug("process: {}", agentLib + "compile.sh", param.get("instance_id") + ".java");
       Process process = new ProcessBuilder(agentLib + "compile.sh", param.get("instance_id") + ".java").start();
 
       BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));

@@ -145,7 +145,7 @@ public class RoadLinkTrafficInfo_by extends AbstractConvert {
 			    	  wMap.put("routeNm", JsonUtil.nvl(item.get("routeNm") , DataType.STRING));
 			      }
 
-			      System.out.println("wMet----------------- : "+wMap.get("spd") );
+		          log.info("wMet----------------- : "+wMap.get("spd") );
 
 	          Map<String,Object> addrValue = (Map)((Map)tMap.get("address")).get("value");
 	          addrValue.put("addressCountry", JsonUtil.nvl(iSvc.getString("addressCountry")) );

@@ -98,7 +98,7 @@ public class AdapterController {
     List<Map> result = new ArrayList<>();
     try {
       result = as.getAll();
-      log.debug("result =" + result);
+      log.debug("result : {}",result);
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
@@ -244,9 +244,6 @@ public class AdapterController {
   public ModelAndView popupItemValue(HttpServletRequest request) {
 
     log.debug("----- AdapterController.popupItemValue() -----");
-    log.debug("request.item = " + request.getParameter("item_nm"));
-    log.debug("request.value = " + request.getParameter("item_value"));
-    log.debug("request.seq = " + request.getParameter("item_seq"));
     Map param = new HashMap();
     param.put("item_nm", request.getParameter("item_nm"));
     param.put("item_value", request.getParameter("item_value"));
@@ -350,9 +347,6 @@ public class AdapterController {
 
       String token = (String) json.get("access_token");
       log.debug(jsonBody);
-      /*
-       * TODO 게이트웨이 주소
-       */
       String gatewayUrl = "";
       url = new URL(gatewayUrl + targetUrl);
 

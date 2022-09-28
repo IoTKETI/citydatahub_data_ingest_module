@@ -126,12 +126,7 @@ public class AuthService {
 
     String url = tokenEndpoint+"?grant_type=authorization_code&client_id="+clientId+"&client_secret="+clientSecret+"&redirect_uri="+redirectUri+"&code="+code;
 
-    log.info("$$$$$$$$$$url:{},{}",tokenEndpoint, object.toString());
-    /*
-    resMessage = httpConnection(url,"GET", apiheader ,object.toString());
-    log.info("resMessage:{}",resMessage);
-    return resMessage;
-     */
+    log.info("###url:{},{}",tokenEndpoint, object.toString());
 
     RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), object.toString());
     Request okRequest = new Request.Builder().url(url).post(requestBody).build();
@@ -173,27 +168,6 @@ public class AuthService {
     log.info("resMessage:{}",resMessage);
     return resMessage;
 
-
-    /*
-    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), object.toString());
-    Request okRequest = new Request.Builder().url(tokenEndpoint).addHeader("Authorization", apiheader).post(requestBody).build();
-    Response response = null;
-
-
-    try {
-      response = client.newCall(okRequest).execute();
-      resMessage = response.body().string();
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    } finally {
-    }
-
-    if (response.isSuccessful()) {
-      return resMessage;
-    } else {
-      return null;
-    }
-    */
   }
 
   /**
@@ -210,33 +184,10 @@ public class AuthService {
     String resMessage = "";
 
     object.put("grant_type", grantPasswordCredentials);
-    //object.put("userId", userId);
-    //object.put("password", userPassword);
-
     resMessage = httpConnection(tokenEndpoint,"POST", apiheader ,object.toString());
     log.info("resMessage:{}",resMessage);
     return resMessage;
 
-    /*
-    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), object.toString());
-    Request okRequest = new Request.Builder().url(tokenEndpoint).addHeader("Authorization", apiheader).post(requestBody).build();
-    Response response = null;
-
-
-    try {
-      response = client.newCall(okRequest).execute();
-      resMessage = response.body().string();
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    } finally {
-    }
-
-    if (response.isSuccessful()) {
-      return resMessage;
-    } else {
-      return null;
-    }
-    */
   }
 
   /**
@@ -382,13 +333,6 @@ public class AuthService {
         JSONObject token = new JSONObject(session.getAttribute("token").toString());
         String target = "access_token";
 
-        /*
-        OkHttpClient client = new OkHttpClient();
-        Request req = new Request.Builder().url(logoutEndPoint).addHeader("Authorization", "Basic " + token.get(target).getAsString()).post(body).build();
-        Response res = client.newCall(req).execute();
-        resMessage = res.body().string();
-        */
-
         String resMessage = "";
 
         resMessage = httpConnection(logoutEndPoint,"POST", "Basic " + token.getString(target) ,bodyStr);
@@ -507,20 +451,7 @@ public class AuthService {
 
     resMessage = httpConnection(publicKeyEndPoint,"GET", apiheader ,"");
     log.info("resMessage:{}", resMessage);
-    /*
 
-    OkHttpClient client = new OkHttpClient();
-    Request request = new Request.Builder().url(publicKeyEndPoint).get().addHeader("Authorization", apiheader).build();
-    String resMessage = "";
-
-    try {
-      Response response = client.newCall(request).execute();
-      resMessage = response.body().string();
-      log.info("resMessage:{}", resMessage);
-    } catch (IOException e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
-     */
     return resMessage;
   }
 
@@ -534,9 +465,6 @@ public class AuthService {
       throws NoSuchAlgorithmException, InvalidKeySpecException, UnsupportedEncodingException {
 
     KeyFactory kf = KeyFactory.getInstance("RSA");
-    // String publicKeyContent = publicKeyResponse.replace("\\n",
-    // "").replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC
-    // KEY-----", "").replace("\"", "");
     log.info("publicKeyResponse:{}", publicKeyResponse);
 
     JSONObject jPublicKey = new JSONObject(publicKeyResponse);
@@ -578,16 +506,7 @@ public class AuthService {
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
-    // {"type":"adminSystem","userId":"cityhub03","nickname":"cityhub03","email":"cityhub03@test.com","role":"Connectivity_Admin","iat":1588730783,"exp":1588734383,"aud":"V43z0o2boLrXia0E5zn6","iss":"urn:datahub:cityhub:security"}
-    /*
-     * OkHttpClient client = new OkHttpClient(); Request request = new
-     * Request.Builder().url(getInfoUri).get().addHeader("Authorization",
-     * "Basic "+token).build(); try { Response response =
-     * client.newCall(request).execute(); resMessage = response.body().string();
-     *
-     * } catch (IOException e) { log.error("Exception : " +
-     * ExceptionUtils.getStackTrace(e)); }
-     */
+
     return resMessage;
   }
 
@@ -635,30 +554,10 @@ public class AuthService {
 
     resMessage = httpConnection(tokenEndpoint,"POST", refreshHeader ,object.toString());
 
-    /*
-    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), object.toString());
-    Request okRequest = new Request.Builder().url(tokenEndpoint).addHeader("Authorization", refreshHeader).post(requestBody).build();
-    Response okResponse = null;
-
-
-    try {
-      okResponse = client.newCall(okRequest).execute();
-      resMessage = okResponse.body().string();
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    } finally {
-    }
-     */
     log.debug("리프레시 토큰 값 : " + refreshToken);
     log.debug("리프레시 토큰 응답 : " + resMessage);
-    //if (okResponse.isSuccessful()) {
-      cookieAddTokenByJson(response, resMessage);
-      return true;
-    /*
-    } else {
-      return false;
-    }
-    */
+    cookieAddTokenByJson(response, resMessage);
+    return true;
   }
 
 }

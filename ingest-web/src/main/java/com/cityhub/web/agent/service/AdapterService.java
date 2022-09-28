@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cityhub.web.agent.mapper.AdapterMapper;
+import com.cityhub.web.config.ConfigEnv;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,13 +36,13 @@ public class AdapterService {
   @Autowired
   AdapterMapper mapper;
 
+  @Autowired
+  ConfigEnv configEnv;
+
   public List<Map> getAll() throws Exception {
     return mapper.getAll();
   }
 
-//  public List<Map> code_detail() throws Exception {
-//    return mapper.code_detail();
-//  }
 
   public List<Map> value_type_search() throws Exception {
     return mapper.value_type_search();
@@ -164,4 +165,6 @@ public class AdapterService {
   public void deleteAdtTypeInfo(String id) throws Exception {
     mapper.deleteAdtTypeInfo(id);
   }
+
+
 }

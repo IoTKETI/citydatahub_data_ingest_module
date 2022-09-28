@@ -406,6 +406,12 @@ ORDER BY A.agent_id, B.adapter_id, C.instance_id, D.display_seq
 	from keyword_info
 	</select>
   
+  
+  <select id="selectAdaptorKeywordInfo" resultType="map"> 
+  select item, item_described , relation_code_id
+  from adapter_info a inner join keyword_info b on a.adapter_id = #{adapter_id} and a.target_platform_type  = b.relation_code_id 
+  </select>
+  
 <select id="selectObComboList" resultType="map"> 
 SELECT
 ob_datamodel_id, ob_datamodel_nm

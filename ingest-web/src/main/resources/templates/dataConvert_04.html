@@ -257,8 +257,6 @@ public class
 
           Map&lt;String,Object&gt; wMap = new LinkedHashMap&lt;&gt;();
           
-          log.info("ServiceResult:{}",ju.get("ServiceResult"));
-          log.info("getObj:{}",ju.getObj("ServiceResult.msgBody.itemList"));
 
           JSONObject itemList =  (JSONObject) ju.getObj("ServiceResult.msgBody.itemList");
 
@@ -287,8 +285,6 @@ public class
             roadTrafficInfo.put("value", wMap);
             tMap.put("RoadLinkTrafficInfo", roadTrafficInfo);
 
-
-            log.info("tMap:{}", tMap);
             rtnList.add(tMap);
             String str = objectMapper.writeValueAsString(tMap);
             log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
@@ -337,7 +333,6 @@ var id = /*[[ ${id} ]]*/;
   
   var ob_datamodel_id = "";
   function _cbAfterdataModel_info(data){
-    console.log(data);
     var agentUrl = "/agentDetail/" + data.agent_id;
     var adapterUrl = "/instanceDetail/" + data.adapter_id;
     setNavi("Agent 관리```/agentList/","Agent 목록```/agentList/","Agent 상세```"+ agentUrl,"Instance 관리```"+ adapterUrl,"데이터모델 변환 관리");
