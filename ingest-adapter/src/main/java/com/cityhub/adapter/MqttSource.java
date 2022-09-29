@@ -16,11 +16,8 @@
  */
 package com.cityhub.adapter;
 
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -28,9 +25,7 @@ import java.util.TimeZone;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flume.ChannelException;
 import org.apache.flume.Context;
-import org.apache.flume.Event;
 import org.apache.flume.EventDrivenSource;
-import org.apache.flume.event.EventBuilder;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
@@ -48,11 +43,11 @@ import com.cityhub.environment.DefaultConstants;
 import com.cityhub.environment.ReflectExecuter;
 import com.cityhub.environment.ReflectExecuterManager;
 import com.cityhub.model.DataModelEx;
+import com.cityhub.source.core.LogWriterToDb;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
-import com.cityhub.utils.LogWriterToDb;
 import com.cityhub.utils.OkUrlUtil;
 import com.cityhub.utils.StrUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -124,6 +119,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     ConfItem.put("metaInfo", metaInfo);
     ConfItem.put("sourceName", this.getName());
     ConfItem.put("adapterType", adapterType);
+    ConfItem.put("invokeClass", getInvokeClass() );
     ConfItem.put("datasetId", datasetId);
 
     mqttOptions = new MqttConnectOptions();
@@ -185,7 +181,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
         }
       }
     } else {
-      log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
+      log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
     }
 
     if (log.isDebugEnabled()) {
@@ -222,12 +218,12 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
             });
             for (Map<String, Object> itm : entities) {
               int length = objectMapper.writeValueAsString(itm).getBytes().length;
-              log.info("`{}`{}`{}`{}`{}`{}", this.getName(), itm.get("type"), getStr(SocketCode.DATA_SAVE_REQ), itm.get("id"), length, adapterType);
+              log.info("`{}`{}`{}`{}`{}`{}`{}", this.getName(), itm.get("type"), SocketCode.DATA_SAVE_REQ.toMessage(), itm.get("id"), length, adapterType,ConfItem.getString("invokeClass"));
               StringBuilder l = new StringBuilder();
               l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
               l.append("`").append(ConfItem.getString("sourceName"));
               l.append("`").append(modelId);
-              l.append("`").append(SocketCode.DATA_SAVE_REQ.getCode() + ";" + SocketCode.DATA_SAVE_REQ.getMessage());
+              l.append("`").append(SocketCode.DATA_SAVE_REQ.toMessage());
               l.append("`").append(itm.get("id") + "");
               l.append("`").append(length);
               l.append("`").append(adapterType);
@@ -264,27 +260,6 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     }
   }
 
-  public void sendEventEx(Map<String, Object> entity, String datasetId) {
-    try {
-      List<Map<String, Object>> entities = new LinkedList<>();
-      entities.add(entity);
-      Map<String, Object> body = new LinkedHashMap<>();
-      body.put("entities", entities);
-      body.put("datasetId", datasetId);
-      Event event = EventBuilder.withBody(objectMapper.writeValueAsString(body).getBytes(Charset.forName("UTF-8")));
-      getChannelProcessor().processEvent(event);
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
-  }
-
-  public String getStr(SocketCode sc) {
-    return sc.getCode() + ";" + sc.getMessage();
-  }
-
-  public String getStr(SocketCode sc, String msg) {
-    return sc.getCode() + ";" + sc.getMessage() + "-" + msg;
-  }
 
   public void callback(byte[] msg) {
     try {

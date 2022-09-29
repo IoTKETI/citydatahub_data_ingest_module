@@ -6,97 +6,98 @@
 
 <div class="container" layout:fragment="content">
 
-        <h3 class="content__title">원천 데이터모델 관리</h3>  
-  
-        <form>
-          <fieldset>
-            <legend>필드셋 제목</legend>
-            <section class="section">
-              <div class="section__header">
-                <h4 class="section__title">원천 데이터모델 목록</h4>
-              </div>
-              <div class="section__content">
-                <table class="table--column" id="obListView">
-                  <caption>테이블 제목</caption>
-                  <colgroup>
-                    <col style="width:50px">
-                    <col style="width:350px">
-                    <col style="width:350px">
-                    <col style="width:150px">
-                    <col style="width:200px">
-                    <col style="width:auto">
-                    <col style="width:100px">
-                  </colgroup>
-                  <thead>
-                    <tr>
-                      <th>순번</th>
-                      <th>Source Model ID</th>
-                      <th>Source Model 명</th>
-                      <th>데이터 유형</th>
-                      <th>등록일</th>
-                      <th>비고</th>
-                      <th>사용여부</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    
-                  </tbody>
-                </table>
-              </div>
-              <div class="button__group">
-                <button class="button__primary" type="button" onclick = "location.href = '/obDetail' ">신규추가</button>
-              </div>
-            </section>
-          </fieldset>
-        </form>
+  <h3 class="content__title">원천 데이터모델 관리</h3>
 
-  <script th:inline="javascript">
+  <form>
+    <fieldset>
+      <legend>필드셋 제목</legend>
+      <section class="section">
+        <div class="section__header">
+          <h4 class="section__title">원천 데이터모델 목록</h4>
+        </div>
+        <div class="section__content">
+          <table class="table--column" id="obListView">
+            <caption>테이블 제목</caption>
+            <colgroup>
+              <col style="width: 50px">
+              <col style="width: 350px">
+              <col style="width: 350px">
+              <col style="width: 150px">
+              <col style="width: 200px">
+              <col style="width: auto">
+              <col style="width: 100px">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>순번</th>
+                <th>Source Model ID</th>
+                <th>Source Model 명</th>
+                <th>데이터 유형</th>
+                <th>등록일</th>
+                <th>비고</th>
+                <th>사용여부</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
+        <div class="button__group">
+          <button class="button__primary" type="button" onclick="location.href = '/obDetail' ">신규추가</button>
+        </div>
+      </section>
+    </fieldset>
+  </form>
+
+<script th:inline="javascript">
   $(document).ready(function() {
-    obListView();  
+    obListView();
   });
-  
-  function obListView (){
+
+  function obListView() {
     var url = "/sourceModels";
     cmUtl.exeAjax("GET", url, null, "_cbAfterObListView");
   }
-  
-  function _cbAfterObListView (data){
+
+  function _cbAfterObListView(data) {
     if (data.length == 0) {
       cmUtl.showEmptyLine('obListView', true);
     }
-  
+
     for (var i = 0; i < data.length; i++) {
-      var index = i+1;
+      var index = i + 1;
       var html = '<tr>';
-      html += '<td>'+index+'</td>';
-      html += '<td><a href="/obDetail/'+data[i].ob_datamodel_id+'">'+data[i].ob_datamodel_id+'</td>';
-      html += '<td>'+data[i].ob_datamodel_nm+'</td>';
-      html += '<td>'+data[i].ob_datamodel_format+'</td>';
-      html += '<td>'+data[i].first_create_dt+'</td>';
-      html += '<td>'+data[i].described+'</td>';
-      html += '<td>'+yn(data[i].use_yn)+'</td>';
-      html += '</tr>';    
-    
+      html += '<td>' + index + '</td>';
+      html += '<td><a href="/obDetail/'+data[i].ob_datamodel_id+'">' + data[i].ob_datamodel_id + '</td>';
+      html += '<td>' + data[i].ob_datamodel_nm + '</td>';
+      html += '<td>' + data[i].ob_datamodel_format + '</td>';
+      html += '<td>' + data[i].first_create_dt + '</td>';
+      html += '<td>' + data[i].described + '</td>';
+      html += '<td>' + yn(data[i].use_yn) + '</td>';
+      html += '</tr>';
+
       $('#obListView').appendBody(html);
-      
+
     }
   }
-  
-  function yn(val){
+
+  function yn(val) {
     var rtn = "";
     switch (val) {
     case "Y":
-      rtn ="사용";
+      rtn = "사용";
       break;
     case "N":
-      rtn ="미사용";
+      rtn = "미사용";
       break;
     }
     return rtn;
   }
-  
-  </script>
-  <script>setNavi("원천 데이터모델 관리```/obList/","원천 데이터모델 목록```/obList/");</script>
+</script>
+<script>
+  setNavi("원천 데이터모델 관리```/obList/", "원천 데이터모델 목록```/obList/");
+</script>
 </div>
 
 </html>

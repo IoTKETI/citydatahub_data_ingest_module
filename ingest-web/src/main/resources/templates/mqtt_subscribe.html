@@ -5,30 +5,30 @@
 
 </head>
 <body>
-<div class="container" layout:fragment="content">
+  <div class="container" layout:fragment="content">
     <h3 class="content__title">oneM2M Subscription Information</h3>
-    
+
     <form onSubmit="return false;">
       <fieldset>
         <legend>필드셋 제목</legend>
         <section class="section">
           <div class="section__header">
-            <h4 class="section__title">oneM2M HTTP protocol setting </h4>
+            <h4 class="section__title">oneM2M HTTP protocol setting</h4>
           </div>
           <div class="section__content">
             <table class="table--column" id="mqttUrlInfo">
               <caption>테이블 제목</caption>
               <colgroup>
-                <col style="width:150px">
-                <col style="width:auto">
-                <col style="width:150px">
-                <col style="width:auto">
+                <col style="width: 150px">
+                <col style="width: auto">
+                <col style="width: 150px">
+                <col style="width: auto">
               </colgroup>
               <tbody>
                 <tr>
                   <th>HTTP server IP/port</th>
                   <td colspan="3"><input id="http_url" name="http_url" type="text" class="input__text" required value="http://203.253.128.164:7579"></td>
-                  
+
                 </tr>
                 <tr>
                   <th>Discovery Target</th>
@@ -38,28 +38,26 @@
                 </tr>
                 <tr>
                   <th rowspan="3">Header</th>
-                  <td colspan="3" style="text-align:left"><input id="header_key1" name="header_key1" type="text" class="input__text" required value="X-M2M-Origin" style="width:150px;color:black" readonly> :
-                  <input id="header_val1" name="header_val1" type="text" class="input__text" required value="SW001" style="width:80%"></td>
+                  <td colspan="3" style="text-align: left"><input id="header_key1" name="header_key1" type="text" class="input__text" required value="X-M2M-Origin"
+                    style="width: 150px; color: black" readonly> : <input id="header_val1" name="header_val1" type="text" class="input__text" required value="SW001" style="width: 80%"></td>
                 </tr>
                 <tr>
-                  <td colspan="3"  style="text-align:left"><input id="header_key2" name="header_key2" type="text" class="input__text" required value="X-M2M-RI" style="width:150px;color:black" readonly> :
-                  <input id="header_val2" name="header_val2" type="text" class="input__text" required value="cityhub" style="width:80%"></td>
+                  <td colspan="3" style="text-align: left"><input id="header_key2" name="header_key2" type="text" class="input__text" required value="X-M2M-RI" style="width: 150px; color: black"
+                    readonly> : <input id="header_val2" name="header_val2" type="text" class="input__text" required value="cityhub" style="width: 80%"></td>
                 </tr>
                 <tr>
-                  <td colspan="3" style="text-align:left"><input id="header_key3" name="header_key3" type="text" class="input__text" required value="Accept" style="width:150px;color:black" readonly> :
-                  <input id="header_val3" name="header_val3" type="text" class="input__text" required value="application/json" style="width:80%"></td>
+                  <td colspan="3" style="text-align: left"><input id="header_key3" name="header_key3" type="text" class="input__text" required value="Accept" style="width: 150px; color: black"
+                    readonly> : <input id="header_val3" name="header_val3" type="text" class="input__text" required value="application/json" style="width: 80%"></td>
                 </tr>
-                              
+
               </tbody>
-            </table>  
+            </table>
           </div>
-          
-          <div class="button__group">
-            
-          </div>
-          
+
+          <div class="button__group"></div>
+
         </section>
-        
+
         <section class="section">
           <div class="section__header">
             <h4 class="section__title">oneM2M MQTT protocol setting</h4>
@@ -68,12 +66,12 @@
             <table class="table--column" id="mqttSubscribeInfo">
               <caption>테이블 제목</caption>
               <colgroup>
-                <col style="width:150px">
-                <col style="width:auto">
-                <col style="width:150px">
-                <col style="width:auto">
-                <col style="width:150px">
-                <col style="width:auto">
+                <col style="width: 150px">
+                <col style="width: auto">
+                <col style="width: 150px">
+                <col style="width: auto">
+                <col style="width: 150px">
+                <col style="width: auto">
               </colgroup>
               <tbody>
                 <tr>
@@ -83,19 +81,17 @@
                   <td><input id="mqtt_originator" name="mqtt_originator" type="text" class="input__text" required value="Mobius"></td>
                   <th>Receiver ID</th>
                   <td><input id="mqtt_receive" name="mqtt_receive" type="text" class="input__text" required value="Ssync_parking_raw"></td>
-                </tr>                
+                </tr>
               </tbody>
-            </table>  
+            </table>
           </div>
-          
-          <div class="button__group">
-            
-          </div>
-          
+
+          <div class="button__group"></div>
+
         </section>
       </fieldset>
     </form>
-    
+
     <form onSubmit="return false;">
       <fieldset>
         <legend>필드셋 제목</legend>
@@ -107,179 +103,175 @@
             <table class="table--column" id="subscribeListInfo">
               <caption>테이블 제목</caption>
               <colgroup>
-                <col style="width:40px">
-                <col style="width:350px">
-                <col style="width:auto">
+                <col style="width: 40px">
+                <col style="width: 350px">
+                <col style="width: auto">
               </colgroup>
               <thead>
                 <tr>
-                  <th><input type="checkbox" id="allCheck" class="input__checkbox" /><label class="label__checkbox" for="allCheck" ></label></th>
+                  <th><input type="checkbox" id="allCheck" class="input__checkbox" /><label class="label__checkbox" for="allCheck"></label></th>
                   <th>Resoure ID</th>
                   <th>Result</th>
                 </tr>
               </thead>
               <tbody>
-              </tbody>                  
-            </table> 
+              </tbody>
+            </table>
           </div>
-          
+
           <div class="button__group">
-          <button class="button__util button__util-- material-icons" type="button" id="btn-importSubscribe" onfocus="this.blur()" >하위 컨테이너 검색</button>
+            <button class="button__util button__util-- material-icons" type="button" id="btn-importSubscribe" onfocus="this.blur()">하위 컨테이너 검색</button>
             <button class="button__primary" type="submit" id="btn-saveSubscribe" onfocus="this.blur()">구독</button>
           </div>
-          
+
         </section>
       </fieldset>
     </form>
-    
-    
-    <div id="cloneSubscribeListInfo" style="display:none">
+
+
+    <div id="cloneSubscribeListInfo" style="display: none">
       <table>
         <tr>
-          <td><input type="checkbox" name="chk_info" class="input__checkbox" id="chk_info" /><label class="label__checkbox" for="chk_info" ></td>
-          <td><input label="항목명" name="subscribeList" id="subscribeList" type="text" class="input__text" required readonly style="color:black" /></td>
-          <td><input label="비고명" name="subscribeBigo" id="subscribeBigo" type="text" class="input__text" readonly style="color:black" /></td>
+          <td><input type="checkbox" name="chk_info" class="input__checkbox" id="chk_info" /><label class="label__checkbox" for="chk_info"></td>
+          <td><input label="항목명" name="subscribeList" id="subscribeList" type="text" class="input__text" required readonly style="color: black" /></td>
+          <td><input label="비고명" name="subscribeBigo" id="subscribeBigo" type="text" class="input__text" readonly style="color: black" /></td>
         </tr>
       </table>
     </div>
-   
+
 
 
 <script>
+  $("#btn-importSubscribe").click(function(event) {
 
-$("#btn-importSubscribe").click(function(event) {
-  
-  if(validation("mqttUrlInfo")) {
-    var data = {
-        "http_url" : $("#http_url").val()
-        ,"http_resource" : $("#http_resource").val()
-        ,"http_parameter" : $("#http_parameter").val()
-        ,"header_key1" : $("#header_key1").val()
-        ,"header_key2" : $("#header_key2").val()
-        ,"header_key3" : $("#header_key3").val()
-        ,"header_val1" : $("#header_val1").val()
-        ,"header_val2" : $("#header_val2").val()
-        ,"header_val3" : $("#header_val3").val()
-    };
-    var url = "/mqtt/subscribe/list";
-    var param = data;
-    cmUtl.exeAjax("POST", url,JSON.stringify(data), "_cbAfterImportResource" );
-  }
-});
-
-function _cbAfterImportResource(data){
-  try{
-    for (var i = 0; i < data.length; i++) {
-      var tmpObj = $("#cloneSubscribeListInfo").find("tr:first").clone();
-      var rowData = new RowData( tmpObj );
-      rowData.setChangeId(i, "chk_info" );
-      rowData.setChangeIdValue(i, "subscribeList" , data[i].item);
-      rowData.setChangeIdValue(i, "subscribeBigo" , "");
-      $('#subscribeListInfo').appendBody(rowData.toObject());
+    if (validation("mqttUrlInfo")) {
+      var data = {
+        "http_url" : $("#http_url").val(),
+        "http_resource" : $("#http_resource").val(),
+        "http_parameter" : $("#http_parameter").val(),
+        "header_key1" : $("#header_key1").val(),
+        "header_key2" : $("#header_key2").val(),
+        "header_key3" : $("#header_key3").val(),
+        "header_val1" : $("#header_val1").val(),
+        "header_val2" : $("#header_val2").val(),
+        "header_val3" : $("#header_val3").val()
+      };
+      var url = "/mqtt/subscribe/list";
+      var param = data;
+      cmUtl.exeAjax("POST", url, JSON.stringify(data), "_cbAfterImportResource");
     }
-    
-    $("#subscribeListInfo").procEmptyLine(); // 검색 된 데이터가 없을 경우  
-  }catch(e){
-    console.log(e);
-  }
-}
+  });
 
-$("#btn-saveSubscribe").click(function(event) {
-  
+  function _cbAfterImportResource(data) {
+    try {
+      for (var i = 0; i < data.length; i++) {
+        var tmpObj = $("#cloneSubscribeListInfo").find("tr:first").clone();
+        var rowData = new RowData(tmpObj);
+        rowData.setChangeId(i, "chk_info");
+        rowData.setChangeIdValue(i, "subscribeList", data[i].item);
+        rowData.setChangeIdValue(i, "subscribeBigo", "");
+        $('#subscribeListInfo').appendBody(rowData.toObject());
+      }
+
+      $("#subscribeListInfo").procEmptyLine(); // 검색 된 데이터가 없을 경우  
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  $("#btn-saveSubscribe").click(function(event) {
+
     event.preventDefault();
     fnSave();
-});
+  });
 
-
-function fnSave(){
-  var srcData = $("#subscribeListInfo");
-  var len = srcData.getLength();
-  if (len == 0) {
-    alert("정보 가져오기를 해주세요.");
-    return;
-  }
-  var rows = new Array();
-  if (len > 0) {
-    for (var i = 0; i < len; i++) {
-      item = srcData.getRow(i);
-      var row = new Object();
-      if(item.find("input[name=chk_info]").is(":checked")){
-        row.item = item.find("input[name=subscribeList]").val();
-        rows.push(row);  
+  function fnSave() {
+    var srcData = $("#subscribeListInfo");
+    var len = srcData.getLength();
+    if (len == 0) {
+      alert("정보 가져오기를 해주세요.");
+      return;
+    }
+    var rows = new Array();
+    if (len > 0) {
+      for (var i = 0; i < len; i++) {
+        item = srcData.getRow(i);
+        var row = new Object();
+        if (item.find("input[name=chk_info]").is(":checked")) {
+          row.item = item.find("input[name=subscribeList]").val();
+          rows.push(row);
+        }
       }
     }
-  }
-  if (rows.length == 0) {
-    alert("구독할 컨테이너를 선택해 주세요.");
-    return;
-  }
-  var data = {
-      "http_url" : $("#http_url").val()
-    ,"http_resource" : $("#http_resource").val()
-    ,"http_parameter" : $("#http_parameter").val()
-    ,"header_key1" : $("#header_key1").val()
-    ,"header_key2" : $("#header_key2").val()
-    ,"header_key3" : $("#header_key3").val()
-    ,"header_val1" : $("#header_val1").val()
-    ,"header_val2" : $("#header_val2").val()
-    ,"header_val3" : $("#header_val3").val()
-    ,"mqtt_ip" : $("#mqtt_ip").val()
-    ,"mqtt_receive" : $("#mqtt_receive").val()
-    ,"mqtt_originator" : $("#mqtt_originator").val()
-    ,"items" : rows
-  };
+    if (rows.length == 0) {
+      alert("구독할 컨테이너를 선택해 주세요.");
+      return;
+    }
+    var data = {
+      "http_url" : $("#http_url").val(),
+      "http_resource" : $("#http_resource").val(),
+      "http_parameter" : $("#http_parameter").val(),
+      "header_key1" : $("#header_key1").val(),
+      "header_key2" : $("#header_key2").val(),
+      "header_key3" : $("#header_key3").val(),
+      "header_val1" : $("#header_val1").val(),
+      "header_val2" : $("#header_val2").val(),
+      "header_val3" : $("#header_val3").val(),
+      "mqtt_ip" : $("#mqtt_ip").val(),
+      "mqtt_receive" : $("#mqtt_receive").val(),
+      "mqtt_originator" : $("#mqtt_originator").val(),
+      "items" : rows
+    };
 
-  if (confirm("구독하시겠습니까?")) {
-    $("#btn-saveSubscribe").prop("disabled", true);
-    var url = "/mqtt/subscribe/save";
-    cmUtl.exeAjax("POST", url, JSON.stringify(data), "_cbAfterSaveSubscribe");
+    if (confirm("구독하시겠습니까?")) {
+      $("#btn-saveSubscribe").prop("disabled", true);
+      var url = "/mqtt/subscribe/save";
+      cmUtl.exeAjax("POST", url, JSON.stringify(data), "_cbAfterSaveSubscribe");
+    }
   }
-}
 
-function _cbAfterSaveSubscribe(data) {
-  
-  var srcData = $("#subscribeListInfo");
-  var len = srcData.getLength();
-  var rows = new Array();
-  if (len > 0) {
-    for (var i = 0; i < len; i++) {
-      item = srcData.getRow(i);
-      var row = new Object();
-      if(item.find("input[name=chk_info]").is(":checked") ){
-        var str = item.find("input[name=subscribeList]").val();
-        for(var j=0 ; j< data.length; j++) {
-          if (str == data[j].addr) {
-            if(data[j].status == 200){
-              item.find("input[name=subscribeBigo]").val("success");
-            } else {
-              var err = JSON.parse(data[j].message);
-              item.find("input[name=subscribeBigo]").val(err['m2m:dbg']);
+  function _cbAfterSaveSubscribe(data) {
+
+    var srcData = $("#subscribeListInfo");
+    var len = srcData.getLength();
+    var rows = new Array();
+    if (len > 0) {
+      for (var i = 0; i < len; i++) {
+        item = srcData.getRow(i);
+        var row = new Object();
+        if (item.find("input[name=chk_info]").is(":checked")) {
+          var str = item.find("input[name=subscribeList]").val();
+          for (var j = 0; j < data.length; j++) {
+            if (str == data[j].addr) {
+              if (data[j].status == 200) {
+                item.find("input[name=subscribeBigo]").val("success");
+              } else {
+                var err = JSON.parse(data[j].message);
+                item.find("input[name=subscribeBigo]").val(err['m2m:dbg']);
+              }
             }
           }
+
         }
-          
       }
     }
+    $("#btn-saveSubscribe").prop("disabled", false);
+
   }
-  $("#btn-saveSubscribe").prop("disabled", false);
- 
-}
 
-
-$("#allCheck").click(function(){ //만약 전체 선택 체크박스가 체크된상태일경우 
-  if($("#allCheck").is(":checked")) { //해당화면에 전체 checkbox들을 체크해준다 
-    $("input[name=chk_info]").prop("checked",true); // 전체선택 체크박스가 해제된 경우 
-  } else { //해당화면에 모든 checkbox들의 체크를해제시킨다. 
-    $("input[name=chk_info]").prop("checked",false); 
-  } 
-});
-
-
-
+  $("#allCheck").click(function() { //만약 전체 선택 체크박스가 체크된상태일경우 
+    if ($("#allCheck").is(":checked")) { //해당화면에 전체 checkbox들을 체크해준다 
+      $("input[name=chk_info]").prop("checked", true); // 전체선택 체크박스가 해제된 경우 
+    } else { //해당화면에 모든 checkbox들의 체크를해제시킨다. 
+      $("input[name=chk_info]").prop("checked", false);
+    }
+  });
 </script>
 
 
-<script>setNavi("Adapter 유형 관리```/mqtt/subscribe/view","oneM2M 구독관리```/mqtt/subscribe/view");</script>
-</div>
+<script>
+  setNavi("Adapter 유형 관리```/mqtt/subscribe/view", "oneM2M 구독관리```/mqtt/subscribe/view");
+</script>
+  </div>
 </body>
 </html>

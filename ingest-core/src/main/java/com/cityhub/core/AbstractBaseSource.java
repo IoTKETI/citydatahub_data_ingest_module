@@ -16,9 +16,14 @@
  */
 package com.cityhub.core;
 
-import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flume.Context;
 import org.apache.flume.CounterGroup;
 import org.apache.flume.Event;
@@ -28,6 +33,7 @@ import org.apache.flume.source.AbstractSource;
 import org.json.JSONObject;
 
 import com.cityhub.utils.JsonUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,16 +81,36 @@ public abstract class AbstractBaseSource extends AbstractSource implements Confi
     return UUID.randomUUID().toString().replaceAll("-", "");
   }
 
-  public void sendEvent(byte[] bodyBytes) {
-    ByteBuffer byteBuffer = ByteBuffer.allocate(bodyBytes.length + 5);
-    byte version = 0x10;// 4bit: Major version, 4bit: minor version
-    Integer bodyLength = bodyBytes.length;// length = 1234
-    byteBuffer.put(version);
-    byteBuffer.putInt(bodyLength.byteValue());
-    byteBuffer.put(bodyBytes);
-    Event event = EventBuilder.withBody(byteBuffer.array());
-    getChannelProcessor().processEvent(event);
+
+  public void sendEventEx(List<Map<String, Object>> entities, String datasetId) {
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put("entities", entities);
+      body.put("datasetId", datasetId);
+      Event event = EventBuilder.withBody(objectMapper.writeValueAsString(body).getBytes(Charset.forName("UTF-8")));
+      getChannelProcessor().processEvent(event);
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
   }
+
+
+  public void sendEventEx(Map<String, Object> entity, String datasetId) {
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      List<Map<String, Object>> entities = new LinkedList<>();
+      entities.add(entity);
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put("entities", entities);
+      body.put("datasetId", datasetId);
+      Event event = EventBuilder.withBody(objectMapper.writeValueAsString(body).getBytes(Charset.forName("UTF-8")));
+      getChannelProcessor().processEvent(event);
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
+  }
+
 
   public String getSchemaSrv() {
     return schemaSrv;

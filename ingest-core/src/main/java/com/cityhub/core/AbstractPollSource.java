@@ -18,8 +18,6 @@ package com.cityhub.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.List;
 import java.util.Scanner;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -27,13 +25,8 @@ import org.apache.flume.Context;
 import org.apache.flume.EventDeliveryException;
 import org.apache.flume.PollableSource;
 import org.apache.flume.source.PollableSourceConstants;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import com.cityhub.dto.KafkaStatusVO;
-import com.cityhub.dto.VerifyStatusVO;
 import com.cityhub.environment.DefaultConstants;
-import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.StrUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -103,47 +96,8 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
     return result.toString();
   }
 
-  public byte[] createSendJson(JSONObject content) {
-    String Uuid = "DATAINGEST_" + getUuid();
-    JSONObject body = new JSONObject();
-    body.put("requestId", Uuid);
-    body.put("e2eRequestId", Uuid);
-    body.put("owner", getInit().getString("owner"));
-    body.put("operation", getInit().getString("operation"));
-    body.put("to", "DataCore/entities/" + (content.has("id") ? content.getString("id") : ""));
-    body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : ""));
-    body.put("queryString", "");
-    body.put("eventTime", DateUtil.getTime());
-    body.put("content", content);
-    return body.toString().getBytes(Charset.forName("UTF-8"));
-  }
 
-  public byte[] createSendJson(JSONObject content, String Uuid) {
-    JSONObject body = new JSONObject();
-    body.put("requestId", Uuid);
-    body.put("e2eRequestId", Uuid);
-    body.put("owner", getInit().getString("owner"));
-    body.put("operation", getInit().getString("operation"));
-    body.put("to", "DataCore/entities/" + (content.has("id") ? content.getString("id") : ""));
-    body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : ""));
-    body.put("queryString", "");
-    body.put("eventTime", DateUtil.getTime());
-    body.put("content", content);
-    return body.toString().getBytes(Charset.forName("UTF-8"));
-  }
 
-  public void createSendJson(String sb) {
-    JSONArray JSendArr = new JSONArray("[" + sb.substring(0, sb.length() - 1) + "]");
-    try {
-      for (Object itm : JSendArr) {
-        JSONObject content = (JSONObject) itm;
-        sendEvent(createSendJson(content));
-      }
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
-
-  }
 
   public abstract void setup(Context context);
 
@@ -180,56 +134,6 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
     this.invokeClass = invokeClass;
   }
 
-  public void listSendKafka(List<VerifyStatusVO> msg) {
-    for (int k = 0; k < msg.size(); k++) {
-      try {
-        VerifyStatusVO vo = msg.get(k);
-        JSONObject content = new JSONObject(vo.getJsonMsg());
-        JSONObject body = new JSONObject();
-        body.put("requestId", vo.getUniqueId());
-        body.put("e2eRequestId", vo.getUniqueId());
-        body.put("owner", getInit().getString("owner"));
-        body.put("operation", getInit().getString("operation"));
-        body.put("to", "DataCore/entities/" + (content.has("id") ? content.getString("id") : ""));
-        body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : ""));
-        body.put("queryString", "");
-        body.put("eventTime", DateUtil.getTime());
-        body.put("content", content);
-        sendEvent(body.toString().getBytes(Charset.forName("UTF-8")));
-
-        if (k % 10 == 0) {
-          Thread.sleep(1);
-        }
-      } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      }
-    }
-  }
-
-  public byte[] progressSendKafka(String eventType, String modelType, String cid, String requestId, String personId, String sdt) {
-    JSONObject ff = null;
-    try {
-      Thread.sleep(10);
-      KafkaStatusVO vo = new KafkaStatusVO();
-      vo.setEventType(eventType);
-      vo.setEventDataType(modelType);
-      vo.setEventDataGroupId(cid);
-      vo.setEventTriggeredRequestId(requestId);
-      vo.setEventDataPersonId(personId);
-      vo.setEventDataBeginTime(sdt);
-      ff = new JSONObject(vo.toJson());
-      ff.remove("eventDataEndTime");
-      ff.remove("eventDataTotalCount");
-      ff.remove("requestedDataTotalCount");
-      ff.remove("eventDescription");
-      log.info(ff.toString());
-
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
-    return ff.toString().getBytes();
-  }
-
   public String refineAddr(String addr) {
     if (addr != null && !"".equals(addr)) {
       addr = addr.replaceAll("일반 ", "");
@@ -244,18 +148,6 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
       }
     }
     return StrUtil.trim(addr);
-  }
-
-  protected void extracted(InterruptedException e) {
-    log.error("{}", e.getStackTrace());
-  }
-
-  protected void extracted(IOException e) {
-    log.error("{}", e.getStackTrace());
-  }
-
-  protected static void extracted(Exception e) {
-    log.error("{}", e.getStackTrace());
   }
 
 }

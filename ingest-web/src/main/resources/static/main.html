@@ -13,103 +13,173 @@
 <link rel="stylesheet" href="/asset/css/jquery-ui.css">
 <link rel="stylesheet" href="/asset/css/sub.css?ver=3">
 <style type="text/css">
-*.pop-layer .pop-container { }
-.pop-layer p.ctxt {  color: #666;  line-height: 25px;}
-.pop-layer .btn-r {  width: 100%;  border-top: 1px solid #DDD;  text-align: right;}
-.pop-layer {  display: none;  position: absolute;  top: 50%;  left: 50%;  width: 410px;  height: auto;  background-color: #fff;  border: 1px solid #c6c6c6;  z-index: 10;}
-.dim-layer {  display: none;  position: fixed;  _position: absolute;  top: 0;  left: 0;  width: 100%;  height: 100%;  z-index: 100;}
-.dim-layer .dimBg {  position: absolute;  top: 0;  left: 0;  width: 100%;  height: 100%;  background: #000;  opacity: .5;  filter: alpha(opacity = 50);}
-.dim-layer .pop-layer {  display: block;}
-a.btn-layerClose {  display: inline-block;  height: 25px;  background-color: #3f5a9d;  font-size: 13px;  color: #fff;  line-height: 25px;}
-a.btn-layerClose:hover {  border: 0px solid #091940;  background-color: #1f326a;  color: #fff;}
-.console {  background-color: #999999;  color: white;  font-size: 15px;}
-#runningFlag {  color: red;}
+*.pop-layer .pop-container {
+  
+}
+
+.pop-layer p.ctxt {
+  color: #666;
+  line-height: 25px;
+}
+
+.pop-layer .btn-r {
+  width: 100%;
+  border-top: 1px solid #DDD;
+  text-align: right;
+}
+
+.pop-layer {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 410px;
+  height: auto;
+  background-color: #fff;
+  border: 1px solid #c6c6c6;
+  z-index: 10;
+}
+
+.dim-layer {
+  display: none;
+  position: fixed;
+  _position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+}
+
+.dim-layer .dimBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  opacity: .5;
+  filter: alpha(opacity = 50);
+}
+
+.dim-layer .pop-layer {
+  display: block;
+}
+
+a.btn-layerClose {
+  display: inline-block;
+  height: 25px;
+  background-color: #3f5a9d;
+  font-size: 13px;
+  color: #fff;
+  line-height: 25px;
+}
+
+a.btn-layerClose:hover {
+  border: 0px solid #091940;
+  background-color: #1f326a;
+  color: #fff;
+}
+
+.console {
+  background-color: #999999;
+  color: white;
+  font-size: 15px;
+}
+
+#runningFlag {
+  color: red;
+}
 
 .breadcrumb__list--current {
-    position: relative;
-    padding: 0 15px;
-    background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #e0e0e0), to(#f9f9f9));
-    background: linear-gradient(to top, #e0e0e0 0, #f9f9f9 100%);
-    border-top: 1px solid #d0d0d0;
-    border-bottom: 1px solid #d0d0d0;
-    border-right-width: 0
+  position: relative;
+  padding: 0 15px;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #e0e0e0), to(#f9f9f9));
+  background: linear-gradient(to top, #e0e0e0 0, #f9f9f9 100%);
+  border-top: 1px solid #d0d0d0;
+  border-bottom: 1px solid #d0d0d0;
+  border-right-width: 0
 }
+
 .breadcrumb__list--current:after {
-    content: '';
-    position: absolute;
-    top: -1px;
-    right: -12px;
-    z-index: 10;
-    width: 12px;
-    height: 31px;
-    background: url("/asset/images/sprite/sp_com.png") rgba(0, 0, 0, 0) -117px -35px no-repeat
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -12px;
+  z-index: 10;
+  width: 12px;
+  height: 31px;
+  background: url("/asset/images/sprite/sp_com.png") rgba(0, 0, 0, 0) -117px -35px no-repeat
 }
 
 .breadcrumb__list--current1 {
-    position: relative;
-    padding: 0px 15px;
-    background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #e0e0e0), to(#f9f9f9));
-    background: linear-gradient(to top, #e0e0e0 0, #f9f9f9 100%);
-    border-top: 1px solid #d0d0d0;
-    border-bottom: 1px solid #d0d0d0;
-    border-right-width: 0;
-    
-    color: #0996a5
+  position: relative;
+  padding: 0px 15px;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #e0e0e0), to(#f9f9f9));
+  background: linear-gradient(to top, #e0e0e0 0, #f9f9f9 100%);
+  border-top: 1px solid #d0d0d0;
+  border-bottom: 1px solid #d0d0d0;
+  border-right-width: 0;
+  color: #0996a5
 }
+
 .breadcrumb__list--current1:after {
-    content: '';
-    position: absolute;
-    top: -1px;
-    right: -12px;
-    z-index: 10;
-    width: 12px;
-    height: 31px;
-    background: url("/asset/images/sprite/sp_com.png") rgba(0, 0, 0, 0) -117px -35px no-repeat
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -12px;
+  z-index: 10;
+  width: 12px;
+  height: 31px;
+  background: url("/asset/images/sprite/sp_com.png") rgba(0, 0, 0, 0) -117px -35px no-repeat
 }
 
 .breadcrumb__list--current2 {
-    position: relative;
-    padding: 0px 15px;
-    background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #e0e0e0), to(#f9f9f9));
-    background: linear-gradient(to top, #e0e0e0 0, #f9f9f9 100%);
-    border-top: 1px solid #d0d0d0;
-    border-bottom: 1px solid #d0d0d0;
-    border-right-width: 0;
-    color: #0996a5
+  position: relative;
+  padding: 0px 15px;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #e0e0e0), to(#f9f9f9));
+  background: linear-gradient(to top, #e0e0e0 0, #f9f9f9 100%);
+  border-top: 1px solid #d0d0d0;
+  border-bottom: 1px solid #d0d0d0;
+  border-right-width: 0;
+  color: #0996a5
 }
+
 .breadcrumb__list--current2:after {
-    content: '';
-    position: absolute;
-    top: -1px;
-    right: -12px;
-    z-index: 10;
-    width: 12px;
-    height: 31px;
-    background: url("/asset/images/sprite/sp_com.png") rgba(0, 0, 0, 0) -117px -35px no-repeat
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -12px;
+  z-index: 10;
+  width: 12px;
+  height: 31px;
+  background: url("/asset/images/sprite/sp_com.png") rgba(0, 0, 0, 0) -117px -35px no-repeat
 }
+
 .breadcrumb__list--current3 {
-    position: relative;
-    padding: 0px 15px;
-    background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #e0e0e0), to(#f9f9f9));
-    background: linear-gradient(to top, #e0e0e0 0, #f9f9f9 100%);
-    border-top: 1px solid #d0d0d0;
-    border-bottom: 1px solid #d0d0d0;
-    border-right-width: 0;
-    color: #0996a5
+  position: relative;
+  padding: 0px 15px;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #e0e0e0), to(#f9f9f9));
+  background: linear-gradient(to top, #e0e0e0 0, #f9f9f9 100%);
+  border-top: 1px solid #d0d0d0;
+  border-bottom: 1px solid #d0d0d0;
+  border-right-width: 0;
+  color: #0996a5
 }
+
 .breadcrumb__list--current3:after {
-    content: '';
-    position: absolute;
-    top: -1px;
-    right: -12px;
-    z-index: 10;
-    width: 12px;
-    height: 31px;
-    background: url("/asset/images/sprite/sp_com.png") rgba(0, 0, 0, 0) -117px -35px no-repeat
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -12px;
+  z-index: 10;
+  width: 12px;
+  height: 31px;
+  background: url("/asset/images/sprite/sp_com.png") rgba(0, 0, 0, 0) -117px -35px no-repeat
 }
 </style>
 <script>
-  function setNavi(p, c){
+  function setNavi(p, c) {
     $('.breadcrumb__list--current1').hide();
     $('.breadcrumb__list--current2').hide();
     $('.breadcrumb__list--current3').hide();
@@ -120,15 +190,14 @@ a.btn-layerClose:hover {  border: 0px solid #091940;  background-color: #1f326a;
     } else {
       $('.breadcrumb__list > a').html(p);
     }
-    
+
     if (c.indexOf("```") > -1) {
       $('.breadcrumb__list--current > a').html(c.split("```")[0]);
       $('.breadcrumb__list--current > a').attr("href", c.split("```")[1]);
     } else {
       $('.breadcrumb__list--current > a').html(c);
     }
-    
-    
+
     if (arguments[2] != undefined) {
       var args = arguments[2];
       $('.breadcrumb__list--current1').show();
@@ -149,7 +218,7 @@ a.btn-layerClose:hover {  border: 0px solid #091940;  background-color: #1f326a;
       } else {
         $('.breadcrumb__list--current2 > a').html(args);
       }
-      
+
     }
     if (arguments[4] != undefined) {
       var args = arguments[4];
@@ -207,7 +276,7 @@ a.btn-layerClose:hover {  border: 0px solid #091940;  background-color: #1f326a;
                 <li class="nav__item"><a class="nav__link" href="#" onClick='move("/adapterDetail")'>Adapter 유형별 파라미터 관리</a></li>
               </ul>
             </li>
-             <li class="nav__depth1 material-icons">
+            <li class="nav__depth1 material-icons">
               <button class="nav__link nav__button" type="button">GS1 코드</button>
               <ul class="nav__depth2">
                 <li class="nav__item"><a class="nav__link" href="#" onClick='move("/gs1List")'>GS1 코드 관리</a></li>]
@@ -229,92 +298,70 @@ a.btn-layerClose:hover {  border: 0px solid #091940;  background-color: #1f326a;
     <hr>
     <!-- main -->
     <main class="main">
-    <h2 class="hidden">본문</h2>
-    <header class="header">
-      <div class="header__util">
-        <button class="button__nav--toggle" type="button">
-          <i class="nav__icon"><span class="hidden">주메뉴 확장/축소 하기</span></i>
-        </button>
-        <span class="header__user">관리자님</span>
-      </div>
-      <div class="breadcrumb">
-        <a class="breadcrumb__list--home" href="/"><span class="hidden">Home</span></a>
-        <span class="breadcrumb__list"><a href="#"></a></span>
-        <span class="breadcrumb__list--current"><a href="#"></a></span>
-        <span class="breadcrumb__list--current1" style="display:none"><a href="#"></a></span>
-        <span class="breadcrumb__list--current2" style="display:none"><a href="#"></a></span>
-        <span class="breadcrumb__list--current3" style="display:none"><a href="#"></a></span>
+      <h2 class="hidden">본문</h2>
+      <header class="header">
+        <div class="header__util">
+          <button class="button__nav--toggle" type="button">
+            <i class="nav__icon"><span class="hidden">주메뉴 확장/축소 하기</span></i>
+          </button>
+          <span class="header__user">관리자님</span>
+        </div>
+        <div class="breadcrumb">
+          <a class="breadcrumb__list--home" href="/"><span class="hidden">Home</span></a> <span class="breadcrumb__list"><a href="#"></a></span> <span class="breadcrumb__list--current"><a
+            href="#"></a></span> <span class="breadcrumb__list--current1" style="display: none"><a href="#"></a></span> <span class="breadcrumb__list--current2" style="display: none"><a href="#"></a></span>
+          <span class="breadcrumb__list--current3" style="display: none"><a href="#"></a></span>
 
-      </div>
-    </header> 
-    <script th:inline="javascript">
-      function move(loc) {
-        window.location.href = loc;
-      }
-    </script>
+        </div>
+      </header>
+      <script th:inline="javascript">
+              function move(loc) {
+                window.location.href = loc;
+              }
+            </script>
 
 
 
-    <div layout:fragment="content"></div>
+      <div layout:fragment="content"></div>
 
 
-<!--     <footer class="footer"> -->
-<!--       <span class="footer__copyright">Copyright © 2019 PINE C&I co.,Ltd All right reserved</span> -->
-
-<!--     </footer> -->
-            <footer class="footer">
-    <div class="footer-top">
-        <div class="content-area">
+      <footer class="footer">
+        <div class="footer-top">
+          <div class="content-area">
             <div class="footer-link">
-                <a href="#">개인정보취급방침</a>
-                <a href="#">이메일무단수집거부</a>
-                <a href="#">이용약관</a>
+              <a href="#">개인정보취급방침</a> <a href="#">이메일무단수집거부</a> <a href="#">이용약관</a>
             </div>
             <div class="site-link">
-                <select class="select-box">
-                    <option>국토교통부</option>
-                    <option>국토교통부</option>
-                    <option>국토교통부</option>
-                    <option>국토교통부</option>
-                </select>
+              <select class="select-box">
+                <option>국토교통부</option>
+                <option>국토교통부</option>
+                <option>국토교통부</option>
+                <option>국토교통부</option>
+              </select>
             </div>
+          </div>
         </div>
-    </div>
-<!--     <div class="footer-bottom"> -->
-<!--         <div class="info"> -->
-<!--             <address> -->
-<!--                 <p>주소(04513) 경기도 성남시 수지구</p> -->
-<!--                 <p>대표번호 : 031-0000-0000    고객센터 : 02-0000-0000 (월~금 09:00 ~ 18:00, 공휴일 제외)</p> -->
-<!--             </address> -->
-<!--             <p class="copyright">Copyright©Datahub. All rights reserved.</p> -->
-<!--         </div> -->
-<!--         <div class="footer-banner"> -->
-<!--             <img src="/cityhub/dist/img/common/footer-banner.jpg"> -->
-<!--         </div> -->
-<!--     </div> -->
-</footer>
-
+        
+      </footer>
   </div>
 
 
 
-    <div id="divLayerPopup"></div>
+  <div id="divLayerPopup"></div>
 
 
   </main>
   </div>
   <hr>
 
-<script>
-  (function(){
-    // common-ui
-    showModal();
-    showNav();
-    showMenu();
-    setInputNumber();
-    
-  })();
-  
-</script>
+  <script>
+      (function() {
+        // common-ui
+        showModal();
+        showNav();
+        showMenu();
+        setInputNumber();
+
+      })();
+    </script>
 </body>
 </html>

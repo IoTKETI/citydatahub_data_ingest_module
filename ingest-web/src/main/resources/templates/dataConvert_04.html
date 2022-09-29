@@ -21,8 +21,7 @@
   <div class="container" layout:fragment="content">
     <h3 class="content__title">데이터 모델 변환</h3>
     <form>
-      <input name="adapter_type_div" id="adapter_type_div" type="hidden" >
-      <input name="adapter_id" id="adapter_id" type="hidden" >
+      <input name="adapter_type_div" id="adapter_type_div" type="hidden"> <input name="adapter_id" id="adapter_id" type="hidden">
       <fieldset>
         <legend>데이터모델 변환</legend>
         <section class="section">
@@ -51,10 +50,9 @@
             </table>
           </div>
           <div class="button__group">
-            <button class="button__outline w-94" type="button" onclick="fn_compile(this)"
-              id="btn-compile" onfocus="this.blur()">컴파일 확인</button>
-              
-           <button class="button__outline w-150" type="button" onclick="fn_moveTrance();">닫기</button>
+            <button class="button__outline w-94" type="button" onclick="fn_compile(this)" id="btn-compile" onfocus="this.blur()">컴파일 확인</button>
+
+            <button class="button__outline w-150" type="button" onclick="fn_moveTrance();">닫기</button>
           </div>
         </section>
       </fieldset>
@@ -64,17 +62,16 @@
     <div style="font-size: 12px; color: #999; border: 1px #555; background-color: #fff; width: 150px; height: 36px; line-height: 36px; text-align: center; display: inline-block">원천 데이터 모델 선택</div>
     <div style="font-size: 12px; color: #999; border: 1px #555; background-color: #fff; width: 150px; height: 36px; line-height: 36px; text-align: center; display: inline-block">표준 데이터 모델 선택</div>
     <div style="font-size: 12px; color: #fff; border: 1px #ddd; background-color: #0996a5; width: 150px; height: 36px; line-height: 36px; text-align: center; display: inline-block">변환 클래스 작성</div>
-    
+
     <div style="border: 1px solid #ddd; padding-right: 5px; padding-left: 5px; padding-bottom: 10px; padding-top: 10px">
       <table style="margin-top: 1px; width: 100%; border-spacing: 0px; background-color: #ffffff">
         <tr style="height: 34px">
           <td colspan=1 style="border: 1px solid #eee; padding-top: 0px; overflow: hidden">
-            
+
             <table style="width: 100%; border: 1px solid #ddd; background-color: #ffffff">
               <tr style="height: 38px">
                 <td style="Font-size: 14px; color: #555; font-weight: bold; padding-left: 10px" width="180px">원천 데이터모델 상세정보</td>
-                <td style="text-align: right" width="*" class="section__header">
-                </td>
+                <td style="text-align: right" width="*" class="section__header"></td>
               </tr>
             </table>
 
@@ -83,69 +80,59 @@
                 <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; width: 200px; text-align: center" bgcolor="#fdfdfd">항목명(영문)</td>
                 <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; width: 200px; text-align: center" bgcolor="#fdfdfd">항목명(국문)</td>
                 <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; width: 100px; text-align: center" bgcolor="#fdfdfd">항목구분</td>
-                <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px;  text-align: center" bgcolor="#fdfdfd">항목설명</td>
+                <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; text-align: center" bgcolor="#fdfdfd">항목설명</td>
                 <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; width: 200px; text-align: center" bgcolor="#fdfdfd">경로</td>
                 <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; width: 200px; text-align: center" bgcolor="#fdfdfd">데이터 구조</td>
               </tr>
               <tr class="keyValueClass" style="height: 34px;">
-                <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px;  text-align: center" bgcolor="#fdfdfd" label="항목명(영문)">
-                  <input name="property" type="text" class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555">
-                </td>
-                <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px;  text-align: center" bgcolor="#fdfdfd" label="항목명(국문)">
-                  <input name="property_nm" type="text" class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555">
-                </td>
-                <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px;  text-align: center" bgcolor="#fdfdfd" label="항목구분">
-                  <input name="type_nm" type="text" class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555" maxlength="5">
-                </td>
-                <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px;  text-align: center" bgcolor="#fdfdfd" label="항목설명">
-                  <input name="described" type="text" class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555">
-                </td>
-                <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px;  text-align: center" bgcolor="#fdfdfd" label="경로">
-                  <input name="property_path" type="text" class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555">
-                </td>
-                <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px;  text-align: center" bgcolor="#fdfdfd" label="데이터 구조">
-                  <input name="property_structure" type="text" class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555">
-                </td>
+                <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; text-align: center" bgcolor="#fdfdfd" label="항목명(영문)"><input name="property" type="text"
+                  class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555"></td>
+                <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; text-align: center" bgcolor="#fdfdfd" label="항목명(국문)"><input name="property_nm" type="text"
+                  class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555"></td>
+                <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; text-align: center" bgcolor="#fdfdfd" label="항목구분"><input name="type_nm" type="text"
+                  class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555" maxlength="5"></td>
+                <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; text-align: center" bgcolor="#fdfdfd" label="항목설명"><input name="described" type="text"
+                  class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555"></td>
+                <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; text-align: center" bgcolor="#fdfdfd" label="경로"><input name="property_path" type="text"
+                  class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555"></td>
+                <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; text-align: center" bgcolor="#fdfdfd" label="데이터 구조"><input name="property_structure"
+                  type="text" class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555"></td>
               </tr>
             </table>
-            
+
           </td>
         </tr>
 
         <tr style="height: 34px; display: none" class="dataTr">
-          <td colspan=1 style="border: 1px solid #eee; padding-top: 10px; padding-left: 10px;; padding-right: 5px; overflow: hidden">
-            <img src="/asset/images/sample.png" style="max-width: 100%;">
+          <td colspan=1 style="border: 1px solid #eee; padding-top: 10px; padding-left: 10px;; padding-right: 5px; overflow: hidden"><img src="/asset/images/sample.png" style="max-width: 100%;">
           </td>
         </tr>
         <tr style="height: 34px" class="sourceTr">
           <td colspan=1 style="border: 1px solid #eee; padding-top: 10px; padding-left: 5px;; padding-right: 5px; overflow: hidden">
-            <div id="editor"></div> 
-            
-             <script>
-                var editor = ace.edit("editor");
-                editor.setTheme("ace/theme/monokai");
-                editor.session.setMode("ace/mode/java");
-                editor.setOptions({
-                  selectionStyle: "line",
-                  highlightActiveLine: true,
-                  highlightSelectedWord: true,
-                  readOnly: false,
-                  cursorStyle: "ace",
-                  mergeUndoDeltas: "always",
-                  behavioursEnabled: true,
-                  wrapBehavioursEnabled: true,
-                  // this is needed if editor is inside scrollable page
-                  copyWithEmptySelection: true ,
-                  useWorker: true
-                })
-            </script>
+            <div id="editor"></div> <script>
+                          var editor = ace.edit("editor");
+                          editor.setTheme("ace/theme/monokai");
+                          editor.session.setMode("ace/mode/java");
+                          editor.setOptions({
+                            selectionStyle : "line",
+                            highlightActiveLine : true,
+                            highlightSelectedWord : true,
+                            readOnly : false,
+                            cursorStyle : "ace",
+                            mergeUndoDeltas : "always",
+                            behavioursEnabled : true,
+                            wrapBehavioursEnabled : true,
+                            // this is needed if editor is inside scrollable page
+                            copyWithEmptySelection : true,
+                            useWorker : true
+                          })
+                        </script>
 
           </td>
         </tr>
         <tr>
-          <td colspan=1 style="border: 1px solid #eee; padding-left: 5px; padding-top: 5px; text-align: left; box-sizing: border-box;" bgcolor="#fdfdfd">
-            <textarea style="width: 100%" rows="5" class="console" id="tailConsole"></textarea>
-          </td>
+          <td colspan=1 style="border: 1px solid #eee; padding-left: 5px; padding-top: 5px; text-align: left; box-sizing: border-box;" bgcolor="#fdfdfd"><textarea style="width: 100%" rows="5"
+              class="console" id="tailConsole"></textarea></td>
         </tr>
       </table>
     </div>
@@ -153,29 +140,23 @@
     <div id="keyValueRow2" style="display: none">
       <table style="margin-top: 1px; width: 100%; border-spacing: 0px;">
         <tr class="keyValueClass" style="height: 34px;">
-          <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px;  text-align: center" bgcolor="#fdfdfd" label="항목명(영문)">
-            <input name="property" type="text" class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555">
-          </td>
-          <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px;  text-align: center" bgcolor="#fdfdfd" label="항목명(국문)">
-            <input name="property_nm" type="text" class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555">
-          </td>
-          <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px;  text-align: center" bgcolor="#fdfdfd" label="항목구분">
-            <input name="type_nm" type="text" class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555" maxlength="5">
-          </td>
-          <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px;  text-align: center" bgcolor="#fdfdfd" label="항목설명">
-            <input name="described" type="text" class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555">
-          </td>
-          <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px;  text-align: center" bgcolor="#fdfdfd" label="경로">
-            <input name="property_path" type="text" class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555">
-          </td>
-          <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px;  text-align: center" bgcolor="#fdfdfd" label="데이터 구조">
-            <input name="property_structure" type="text" class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555">
-          </td>
+          <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; text-align: center" bgcolor="#fdfdfd" label="항목명(영문)"><input name="property" type="text"
+            class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555"></td>
+          <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; text-align: center" bgcolor="#fdfdfd" label="항목명(국문)"><input name="property_nm" type="text"
+            class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555"></td>
+          <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; text-align: center" bgcolor="#fdfdfd" label="항목구분"><input name="type_nm" type="text"
+            class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555" maxlength="5"></td>
+          <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; text-align: center" bgcolor="#fdfdfd" label="항목설명"><input name="described" type="text"
+            class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555"></td>
+          <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; text-align: center" bgcolor="#fdfdfd" label="경로"><input name="property_path" type="text"
+            class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555"></td>
+          <td style="border: 1px solid #eee; Font-size: 12px; color: #555; padding-left: 0px; text-align: center" bgcolor="#fdfdfd" label="데이터 구조"><input name="property_structure" type="text"
+            class="input__text" style="box-sizing: border-box; line-height: 24px; width: 100%; border: 1px solid #eee;; Font-size: 12px; color: #555"></td>
         </tr>
       </table>
     </div>
 
-<textarea id="editorImport" style="display: none">
+    <textarea id="editorImport" style="display: none">
 package com.cityhub.adapter.convex;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -195,7 +176,6 @@ import org.json.JSONObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.cityhub.exception.CoreException;
-import com.cityhub.source.core.AbstractLegacySystemSource;
 import com.cityhub.source.core.AbstractNormalSource;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
@@ -214,7 +194,7 @@ import lombok.extern.slf4j.Slf4j;
 </textarea>
 
 
-<textarea id="editorMid" style="display: none">
+    <textarea id="editorMid" style="display: none">
 @SuppressWarnings("unchecked")
 @Slf4j
 public class $classname$ extends AbstractNormalSource {
@@ -270,10 +250,10 @@ public class $classname$ extends AbstractNormalSource {
     </textarea>
 
 
-<textarea id="editorMidI1140" style="display: none">
+    <textarea id="editorMidI1140" style="display: none">
 @SuppressWarnings("unchecked")
 @Slf4j
-public class $classname$ extends AbstractLegacySystemSource {
+public class $classname$ extends AbstractNormalSource {
   @Override
   public String doit(HikariDataSource datasource)  {
     List&lt;Map&lt;String,Object&gt;&gt; rtnList = new LinkedList&lt;&gt;();
@@ -292,7 +272,7 @@ public class $classname$ extends AbstractLegacySystemSource {
         JsonUtil jsonModel = new JsonUtil(modelTemplate.toString());    
 
         //소스코드 첨가부분 - 시작
-
+        // 예제
         jsonModel.put("eventType.value", rs.getString("EVT_ID"));
         jsonModel.put("eventName.value", rs.getString("EVT_DTL"));
         
@@ -331,127 +311,124 @@ public class $classname$ extends AbstractLegacySystemSource {
 } // end of class
     </textarea>
 
-    <script type="text/javascript" th:inline="javascript">
-/*<![CDATA[*/
-var insId = /*[[ ${insId} ]]*/'';
-var id = /*[[ ${id} ]]*/'';
-/*]]>*/
-</script>
-    <script type="text/javascript">
 
-    function setEditorTemp(){
-      var tempStr = "";
-      if ($("#adapter_type_div").val() == "I1140") {
-        
-        tempStr = $('#editorImport').val();
-        tempStr += $('#editorMidI1140').val();
-        tempStr = tempStr.replace('$classname$', $('#instance_id').text());
-        
-         
-      } else {
-        tempStr = $('#editorImport').val();
-        tempStr += $('#editorMid').val();
-        tempStr = tempStr.replace('$classname$', $('#instance_id').text());
-        
-      }
-      editor.setValue(tempStr);
+
+    <script type="text/javascript" th:inline="javascript">
+  /*<![CDATA[*/
+  var insId = /*[[ ${insId} ]]*/'';
+  var id = /*[[ ${id} ]]*/'';
+  /*]]>*/
+
+  function setEditorTemp() {
+    var tempStr = "";
+    if ($("#adapter_type_div").val() == "I1140") {
+
+      tempStr = $('#editorImport').val();
+      tempStr += $('#editorMidI1140').val();
+      tempStr = tempStr.replace('$classname$', $('#instance_id').text());
+
+    } else {
+      tempStr = $('#editorImport').val();
+      tempStr += $('#editorMid').val();
+      tempStr = tempStr.replace('$classname$', $('#instance_id').text());
+
     }
-    
+    editor.setValue(tempStr);
+  }
+
   $(document).ready(function() {
     dataModel_info();
   });
-  
+
   function fn_moveTrance() {
     location.href = "/instanceDetail/" + $("#adapter_id").val();
   }
-  
-  function dataModel_info(){
-    var url = "/conv/"+insId+"/dataModel_Topinfo";
+
+  function dataModel_info() {
+    var url = "/conv/" + insId + "/dataModel_Topinfo";
     cmUtl.exeAjax("GET", url, null, "_cbAfterdataModel_info");
   }
-  
-  
+
   var ob_datamodel_id = "";
-  function _cbAfterdataModel_info(data){
+  function _cbAfterdataModel_info(data) {
     var agentUrl = "/agentDetail/" + data.agent_id;
     var adapterUrl = "/instanceDetail/" + data.adapter_id;
-    setNavi("Agent 관리```/agentList/","Agent 목록```/agentList/","Agent 상세```"+ agentUrl,"Instance 관리```"+ adapterUrl,"데이터모델 변환 관리");
-    
+    setNavi("Agent 관리```/agentList/", "Agent 목록```/agentList/", "Agent 상세```" + agentUrl, "Instance 관리```" + adapterUrl, "데이터모델 변환 관리");
+
     var str_ob_datamodel = "";
     var str_st_datamodel = "";
-    
-    if(data.ob_datamodel_id != null && data.ob_datamodel_id != ""){
-      str_ob_datamodel = ' ('+ data.ob_datamodel_id +')';
+
+    if (data.ob_datamodel_id != null && data.ob_datamodel_id != "") {
+      str_ob_datamodel = ' (' + data.ob_datamodel_id + ')';
       ob_datamodel_id = data.ob_datamodel_id;
     }
-    if(data.st_datamodel_id != null && data.st_datamodel_id != ""){
-      str_st_datamodel = ' ('+ data.st_datamodel_id +')';
+    if (data.st_datamodel_id != null && data.st_datamodel_id != "") {
+      str_st_datamodel = ' (' + data.st_datamodel_id + ')';
     }
-    
+
     var html = '';
-      html += '<tr>';
-      html += '<td id="instance_id">'+data.instance_id+'</td>';
-      html += '<td>'+data.instance_nm+'</td>';
-      html += '<td>'+data.ob_datamodel_nm + str_ob_datamodel +'</td>';
-      html += '<td>'+data.st_datamodel_nm + str_st_datamodel +'</td>';
-      html += '</tr>';
+    html += '<tr>';
+    html += '<td id="instance_id">' + data.instance_id + '</td>';
+    html += '<td>' + data.instance_nm + '</td>';
+    html += '<td>' + data.ob_datamodel_nm + str_ob_datamodel + '</td>';
+    html += '<td>' + data.st_datamodel_nm + str_st_datamodel + '</td>';
+    html += '</tr>';
     $("#dataModelTopInfo > tbody").append(html);
     $("#adapter_type_div").val(data.adapter_type_div);
     $("#adapter_id").val(data.adapter_id);
     get_file_info();
   }
-  
-  function get_file_info(){
+
+  function get_file_info() {
     var tmpAdtId = $('#instance_id').text().split("_");
-    var param = "/agents/"+tmpAdtId[0]+"/adaptors/"+tmpAdtId[0]+"/instance/"+$('#instance_id').text()+"/modelConversion";
+    var param = "/agents/" + tmpAdtId[0] + "/adaptors/" + tmpAdtId[0] + "/instance/" + $('#instance_id').text() + "/modelConversion";
     cmUtl.exeAjax("GET", param, null, "_cbAfterfile_info");
   }
-  
-  function _cbAfterfile_info (rtn){
-    if(rtn.body!=null){
-      if($.trim(rtn.body) != ""){
-        if(rtn.body != "File Not Found!!"){
+
+  function _cbAfterfile_info(rtn) {
+    if (rtn.body != null) {
+      if ($.trim(rtn.body) != "") {
+        if (rtn.body != "File Not Found!!") {
           editor.setValue(rtn.body);
-        }else{
+        } else {
           setEditorTemp();
         }
-      }else{
+      } else {
         setEditorTemp();
       }
-    }else{
+    } else {
       setEditorTemp();
     }
     obSelect();
   }
-  
-  
+
   $('#editor').resize(function(e) {
     editor = ace.edit("editor");
     editor.setTheme("ace/theme/monokai");
     editor.session.setMode("ace/mode/java");
     editor.setOptions({
-      selectionStyle: "line",
-      highlightActiveLine: true,
-      highlightSelectedWord: true,
-      readOnly: false,
-      cursorStyle: "ace",
-      mergeUndoDeltas: "always",
-      behavioursEnabled: true,
-      wrapBehavioursEnabled: true,
+      selectionStyle : "line",
+      highlightActiveLine : true,
+      highlightSelectedWord : true,
+      readOnly : false,
+      cursorStyle : "ace",
+      mergeUndoDeltas : "always",
+      behavioursEnabled : true,
+      wrapBehavioursEnabled : true,
       // this is needed if editor is inside scrollable page
-      copyWithEmptySelection: true ,
-      useWorker: true
+      copyWithEmptySelection : true,
+      useWorker : true
     })
   })
 
-  function obSelect(){
-    
-    if(ob_datamodel_id != ""){
-      
-      var param = "/obDetail/"+ob_datamodel_id+"/item";
-      
+  function obSelect() {
+
+    if (ob_datamodel_id != "") {
+
+      var param = "/obDetail/" + ob_datamodel_id + "/item";
+
       var type = "GET";
-      
+
       $.ajax({
         type : type,
         contentType : "application/json",
@@ -460,15 +437,15 @@ var id = /*[[ ${id} ]]*/'';
         cache : false,
         timeout : 600000,
         success : function(data) {
-          if(data.length == 0){
+          if (data.length == 0) {
             $('.keyValueClass').hide();
             $('.errorJson').show();
-            
-          }else{
+
+          } else {
             $('.errorJson').hide();
             $('#tableMain').find('.keyValueClass').remove();
             var tmpIns;
-            for(var i=0; i<data.length; i++){
+            for (var i = 0; i < data.length; i++) {
               tmpIns = $('#keyValueRow2').children().children().children().clone();
               $(tmpIns).appendTo("#tableMain");
               $(tmpIns).find("input[name=property_path]").val(data[i].property_path);
@@ -478,31 +455,29 @@ var id = /*[[ ${id} ]]*/'';
               $(tmpIns).find("input[name=type_nm]").val(data[i].type_nm);
               $(tmpIns).find("input[name=described]").val(data[i].described);
             }
-    
+
           }
         },
         error : function(e) {
           var result = JSON.parse(e.responseText);
-          if(result.resultCode == "404"){
+          if (result.resultCode == "404") {
             $('.keyValueClass').hide();
             $('.errorJson').show();
           }
         }
-      }); 
+      });
     }
   }
-  
-  
-  
-  function workOb(){
-    var tempStr = $('#editorTop').val()+$('#instance_id').text()+$('#editorMid').val();
+
+  function workOb() {
+    var tempStr = $('#editorTop').val() + $('#instance_id').text() + $('#editorMid').val();
     tempStr += "\n//소스코드 첨가부분 - 시작\n\n";
-    
+
     $("#tableMain tbody tr").each(function(k) {
-      if(k!=0){
-        if($(this).find("input:checkbox[name=chk_info]").is(":checked")){
-          
-          tempStr += 'JSONArray arrList = ju.getArray("'+$(this).find("input[name=property_path]").val()+'");\n';
+      if (k != 0) {
+        if ($(this).find("input:checkbox[name=chk_info]").is(":checked")) {
+
+          tempStr += 'JSONArray arrList = ju.getArray("' + $(this).find("input[name=property_path]").val() + '");\n';
         }
       }
     });
@@ -513,24 +488,24 @@ var id = /*[[ ${id} ]]*/'';
 
   function fn_compile(tb) {
     $("#btn-compile").prop("disabled", true);
-    
+
     var tmpAdtId = $('#instance_id').text().split("_");
-    var param = "/agents/"+tmpAdtId[0]+"/adaptors/"+tmpAdtId[0]+"/instance/"+$('#instance_id').text()+"/modelConversion";
+    var param = "/agents/" + tmpAdtId[0] + "/adaptors/" + tmpAdtId[0] + "/instance/" + $('#instance_id').text() + "/modelConversion";
     var compileData = {
-        "instance_id":$('#instance_id').text(),
-        "sourceCode":editor.getValue()
-        };
-    
+      "instance_id" : $('#instance_id').text(),
+      "sourceCode" : editor.getValue()
+    };
+
     cmUtl.exeAjax("PUT", param, JSON.stringify(compileData), "_cbAfterfn_compile");
   }
-  
-  function _cbAfterfn_compile (rtn){
-    if(rtn.log!=null){
+
+  function _cbAfterfn_compile(rtn) {
+    if (rtn.log != null) {
       var msg;
-      msg = replaceAll(rtn.log,"null/root/flume/plugins.d/agent/lib/"+$('#instance_id').text()+".java:","");
-      msg = replaceAll(msg,"/root/flume/plugins.d/agent/lib/"+$('#instance_id').text()+".java:","");
+      msg = replaceAll(rtn.log, "null/root/flume/plugins.d/agent/lib/" + $('#instance_id').text() + ".java:", "");
+      msg = replaceAll(msg, "/root/flume/plugins.d/agent/lib/" + $('#instance_id').text() + ".java:", "");
       $("#tailConsole").val(msg);
-    }else{
+    } else {
       $("#tailConsole").val(" 컴파일에 성공했습니다.");
     }
     $("#btn-compile").prop("disabled", false);
@@ -539,15 +514,20 @@ var id = /*[[ ${id} ]]*/'';
   function replaceAll(str, searchStr, replaceStr) {
     return str.split(searchStr).join(replaceStr);
   }
-  
-  $(function() {
-    var $editor = $('#editor').resizable({handles: 's'});
-    var $tailConsole = $('#tailConsole').resizable({handles: 's'});
-    var $tableMain = $('#tableMain > tbody').resizable({handles: 's'});
-    $('#tableMain > tbody').css("overflow-y","auto");
-  });
 
-</script>
+  $(function() {
+    var $editor = $('#editor').resizable({
+      handles : 's'
+    });
+    var $tailConsole = $('#tailConsole').resizable({
+      handles : 's'
+    });
+    var $tableMain = $('#tableMain > tbody').resizable({
+      handles : 's'
+    });
+    $('#tableMain > tbody').css("overflow-y", "auto");
+  });
+        </script>
 
   </div>
 </body>

@@ -16,22 +16,19 @@
  */
 package com.cityhub.adapter.convex;
 
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpHeaders;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.cityhub.core.AbstractConvert;
-import com.cityhub.environment.Constants;
 import com.cityhub.exception.CoreException;
+import com.cityhub.source.core.AbstractConvert;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DataType;
@@ -39,7 +36,6 @@ import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.OkUrlUtil;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -50,20 +46,12 @@ public class ConvParkingOneM2M extends AbstractConvert {
   private ObjectMapper objectMapper;
 
   @Override
-  public void init(JSONObject ConfItem, JSONObject templateItem) {
-    super.setup(ConfItem, templateItem);
-    this.objectMapper = new ObjectMapper();
-    this.objectMapper.setSerializationInclusion(Include.NON_NULL);
-    this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
-    this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
-
+  public void setup() {
     Map<String, String> headers = new HashMap<>();
     headers.put(HttpHeaders.ACCEPT, "application/json");
     headers.put("X-M2M-Origin", "SW001");
     headers.put("X-M2M-RI", "cityhub");
-
     try {
-
       String u = ConfItem.getString("metaInfo");
       HttpResponse discovery = OkUrlUtil.get(u + "?fu=1&ty=3", headers);
       if (discovery.getStatusCode() == 200) {
@@ -90,6 +78,7 @@ public class ConvParkingOneM2M extends AbstractConvert {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
+
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override

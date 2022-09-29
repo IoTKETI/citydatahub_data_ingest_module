@@ -6,190 +6,186 @@
 <script src="/asset/js/jsonview.js"></script>
 </head>
 
-<body >
+<body>
 
   <div class="container" layout:fragment="content">
     <h3 class="content__title">원천 데이터모델 관리</h3>
-    
-        <form id="bodyObDetail" onSubmit="return false;">
-          <fieldset>
-            <legend>필드셋 제목</legend>
-            <section class="section">
-              <div class="section__header">
-                <h4 class="section__title">원천 데이터모델 기본정보</h4>
-              </div>
-              <div class="section__content">
-                <table class="table--column" id="tableMainData">
-                  <caption>테이블 제목</caption>
-                  <colgroup>
-                    <col style="width:250px">
-                    <col style="width:auto">
-                    <col style="width:250px">
-                    <col style="width:auto">                                      
-                  </colgroup>
-                  <thead>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th>Source Model ID</th>
-                      <td label="Source Model ID"><input id="ob_datamodel_id" name="ob_datamodel_id" type="text" class="input__text" style="width: 100%;" required></td>
-                      <th>사용여부</th>
-                      <td  class="ta-l">
-                        <label class="label__radio"><input label="사용여부" type="radio" class="input__radio" name="use_yn" value="Y" checked>사용</label>
-                        <label class="label__radio"><input label="사용여부" type="radio" class="input__radio" name="use_yn" value="N">사용안함</label>
-                      </td>                      
-                    </tr>
-                    <tr>
-                      <th>Source Model 명</th>
-                      <td label="Source Model 명"><input id="ob_datamodel_nm" name="ob_datamodel_nm" type="text" class="input__text" required></td>
-                      <th>비고</th>
-                      <td label="비고"><input name="described" type="text" class="input__text"></td>                      
-                    </tr>
-                    <tr>                      
-                      <th>데이터포맷</th>
-                      <td class="ta-l" colspan="3">
-                        <label class="label__radio"><input label="데이터포맷" type="radio" class="input__radio" name="ob_datamodel_format" value="json" checked>JSON</label>
-                        <label class="label__radio"><input label="데이터포맷" type="radio" class="input__radio" name="ob_datamodel_format" value="xml">XML</label>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="button__group">
-                <button class="button__primary" type="button" onclick="location.href = '/obList'" onfocus="this.blur()">목록</button>
-                <button class="button__primary" type="submit" id="btn-del" onfocus="this.blur()">삭제</button>
-                <button class="button__primary" type="submit" id="btn-save" onfocus="this.blur()">저장</button>
-              </div>
-            </section>
-          </fieldset>
-        </form>
-    
-        <form id = "tableMainObDetail" onSubmit="return false;">
-          <fieldset>
-            <legend>필드셋 제목</legend>
-            <section class="section">
-              <div class="section__header">
-                <h4 class="section__title">원천 데이터모델 상세정보</h4>
-              </div>
-              <div class="section__content" id="userDiv">
-              <textarea id="jsonUrl" name="jsonUrl" class="textarea" onmouseover="detailShow(this)" title="" ></textarea>
-                <table class="table--column" id="tableMain" >
-                  <caption>테이블 제목</caption>
-                  <colgroup>
-                    <col style="width:40px">
-                    <col style="width:200px">
-                    <col style="width:200px">
-                    <col style="width:200px">
-                    <col style="width:200px">
-                    <col style="width:100px">                    
-                    <col style="width:auto">
-                  </colgroup>
-                  <thead>
-                    <tr>
-                      <th>선택</th>
-                      <th>경로</th>
-                      <th>데이터구조</th>
-                      <th>항목명(영문)</th>
-                      <th>항목명(국문)</th>
-                      <th>항목구분</th>
-                      <th>항목설명</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    
-                  </tbody>
-                </table>
-              </div>
-              <div class="button__group">               
-                <button class="button__outline w-94" type="button" onclick="send()" >json 가져오기</button>
-                <button class="button__util button__util--add material-icons" id="plus" onclick="addrow()" onfocus="this.blur()" type="button">추가</button>
-                <button class="button__util button__util--remove material-icons" id="minus" onclick="delrow()" onfocus="this.blur()" type="button">삭제</button>
-              </div>
-            </section>
-          </fieldset>
-        </form>
-        
-        <div id="keyValueRow" style="display: none">
-          <table>
-            <tr class="keyValueClass">
-              <td><input type="checkbox" class="input__checkbox" name="chk_info" id="chk_info" ><label class="label__checkbox" for="chk_info" ></label></td>
-              <td label="경로"><input id="property_path" name="property_path" type="text" class="input__text" required></td>
-              <td label="데이터 구조"><input id="property_structure" name="property_structure" type="text" class="input__text" required></td>
-              <td label="항목명(영문)"><input id="property" name="property" type="text" class="input__text" engNum required></td>
-              <td label="항목명(국문)"><input id="property_nm" name="property_nm" type="text" class="input__text" hanNum required></td>
-              <td label="항목구분">
-                <select class="select select--full" id="type" name="type" required>
-                  <option value="I0701" >string</option>
-                  <option value="I0703" >integer</option>
-                  <option value="I0705" >float</option>
-                </select>
-              </td>
-              <td label="항목설명"><input id="described" name="described" type="text" class="input__text"></td>
-            </tr>
-          </table>
-        </div>
+
+    <form id="bodyObDetail" onSubmit="return false;">
+      <fieldset>
+        <legend>필드셋 제목</legend>
+        <section class="section">
+          <div class="section__header">
+            <h4 class="section__title">원천 데이터모델 기본정보</h4>
+          </div>
+          <div class="section__content">
+            <table class="table--column" id="tableMainData">
+              <caption>테이블 제목</caption>
+              <colgroup>
+                <col style="width: 250px">
+                <col style="width: auto">
+                <col style="width: 250px">
+                <col style="width: auto">
+              </colgroup>
+              <thead>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Source Model ID</th>
+                  <td label="Source Model ID"><input id="ob_datamodel_id" name="ob_datamodel_id" type="text" class="input__text" style="width: 100%;" required></td>
+                  <th>사용여부</th>
+                  <td class="ta-l"><label class="label__radio"><input label="사용여부" type="radio" class="input__radio" name="use_yn" value="Y" checked>사용</label> <label class="label__radio"><input
+                      label="사용여부" type="radio" class="input__radio" name="use_yn" value="N">사용안함</label></td>
+                </tr>
+                <tr>
+                  <th>Source Model 명</th>
+                  <td label="Source Model 명"><input id="ob_datamodel_nm" name="ob_datamodel_nm" type="text" class="input__text" required></td>
+                  <th>비고</th>
+                  <td label="비고"><input name="described" type="text" class="input__text"></td>
+                </tr>
+                <tr>
+                  <th>데이터포맷</th>
+                  <td class="ta-l" colspan="3"><label class="label__radio"><input label="데이터포맷" type="radio" class="input__radio" name="ob_datamodel_format" value="json" checked>JSON</label>
+                    <label class="label__radio"><input label="데이터포맷" type="radio" class="input__radio" name="ob_datamodel_format" value="xml">XML</label></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="button__group">
+            <button class="button__primary" type="button" onclick="location.href = '/obList'" onfocus="this.blur()">목록</button>
+            <button class="button__primary" type="submit" id="btn-del" onfocus="this.blur()">삭제</button>
+            <button class="button__primary" type="submit" id="btn-save" onfocus="this.blur()">저장</button>
+          </div>
+        </section>
+      </fieldset>
+    </form>
+
+    <form id="tableMainObDetail" onSubmit="return false;">
+      <fieldset>
+        <legend>필드셋 제목</legend>
+        <section class="section">
+          <div class="section__header">
+            <h4 class="section__title">원천 데이터모델 상세정보</h4>
+          </div>
+          <div class="section__content" id="userDiv">
+            <textarea id="jsonUrl" name="jsonUrl" class="textarea" onmouseover="detailShow(this)" title=""></textarea>
+            <table class="table--column" id="tableMain">
+              <caption>테이블 제목</caption>
+              <colgroup>
+                <col style="width: 40px">
+                <col style="width: 200px">
+                <col style="width: 200px">
+                <col style="width: 200px">
+                <col style="width: 200px">
+                <col style="width: 100px">
+                <col style="width: auto">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>선택</th>
+                  <th>경로</th>
+                  <th>데이터구조</th>
+                  <th>항목명(영문)</th>
+                  <th>항목명(국문)</th>
+                  <th>항목구분</th>
+                  <th>항목설명</th>
+                </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
+          </div>
+          <div class="button__group">
+            <button class="button__outline w-94" type="button" onclick="send()">json 가져오기</button>
+            <button class="button__util button__util--add material-icons" id="plus" onclick="addrow()" onfocus="this.blur()" type="button">추가</button>
+            <button class="button__util button__util--remove material-icons" id="minus" onclick="delrow()" onfocus="this.blur()" type="button">삭제</button>
+          </div>
+        </section>
+      </fieldset>
+    </form>
+
+    <div id="keyValueRow" style="display: none">
+      <table>
+        <tr class="keyValueClass">
+          <td><input type="checkbox" class="input__checkbox" name="chk_info" id="chk_info"><label class="label__checkbox" for="chk_info"></label></td>
+          <td label="경로"><input id="property_path" name="property_path" type="text" class="input__text" required></td>
+          <td label="데이터 구조"><input id="property_structure" name="property_structure" type="text" class="input__text" required></td>
+          <td label="항목명(영문)"><input id="property" name="property" type="text" class="input__text" engNum required></td>
+          <td label="항목명(국문)"><input id="property_nm" name="property_nm" type="text" class="input__text" hanNum required></td>
+          <td label="항목구분"><select class="select select--full" id="type" name="type" required>
+              <option value="I0701">string</option>
+              <option value="I0703">integer</option>
+              <option value="I0705">float</option>
+          </select></td>
+          <td label="항목설명"><input id="described" name="described" type="text" class="input__text"></td>
+        </tr>
+      </table>
+    </div>
 
 
-  <script th:inline="javascript">
+<script th:inline="javascript">
   /*<![CDATA[*/
-  var id = /*[[${id}]]*/ 'default';
-/*]]>*/
-  
+  var id = /*[[${id}]]*/'default';
+  /*]]>*/
+
   $(document).ready(function() {
     existIdProc();
   });
-  
+
   $('#btn-save').on('click', function() {
     var item_size = $("#tableMain > tbody > tr").length;
     if (validation("bodyObDetail")) {
-      if(item_size > 0){
-        if(validation("tableMainObDetail")) if (confirm("저장하시겠습니까?")) fireAjaxSubmit();
+      if (item_size > 0) {
+        if (validation("tableMainObDetail"))
+          if (confirm("저장하시겠습니까?"))
+            fireAjaxSubmit();
       } else {
-        if (confirm("저장하시겠습니까?")) fireAjaxSubmit();
+        if (confirm("저장하시겠습니까?"))
+          fireAjaxSubmit();
       }
-    } 
+    }
   });
 
-
-  function existIdProc(){
+  function existIdProc() {
     if (id == null) {
       $("#tableMain").procEmptyLine(); // 검색 된 데이터가 없을 경우
       $("#btn-del").hide();
       return;
     }
-//     var url = "/obDetail/"+id+"/data";
-    var url = "/sourceModels/"+id;
+    //     var url = "/obDetail/"+id+"/data";
+    var url = "/sourceModels/" + id;
     cmUtl.exeAjaxDynamic("GET", url, " ", "", "_cbAfterExistIdProcData");
   }
-  
-  function _cbAfterExistIdProcData(data){
+
+  function _cbAfterExistIdProcData(data) {
     if (id != "" && id != null) {
       $("#ob_datamodel_id").attr("disabled", true);
     }
-      
-    var row = new RowData( $("#tableMainData > tbody") );
-    row.setValue("ob_datamodel_nm",data.ob_datamodel_nm);
-    row.setValue("ob_datamodel_id",data.ob_datamodel_id);
-    row.setValue("use_yn",data.use_yn);
-    row.setValue("described",data.described);  
-    row.setValue("ob_datamodel_format",data.ob_datamodel_format);  
 
-    var url = "/obDetail/"+id+"/item";
+    var row = new RowData($("#tableMainData > tbody"));
+    row.setValue("ob_datamodel_nm", data.ob_datamodel_nm);
+    row.setValue("ob_datamodel_id", data.ob_datamodel_id);
+    row.setValue("use_yn", data.use_yn);
+    row.setValue("described", data.described);
+    row.setValue("ob_datamodel_format", data.ob_datamodel_format);
+
+    var url = "/obDetail/" + id + "/item";
     cmUtl.exeAjaxDynamic("GET", url, " ", "", "_cbAfterExistIdProcItem");
   }
-  
-  function _cbAfterExistIdProcItem(data){
+
+  function _cbAfterExistIdProcItem(data) {
     for (var i = 0; i < data.length; i++) {
       var tmpObj = $("#keyValueRow").find("tr:first").clone();
-      var rows = new RowData( tmpObj );
-      rows.setChangeId(i,"chk_info");
-      rows.setChangeIdValue(i, "property_path" , data[i].property_path);
-      rows.setChangeIdValue(i, "property_structure" , data[i].property_structure);
-      rows.setChangeIdValue(i, "property" , data[i].property);
-      rows.setChangeIdValue(i, "property_nm" , data[i].property_nm);
-      rows.setChangeIdValue(i, "type" , data[i].type);
-      rows.setChangeIdValue(i, "described" , data[i].described);
-      
+      var rows = new RowData(tmpObj);
+      rows.setChangeId(i, "chk_info");
+      rows.setChangeIdValue(i, "property_path", data[i].property_path);
+      rows.setChangeIdValue(i, "property_structure", data[i].property_structure);
+      rows.setChangeIdValue(i, "property", data[i].property);
+      rows.setChangeIdValue(i, "property_nm", data[i].property_nm);
+      rows.setChangeIdValue(i, "type", data[i].type);
+      rows.setChangeIdValue(i, "described", data[i].described);
+
       $('#tableMain').appendBody(rows.toObject());
     }
     $("#tableMain").procEmptyLine(); // 검색 된 데이터가 없을 경우 
@@ -197,17 +193,18 @@
 
   function addrow() {
     var tmpObj = $("#keyValueRow").find("tr:first").clone();
-    var row = new RowData( tmpObj );
-    row.setChangeId($('#tableMain').getLength(),"chk_info");
+    var row = new RowData(tmpObj);
+    row.setChangeId($('#tableMain').getLength(), "chk_info");
     $('#tableMain').appendBody(row.toObject());
-    
+
     $("#tableMain").procEmptyLine(); // 검색 된 데이터가 없을 경우
   }
-  
+
   function delrow() {
     var tmp = $('#tableMain').find("input:checkbox[name='chk_info']");
     $(tmp).each(function() {
-      if ($(this).is(":checked")) $(this).closest('tr').remove();
+      if ($(this).is(":checked"))
+        $(this).closest('tr').remove();
     });
     $("#tableMain").procEmptyLine(); // 검색 된 데이터가 없을 경우 
   }
@@ -218,8 +215,8 @@
     var tableMainSize = $("#tableMain").getLength();
     var itemsData = new Array();
     for (var i = 0; i < tableMainSize; i++) {
-      var row = new RowData( $("#tableMain").getRow(i));
-      
+      var row = new RowData($("#tableMain").getRow(i));
+
       var itemRowData = new Object();
       itemRowData.property_path = row.getValue("property_path");
       itemRowData.property_structure = row.getValue("property_structure");
@@ -227,13 +224,12 @@
       itemRowData.property_nm = row.getValue("property_nm");
       itemRowData.type = row.getValue("type");
       itemRowData.described = row.getValue("described");
-      
-      itemsData.push(itemRowData);
-      
-    } 
-      
 
-    var pRow = new RowData( $("#tableMainData > tbody") );
+      itemsData.push(itemRowData);
+
+    }
+
+    var pRow = new RowData($("#tableMainData > tbody"));
     //모델항목 추가 끝
     var data = {
       "ob_datamodel_id" : pRow.getValue("ob_datamodel_id"),
@@ -244,139 +240,135 @@
       "itemsData" : itemsData
     };
 
-    var type ="POST";
+    var type = "POST";
     //var url = "/obDetail";
-     var url = "/sourceModel";
-    
+    var url = "/sourceModel";
+
     if (id != "" && id != null) {
       type = "PUT";
       url += "/" + pRow.getValue("ob_datamodel_id");
     } else {
       url += "s";
     }
-    
-    var param = {'ob_datamodel_id' : pRow.getValue("ob_datamodel_id")};
-    cmUtl.exeAjaxDynamic(type, url, param , JSON.stringify(data), "_cbAfterFireAjaxSubmit");
+
+    var param = {
+      'ob_datamodel_id' : pRow.getValue("ob_datamodel_id")
+    };
+    cmUtl.exeAjaxDynamic(type, url, param, JSON.stringify(data), "_cbAfterFireAjaxSubmit");
   }
-  
+
   function _cbAfterFireAjaxSubmit(data) {
-    if(!data.hasOwnProperty("resultCode")){
+    if (!data.hasOwnProperty("resultCode")) {
       data.resultCode = data.type;
       data.resultMsg = data.detail;
     }
-    var resultCode = ""+data.resultCode;
-    if(resultCode.substr(0,1) == "2" ){
+    var resultCode = "" + data.resultCode;
+    if (resultCode.substr(0, 1) == "2") {
       alert("저장하였습니다.");
       location.replace('/obDetail/' + $("#ob_datamodel_id").val());
     } else {
-      alert(data.detail);  
+      alert(data.detail);
       //id = $("#ob_datamodel_id").val();
       //$("#ob_datamodel_id").prop("readOnly" , true);
-    } 
-    
+    }
+
     $("#btn-save").prop("disabled", false);
   }
-  
-  
-  
+
   $('#btn-del').on('click', function() {
-    if (confirm("삭제하시겠습니까?")) fireAjaxDelSubmit();
+    if (confirm("삭제하시겠습니까?"))
+      fireAjaxDelSubmit();
   });
-  
+
   function fireAjaxDelSubmit() {
     $("#btn-del").prop("disabled", true);
-    
-    var type ="DELETE";
-    var pRow = new RowData( $("#tableMainData > tbody") );
+
+    var type = "DELETE";
+    var pRow = new RowData($("#tableMainData > tbody"));
     //var url = "/obDetail";
-     //var url = "/sourceModel/"+pRow.getValue("ob_datamodel_id");
-     var url = "/sourceModel/"+pRow.getValue("ob_datamodel_id");
-     
+    //var url = "/sourceModel/"+pRow.getValue("ob_datamodel_id");
+    var url = "/sourceModel/" + pRow.getValue("ob_datamodel_id");
+
     cmUtl.exeAjax(type, url, "", "_cbAfterFireAjaxDelSubmit");
   }
 
-function _cbAfterFireAjaxDelSubmit(data) {
-  
-  if(!data.hasOwnProperty("responseCode")){
-    data.resultCode = data.type;
-    data.resultMsg = data.detail;
-  }else{
-    data.resultCode = data.responseCode;
+  function _cbAfterFireAjaxDelSubmit(data) {
+
+    if (!data.hasOwnProperty("responseCode")) {
+      data.resultCode = data.type;
+      data.resultMsg = data.detail;
+    } else {
+      data.resultCode = data.responseCode;
+    }
+    var resultCode = "" + data.resultCode;
+
+    if (resultCode.substr(0, 1) == "2") {
+      alert("삭제하였습니다.");
+      location.replace('/obList');
+    } else {
+      alert(data.resultMsg);
+      //id = $("#ob_datamodel_id").val();
+      //$("#ob_datamodel_id").prop("readOnly" , true);
+    }
+
+    $("#btn-del").prop("disabled", false);
   }
-  var resultCode = ""+data.resultCode;
-  
-  if(resultCode.substr(0,1) == "2" ){
-    alert("삭제하였습니다.");
-    location.replace('/obList');
-  } else {
-    alert(data.resultMsg);  
-    //id = $("#ob_datamodel_id").val();
-    //$("#ob_datamodel_id").prop("readOnly" , true);
-  } 
-  
-  $("#btn-del").prop("disabled", false);
-}
-  
-  
-  
-  
-  
-  
-  
-  function rdoMtd(obj){
+
+  function rdoMtd(obj) {
     var txt = $(obj).val();
     $('#userDiv').hide();
     $('#autoDiv').hide();
-    $('#'+txt+'Div').show();
+    $('#' + txt + 'Div').show();
   }
-  
-  function send(){
+
+  function send() {
     var url = "/obDetailAuto";
-    var data = { "jsonUrl" : $("#jsonUrl").val() };
+    var data = {
+      "jsonUrl" : $("#jsonUrl").val()
+    };
     var type = "POST";
     cmUtl.exeAjax(type, url, JSON.stringify(data), "_cbAfterSend");
   }
 
   function _cbAfterSend(data) {
-    if(data.length == 0){
+    if (data.length == 0) {
       $('.keyValueClass').hide();
       $('.errorJson').show();
-      
-    }else{
+
+    } else {
       $('.errorJson').hide();
       $('.tableEmptyLine').hide();
       $('#tableMain').find('.keyValueClass').remove();
-      
+
       var tmpIns;
-      
+
       var rowcnt = $("#keyValueRow").length;
       var addcnt = 0;
-      for(var i=0; i<data.length; i++){
-                
+      for (var i = 0; i < data.length; i++) {
+
         tmpIns = $("#keyValueRow").find("tr:first").clone();
         $(tmpIns).appendTo("#tableMain");
-        $(tmpIns).find("input[name=chk_info]").attr("id","chk_info"+i);
-        $(tmpIns).find("label").attr("for","chk_info"+i)
+        $(tmpIns).find("input[name=chk_info]").attr("id", "chk_info" + i);
+        $(tmpIns).find("label").attr("for", "chk_info" + i)
         $(tmpIns).find("input[name=property_path]").val(data[i].property_path);
         $(tmpIns).find("input[name=property_structure]").val(data[i].property_structure);
         $(tmpIns).find("input[name=property]").val(data[i].property);
-        
-        
+
       }
 
     }
   }
-      
-    </script>
-  <!-- script -->
-  <script>
-    function detailShow(e) {
-      $(e).attr("title", $(e).val());
-    }
-    
-  </script>
-  <script>setNavi("원천 데이터모델 관리```/obList/","원천 데이터모델 목록```/obList/","원천 데이터모델 상세");</script>
-  <!-- //script -->
+</script>
+<!-- script -->
+<script>
+  function detailShow(e) {
+    $(e).attr("title", $(e).val());
+  }
+</script>
+<script>
+  setNavi("원천 데이터모델 관리```/obList/", "원천 데이터모델 목록```/obList/", "원천 데이터모델 상세");
+</script>
+<!-- //script -->
   </div>
 </body>
 </html>

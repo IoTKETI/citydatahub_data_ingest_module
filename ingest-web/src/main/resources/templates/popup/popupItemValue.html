@@ -11,17 +11,16 @@
     </div>
     <div class="modal__body">
       <div class="section">
-      
-      
-        <!-- 내용  -->        
+
+
+        <!-- 내용  -->
         <div class="section__header">
           <h4 class="section__title" id="item_nm"></h4>
           <div class="button__group">
             <button id="apply" class="button__outline button__modal--close" type="button">적용</button>
           </div>
         </div>
-        <div class="section__content">
-        </div>
+        <div class="section__content"></div>
         <div class="section__content">
           <table class="table--column table--view">
             <caption>테이블 제목</caption>
@@ -32,8 +31,8 @@
             </thead>
             <tbody>
               <tr>
-                <td><textarea style="width: 98%;height:300px"  class="console textarea" id="tailConsole" th:text="${result.item_value}"></textarea></td>
-                <td><input type="hidden" id="page_title" th:value="${result.item_nm}" > <input type="hidden" id="seq" th:value="${result.item_seq}" > </td>  
+                <td><textarea style="width: 98%; height: 300px" class="console textarea" id="tailConsole" th:text="${result.item_value}"></textarea></td>
+                <td><input type="hidden" id="page_title" th:value="${result.item_nm}"> <input type="hidden" id="seq" th:value="${result.item_seq}"></td>
               </tr>
             </tbody>
           </table>
@@ -50,31 +49,30 @@
     </div>
 
 <script th:inline="javascript">
-
-var endPoint = 0;
-var tailFlag = false;
-var tailConsoleLog;
-var runningFlag;
-var timer
+  var endPoint = 0;
+  var tailFlag = false;
+  var tailConsoleLog;
+  var runningFlag;
+  var timer
 
   $(document).ready(function() {
-    var item_nm = $("#page_title").val();    
-    $("#item_nm").text("[ "+item_nm + " ] 항목 값 설정");
+    var item_nm = $("#page_title").val();
+    $("#item_nm").text("[ " + item_nm + " ] 항목 값 설정");
     $(".button__modal--close").click(function(data) {
-      var data = {"value": $("#tailConsole").val(), "seq":$("#seq").val()};
+      var data = {
+        "value" : $("#tailConsole").val(),
+        "seq" : $("#seq").val()
+      };
       $("#divLayerPopup").empty();
       clearTimeout(timer);
-      if ( _cbFunc != "" ) {
-        try { eval( _cbFunc+"(data)" ); } catch(e){}
+      if (_cbFunc != "") {
+        try {
+          eval(_cbFunc + "(data)");
+        } catch (e) {
+        }
       }
     });
   });
-
-
- 
-
-
-  
 </script>
 
 

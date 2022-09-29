@@ -16,17 +16,12 @@
  */
 package com.cityhub.adapter;
 
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flume.Context;
-import org.apache.flume.Event;
-import org.apache.flume.event.EventBuilder;
 import org.json.JSONObject;
 
 import com.cityhub.core.AbstractPollSource;
@@ -35,11 +30,11 @@ import com.cityhub.environment.Constants;
 import com.cityhub.environment.ReflectExecuter;
 import com.cityhub.environment.ReflectExecuterManager;
 import com.cityhub.model.DataModelEx;
+import com.cityhub.source.core.LogWriterToDb;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
-import com.cityhub.utils.LogWriterToDb;
 import com.cityhub.utils.OkUrlUtil;
 import com.cityhub.utils.StrUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -55,7 +50,7 @@ public class OpenApiSource extends AbstractPollSource {
   private String datasetId;
   private String schemaSrv;
   private JSONObject templateItem;
-  private JSONObject configInfo;
+  private JSONObject ConfItem;
   private String[] ArrModel = null;
   private String adapterType;
   private ObjectMapper objectMapper;
@@ -64,12 +59,12 @@ public class OpenApiSource extends AbstractPollSource {
   public void setup(Context context) {
     String confFile = context.getString("CONF_FILE", "");
     if (!"".equals(confFile)) {
-      configInfo = new JsonUtil().getFileJsonObject(confFile);
+      ConfItem = new JsonUtil().getFileJsonObject(confFile);
     } else {
-      configInfo = new JSONObject();
+      ConfItem = new JSONObject();
     }
     String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "http://localhost:8888/logToDbApi");
-    configInfo.put("daemonServerLogApi", DAEMON_SERVER_LOGAPI);
+    ConfItem.put("daemonServerLogApi", DAEMON_SERVER_LOGAPI);
 
     adapterType = context.getString("type", "");
 
@@ -79,13 +74,13 @@ public class OpenApiSource extends AbstractPollSource {
     ArrModel = StrUtil.strToArray(modelId, ",");
     datasetId = context.getString("DATASET_ID", "");
 
-    configInfo.put("modelId", modelId);
-    configInfo.put("model_id", modelId);
-    configInfo.put("datasetId", datasetId);
-    configInfo.put("schemaSrv", schemaSrv);
-    configInfo.put("sourceName", this.getName());
-    configInfo.put("adapterType", adapterType);
-    configInfo.put("invokeClass", getInvokeClass());
+    ConfItem.put("modelId", modelId);
+    ConfItem.put("model_id", modelId);
+    ConfItem.put("datasetId", datasetId);
+    ConfItem.put("schemaSrv", schemaSrv);
+    ConfItem.put("sourceName", this.getName());
+    ConfItem.put("adapterType", adapterType);
+    ConfItem.put("invokeClass", getInvokeClass());
 
     this.objectMapper = new ObjectMapper();
     this.objectMapper.setSerializationInclusion(Include.NON_NULL);
@@ -113,7 +108,7 @@ public class OpenApiSource extends AbstractPollSource {
         }
       }
     } else {
-      log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
+      log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
     }
 
     if (log.isDebugEnabled()) {
@@ -127,25 +122,25 @@ public class OpenApiSource extends AbstractPollSource {
     try {
       if (ArrModel != null) {
 
-        ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(), configInfo, templateItem);
+        ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(), ConfItem, templateItem);
         String sb = reflectExecuter.doit();
         if (sb != null && !"".equals(sb)) {
           List<Map<String, Object>> entities = objectMapper.readValue(sb, new TypeReference<List<Map<String, Object>>>() {
           });
           for (Map<String, Object> itm : entities) {
             int length = objectMapper.writeValueAsString(itm).getBytes().length;
-            log.info("`{}`{}`{}`{}`{}`{}", this.getName(), itm.get("type"), getStr(SocketCode.DATA_SAVE_REQ), itm.get("id"), length, adapterType);
+            log.info("`{}`{}`{}`{}`{}`{}", this.getName(), itm.get("type"), SocketCode.DATA_SAVE_REQ.toMessage(), itm.get("id"), length, adapterType,ConfItem.getString("invokeClass"));
             StringBuilder l = new StringBuilder();
             l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-            l.append("`").append(configInfo.getString("sourceName"));
+            l.append("`").append(ConfItem.getString("sourceName"));
             l.append("`").append(modelId);
-            l.append("`").append(SocketCode.DATA_SAVE_REQ.getCode() + ";" + SocketCode.DATA_SAVE_REQ.getMessage());
+            l.append("`").append(SocketCode.DATA_SAVE_REQ.toMessage());
             l.append("`").append(itm.get("id") + "");
             l.append("`").append(length);
             l.append("`").append(adapterType);
-            l.append("`").append(configInfo.getString("invokeClass"));
+            l.append("`").append(ConfItem.getString("invokeClass"));
             LogVO logVo = new LogVO();
-            logVo.setSourceName(configInfo.getString("sourceName"));
+            logVo.setSourceName(ConfItem.getString("sourceName"));
             logVo.setPayload(l.toString());
             logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
             logVo.setType(modelId);
@@ -153,39 +148,20 @@ public class OpenApiSource extends AbstractPollSource {
             logVo.setDesc(SocketCode.DATA_SAVE_REQ.getMessage());
             logVo.setId(itm.get("id") + "");
             logVo.setLength(String.valueOf(length));
-            logVo.setAdapterType(configInfo.getString("invokeClass"));
-            LogWriterToDb.logToDaemonApi(configInfo, logVo);
+            logVo.setAdapterType(ConfItem.getString("invokeClass"));
+            LogWriterToDb.logToDaemonApi(ConfItem, logVo);
 
           }
 
-          sendEventEx(entities);
+          sendEventEx(entities, datasetId);
           Thread.sleep(10);
         }
       } else {
-        log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
+        log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
       }
     } catch (Exception e) {
-      log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, getStr(SocketCode.NORMAL_ERROR, e.getMessage()), "", 0, adapterType);
+      log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.NORMAL_ERROR.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
     }
   }
 
-  public void sendEventEx(List<Map<String, Object>> entities) {
-    try {
-      Map<String, Object> body = new LinkedHashMap<>();
-      body.put("entities", entities);
-      body.put("datasetId", datasetId);
-      Event event = EventBuilder.withBody(objectMapper.writeValueAsString(body).getBytes(Charset.forName("UTF-8")));
-      getChannelProcessor().processEvent(event);
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
-  }
-
-  public String getStr(SocketCode sc) {
-    return sc.getCode() + ";" + sc.getMessage();
-  }
-
-  public String getStr(SocketCode sc, String msg) {
-    return sc.getCode() + ";" + sc.getMessage() + "-" + msg;
-  }
 } // end of class

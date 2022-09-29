@@ -2,518 +2,508 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sd="http://www.thymeleaf.org/spring-data" layout:decorator="layout/main" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
 <meta charset="UTF-8">
-<title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">Agent 관리 - 추가 등록 / 변경 </title>
+<title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">Agent 관리 - 추가 등록 / 변경</title>
 <script src="/ace-builds-master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="/ace-builds-master/src-noconflict/mode-java.js" type="text/javascript" charset="utf-8"></script>
 
 </head>
 <body>
-      <div class="container" layout:fragment="content">
-        <h3 class="content__title">상세 설정</h3>
+  <div class="container" layout:fragment="content">
+    <h3 class="content__title">상세 설정</h3>
 
-        <form id="agent_info" onSubmit="return false;">
-          <fieldset>
-            <legend>Agent 추가 등록/변경</legend>
-            <section class="section">
-              <div class="section__header">
-                <h4 class="section__title">Agent 추가 등록/변경</h4>
-              </div>
-              <div class="section__content">
-                <table class="table--column" id="agentInfo">
-                  <caption>테이블 제목</caption>
-                  <colgroup>
-                    <col style="width:150px">
-                    <col style="width:auto">
-                    <col style="width:150px">
-                    <col style="width:auto">
-                  </colgroup>
-                  <tbody>
-                    <tr>
-                      <th>Agent ID</th>
-                      <td label ="Agent ID"><input id="agent_id" name="agent_id" type="text" class="input__text" required></td>
-                      <th>Agent 명</th>
-                      <td label ="Agent 명"><input id="agent_nm" name="agent_nm" type="text" class="input__text" required></td>                                            
-                    </tr>
-                    <tr>                      
-                      <th>사용여부</th>
-                      <td class="ta-l" colspan="3">
-                        <label class="사용여부"><input type="radio" name="use_yn" class="input__radio" value="Y"  checked="checked">사용</label>
-                        <label class="사용여부"><input type="radio" name="use_yn" class="input__radio" value="N" >사용안함</label>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>비고</th>
-                      <td colspan="3">
-                        <textarea class="textarea" id="etc_note" name="etc_note"></textarea>
-                      </td>
-                    </tr>                    
-                  </tbody>
-                </table>
-              </div>
-              <div class="button__group">
-                <button class="button__primary" type="button" onclick="location.href = '/agentList'" onfocus="this.blur()">목록</button>
-                <button class="button__primary" type="submit" id="btn-del-agent" onfocus="this.blur()">삭제</button>
-                <button class="button__primary" type="submit" id="btn-save" onfocus="this.blur()">저장</button>
-              </div>
-            </section>
-          </fieldset>
-        </form>
- 
-        <form onSubmit="return false;">
-          <fieldset>
-            <legend>Adaptor 추가 등록 / 변경</legend>
-            <section class="section">
-              <div class="section__header">
-                <h4 class="section__title">Adaptor 추가 등록 / 변경</h4>
-              </div>
-              <div class="section__content">
-                <table class="table--column" id="adaptorInfo">
-                  <caption>테이블 제목</caption>
-                  <colgroup>
-                    <col style="width:40px">
-                    <col style="width:40px">
-                    <col style="width:200px">
-                    <col style="width:200px">
-                    <col style="width:200px">
-                    <col style="width:200px">
-                    <col style="width:100px">                    
-                  </colgroup>
-                  <thead>
-                    <tr>
-                      <th>선택</th>
-                      <th>순번</th>
-                      <th>Adaptor ID</th>
-                      <th>Adaptor 명</th>
-                      <th>Platform 유형</th>
-                      <th>사용여부</th>
-                      <th>인스턴스 수</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  </tbody>                  
-                </table>
-              </div>
-              <div class="button__group">
-                <button class="button__util button__util--add material-icons" type="button" id="btn-add1" onfocus="this.blur()">신규추가</button>
-                <button class="button__primary" type="submit" id="btn-del" onfocus="this.blur()">삭제</button>
-                <button class="button__primary" type="button" id="btn-modify" onfocus="this.blur()" >수정</button>
-                <button class="button__primary" type="button" id="btn-save2" onfocus="this.blur()" >저장</button>
-                <button class="button__primary" type="button" id="btn-modify2" onfocus="this.blur()" style="display:none" >저장</button>
-              </div>
-            </section>
-          </fieldset>
-        </form>
-        
-        <div id="cloneParent" style="display:none">
-          <table>
-            <tr>
-              <td ><label class="label__radio"><input name="ids" id="vw_ids" type="radio" class="input__radio"  ></label></td>
-              <td id="vw_idx"></td>
-              <td ><a id="vw_adapter_id"></a></td>
-              <td id="vw_adapter_nm"></td>
-              <td id="vw_adapter_type"></td>
-              <td id="vw_use_yn"></td>
-              <td id="vw_ins_cnt"></td>
-            </tr>
-          </table>
-        </div>
+    <form id="agent_info" onSubmit="return false;">
+      <fieldset>
+        <legend>Agent 추가 등록/변경</legend>
+        <section class="section">
+          <div class="section__header">
+            <h4 class="section__title">Agent 추가 등록/변경</h4>
+          </div>
+          <div class="section__content">
+            <table class="table--column" id="agentInfo">
+              <caption>테이블 제목</caption>
+              <colgroup>
+                <col style="width: 150px">
+                <col style="width: auto">
+                <col style="width: 150px">
+                <col style="width: auto">
+              </colgroup>
+              <tbody>
+                <tr>
+                  <th>Agent ID</th>
+                  <td label="Agent ID"><input id="agent_id" name="agent_id" type="text" class="input__text" required></td>
+                  <th>Agent 명</th>
+                  <td label="Agent 명"><input id="agent_nm" name="agent_nm" type="text" class="input__text" required></td>
+                </tr>
+                <tr>
+                  <th>사용여부</th>
+                  <td class="ta-l" colspan="3"><label class="사용여부"><input type="radio" name="use_yn" class="input__radio" value="Y" checked="checked">사용</label> <label class="사용여부"><input
+                      type="radio" name="use_yn" class="input__radio" value="N">사용안함</label></td>
+                </tr>
+                <tr>
+                  <th>비고</th>
+                  <td colspan="3"><textarea class="textarea" id="etc_note" name="etc_note"></textarea></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="button__group">
+            <button class="button__primary" type="button" onclick="location.href = '/agentList'" onfocus="this.blur()">목록</button>
+            <button class="button__primary" type="submit" id="btn-del-agent" onfocus="this.blur()">삭제</button>
+            <button class="button__primary" type="submit" id="btn-save" onfocus="this.blur()">저장</button>
+          </div>
+        </section>
+      </fieldset>
+    </form>
 
-        <form id = "adtFrm" style="display:none" onSubmit="return false;">
-          <fieldset>
-            <legend>Adaptor 기본정보 추가 등록 / 변경</legend>
-            <section class="section">
-              <div class="section__header">
-                <h4 class="section__title">Adaptor 기본정보 추가 등록 / 변경</h4>
-              </div>
-              <div class="section__content">
-                <table class="table--column" id="adaptorFormInfo">
-                  <caption>테이블 제목</caption>
-                  <colgroup>
-                    <col style="width:150px">
-                    <col style="width:auto">
-                    <col style="width:150px">
-                    <col style="width:auto">
-                  </colgroup>
-                  <thead>
-                  </thead>
-                  <tbody>
-                    <tr >
-                      <th>Adaptor ID</th>
-                      <td label="Adaptor ID"><input id="adapter_id" name="adapter_id" type="text" class="input__text" required></td>
-                      <th>Adaptor 명</th>
-                      <td label="Adaptor 명"><input id="adapter_nm" name="adapter_nm" type="text" class="input__text" required></td>
-                    </tr>
-                    <tr>
-                      <th>Platform 유형</th>
-                      <td label="Platform 유형">
-                        <select class="select select--full" name="platform_type" id="platform_type" required>
-                          <option value="">선택</option>
-                          <option th:each="itemData : ${platform_type}" th:value="${itemData.code_id}" th:text="${itemData.code_nm}"></option>
-                        </select>
-                      </td>
-                      <th>사용여부</th>
-                      <td class="ta-l">
-                        <label class="사용여부"><input type="radio" class="input__radio" name="adt_use_yn" value="Y" checked="checked">사용</label>
-                        <label class="사용여부"><input type="radio" class="input__radio" name="adt_use_yn" value="N" >사용안함</label>
-                      </td>
-                     </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div id="addAd" style="margin-top:10px">
-              </div>
-            </section>
-          </fieldset>
-        </form>
-    
-  <script th:inline="javascript">
-  
-  /* <![CDATA[ */ 
-  var id = /*[[${id}]]*/ 'default';
+    <form onSubmit="return false;">
+      <fieldset>
+        <legend>Adaptor 추가 등록 / 변경</legend>
+        <section class="section">
+          <div class="section__header">
+            <h4 class="section__title">Adaptor 추가 등록 / 변경</h4>
+          </div>
+          <div class="section__content">
+            <table class="table--column" id="adaptorInfo">
+              <caption>테이블 제목</caption>
+              <colgroup>
+                <col style="width: 40px">
+                <col style="width: 40px">
+                <col style="width: 200px">
+                <col style="width: 200px">
+                <col style="width: 200px">
+                <col style="width: 200px">
+                <col style="width: 100px">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>선택</th>
+                  <th>순번</th>
+                  <th>Adaptor ID</th>
+                  <th>Adaptor 명</th>
+                  <th>Platform 유형</th>
+                  <th>사용여부</th>
+                  <th>인스턴스 수</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+          <div class="button__group">
+            <button class="button__util button__util--add material-icons" type="button" id="btn-add1" onfocus="this.blur()">신규추가</button>
+            <button class="button__primary" type="submit" id="btn-del" onfocus="this.blur()">삭제</button>
+            <button class="button__primary" type="button" id="btn-modify" onfocus="this.blur()">수정</button>
+            <button class="button__primary" type="button" id="btn-save2" onfocus="this.blur()">저장</button>
+            <button class="button__primary" type="button" id="btn-modify2" onfocus="this.blur()" style="display: none">저장</button>
+          </div>
+        </section>
+      </fieldset>
+    </form>
+
+    <div id="cloneParent" style="display: none">
+      <table>
+        <tr>
+          <td><label class="label__radio"><input name="ids" id="vw_ids" type="radio" class="input__radio"></label></td>
+          <td id="vw_idx"></td>
+          <td><a id="vw_adapter_id"></a></td>
+          <td id="vw_adapter_nm"></td>
+          <td id="vw_adapter_type"></td>
+          <td id="vw_use_yn"></td>
+          <td id="vw_ins_cnt"></td>
+        </tr>
+      </table>
+    </div>
+
+    <form id="adtFrm" style="display: none" onSubmit="return false;">
+      <fieldset>
+        <legend>Adaptor 기본정보 추가 등록 / 변경</legend>
+        <section class="section">
+          <div class="section__header">
+            <h4 class="section__title">Adaptor 기본정보 추가 등록 / 변경</h4>
+          </div>
+          <div class="section__content">
+            <table class="table--column" id="adaptorFormInfo">
+              <caption>테이블 제목</caption>
+              <colgroup>
+                <col style="width: 150px">
+                <col style="width: auto">
+                <col style="width: 150px">
+                <col style="width: auto">
+              </colgroup>
+              <thead>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Adaptor ID</th>
+                  <td label="Adaptor ID"><input id="adapter_id" name="adapter_id" type="text" class="input__text" required></td>
+                  <th>Adaptor 명</th>
+                  <td label="Adaptor 명"><input id="adapter_nm" name="adapter_nm" type="text" class="input__text" required></td>
+                </tr>
+                <tr>
+                  <th>Platform 유형</th>
+                  <td label="Platform 유형"><select class="select select--full" name="platform_type" id="platform_type" required>
+                      <option value="">선택</option>
+                      <option th:each="itemData : ${platform_type}" th:value="${itemData.code_id}" th:text="${itemData.code_nm}"></option>
+                  </select></td>
+                  <th>사용여부</th>
+                  <td class="ta-l"><label class="사용여부"><input type="radio" class="input__radio" name="adt_use_yn" value="Y" checked="checked">사용</label> <label class="사용여부"><input
+                      type="radio" class="input__radio" name="adt_use_yn" value="N">사용안함</label></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="addAd" style="margin-top: 10px"></div>
+        </section>
+      </fieldset>
+    </form>
+
+<script th:inline="javascript">
+  /* <![CDATA[ */
+  var id = /*[[${id}]]*/'default';
   /* ]]> */
-  
+
   $(document).ready(function() {
     existIdProc();
   });
-    
+
   $("#btn-save").click(function(event) {
     if (validation("agent_info")) {
-      if (confirm("저장하시겠습니까?")){
+      if (confirm("저장하시겠습니까?")) {
         event.preventDefault();
         agent_save();
       }
-    }        
+    }
   });
-  
+
   $("#btn-save2").click(function(event) {
     if (validation("adtFrm")) {
-      if (confirm("저장하시겠습니까?")){
+      if (confirm("저장하시겠습니까?")) {
         event.preventDefault();
         adapter_save();
       }
-    }  
+    }
   });
-  
+
   $("#btn-modify2").click(function(event) {
     if (validation("adtFrm")) {
-      if (confirm("수정하시겠습니까?")){
+      if (confirm("수정하시겠습니까?")) {
         event.preventDefault();
         adapter_modify();
       }
-    }  
-  }); 
-  
+    }
+  });
+
   $("#btn-add1").click(function(event) {
     add_adaptor();
   });
-  
+
   $("#btn-modify").click(function(event) {
     var idx = $("input:radio[name=ids]:checked").val();
-    var data = gridData[idx-1]; 
-    if(idx >= 1 ){
-      modify_adaptor(data); 
+    var data = gridData[idx - 1];
+    if (idx >= 1) {
+      modify_adaptor(data);
     } else {
       alert("수정할 어댑터를 선택해 주세요.");
     }
   });
-  
-  function existIdProc(){
+
+  function existIdProc() {
     if (id == null) {
       $("#adaptorInfo").procEmptyLine(); // 검색 된 데이터가 없을 경우
       $("#btn-del-agent").hide();
       return;
     }
     //var url = "/agentDetail/"+id+"/agent";
-    var url = "/agents/"+id;
+    var url = "/agents/" + id;
     cmUtl.exeAjaxDynamic("GET", url, " ", "", "_cbAfterExistIdProcAgent");
   }
-  
-  function _cbAfterExistIdProcAgent(data){
+
+  function _cbAfterExistIdProcAgent(data) {
     if (id != "" && id != null) {
       $("#agent_id").attr("disabled", true);
     }
-      
-    var row = new RowData( $("#agentInfo > tbody") );
-    row.setValue("agent_id",data.agent_id);
-    row.setValue("agent_nm",data.agent_nm);
-    row.setValue("use_yn",data.use_yn);
-    row.setValue("etc_note",data.etc_note);
 
-    var url = "/agentDetail/"+id+"/adaptor";
+    var row = new RowData($("#agentInfo > tbody"));
+    row.setValue("agent_id", data.agent_id);
+    row.setValue("agent_nm", data.agent_nm);
+    row.setValue("use_yn", data.use_yn);
+    row.setValue("etc_note", data.etc_note);
+
+    var url = "/agentDetail/" + id + "/adaptor";
     cmUtl.exeAjaxDynamic("GET", url, " ", "", "_cbAfterExistIdProcItem");
   }
-  
+
   var gridData;
-  function _cbAfterExistIdProcItem(data){
+  function _cbAfterExistIdProcItem(data) {
     gridData = data;
     for (var i = 0; i < data.length; i++) {
       var tmpObj = $("#cloneParent").find("tr:first").clone();
-      var rows = new RowData( tmpObj );
-      rows.setChangeIdValue(i, "vw_ids" , i + 1);
-      rows.setChangeIdValue(i, "vw_idx" , i + 1);
-      rows.setChangeIdValue(i, "vw_adapter_id" , data[i].adapter_id, "/instanceDetail/" + data[i].adapter_id);
-      rows.setChangeIdValue(i, "vw_adapter_nm" , data[i].adapter_nm);
-      rows.setChangeIdValue(i, "vw_adapter_type" , data[i].adapter_type);
-      rows.setChangeIdValue(i, "vw_use_yn" , yn(data[i].use_yn));
-      rows.setChangeIdValue(i, "vw_ins_cnt" , data[i].ins_cnt);
-      
+      var rows = new RowData(tmpObj);
+      rows.setChangeIdValue(i, "vw_ids", i + 1);
+      rows.setChangeIdValue(i, "vw_idx", i + 1);
+      rows.setChangeIdValue(i, "vw_adapter_id", data[i].adapter_id, "/instanceDetail/" + data[i].adapter_id);
+      rows.setChangeIdValue(i, "vw_adapter_nm", data[i].adapter_nm);
+      rows.setChangeIdValue(i, "vw_adapter_type", data[i].adapter_type);
+      rows.setChangeIdValue(i, "vw_use_yn", yn(data[i].use_yn));
+      rows.setChangeIdValue(i, "vw_ins_cnt", data[i].ins_cnt);
+
       $('#adaptorInfo').appendBody(rows.toObject());
     }
-    
+
     $("#adaptorInfo").procEmptyLine(); // 검색 된 데이터가 없을 경우 
   }
-  
-  function yn(val){
+
+  function yn(val) {
     var rtn = "";
     switch (val) {
     case "Y":
-      rtn ="사용";
+      rtn = "사용";
       break;
     case "N":
-      rtn ="미사용";
+      rtn = "미사용";
       break;
     }
     return rtn;
   }
-  
+
   function agent_save() {
 
     $("#btn-save").prop("disabled", true);
-    
+
     //var param = "/agentDetail";
     var param = "/agents";
-    
-    var pRow = new RowData( $("#agentInfo > tbody") );
+
+    var pRow = new RowData($("#agentInfo > tbody"));
     var data = {
-        "agent_id" : pRow.getValue("agent_id"),
-        "agent_nm" : pRow.getValue("agent_nm"),
-        "ip_addr" : "192.168.1.101",
-        "port_number" : Number("8080"),
-        "use_yn" : pRow.getValue("use_yn"),
-        "etc_note" : pRow.getValue("etc_note"),
+      "agent_id" : pRow.getValue("agent_id"),
+      "agent_nm" : pRow.getValue("agent_nm"),
+      "ip_addr" : "192.168.1.101",
+      "port_number" : Number("8080"),
+      "use_yn" : pRow.getValue("use_yn"),
+      "etc_note" : pRow.getValue("etc_note"),
     };
     var type = "POST";
-    
-    if(id != "" && id != null){
+
+    if (id != "" && id != null) {
       type = "PUT";
       param += "/" + pRow.getValue("agent_id");
     }
     cmUtl.exeAjax(type, param, JSON.stringify(data), "_cbAfterAgentSave");
   }
-  
-  function _cbAfterAgentSave(){
+
+  function _cbAfterAgentSave() {
     $("#btn-save").prop("disabled", false);
     alert("저장되었습니다.");
-    location.replace('/agentDetail/'+$("#agent_id").val());
+    location.replace('/agentDetail/' + $("#agent_id").val());
   }
-  
+
   function adapter_save() {
     $("#btn-save2").prop("disabled", true);
-    
+
     //var param = "/adapterSave";
-    var param = "/agents/"+$("#agent_id").val()+"/adaptors";
-    var Row = new RowData( $("#adaptorFormInfo > tbody") );
-    
+    var param = "/agents/" + $("#agent_id").val() + "/adaptors";
+    var Row = new RowData($("#adaptorFormInfo > tbody"));
+
     var size = Row.getValue("adapter_id").length;
     var chk = 0;
     var id = Row.getValue("adapter_id");
     const arr = id.split("");
-    
-    for(var i=0; i<arr.length; i++){
-    	if(arr[i] >= 0 && arr[i] <= 9){
-    		continue;
-    	} else {
-    		chk = 1;
-    		break;
-    	}
+
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i] >= 0 && arr[i] <= 9) {
+        continue;
+      } else {
+        chk = 1;
+        break;
+      }
     }
-    
-	const reghan = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
-    const reguni =/[`~!@#$%^&*|\\\'\";:\/?]/gi
-    
-    if(size >20){
-    	alert("id의 길이가 맞지 않습니다.")
-    	$("#btn-save2").prop("disabled", false);
-    	return;
-    } else if(chk == 0){
-    	alert("숫자만으로 이루어진 id는 사용할 수 없습니다.")
-    	$("#btn-save2").prop("disabled", false);
-    	return;
-    } else if(reghan.test(Row.getValue("adapter_id")) || reguni.test(Row.getValue("adapter_id"))){
-    	alert("id에 사용할 수 없는 문자가 포함되어 있습니다.\n(한글 또는 _를 제외한 특수문자)");
-    	$("#btn-save2").prop("disabled", false);
-    	return;
-    } else {    
-    	var data = {
+
+    const reghan = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+    const reguni = /[`~!@#$%^&*|\\\'\";:\/?]/gi
+
+    if (size > 20) {
+      alert("id의 길이가 맞지 않습니다.")
+      $("#btn-save2").prop("disabled", false);
+      return;
+    } else if (chk == 0) {
+      alert("숫자만으로 이루어진 id는 사용할 수 없습니다.")
+      $("#btn-save2").prop("disabled", false);
+      return;
+    } else if (reghan.test(Row.getValue("adapter_id")) || reguni.test(Row.getValue("adapter_id"))) {
+      alert("id에 사용할 수 없는 문자가 포함되어 있습니다.\n(한글 또는 _를 제외한 특수문자)");
+      $("#btn-save2").prop("disabled", false);
+      return;
+    } else {
+      var data = {
         "adapter_id" : Row.getValue("adapter_id"),
         "adapter_nm" : Row.getValue("adapter_nm"),
         "target_platform_type" : Row.getValue("platform_type"),
         "use_yn" : Row.getValue("adt_use_yn"),
         "agent_id" : $("#agent_id").val(),
-    };
-    cmUtl.exeAjax("POST", param, JSON.stringify(data), "_cbAfterAdtSave");  
+      };
+      cmUtl.exeAjax("POST", param, JSON.stringify(data), "_cbAfterAdtSave");
     }
   }
-  
-  
+
   function _cbAfterAdtSave(data) {
-    if(!data.hasOwnProperty("resultCode")){
+    if (!data.hasOwnProperty("resultCode")) {
       data.resultCode = data.type;
       data.resultMsg = data.detail;
     }
-    var resultCode = ""+data.resultCode;
-    if(resultCode.substr(0,1) == "2" ){
+    var resultCode = "" + data.resultCode;
+    if (resultCode.substr(0, 1) == "2") {
       alert("저장하였습니다.");
       location.replace('/agentDetail/' + $("#agent_id").val());
     } else {
-      alert(data.detail);  
-    } 
-    
+      alert(data.detail);
+    }
+
     $("#btn-save2").prop("disabled", false);
   }
-  
+
   function adapter_modify() {
     $("#btn-modify2").prop("disabled", true);
-        
-    var Row = new RowData( $("#adaptorFormInfo > tbody") );
-    
-    var param = "/agents/"+$("#agent_id").val()+"/adaptors/"+Row.getValue("adapter_id");
-    
+
+    var Row = new RowData($("#adaptorFormInfo > tbody"));
+
+    var param = "/agents/" + $("#agent_id").val() + "/adaptors/" + Row.getValue("adapter_id");
+
     var data = {
-        "adapter_id" : Row.getValue("adapter_id"),
-        "adapter_nm" : Row.getValue("adapter_nm"),
-        "target_platform_type" : Row.getValue("platform_type"),
-        "use_yn" : Row.getValue("adt_use_yn"),
-        "agent_id" : $("#agent_id").val(),
+      "adapter_id" : Row.getValue("adapter_id"),
+      "adapter_nm" : Row.getValue("adapter_nm"),
+      "target_platform_type" : Row.getValue("platform_type"),
+      "use_yn" : Row.getValue("adt_use_yn"),
+      "agent_id" : $("#agent_id").val(),
     };
-    cmUtl.exeAjax("PUT", param, JSON.stringify(data), "_cbAfterAdtModify");    
+    cmUtl.exeAjax("PUT", param, JSON.stringify(data), "_cbAfterAdtModify");
   }
-  
-  function _cbAfterAdtModify(){
+
+  function _cbAfterAdtModify() {
     $("#btn-modify2").prop("disabled", false);
     alert("저장되었습니다.");
     location.replace('/agentDetail/' + $("#agent_id").val());
   }
-  
+
   function add_adaptor() {
     $('#adapter_id').val('');
     $('#adapter_nm').val('');
     $('#platform_type').val("");
     $("input:radio[name=adt_use_yn]:input[value=Y]").prop("checked", true);
     $('#adapter_type').attr("disabled", false);
-    $('#adapter_id').attr("readonly",false);
+    $('#adapter_id').attr("readonly", false);
     $('#adtFrm').show();
     $('#btn-add1').hide();
     $('#btn-save2').show();
     $('#btn-modify2').hide();
   }
-  
+
   function modify_adaptor(data) {
-    var row = new RowData( $("#adaptorFormInfo > tbody") );
-    row.setValue("adapter_id",data.adapter_id);
-    row.setValue("adapter_nm",data.adapter_nm);
-    row.setValue("platform_type",data.target_platform_type);
-    row.setValue("adt_use_yn",data.use_yn);
-    $('#adapter_id').attr("readonly",true);
+    var row = new RowData($("#adaptorFormInfo > tbody"));
+    row.setValue("adapter_id", data.adapter_id);
+    row.setValue("adapter_nm", data.adapter_nm);
+    row.setValue("platform_type", data.target_platform_type);
+    row.setValue("adt_use_yn", data.use_yn);
+    $('#adapter_id').attr("readonly", true);
     $('#adtFrm').show();
     $('#btn-add1').show();
     $('#btn-save2').hide();
     $('#btn-modify2').show();
   }
-  
-  
+
   $("#btn-del").click(function(event) {
     var idx = $("input:radio[name=ids]:checked").val();
-    var data = gridData[idx-1]; 
-    if(idx >= 1 ){
-      if (confirm("삭제하시겠습니까?")) fireAjaxDelSubmit(data);
+    var data = gridData[idx - 1];
+    if (idx >= 1) {
+      if (confirm("삭제하시겠습니까?"))
+        fireAjaxDelSubmit(data);
     } else {
       alert("삭제할 어댑터를 선택해 주세요.");
     }
   });
-  
+
   function fireAjaxDelSubmit(data) {
-    
-    if(data.ins_cnt > 0){
+
+    if (data.ins_cnt > 0) {
       alert("인스턴스가 존재하는 어댑터는 삭제할 수 없습니다.");
-    }else{
+    } else {
       $("#btn-del").prop("disabled", true);
 
-      var type ="DELETE";
+      var type = "DELETE";
       //var url = "/obDetail";
-       var url = "/agents/"+$("#agent_id").val()+"/adaptors/"+data.adapter_id;
-      cmUtl.exeAjax(type, url, "", "_cbAfterFireAjaxDelSubmit");      
+      var url = "/agents/" + $("#agent_id").val() + "/adaptors/" + data.adapter_id;
+      cmUtl.exeAjax(type, url, "", "_cbAfterFireAjaxDelSubmit");
     }
   }
 
-function _cbAfterFireAjaxDelSubmit(data) {
-  
-  if(!data.hasOwnProperty("responseCode")){
-    data.resultCode = data.type;
-    data.resultMsg = data.detail;
-  }else{
-    data.resultCode = data.responseCode;
+  function _cbAfterFireAjaxDelSubmit(data) {
+
+    if (!data.hasOwnProperty("responseCode")) {
+      data.resultCode = data.type;
+      data.resultMsg = data.detail;
+    } else {
+      data.resultCode = data.responseCode;
+    }
+    var resultCode = "" + data.resultCode;
+
+    if (resultCode.substr(0, 1) == "2") {
+      alert("삭제하였습니다.");
+      location.replace('/agentDetail/' + $("#agent_id").val());
+    } else {
+      alert(data.resultMsg);
+      //id = $("#ob_datamodel_id").val();
+      //$("#ob_datamodel_id").prop("readOnly" , true);
+    }
+
+    $("#btn-del").prop("disabled", false);
   }
-  var resultCode = ""+data.resultCode;
-  
-  if(resultCode.substr(0,1) == "2" ){
-    alert("삭제하였습니다.");
-    location.replace('/agentDetail/'+$("#agent_id").val());
-  } else {
-    alert(data.resultMsg);  
-    //id = $("#ob_datamodel_id").val();
-    //$("#ob_datamodel_id").prop("readOnly" , true);
-  } 
-  
-  $("#btn-del").prop("disabled", false);
-}
 
-$('#btn-del-agent').on('click', function() {
-  if (confirm("삭제하시겠습니까?")) chkAdtCnt();
-});
+  $('#btn-del-agent').on('click', function() {
+    if (confirm("삭제하시겠습니까?"))
+      chkAdtCnt();
+  });
 
-function chkAdtCnt(){
-  var url = "/agentDetail/"+id+"/adaptor";
-  cmUtl.exeAjaxDynamic("GET", url, " ", "", "_chkAdtCnt");
-}
-
-function _chkAdtCnt(data){
-  if(data.length > 0){
-    alert("어댑터가 존재하는 에이전트는 삭제할 수 없습니다.");
-  }else{
-    $("#btn-del-agent").prop("disabled", true);
-
-    var type ="DELETE";
-     var url = "/agents/"+$("#agent_id").val();
-    cmUtl.exeAjax(type, url, "", "_cbAfterFireAjaxAgentDelSubmit");      
+  function chkAdtCnt() {
+    var url = "/agentDetail/" + id + "/adaptor";
+    cmUtl.exeAjaxDynamic("GET", url, " ", "", "_chkAdtCnt");
   }
-}
 
-function _cbAfterFireAjaxAgentDelSubmit(data) {
-  
-  if(!data.hasOwnProperty("responseCode")){
-    data.resultCode = data.type;
-    data.resultMsg = data.detail;
-  }else{
-    data.resultCode = data.responseCode;
+  function _chkAdtCnt(data) {
+    if (data.length > 0) {
+      alert("어댑터가 존재하는 에이전트는 삭제할 수 없습니다.");
+    } else {
+      $("#btn-del-agent").prop("disabled", true);
+
+      var type = "DELETE";
+      var url = "/agents/" + $("#agent_id").val();
+      cmUtl.exeAjax(type, url, "", "_cbAfterFireAjaxAgentDelSubmit");
+    }
   }
-  var resultCode = ""+data.resultCode;
-  
-  if(resultCode.substr(0,1) == "2" ){
-    alert("삭제하였습니다.");
-    location.replace('/agentList');
-  } else {
-    alert(data.resultMsg);  
-  } 
-  
-  $("#btn-del-agent").prop("disabled", false);
-}
-  
-  
+
+  function _cbAfterFireAjaxAgentDelSubmit(data) {
+
+    if (!data.hasOwnProperty("responseCode")) {
+      data.resultCode = data.type;
+      data.resultMsg = data.detail;
+    } else {
+      data.resultCode = data.responseCode;
+    }
+    var resultCode = "" + data.resultCode;
+
+    if (resultCode.substr(0, 1) == "2") {
+      alert("삭제하였습니다.");
+      location.replace('/agentList');
+    } else {
+      alert(data.resultMsg);
+    }
+
+    $("#btn-del-agent").prop("disabled", false);
+  }
 </script>
 <!-- script -->
-  <script>setNavi("Agent 관리```/agentList/","Agent 설정```/agentList/","Agent 상세");</script>
-<!-- //script -->
-  </div>  
-  </body>
-  </html>
+    <script>
+          setNavi("Agent 관리```/agentList/", "Agent 설정```/agentList/", "Agent 상세");
+        </script>
+    <!-- //script -->
+  </div>
+</body>
+</html>

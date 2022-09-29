@@ -16,6 +16,9 @@
  */
 package com.cityhub.adapter;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.flume.Context;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,13 +28,15 @@ import com.cityhub.dto.LogVO;
 import com.cityhub.environment.ReflectExecuter;
 import com.cityhub.environment.ReflectExecuterManager;
 import com.cityhub.model.DataModel;
+import com.cityhub.source.core.LogWriterToDb;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
-import com.cityhub.utils.LogWriterToDb;
 import com.cityhub.utils.OkUrlUtil;
 import com.cityhub.utils.StrUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +49,7 @@ public class Fiware extends AbstractPollSource {
   private JSONObject ConfItem;
   private String[] ArrModel = null;
   private String adapterType;
+  private String datasetId;
 
   @Override
   public void setup(Context context) {
@@ -62,7 +68,7 @@ public class Fiware extends AbstractPollSource {
     String TEMP_VALUE1 = context.getString("TEMP_VALUE1", "");
     adapterType = context.getString("type", "");
 
-    schemaSrv = super.getSchemaSrv();
+    schemaSrv = context.getString("DATAMODEL_API_URL", "");
     ArrModel = StrUtil.strToArray(modelId, ",");
 
 
@@ -72,6 +78,8 @@ public class Fiware extends AbstractPollSource {
     ConfItem.put("temp_value", TEMP_VALUE);
     ConfItem.put("temp_value1", TEMP_VALUE1);
     ConfItem.put("adapterType", adapterType);
+    ConfItem.put("invokeClass", getInvokeClass() );
+    ConfItem.put("datasetId", context.getString("DATASET_ID", ""));
   }
 
   @Override
@@ -99,7 +107,7 @@ public class Fiware extends AbstractPollSource {
       }
 
     } else {
-      log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId , getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
+      log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId , SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
     }
 
 
@@ -120,22 +128,23 @@ public class Fiware extends AbstractPollSource {
         ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass() ,  ConfItem, templateItem);
         String sb = reflectExecuter.doit();
         if (sb != null && sb.lastIndexOf(",") > 0) {
+          ObjectMapper objectMapper = new ObjectMapper();
+          List<Map<String, Object>> entities = objectMapper.readValue(sb, new TypeReference<List<Map<String, Object>>>() {
+          });
           JSONArray JSendArr = new JSONArray("[" + sb.substring(0 , sb.length() - 1) + "]");
           int cnt = 0;
-          for (Object itm : JSendArr) {
-            JSONObject jo = (JSONObject)itm;
-            // 최소한의 검증 처리 (필수값 체크)
-            log.info("`{}`{}`{}`{}`{}`{}",this.getName() ,jo.getString("type"), getStr(SocketCode.DATA_SAVE_REQ) , jo.getString("id"), jo.toString().getBytes().length, adapterType);
-            StringBuilder l =  new StringBuilder();
+          for (Map<String, Object> itm : entities) {
+            int length = objectMapper.writeValueAsString(itm).getBytes().length;
+            log.info("`{}`{}`{}`{}`{}`{}", this.getName(), itm.get("type"), SocketCode.DATA_SAVE_REQ.toMessage(), itm.get("id"), length, adapterType,ConfItem.getString("invokeClass"));
+            StringBuilder l = new StringBuilder();
             l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
             l.append("`").append(ConfItem.getString("sourceName"));
             l.append("`").append(modelId);
-            l.append("`").append(SocketCode.DATA_SAVE_REQ.getCode() + ";" + SocketCode.DATA_SAVE_REQ.getMessage());
-            l.append("`").append(jo.getString("id"));
-            l.append("`").append(jo.toString().getBytes().length);
+            l.append("`").append(SocketCode.DATA_SAVE_REQ.toMessage());
+            l.append("`").append(itm.get("id") + "");
+            l.append("`").append(length);
             l.append("`").append(adapterType);
             l.append("`").append(ConfItem.getString("invokeClass"));
-
             LogVO logVo = new LogVO();
             logVo.setSourceName(ConfItem.getString("sourceName"));
             logVo.setPayload(l.toString());
@@ -143,31 +152,22 @@ public class Fiware extends AbstractPollSource {
             logVo.setType(modelId);
             logVo.setStep(SocketCode.DATA_SAVE_REQ.getCode());
             logVo.setDesc(SocketCode.DATA_SAVE_REQ.getMessage());
-            logVo.setId(jo.getString("id"));
-            logVo.setLength(String.valueOf(jo.toString().getBytes().length));
+            logVo.setId(itm.get("id") + "");
+            logVo.setLength(String.valueOf(length));
             logVo.setAdapterType(ConfItem.getString("invokeClass"));
-            LogWriterToDb.logToDaemonApi(ConfItem,logVo);
-            cnt++;
-            byte[] cont = createSendJson(jo);
+            LogWriterToDb.logToDaemonApi(ConfItem, logVo);
 
-            sendEvent(cont);
-
-            Thread.sleep(10);
           }
-        }
+          sendEventEx(entities,datasetId);
 
+        }
       } else {
-        log.error("`{}`{}`{}`{}`{}`{}",this.getName(), modelId , getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
+        log.error("`{}`{}`{}`{}`{}`{}`{}",this.getName(), modelId , SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
       }
     } catch (Exception e) {
-      log.error("`{}`{}`{}`{}`{}`{}",this.getName(), modelId , getStr(SocketCode.NORMAL_ERROR, e.getMessage()), "", 0, adapterType);
+      log.error("`{}`{}`{}`{}`{}`{}`{}",this.getName(), modelId , SocketCode.NORMAL_ERROR.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
     }
   }
 
-  public String getStr(SocketCode sc) {
-    return sc.getCode() + ";" + sc.getMessage();
-  }
-  public String getStr(SocketCode sc,String msg) {
-    return sc.getCode() + ";" + sc.getMessage() + "-" + msg;
-  }
+
 } // end of class

@@ -45,10 +45,12 @@ public class UdpSource extends AbstractPollSource {
   private JSONObject ConfItem;
   private String adapterType;
   private String savePathRawData;
+  private String datasetId;
 
   @Override
   public void setup(Context context) {
     modelId = context.getString("MODEL_ID", "");
+
     String confFile = context.getString("CONF_FILE", "");
     port = context.getInteger("port");
     adapterType = context.getString("type", "");
@@ -61,6 +63,7 @@ public class UdpSource extends AbstractPollSource {
     }
     ConfItem.put("sourceName", this.getName());
     ConfItem.put("adapterType", adapterType);
+    ConfItem.put("datasetId", context.getString("DATASET_ID", ""));
   }
 
   @Override
@@ -88,19 +91,13 @@ public class UdpSource extends AbstractPollSource {
         DatagramPacket request = new DatagramPacket(buffer, buffer.length);
         socket.receive(request);
         buffer = request.getData();
-        /*
-        InetAddress clientIp = request.getAddress();
-        int clientPort = request.getPort();
-        DatagramPacket response = new DatagramPacket(request.getData(), request.getData().length, clientIp, clientPort);
-        socket.send(response);
-         */
+
         String rawdata = byteArrayToBinaryString(buffer);
         String id = "urn:datahub:" + modelId + ":" + port;
 
         JSONObject jTemplate = new JSONObject(templateItem.getJSONObject(modelId).toString());
         JsonUtil jsonEx = new JsonUtil(jTemplate);
 
-        //log(SocketCode.DATA_RECEIVE, id, rawdata.getBytes());
 
         jsonEx.put("@context", new JSONArray().put("http://uri.etsi.org/ngsi-ld/core-context.jsonld").put("http://cityhub.kr/ngsi-ld/vdata.jsonld"));
         jsonEx.put("id", id);
@@ -113,21 +110,20 @@ public class UdpSource extends AbstractPollSource {
         jsonEx.put("rawData.value", rawdata);
 
         jsonEx.remove("address");
-        //log(SocketCode.DATA_CONVERT_SUCCESS, id, jTemplate.toString().getBytes());
 
         log.info("{}",jTemplate);
 
-        byte[] cont = createSendJson(jTemplate);
-        sendEvent(cont);
+        sendEventEx(jTemplate.toMap() , datasetId);
 
         createFileRawData(rawdata, savePathRawData, modelId, port);
 
       }
 
     } catch (Exception e) {
-      log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, getStr(SocketCode.NORMAL_ERROR, e.getMessage()), "", 0, adapterType);
+      log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.NORMAL_ERROR.toMessage(), "", 0, adapterType);
     }
   }
+
   public void createFileRawData(String rawdata,String savePathRawData, String  modelId, int port) {
     File d = new File(savePathRawData);
     if(!d.exists()) {
@@ -180,52 +176,6 @@ public class UdpSource extends AbstractPollSource {
       return total;
   }
 
-  public String getStr(SocketCode sc) {
-    return sc.getCode() + ";" + sc.getMessage();
-  }
 
-  public String getStr(SocketCode sc, String msg) {
-    return sc.getCode() + ";" + sc.getMessage() + "-" + msg;
-  }
-
-  public void log(SocketCode sc, String id) {
-    log.info("`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), modelId,
-        sc.getCode() + ";" + sc.getMessage() + "", id, 0, ConfItem.getString("adapterType"));
-  }
-
-  public void log(SocketCode sc, String id, String msg) {
-    log.info("`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), modelId,
-        sc.getCode() + ";" + sc.getMessage() + "-" + msg, id, 0, ConfItem.getString("adapterType"));
-  }
-
-  public void log(SocketCode sc, String id, String msg, String modelId) {
-    log.info("`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), modelId, sc.getCode() + ";" + sc.getMessage() + "-" + msg, id, 0,
-        ConfItem.getString("adapterType"));
-  }
-
-  public void log(SocketCode sc, String id, byte[] byteBody) {
-    log.info("`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), modelId,
-        sc.getCode() + ";" + sc.getMessage() + "", id, byteBody.length, ConfItem.getString("adapterType"));
-  }
-
-  public void log(SocketCode sc, String id, byte[] byteBody, String modelId) {
-    log.info("`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), modelId, sc.getCode() + ";" + sc.getMessage() + "", id,
-        byteBody.length, ConfItem.getString("adapterType"));
-  }
-
-  public void log(SocketCode sc, String id, String msg, byte[] byteBody) {
-    log.info("`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), modelId,
-        sc.getCode() + ";" + sc.getMessage() + "-" + msg, id, byteBody.length, ConfItem.getString("adapterType"));
-  }
-
-  public void logger(SocketCode sc, String modelId, String id, byte[] byteBody) {
-    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), modelId, sc.getCode() + ";" + sc.getMessage() + "", id,
-        byteBody.length, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
-  }
-
-  public void logger(SocketCode sc, String modelId, String id, byte[] byteBody, String msg) {
-    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), modelId, sc.getCode() + ";" + sc.getMessage() + "-" + msg, id,
-        byteBody.length, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
-  }
 
 } // end of class

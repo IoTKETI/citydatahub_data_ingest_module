@@ -24,8 +24,8 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.cityhub.core.AbstractConvert;
 import com.cityhub.exception.CoreException;
+import com.cityhub.source.core.AbstractConvert;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DataType;
@@ -39,10 +39,6 @@ import okhttp3.Response;
 
 public class ConvEnergyFemsElec extends AbstractConvert {
 
-  @Override
-  public void init(JSONObject ConfItem, JSONObject templateItem) {
-    super.setup(ConfItem, templateItem);
-  }
 
   @Override
   public String doit() throws CoreException {

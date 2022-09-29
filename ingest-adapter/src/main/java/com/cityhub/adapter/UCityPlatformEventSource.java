@@ -28,7 +28,6 @@ import com.cityhub.core.AbstractPollSource;
 import com.cityhub.environment.ReflectExecuter;
 import com.cityhub.environment.ReflectExecuterManager;
 import com.cityhub.model.DataModel;
-import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.OkUrlUtil;
@@ -44,23 +43,25 @@ public class UCityPlatformEventSource extends AbstractPollSource {
   private String EXCEL_FILE_FULL_PATH;
   private JSONObject templateItem = new JSONObject();
   private JSONObject ConfItem = new JSONObject();
+  private String datasetId;
 
   @Override
   public void setup(Context context) {
 
     modelId = context.getString("MODEL_ID"); // UCityPlatformEvent
     adapterType = context.getString("type"); // com.cityhub.adapter.UCityPlatformEventSource
-    schemaSrv = super.getSchemaSrv(); // http: //192.168.1.33:9876/schema/schemas/
+    schemaSrv = context.getString("DATAMODEL_API_URL", "");
     EXCEL_FILE_FULL_PATH = context.getString("EXCEL_FILE"); // event.xls
     ConfItem.put("EXCEL", EXCEL_FILE_FULL_PATH);
     ConfItem.put("sourceName", this.getName());
     ConfItem.put("model_id", modelId);
     ConfItem.put("schema_srv", schemaSrv);
     ConfItem.put("adapterType", adapterType);
+    ConfItem.put("invokeClass", context.getString("invokeClass", "") );
 
     String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "http://localhost:8888/logToDbApi");
     ConfItem.put("daemonServerLogApi", DAEMON_SERVER_LOGAPI);
-
+    ConfItem.put("datasetId", context.getString("DATASET_ID", ""));
   }
 
   @Override
@@ -102,16 +103,12 @@ public class UCityPlatformEventSource extends AbstractPollSource {
 
           cnt++;
 
-          // byte[] cont = createSendJson(jo);
           JSONObject body = new JSONObject();
           body.put("content", jo);
           byte[] cont = body.toString().getBytes(Charset.forName("UTF-8"));
 
-          // sendEvent(cont);
           ByteBuffer byteBuffer = ByteBuffer.allocate(cont.length + 5);
           byteBuffer.put(cont);
-
-          // Thread.sleep(1000);
         }
       }
     } catch (Exception e) {
@@ -119,12 +116,5 @@ public class UCityPlatformEventSource extends AbstractPollSource {
     }
   }
 
-  public String getStr(SocketCode sc) {
-    return sc.getCode() + ";" + sc.getMessage();
-  }
-
-  public String getStr(SocketCode sc, String msg) {
-    return sc.getCode() + ";" + sc.getMessage() + "-" + msg;
-  }
 
 } // end of class

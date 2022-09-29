@@ -21,7 +21,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -34,35 +33,22 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 
-import com.cityhub.core.AbstractConvert;
-import com.cityhub.environment.Constants;
 import com.cityhub.exception.CoreException;
+import com.cityhub.source.core.AbstractConvert;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ConvCCTV_DisasterMonitoring_Postgres extends AbstractConvert {
-  public ObjectMapper objectMapper;
 
-  @Override
-  public void init(JSONObject ConfItem, JSONObject templateItem) {
-    super.setup(ConfItem, templateItem);
-    this.objectMapper = new ObjectMapper();
-    this.objectMapper.setSerializationInclusion(Include.NON_NULL);
-    this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
-    this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
-  }
 
   @Override
   public String doit() throws CoreException {

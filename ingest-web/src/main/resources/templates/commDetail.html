@@ -6,135 +6,132 @@
 <script src="/asset/js/jsonview.js"></script>
 </head>
 
-<body >
+<body>
 
   <div class="container" layout:fragment="content">
     <h3 class="content__title">시스템 관리</h3>
-    
-        <form>
-          <fieldset>
-            <legend>필드셋 제목</legend>
-            <section class="section">
-              <div class="section__header">
-                <h4 class="section__title">공통코드</h4>
-              </div>
-              <div class="section__content">
-                <table class="table--column" id ="commCodeView">
-                  <caption>테이블 제목</caption>
-                  <colgroup>
-                    <col style="width:150px">
-                    <col style="width:auto">
-                    <col style="width:150px">
-                    <col style="width:auto">                                      
-                  </colgroup>
-                  <tbody>
-                  
-                  </tbody>
-                </table>
-              </div>
-              <div class="button__group">
-                <button class="button__primary" type="button" onclick="location.href = '/commList'" onfocus="this.blur()">목록</button>
-              </div>
-            </section>
-          </fieldset>
-        </form>
-    
-        <form id="commTitle">
-          <fieldset>
-            <legend>공통코드 상세</legend>
-            <section class="section">
-              <div class="section__header">
-                <h4 class="section__title" id="commTypeNm">공통코드 상세</h4>
-              </div>
-              <div class="section__content" id="commCodeDetail">
-                <table class="table--column" id="commCode">
-                  <caption>테이블 제목</caption>
-                  <colgroup>
-                    <col style="width:40px">
-                    <col style="width:300px">
-                    <col style="width:auto">
-                    <col style="width:90px">                                      
-                  </colgroup>
-                  <thead>
-                    <tr>
-                      <th>선택</th>
-                      <th>공통코드</th>
-                      <th>상세코드명</th>
-                      <th>사용여부</th>
-                    </tr>                    
-                  </thead>
-                  <tbody>
-                  
-                  </tbody>
-                </table>
-              </div>
-              <div class="button__group">
-                <input id="commId" type="hidden" value="">
-                <button class="button__util button__util--add material-icons" id="plus" onclick="codeAddRow('commCode')" onfocus="this.blur()" type="button">추가</button>
-                <button class="button__util button__util--remove material-icons" id="minus" onclick="codeDelRow('commCode')" onfocus="this.blur()" type="button">삭제</button>
-                <button class="button__primary" type="submit" id="btn-save2" onfocus="this.blur()">저장</button>
-              </div>
-              <div id="commCodeRow" style="display: none">
-                <table >
-                  <tr>
-                    <td><input type="checkbox" name="chk_info" class="input__checkbox" id="chk_info" value="del"><label class="label__checkbox" for="chk_info" ></td>
-                    <td label="공통코드"><input name="code_id" type="text" class="input__text" maxlength="5" uppercase required engNum></td>
-                    <td label="상세코드명"><input name="code_nm" type="text" class="input__text" maxlength="200" required></td>
-                    <td label="사용여부"><select class="select select--full" name="use_yn" required>
-                        <option value="Y">사용</option>
-                        <option value="N">미사용</option>
-                    </select></td>
-                  </tr>
-                </table>
-              </div>
-            </section>
-          </fieldset>
-        </form>
-        
-        <form>
-          <table>
-            <tr>
-              <td><input type="hidden" id="code_type_id" th:value="${code_type_id.code_type_id}"></td>
-            </tr>
-          </table>
-        </form>
-        
-        
 
-  <script th:inline="javascript">
-  
-  
+    <form>
+      <fieldset>
+        <legend>필드셋 제목</legend>
+        <section class="section">
+          <div class="section__header">
+            <h4 class="section__title">공통코드</h4>
+          </div>
+          <div class="section__content">
+            <table class="table--column" id="commCodeView">
+              <caption>테이블 제목</caption>
+              <colgroup>
+                <col style="width: 150px">
+                <col style="width: auto">
+                <col style="width: 150px">
+                <col style="width: auto">
+              </colgroup>
+              <tbody>
+
+              </tbody>
+            </table>
+          </div>
+          <div class="button__group">
+            <button class="button__primary" type="button" onclick="location.href = '/commList'" onfocus="this.blur()">목록</button>
+          </div>
+        </section>
+      </fieldset>
+    </form>
+
+    <form id="commTitle">
+      <fieldset>
+        <legend>공통코드 상세</legend>
+        <section class="section">
+          <div class="section__header">
+            <h4 class="section__title" id="commTypeNm">공통코드 상세</h4>
+          </div>
+          <div class="section__content" id="commCodeDetail">
+            <table class="table--column" id="commCode">
+              <caption>테이블 제목</caption>
+              <colgroup>
+                <col style="width: 40px">
+                <col style="width: 300px">
+                <col style="width: auto">
+                <col style="width: 90px">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>선택</th>
+                  <th>공통코드</th>
+                  <th>상세코드명</th>
+                  <th>사용여부</th>
+                </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
+          </div>
+          <div class="button__group">
+            <input id="commId" type="hidden" value="">
+            <button class="button__util button__util--add material-icons" id="plus" onclick="codeAddRow('commCode')" onfocus="this.blur()" type="button">추가</button>
+            <button class="button__util button__util--remove material-icons" id="minus" onclick="codeDelRow('commCode')" onfocus="this.blur()" type="button">삭제</button>
+            <button class="button__primary" type="submit" id="btn-save2" onfocus="this.blur()">저장</button>
+          </div>
+          <div id="commCodeRow" style="display: none">
+            <table>
+              <tr>
+                <td><input type="checkbox" name="chk_info" class="input__checkbox" id="chk_info" value="del"><label class="label__checkbox" for="chk_info"></td>
+                <td label="공통코드"><input name="code_id" type="text" class="input__text" maxlength="5" uppercase required engNum></td>
+                <td label="상세코드명"><input name="code_nm" type="text" class="input__text" maxlength="200" required></td>
+                <td label="사용여부"><select class="select select--full" name="use_yn" required>
+                    <option value="Y">사용</option>
+                    <option value="N">미사용</option>
+                </select></td>
+              </tr>
+            </table>
+          </div>
+        </section>
+      </fieldset>
+    </form>
+
+    <form>
+      <table>
+        <tr>
+          <td><input type="hidden" id="code_type_id" th:value="${code_type_id.code_type_id}"></td>
+        </tr>
+      </table>
+    </form>
+
+
+
+    <script th:inline="javascript">
   $(document).ready(function() {
     commCodeView();
-  
+
     if (code_type_id != "") {
       $("#code_type_id").attr("disabled", true);
     }
-  
-    
-      $("#btn-save2").click(function(event) {
-          if (validation("commCode")){
-            if (confirm("저장하시겠습니까?")){
-              event.preventDefault();
-              commCodeSave();
-          }
+
+    $("#btn-save2").click(function(event) {
+      if (validation("commCode")) {
+        if (confirm("저장하시겠습니까?")) {
+          event.preventDefault();
+          commCodeSave();
         }
-      });
+      }
     });
-  
-  function commCodeView(){
+  });
+
+  function commCodeView() {
     var param = "/commCodeView/" + $("#code_type_id").val();
     cmUtl.exeAjax("GET", param, null, "_cbAfterCommCodeView");
   }
-  
-  function _cbAfterCommCodeView(data){
+
+  function _cbAfterCommCodeView(data) {
     var html = '';
-    
+
     html += '<tr>';
     html += '<th>대분류코드</th>';
     html += '<td><input name="code_type_id" type="text" class="input__text" value="'+data.code_type_id+'" readonly></td>';
     html += '<th>사용여부</th>';
-    html += '<td><input name="code_type_nm" type="text" class="input__text" value="'+yn(data.use_yn)+'"  readonly></td>';
+    html += '<td><input name="code_type_nm" type="text" class="input__text" value="' + yn(data.use_yn) + '"  readonly></td>';
     html += '</tr>';
     html += '<tr>';
     html += '<th>공통코드 대분류 명</th>';
@@ -142,16 +139,15 @@
     html += '<th>최종 수정일자</th>';
     html += '<td><input name="last_update_dt" type="text" class="input__text" value="'+data.last_update_dt+'"  readonly></td>';
     html += '</tr>';
-  
+
     $('#commCodeView > tbody').append(html);
-  
-  
-  var param = "/commDetailView/" + $("#code_type_id").val();
-  cmUtl.exeAjax("GET", param, null, "_cbAftercommDetailView");
+
+    var param = "/commDetailView/" + $("#code_type_id").val();
+    cmUtl.exeAjax("GET", param, null, "_cbAftercommDetailView");
   }
-  
-  function _cbAftercommDetailView(data){
-    if (data == 0){
+
+  function _cbAftercommDetailView(data) {
+    if (data == 0) {
       $('#commCode > tbody ').empty();
       cmUtl.showEmptyLine('commCode', false);
       cmUtl.showEmptyLine('commCode', true);
@@ -159,32 +155,32 @@
       $('#commCode > tbody ').empty();
       cmUtl.showEmptyLine('commCode', false);
     }
-    
-    for (var i = 0; i < data.length; i++){
+
+    for (var i = 0; i < data.length; i++) {
       var html = '<tr>';
       html += '<td><input type="checkbox" name="chk_info" class="input__checkbox" id="item_chk'+i+'"><label class="label__checkbox" for="item_chk'+i+'"></label></td>';
       html += '<td><input name="code_id" type="text" class="input__text" value="'+data[i].code_id+'"></td>';
       html += '<td style="text-align:left"><input name="code_nm" type="text" class="input__text" value="'+data[i].code_nm+'"></td>';
       html += '<td><select class="select select--full" name="use_yn" required><option value ="Y">사용</option><option value ="N">미사용</option></select></td>';
       html += '</tr>';
-      
+
       $('#commCode').appendBody(html);
     }
   }
-  
-  function yn(val){
+
+  function yn(val) {
     var rtn = "";
     switch (val) {
     case "Y":
-      rtn ="사용";
+      rtn = "사용";
       break;
     case "N":
-      rtn ="미사용";
+      rtn = "미사용";
       break;
     }
     return rtn;
   }
-   
+
   function commCodeSave() {
     $("#btn-save2").prop("disabled", true);
     var code_type_id = $("#code_type_id").val();
@@ -197,10 +193,10 @@
         codeRowData.code_id = code.find("input[name=code_id]").val();
         codeRowData.code_nm = code.find("input[name=code_nm]").val();
         codeRowData.use_yn = code.find("select[name=use_yn]").val();
-        
+
         codesData.push(codeRowData);
       }
-    } 
+    }
     var data = {
       'codesData' : codesData
     };
@@ -209,41 +205,43 @@
   }
   function _cbAftercommCodeSave(data) {
     $("#btn-save2").prop("disabled", false);
-    isCodeMod = false;      
+    isCodeMod = false;
     alert("저장되었습니다.");
-  } 
+  }
 
   function codeAddRow(tb) {
     var obj = $('#' + tb);
     cmUtl.showEmptyLine(tb, false);
     var tmpObj = $("#commCodeRow").find("tr:first").clone();
     var length = obj.find("tbody > tr").length;
-    tmpObj.find("[name=chk_info]").prop("id", "chk_info" + length );
-    tmpObj.find("label").prop("for", "chk_info" + length );
+    tmpObj.find("[name=chk_info]").prop("id", "chk_info" + length);
+    tmpObj.find("label").prop("for", "chk_info" + length);
     obj.find("tbody:last").append(tmpObj);
   }
-  
+
   function codeDelRow(tb) {
     var obj = $('#' + tb);
     var tmp = obj.find("input:checkbox");
     $(tmp).each(function() {
-      if ($(this).is(":checked")) $(this).closest('tr').remove();
+      if ($(this).is(":checked"))
+        $(this).closest('tr').remove();
     });
     var tmpSize = obj.find("input:checkbox").length;
-    
-    if (tmpSize < 1) cmUtl.showEmptyLine(tb, true) ;
+
+    if (tmpSize < 1)
+      cmUtl.showEmptyLine(tb, true);
   }
-  
-  </script>
-  <!-- script -->
-  <script>
-    function detailShow(e) {
-      $(e).attr("title", $(e).val());
-    }
-    
-  </script>
-  <script>setNavi("시스템관리```/commList/","공통코드 관리```/commList/","공통코드 상세");</script>
-  <!-- //script -->
+        </script>
+    <!-- script -->
+    <script>
+          function detailShow(e) {
+            $(e).attr("title", $(e).val());
+          }
+        </script>
+    <script>
+          setNavi("시스템관리```/commList/", "공통코드 관리```/commList/", "공통코드 상세");
+        </script>
+    <!-- //script -->
   </div>
 </body>
 </html>

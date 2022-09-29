@@ -6,170 +6,171 @@
 
 </head>
 
- <body>
+<body>
 
-        <div class="container" layout:fragment="content">
-           <h3 class="content__title">시스템 관리</h3>
+  <div class="container" layout:fragment="content">
+    <h3 class="content__title">시스템 관리</h3>
 
-        <form>
-          <fieldset>
-            <legend>공통코드 목록</legend>
-            <section class="section">
-              <div class="section__header" >
-                <h4 class="section__title">공통코드 목록</h4>
-              </div>
-              <div class="section__content" id="commMaster">
-                <table class="table--column" id="commParent">
-                  <caption>테이블 제목</caption>
-                  <colgroup>
-                    <col style="width:70px">
-                    <col style="width:300px">
-                    <col style="width:auto">
-                    <col style="width:90px">
-                    <col style="width:0px">                                      
-                  </colgroup>
-                  <thead>
-                    <tr>
-                      <th>순번</th>
-                      <th>대분류 코드</th>
-                      <th>공통코드 대분류 명</th>
-                      <th>사용여부</th>
-                      <th></th>
-                    </tr>                    
-                  </thead>
-                  <tbody>
-                                    
-                  </tbody>
-                </table>
-              </div>
-              <div class="button__group">
-                <button class="button__util button__util--add material-icons" id="plus" onclick="commAddRow(this)" onfocus="this.blur()" type="button">추가</button>
-                <button class="button__primary" type="submit" id="btn-save" onfocus="this.blur()">저장</button>
-              </div>
-              <div id="commTypeRow" style="display: none">
-                <table>
-                  <tr>
-                    <td >신규 추가</td>
-                    <td label="대분류코드"><input name="code_type_id" type="text" maxlength="3" uppercase required engNum></td>
-                    <td label="공동코드 대분류 명"><input name="code_type_nm" type="text" class="input__text" maxlength="200" required></td>
-                    <td label="사용여부"><select class="select select--full" name="use_yn" required>
-                        <option value="Y">사용</option>
-                        <option value="N">미사용</option>
-                    </select></td>
-                    <td><input name="db_yn" type="hidden" value="N"></td>
-                  </tr>
-                </table>
-              </div>
-            </section>
-          </fieldset>
-        </form>
+    <form>
+      <fieldset>
+        <legend>공통코드 목록</legend>
+        <section class="section">
+          <div class="section__header">
+            <h4 class="section__title">공통코드 목록</h4>
+          </div>
+          <div class="section__content" id="commMaster">
+            <table class="table--column" id="commParent">
+              <caption>테이블 제목</caption>
+              <colgroup>
+                <col style="width: 70px">
+                <col style="width: 300px">
+                <col style="width: auto">
+                <col style="width: 90px">
+                <col style="width: 0px">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>순번</th>
+                  <th>대분류 코드</th>
+                  <th>공통코드 대분류 명</th>
+                  <th>사용여부</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
 
-  <script th:inline="javascript">
-    var isCodeMod = false;  
-    var isTypeMod = true;
-    
-    $(document).ready(function() {
-      commDataList();
-      $("#btn-save").click(function(event) {
-        if(!isCodeMod){
-          if (validation("commMaster")) {
-            if (confirm("저장하시겠습니까?")){
-              event.preventDefault();
-              commTypeSave();
-            }
-          }  
-        } else {
-          if(confirm("공통코드항목에 수정된 데이터가 있습니다.\n저장하지 않은 데이터는 초기화됩니다.\n진행 하시겠습니까?")){
+              </tbody>
+            </table>
+          </div>
+          <div class="button__group">
+            <button class="button__util button__util--add material-icons" id="plus" onclick="commAddRow(this)" onfocus="this.blur()" type="button">추가</button>
+            <button class="button__primary" type="submit" id="btn-save" onfocus="this.blur()">저장</button>
+          </div>
+          <div id="commTypeRow" style="display: none">
+            <table>
+              <tr>
+                <td>신규 추가</td>
+                <td label="대분류코드"><input name="code_type_id" type="text" maxlength="3" uppercase required engNum></td>
+                <td label="공동코드 대분류 명"><input name="code_type_nm" type="text" class="input__text" maxlength="200" required></td>
+                <td label="사용여부"><select class="select select--full" name="use_yn" required>
+                    <option value="Y">사용</option>
+                    <option value="N">미사용</option>
+                </select></td>
+                <td><input name="db_yn" type="hidden" value="N"></td>
+              </tr>
+            </table>
+          </div>
+        </section>
+      </fieldset>
+    </form>
+
+    <script th:inline="javascript">
+  var isCodeMod = false;
+  var isTypeMod = true;
+
+  $(document).ready(function() {
+    commDataList();
+    $("#btn-save").click(function(event) {
+      if (!isCodeMod) {
+        if (validation("commMaster")) {
+          if (confirm("저장하시겠습니까?")) {
             event.preventDefault();
             commTypeSave();
-          } 
-        }        
-      });
-    });      
-
-    function commDataList(){
-      var url = "/commDataList";
-      cmUtl.exeAjax("GET", url, null, "_cbAftercommDataList" );
-      } 
-  
-    function _cbAftercommDataList(data) {
-      if (data.length == 0) {
-        cmUtl.showEmptyLine('commParent', true);
-      }
-    
-      for (var i = 0; i < data.length; i++) {
-        var index = i+1;
-        var html = '<tr>';
-        html += '<td>'+index+'</td>';
-        html += '<td label="대분류코드"><input name="code_type_id" type="hidden" value="'+data[i].code_type_id+'"><a href="/commDetail/'+data[i].code_type_id+'">'+data[i].code_type_id+'</td>';
-        html += '<td label="공통코드 대분류 명 " style="text-align:left"><input class="input__text" name="code_type_nm" type="text" ></td>';
-        html += '<td label="사용여부"><select class="select select--full" name="use_yn" required><option value ="Y">사용</option><option value ="N">미사용</option></select></td>';
-        html += '</tr>';    
-      
-        $('#commParent').appendBody(html);
-        
-        $("#commParent").getRow(i).find("[name='code_type_nm']").val(data[i].code_type_nm).attr("required", true);
-        $("#commParent").getRow(i).find("select[name='use_yn']").val(data[i].use_yn).prop("selected", true);
-      }
-    }
-    
-    function commTypeSave() {
-      $("#btn-save").prop("disabled", true);
-      var param = "/commTypeSave";
-      var comm_type_length = $("#commParent").getLength();
-      var comm_type_data = new Array();
-      if (comm_type_length > 0) {
-        for (var i = 0; i < comm_type_length; i++) {
-          item = $("#commParent").getRow(i);
-          var commRowData = new Object();
-          
-          commRowData.code_type_id = item.find("input[name=code_type_id]").val();
-          commRowData.code_type_nm = item.find("input[name=code_type_nm]").val();
-          commRowData.db_yn = item.find("input[name=db_yn]").val();
-          commRowData.use_yn = item.find("select[name=use_yn]").val();
-          comm_type_data.push(commRowData);
-        }
-
-      }
-      var data = {
-        "comm_type_data" : comm_type_data
-      };
-      cmUtl.exeAjax("POST", param, JSON.stringify(data), "_cbAfterAdtTypeSave");
-    }
-    function _cbAfterAdtTypeSave(data) {
-      alert("저장되었습니다.");
-      $("#btn-save").prop("disabled", false);
-      location.replace('/commList');
-    }
-
-    function commAddRow(tb) {
-      var tmpObj = $("#commTypeRow").find("tr:first").clone();
-      if(!isCodeMod) {
-        if (isTypeMod) {
-          $("#commTypeRow").hide();
-          $("#commTitle").hide();
-          $("#commCode").hide();
-          $("#commParent").find('tbody:last').append(tmpObj);
-          isTypeMod = false;
-        } else {
-          alert("공통코드 목록을 저장 후 추가해 주세요");
+          }
         }
       } else {
-        if(confirm("공통코드항목에 수정된 데이터가 있습니다.\n저장하지 않은 데이터는 초기화됩니다.\n진행 하시겠습니까?")){
-          $("#commTypeRow").hide();
-          $("#commTitle").hide();
-          $("#commCode").hide();
-          $("#commParent").find('tbody:last').append(tmpObj);
-          isCodeMod = false;
-          isTypeMod = false;
+        if (confirm("공통코드항목에 수정된 데이터가 있습니다.\n저장하지 않은 데이터는 초기화됩니다.\n진행 하시겠습니까?")) {
+          event.preventDefault();
+          commTypeSave();
         }
-      }      
+      }
+    });
+  });
+
+  function commDataList() {
+    var url = "/commDataList";
+    cmUtl.exeAjax("GET", url, null, "_cbAftercommDataList");
+  }
+
+  function _cbAftercommDataList(data) {
+    if (data.length == 0) {
+      cmUtl.showEmptyLine('commParent', true);
     }
- 
-  </script>
-  <!-- script -->
-    <script>setNavi("시스템관리```/commList/","공통코드 관리```/commList/");</script>
-  <!-- //script -->
+
+    for (var i = 0; i < data.length; i++) {
+      var index = i + 1;
+      var html = '<tr>';
+      html += '<td>' + index + '</td>';
+      html += '<td label="대분류코드"><input name="code_type_id" type="hidden" value="'+data[i].code_type_id+'"><a href="/commDetail/'+data[i].code_type_id+'">' + data[i].code_type_id + '</td>';
+      html += '<td label="공통코드 대분류 명 " style="text-align:left"><input class="input__text" name="code_type_nm" type="text" ></td>';
+      html += '<td label="사용여부"><select class="select select--full" name="use_yn" required><option value ="Y">사용</option><option value ="N">미사용</option></select></td>';
+      html += '</tr>';
+
+      $('#commParent').appendBody(html);
+
+      $("#commParent").getRow(i).find("[name='code_type_nm']").val(data[i].code_type_nm).attr("required", true);
+      $("#commParent").getRow(i).find("select[name='use_yn']").val(data[i].use_yn).prop("selected", true);
+    }
+  }
+
+  function commTypeSave() {
+    $("#btn-save").prop("disabled", true);
+    var param = "/commTypeSave";
+    var comm_type_length = $("#commParent").getLength();
+    var comm_type_data = new Array();
+    if (comm_type_length > 0) {
+      for (var i = 0; i < comm_type_length; i++) {
+        item = $("#commParent").getRow(i);
+        var commRowData = new Object();
+
+        commRowData.code_type_id = item.find("input[name=code_type_id]").val();
+        commRowData.code_type_nm = item.find("input[name=code_type_nm]").val();
+        commRowData.db_yn = item.find("input[name=db_yn]").val();
+        commRowData.use_yn = item.find("select[name=use_yn]").val();
+        comm_type_data.push(commRowData);
+      }
+
+    }
+    var data = {
+      "comm_type_data" : comm_type_data
+    };
+    cmUtl.exeAjax("POST", param, JSON.stringify(data), "_cbAfterAdtTypeSave");
+  }
+  function _cbAfterAdtTypeSave(data) {
+    alert("저장되었습니다.");
+    $("#btn-save").prop("disabled", false);
+    location.replace('/commList');
+  }
+
+  function commAddRow(tb) {
+    var tmpObj = $("#commTypeRow").find("tr:first").clone();
+    if (!isCodeMod) {
+      if (isTypeMod) {
+        $("#commTypeRow").hide();
+        $("#commTitle").hide();
+        $("#commCode").hide();
+        $("#commParent").find('tbody:last').append(tmpObj);
+        isTypeMod = false;
+      } else {
+        alert("공통코드 목록을 저장 후 추가해 주세요");
+      }
+    } else {
+      if (confirm("공통코드항목에 수정된 데이터가 있습니다.\n저장하지 않은 데이터는 초기화됩니다.\n진행 하시겠습니까?")) {
+        $("#commTypeRow").hide();
+        $("#commTitle").hide();
+        $("#commCode").hide();
+        $("#commParent").find('tbody:last').append(tmpObj);
+        isCodeMod = false;
+        isTypeMod = false;
+      }
+    }
+  }
+        </script>
+    <!-- script -->
+    <script>
+          setNavi("시스템관리```/commList/", "공통코드 관리```/commList/");
+        </script>
+    <!-- //script -->
   </div>
 </body>
 </html>

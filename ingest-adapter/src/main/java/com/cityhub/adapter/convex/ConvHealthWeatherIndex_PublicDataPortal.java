@@ -21,38 +21,23 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.cityhub.core.AbstractConvert;
-import com.cityhub.environment.Constants;
 import com.cityhub.exception.CoreException;
+import com.cityhub.source.core.AbstractConvert;
 import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ConvHealthWeatherIndex_PublicDataPortal extends AbstractConvert {
-  private ObjectMapper objectMapper;
-
-  @Override
-  public void init(JSONObject ConfItem, JSONObject templateItem) {
-
-    super.setup(ConfItem, templateItem);
-    this.objectMapper = new ObjectMapper();
-    this.objectMapper.setSerializationInclusion(Include.NON_NULL);
-    this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
-    this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
-  }
 
   @Override
   public String doit() throws CoreException {

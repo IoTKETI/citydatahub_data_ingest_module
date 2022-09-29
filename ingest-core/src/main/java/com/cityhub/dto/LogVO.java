@@ -34,6 +34,7 @@ public class LogVO {
   private String sourceName;
   private String length;
   private String adapterType;
+  private String invokeClass;
   private Map data;
 
   private String desc;
@@ -47,7 +48,7 @@ public class LogVO {
   }
 
   public Map<String, ?> toMap() {
-    Map<String, Object> l = new HashMap<String, Object>();
+    Map<String, Object> l = new HashMap<>();
     l.put("endPoint",endPoint);
     l.put("payload",payload);
     return l;

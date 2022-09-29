@@ -29,5 +29,7 @@ public interface ReflectExecuter {
   public String doit(Statement statement) throws CoreException ;
   public String doit(byte[] t2) throws CoreException ;
   public String doit() throws CoreException ;
+  public void setup();
+
 
 } // end of class

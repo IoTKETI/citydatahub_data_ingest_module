@@ -27,7 +27,6 @@
   color: white;
   font-size: 15px;
 }
-
 </style>
 <script type="text/javascript">
   var consoleLog;
@@ -37,8 +36,8 @@
 
     $('#startDaemon').on('click', function() {
       var form = {
-          "id" : "에이전트id"
-        };
+        "id" : "에이전트id"
+      };
       $.ajax({
         method : 'post',
         url : '/agent/start', // #### Caution: The name of the source file
@@ -47,18 +46,17 @@
         data : JSON.stringify(form),
         success : function(data) {
           logdata = data;
-          
+
           consoleLog.val(consoleLog.val() + JSON.stringify(logdata) + "\n");
           consoleLog.scrollTop(consoleLog.prop('scrollHeight'));
 
-          
         }
       });
     });
     $('#stopDaemon').on('click', function() {
       var form = {
-          "id" : "에이전트id"
-        };
+        "id" : "에이전트id"
+      };
       $.ajax({
         method : 'post',
         url : '/agent/stop', // #### Caution: The name of the source file
@@ -67,18 +65,17 @@
         data : JSON.stringify(form),
         success : function(data) {
           logdata = data;
-          
+
           consoleLog.val(consoleLog.val() + JSON.stringify(logdata) + "\n");
           consoleLog.scrollTop(consoleLog.prop('scrollHeight'));
 
-          
         }
       });
     });
     $('#restartDaemon').on('click', function() {
       var form = {
-          "id" : "에이전트id"
-        };
+        "id" : "에이전트id"
+      };
       $.ajax({
         method : 'post',
         url : '/agent/restart', // #### Caution: The name of the source file
@@ -87,13 +84,12 @@
         data : JSON.stringify(form),
         success : function(data) {
           logdata = data;
-          
+
           consoleLog.val(consoleLog.val() + JSON.stringify(logdata) + "\n");
           consoleLog.scrollTop(consoleLog.prop('scrollHeight'));
 
-          
         }
-      });      
+      });
     });
 
   });
@@ -102,10 +98,9 @@
 <body>
   <div id="header">
     <h2>데몬서버 관리</h2>
-    
-    <input id="startDaemon" type="button" value="start" />&nbsp;&nbsp;&nbsp; 
-    <input id="stopDaemon" type="button" value="stop" />&nbsp;&nbsp;&nbsp; 
-    <input id="restartDaemon" type="button" value="restart" />&nbsp;&nbsp;&nbsp;
+
+    <input id="startDaemon" type="button" value="start" />&nbsp;&nbsp;&nbsp; <input id="stopDaemon" type="button" value="stop" />&nbsp;&nbsp;&nbsp; <input id="restartDaemon" type="button"
+      value="restart" />&nbsp;&nbsp;&nbsp;
 
 
   </div>

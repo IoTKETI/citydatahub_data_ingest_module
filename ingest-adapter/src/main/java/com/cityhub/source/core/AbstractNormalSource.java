@@ -16,13 +16,6 @@
  */
 package com.cityhub.source.core;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
@@ -30,12 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flume.Event;
 import org.apache.flume.channel.ChannelProcessor;
 import org.apache.flume.event.EventBuilder;
 import org.json.JSONObject;
 
+import com.cityhub.dto.LogVO;
 import com.cityhub.environment.Constants;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
@@ -45,7 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AbstractNormalSource  implements ReflectOpenApi {
+public abstract class AbstractNormalSource  implements ReflectNormalSystem {
   protected ChannelProcessor channelProcessor = null;
   protected JSONObject ConfItem = new JSONObject();
   protected ObjectMapper objectMapper;
@@ -64,7 +59,17 @@ public abstract class AbstractNormalSource  implements ReflectOpenApi {
   }
 
   @Override
+  public void setup() {
+    // TODO : 추가로 구현해야할 경우 오버라이드 해서 이용
+  }
+
+  @Override
   public String doit() {
+    return null;
+  }
+
+  @Override
+  public String doit(BasicDataSource ds) {
     return null;
   }
 
@@ -92,8 +97,6 @@ public abstract class AbstractNormalSource  implements ReflectOpenApi {
   }
 
   protected void toLogger(SocketCode sc, String id, byte[] byteBody) {
-
-
     log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("modelId"), sc.toMessage(), id, byteBody.length, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
 
     StringBuilder l = new StringBuilder();
@@ -106,7 +109,7 @@ public abstract class AbstractNormalSource  implements ReflectOpenApi {
     l.append("`").append(ConfItem.getString("adapterType"));
     l.append("`").append(ConfItem.getString("invokeClass"));
 
-    LoggerVO logVo = new LoggerVO();
+    LogVO logVo = new LogVO();
     logVo.setSourceName(ConfItem.getString("sourceName"));
     logVo.setPayload(l.toString());
     logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
@@ -115,55 +118,10 @@ public abstract class AbstractNormalSource  implements ReflectOpenApi {
     logVo.setDesc(sc.getMessage());
     logVo.setId(id);
     logVo.setLength(String.valueOf(byteBody.length));
-    logVo.setAdapterType(ConfItem.getString("invokeClass"));
-    logToDaemonApi(ConfItem, logVo);
-  }
+    logVo.setAdapterType(ConfItem.getString("adapterType"));
+    logVo.setInvokeClass(ConfItem.getString("invokeClass"));
 
-  private void logToDaemonApi(JSONObject confItem, LoggerVO logVo) {
-    try {
-      if (confItem.has("daemonServerLogApi") && !"".equals(confItem.getString("daemonServerLogApi"))) {
-        String resultcode = httpConnection(confItem.getString("daemonServerLogApi"), new JSONObject(logVo).toString());
-        log.info("####logJson####{}", resultcode);
-      }
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
-  }
-
-  private String httpConnection(String targetUrl, String jsonBody) throws MalformedURLException, java.io.IOException {
-    String returnText = "";
-
-    URL url = new URL(targetUrl);
-    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    conn.setRequestProperty("Accept", "application/json");
-    conn.setRequestProperty("Content-Type", "application/json");
-    conn.setRequestMethod("POST");
-
-    if (!"".equals(jsonBody)) {
-      conn.setDoOutput(true);
-      try (OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());) {
-        wr.write(jsonBody);
-        wr.flush();
-      } catch (IOException e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      }
-    }
-
-    int responseCode = conn.getResponseCode();
-    StringBuffer sb = null;
-    String jsonData = "";
-    try (BufferedReader br = new BufferedReader(new InputStreamReader(responseCode < 400 ? conn.getInputStream() : conn.getErrorStream(), "UTF-8"));) {
-      sb = new StringBuffer();
-      while ((jsonData = br.readLine()) != null) {
-        sb.append(jsonData);
-      }
-      returnText = sb.toString();
-      log.info("returnText:{}", returnText);
-    } catch (IOException e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
-
-    return returnText;
+    LogWriterToDb.logToDaemonApi(ConfItem, logVo);
   }
 
 }

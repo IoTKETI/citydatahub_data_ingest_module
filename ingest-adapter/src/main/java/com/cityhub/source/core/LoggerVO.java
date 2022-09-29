@@ -35,6 +35,7 @@ public class LoggerVO {
   private String sourceName;
   private String length;
   private String adapterType;
+  private String invokeClass;
   private Map<String,Object> data;
 
   private String desc;

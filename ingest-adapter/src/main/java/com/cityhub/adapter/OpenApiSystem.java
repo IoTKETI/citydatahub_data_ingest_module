@@ -27,7 +27,7 @@ import org.json.JSONObject;
 
 import com.cityhub.environment.DefaultConstants;
 import com.cityhub.model.DataModelEx;
-import com.cityhub.source.core.ReflectOpenApi;
+import com.cityhub.source.core.ReflectNormalSystem;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
@@ -112,10 +112,10 @@ public class OpenApiSystem extends AbstractSource implements PollableSource, Con
     log.info("Processing - {},{}", this.getName(), modelId);
     try {
       if (ArrModel != null) {
-        ReflectOpenApi reflectExecuter = null;
+        ReflectNormalSystem reflectExecuter = null;
         try {
           Class<?> clz = Class.forName(configInfo.get("invokeClass").toString());
-          reflectExecuter  = (ReflectOpenApi)clz.newInstance();
+          reflectExecuter  = (ReflectNormalSystem)clz.newInstance();
           reflectExecuter.init(getChannelProcessor(), configInfo);
           reflectExecuter.doit();
 

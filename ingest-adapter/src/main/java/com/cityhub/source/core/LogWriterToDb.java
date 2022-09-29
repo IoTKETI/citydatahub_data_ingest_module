@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cityhub.utils;
+package com.cityhub.source.core;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import com.cityhub.dto.LogVO;
 import com.cityhub.utils.DataCoreCode.SocketCode;
+import com.cityhub.utils.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -86,7 +87,7 @@ public class LogWriterToDb {
   public static void logToDaemonApi(LogVO logVo) {
     JSONObject logJson = new JSONObject(logVo);
     String resultcode = httpConnection(logServer, logJson.toString());
-    log.info("####logJson####{}", resultcode);
+    log.info("daemonServerLogApi:{}", resultcode);
   }
 
   public static void logToDaemonApi(JSONObject confItem, LogVO logVo) {
@@ -94,12 +95,12 @@ public class LogWriterToDb {
     if (confItem.has("daemonServerLogApi")) {
       if (confItem.getString("daemonServerLogApi") != null && !"".equals(confItem.getString("daemonServerLogApi")) && logJson != null) {
         String resultcode = httpConnection(confItem.getString("daemonServerLogApi"), logJson.toString());
-        log.info("####logJson####{}", resultcode);
+        log.info("daemonServerLogApi:{}", resultcode);
       }
     } else {
       // default daemon Url
       String resultcode = httpConnection(logServer, logJson.toString());
-      log.info("####logJson####{}", resultcode);
+      log.info("daemonServerLogApi:{}", resultcode);
     }
   }
 

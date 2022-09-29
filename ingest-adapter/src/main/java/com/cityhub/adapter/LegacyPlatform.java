@@ -16,6 +16,7 @@
  */
 package com.cityhub.adapter;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flume.Context;
 import org.apache.flume.CounterGroup;
@@ -27,14 +28,13 @@ import org.json.JSONObject;
 
 import com.cityhub.environment.DefaultConstants;
 import com.cityhub.model.DataModelEx;
-import com.cityhub.source.core.ReflectLegacySystem;
-import com.cityhub.source.core.ReflectLegacySystemManager;
+import com.cityhub.source.core.ReflectNormalSystem;
+import com.cityhub.source.core.ReflectNormalSystemManager;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.OkUrlUtil;
 import com.cityhub.utils.StrUtil;
-import com.zaxxer.hikari.HikariDataSource;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -123,13 +123,15 @@ public class LegacyPlatform extends AbstractSource implements PollableSource , C
   public void processing() {
     log.info("::::::::::::::::::{} - Processing :::::::::::::::::", this.getName());
 
-    try (HikariDataSource ds = new HikariDataSource();){
-      ds.setJdbcUrl(ConfItem.getString("jdbcUrl"));
-      ds.setUsername(ConfItem.getString("username"));
-      ds.setPassword(ConfItem.getString("password"));
-      ReflectLegacySystem reflectExecuter = ReflectLegacySystemManager.getInstance(ConfItem.getString("invokeClass"));
+    try (BasicDataSource dataSource = new BasicDataSource();){
+      dataSource.setDriverClassName(ConfItem.getString("driverClassName"));
+      dataSource.setUrl(ConfItem.getString("jdbcUrl"));
+      dataSource.setUsername(ConfItem.getString("username"));
+      dataSource.setPassword(ConfItem.getString("password"));
+
+      ReflectNormalSystem reflectExecuter = ReflectNormalSystemManager.getInstance(ConfItem.getString("invokeClass"));
       reflectExecuter.init(getChannelProcessor(), ConfItem);
-      String sb = reflectExecuter.doit(ds);
+      String sb = reflectExecuter.doit(dataSource);
     } catch (NullPointerException e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     } catch (Exception e) {

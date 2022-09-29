@@ -27,7 +27,6 @@
   color: white;
   font-size: 15px;
 }
-
 </style>
 <script type="text/javascript">
   var consoleLog;
@@ -37,8 +36,8 @@
 
     $('#statusAgent').on('click', function() {
       var form = {
-          "id" : "fi"
-        };
+        "id" : "fi"
+      };
       $.ajax({
         method : 'post',
         url : '/agent/status', // #### Caution: The name of the source file
@@ -52,15 +51,15 @@
         }
       });
     });
-        
+
   });
 </script>
 </head>
 <body>
   <div id="header">
     <h2>데몬서버의 에이전트 상태가져오기</h2>
-    
-    <input id="statusAgent" type="button" value="상태가져오기" />&nbsp;&nbsp;&nbsp; 
+
+    <input id="statusAgent" type="button" value="상태가져오기" />&nbsp;&nbsp;&nbsp;
 
 
   </div>

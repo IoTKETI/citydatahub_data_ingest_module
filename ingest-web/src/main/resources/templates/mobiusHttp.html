@@ -7,16 +7,16 @@
 <body>
   <div class="container w-half" layout:fragment="Content">
 
-  <section class="section ">
-    <div class="section__header ">
-      <h4 class="section__title">MOBIUS HTTP</h4>
-    </div>
-  </section>
+    <section class="section ">
+      <div class="section__header ">
+        <h4 class="section__title">MOBIUS HTTP</h4>
+      </div>
+    </section>
 
     <table class="tta-table ">
       <colgroup>
-        <col style="width:80px">
-        <col style="width:350px">
+        <col style="width: 80px">
+        <col style="width: 350px">
       </colgroup>
       <tr>
         <td>데이터 구분</td>
@@ -26,9 +26,8 @@
       </tr>
       <tr>
         <td>broker</td>
-        <th><input type="text" name="broker" id="broker" class="input-text" value="http://192.168.1.214:7579/Mobius/sync_parking_raw">
-            <input type="hidden" name="topic" id="topic" value="httpTopic">
-        </th>
+        <th><input type="text" name="broker" id="broker" class="input-text" value="http://192.168.1.214:7579/Mobius/sync_parking_raw"> <input type="hidden" name="topic" id="topic"
+          value="httpTopic"></th>
       </tr>
       <tr>
         <td>시간 단위 설정</td>
@@ -58,74 +57,74 @@
 
     <div id="feedback"></div>
 
-    <script th:inline="javascript">
-          var timer;
-          var ttaFlag = false;
+<script th:inline="javascript">
+  var timer;
+  var ttaFlag = false;
 
-          $(document).ready(function() {
+  $(document).ready(function() {
 
-            $("#start").on('click', function() {
-              $("#start").prop("disabled", true);
-              $("#stop").prop("disabled", false);
-              ttaFlag = true;
-              $("#start").hide();
-              $("#stop").show();
-              data_ajax_submit();
-            });
+    $("#start").on('click', function() {
+      $("#start").prop("disabled", true);
+      $("#stop").prop("disabled", false);
+      ttaFlag = true;
+      $("#start").hide();
+      $("#stop").show();
+      data_ajax_submit();
+    });
 
-            $("#stop").on('click', function() {
-              $("#stop").prop("disabled", true);
-              $("#start").prop("disabled", false);
-              ttaFlag = false;
-              $("#stop").hide();
-              $("#start").show();
-            });
-          });
+    $("#stop").on('click', function() {
+      $("#stop").prop("disabled", true);
+      $("#start").prop("disabled", false);
+      ttaFlag = false;
+      $("#stop").hide();
+      $("#start").show();
+    });
+  });
 
-          function startTta() {
-            var generateRandom = function (min, max) {
-              var ranNum = Math.floor(Math.random()*(max-min+1)) + min;
-              return ranNum;
-            }
-            if (ttaFlag) {
-              var param = {
-                "dataGubn" : $("#dataGubn").val(),
-                "topic" : $("#topic").val(),
-                "broker" : $("#broker").val(),
-                "dataLink" : "MH"
-              };
+  function startTta() {
+    var generateRandom = function(min, max) {
+      var ranNum = Math.floor(Math.random() * (max - min + 1)) + min;
+      return ranNum;
+    }
+    if (ttaFlag) {
+      var param = {
+        "dataGubn" : $("#dataGubn").val(),
+        "topic" : $("#topic").val(),
+        "broker" : $("#broker").val(),
+        "dataLink" : "MH"
+      };
 
-              cmUtl.exeAjax("POST", "/mqttBroker", JSON.stringify(param), "data_ajax_submit");
-            }
-          }
+      cmUtl.exeAjax("POST", "/mqttBroker", JSON.stringify(param), "data_ajax_submit");
+    }
+  }
 
-          function data_ajax_submit(data) {
-            if (data != null) {
-              var json = "<h4>Ajax Response</h4><pre>" + JSON.stringify(data, null, 4) + "</pre>";
-              $('#feedback').html(json);
-            }
-            var ranTime = 0;
-            var sTime = 0;
-            var timeGubn = $("#timeGubn").val();
-            if (timeGubn == "s") {
-              sTime = 1000;
-            } else if (timeGubn == "m") {
-              sTime = 60000;
-            } else if (timeGubn == "h") {
-              sTime = 3600000;
-            }
-            var startTime = $("#startTime").val();
-            var stopTime = $("#stopTime").val();
-            ranTime = randomRange(startTime, stopTime) * sTime;
-            timer = setTimeout(startTta, ranTime);
-          }
+  function data_ajax_submit(data) {
+    if (data != null) {
+      var json = "<h4>Ajax Response</h4><pre>" + JSON.stringify(data, null, 4) + "</pre>";
+      $('#feedback').html(json);
+    }
+    var ranTime = 0;
+    var sTime = 0;
+    var timeGubn = $("#timeGubn").val();
+    if (timeGubn == "s") {
+      sTime = 1000;
+    } else if (timeGubn == "m") {
+      sTime = 60000;
+    } else if (timeGubn == "h") {
+      sTime = 3600000;
+    }
+    var startTime = $("#startTime").val();
+    var stopTime = $("#stopTime").val();
+    ranTime = randomRange(startTime, stopTime) * sTime;
+    timer = setTimeout(startTta, ranTime);
+  }
 
-          function randomRange(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min)) + min; //최댓값은 제외, 최솟값은 포함
-          }
-        </script>
+  function randomRange(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min; //최댓값은 제외, 최솟값은 포함
+  }
+</script>
   </div>
 </body>
 </html>

@@ -1,5 +1,3 @@
-package com.cityhub.source.core;
-
 /**
  *
  * Copyright 2021 PINE C&I CO., LTD
@@ -16,22 +14,25 @@ package com.cityhub.source.core;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.cityhub.source.core;
 
 
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import org.apache.flume.channel.ChannelProcessor;
-import org.json.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
+public class ReflectNormalSystemManager {
+  public static ReflectNormalSystem getInstance(String invokeClass ) {
+    ReflectNormalSystem reflectExecuter = null;
+    try {
+      Class<?> clz = Class.forName(invokeClass);
+      reflectExecuter  = (ReflectNormalSystem)clz.newInstance();
+    } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+      log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+    }
 
-public interface ReflectOpenApi  {
-
-  public void init(ChannelProcessor channelProcessor , JSONObject configEnv);
-
-  public String doit() ;
-
-  public void sendEvent(List<Map<String, Object>> bodyMap,String DATASET_ID) ;
-
+    return reflectExecuter;
+  }
 
 } // end of class

@@ -16,18 +16,16 @@
  */
 package com.cityhub.adapter;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flume.Context;
+import org.apache.flume.Event;
+import org.apache.flume.event.EventBuilder;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.config.RequestConfig;
@@ -42,6 +40,7 @@ import org.json.JSONObject;
 
 import com.cityhub.core.AbstractPollSource;
 import com.cityhub.environment.DefaultConstants;
+import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.OkUrlUtil;
@@ -84,7 +83,6 @@ public class MqttSubSource extends AbstractPollSource {
 
       HttpResponse res = OkUrlUtil.get(addr + "?fu=1&ty=3", Subheaders);
       if (res.getStatusCode() == 200) {
-        // log.debug(res.getPayload());
         dis = new JSONObject(res.getPayload());
         crtsub();
         JSONObject jo = new JSONObject();
@@ -95,7 +93,32 @@ public class MqttSubSource extends AbstractPollSource {
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
+  }
 
+  public void sendEvent(byte[] bodyBytes) {
+    ByteBuffer byteBuffer = ByteBuffer.allocate(bodyBytes.length + 5);
+    byte version = 0x10;// 4bit: Major version, 4bit: minor version
+    Integer bodyLength = bodyBytes.length;// length = 1234
+    byteBuffer.put(version);
+    byteBuffer.putInt(bodyLength.byteValue());
+    byteBuffer.put(bodyBytes);
+    Event event = EventBuilder.withBody(byteBuffer.array());
+    getChannelProcessor().processEvent(event);
+  }
+
+  public byte[] createSendJson(JSONObject content) {
+    String Uuid = "DATAINGEST_" + getUuid();
+    JSONObject body = new JSONObject();
+    body.put("requestId", Uuid);
+    body.put("e2eRequestId", Uuid);
+    body.put("owner", getInit().getString("owner"));
+    body.put("operation", getInit().getString("operation"));
+    body.put("to", "DataCore/entities/" + (content.has("id") ? content.getString("id") : ""));
+    body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : ""));
+    body.put("queryString", "");
+    body.put("eventTime", DateUtil.getTime());
+    body.put("content", content);
+    return body.toString().getBytes(Charset.forName("UTF-8"));
   }
 
   public void crtsub() {
@@ -125,9 +148,6 @@ public class MqttSubSource extends AbstractPollSource {
           sub.put("m2m:sub.nu", new JSONArray().put(nu));
 
           String mqttAddr = url_addr + "/" + line + "?rcn=1";
-          // log.info("headers:{}", headers);
-          // log.info("mqttAddr:{}", mqttAddr);
-          // log.info("body:{}", sub.toString());
 
           HttpPost httpPost = new HttpPost(mqttAddr);
           httpPost.setHeader("Accept", "application/json");
@@ -148,34 +168,19 @@ public class MqttSubSource extends AbstractPollSource {
             int StatusCode = -1;
             String StatusName = null;
             CloseableHttpResponse httpRes = httpclient.execute(httpPost);
-            // log.info(">>>{}>>>{}>>>{}", httpPost.getMethod(),
-            // httpRes.getStatusLine().toString(), httpPost.getURI() );
             HttpEntity entity = httpRes.getEntity();
             if (entity != null) {
               payload = EntityUtils.toString(httpRes.getEntity());
-              // log.info("<<<{}", payload);
             }
             StatusCode = httpRes.getStatusLine().getStatusCode();
             StatusName = httpRes.getStatusLine().getReasonPhrase();
-            // log.info("{}",StatusCode + " , " + StatusName + " , " +
-            // httpPost.getMethod());
-            // log.info("{}",httpPost.getLastHeader("Content-Type"));
-            // log.info("{}",httpPost.getURI());
+
             log.info("{}", payload);
             Thread.sleep(500);
           } catch (Exception e) {
             log.error("Exception : " + ExceptionUtils.getStackTrace(e));
           }
 
-          // httpConnection(mqttAddr,sub.toString());
-          /*
-           * HttpResponse hr = OkUrlUtil.post(mqttAddr, headers, sub.toString());
-           * log.info("`{}`{}`{}`{}`{}",this.getName() ,"", hr.getStatusCode() + ";" +
-           * hr.getPayload() , "", "");
-           *
-           * if (log.isDebugEnabled()) { log.debug("status :{} , addr: {} , result: {} ",
-           * hr.getStatusCode(), mqttAddr, hr.getPayload()); }
-           */
           Thread.sleep(100);
         } catch (Exception e) {
           log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -211,62 +216,6 @@ public class MqttSubSource extends AbstractPollSource {
         log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       }
     }
-  }
-
-  public String httpConnection(String targetUrl, String jsonBody) {
-    URL url = null;
-    HttpURLConnection conn = null;
-    BufferedReader br = null;
-    StringBuffer sb = null;
-    String returnText = "";
-    String jsonData = "";
-    int responseCode;
-
-    try {
-      url = new URL(targetUrl);
-
-      conn = (HttpURLConnection) url.openConnection();
-      conn.setRequestProperty("Accept", "application/json");
-      conn.setRequestProperty("Accept-Charset", "utf-8");
-      conn.setRequestProperty("Content-Type", "application/json;charset-UTF-8;ty=23");
-      conn.setRequestProperty("X-M2M-Origin", "SW001");
-      conn.setRequestProperty("X-M2M-RI", "cityhub");
-      conn.setRequestMethod("POST");
-
-      if (!"".equals(jsonBody)) {
-        conn.setDoOutput(true);
-        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-        wr.write(jsonBody);
-        wr.flush();
-      }
-      responseCode = conn.getResponseCode();
-      log.debug("responseCode : {}", responseCode);
-
-      if (responseCode < 400) {
-        br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-      } else {
-        br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "UTF-8"));
-      }
-
-      sb = new StringBuffer();
-
-      while ((jsonData = br.readLine()) != null) {
-        sb.append(jsonData);
-      }
-      returnText = sb.toString();
-
-      log.debug("returnText:{}", returnText);
-    } catch (IOException e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    } finally {
-      try {
-        br.close();
-        conn.disconnect();
-      } catch (Exception e2) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e2));
-      }
-    }
-    return returnText;
   }
 
 } // end of class

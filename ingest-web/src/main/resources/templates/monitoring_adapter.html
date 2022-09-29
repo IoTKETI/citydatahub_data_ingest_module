@@ -27,16 +27,15 @@
           <tbody>
             <tr>
               <th>Agent ID</th>
-              <td id="info_agent_id" ></td>
+              <td id="info_agent_id"></td>
               <th>Agent 명</th>
               <td id="info_agent_nm"></td>
             </tr>
-  
+
           </tbody>
         </table>
       </div>
-      <div class="button__group">
-      </div>
+      <div class="button__group"></div>
     </section>
 
     <form>
@@ -50,17 +49,17 @@
             <table class="table--column" id="Feedback">
               <caption>상세 목록</caption>
               <colgroup>
-                <col style="width:60px">
-                <col >
-                <col style="width:180px">
-                <col style="width:100px">
-                <col style="width:100px">
-                <col style="width:90px">
-                <col style="width:90px">
-                <col style="width:90px">
-                <col style="width:90px">
-                <col style="width:130px">
-                <col style="width:100px">
+                <col style="width: 60px">
+                <col>
+                <col style="width: 180px">
+                <col style="width: 100px">
+                <col style="width: 100px">
+                <col style="width: 90px">
+                <col style="width: 90px">
+                <col style="width: 90px">
+                <col style="width: 90px">
+                <col style="width: 130px">
+                <col style="width: 100px">
               </colgroup>
               <thead>
                 <tr>
@@ -69,23 +68,26 @@
                   <th>시작/종료</th>
                   <th>인스턴스 수</th>
                   <th>상태</th>
-                  <th>Messages<br>in / hour</th>
-                  <th>Messages<br>out / hour</th>
-                  <th>Bytes<br>in / hour</th>
-                  <th>Bytes<br>out / hour</th>
-                  <th>Failure Messages<br>/ hour</th>
+                  <th>Messages<br>in / hour
+                  </th>
+                  <th>Messages<br>out / hour
+                  </th>
+                  <th>Bytes<br>in / hour
+                  </th>
+                  <th>Bytes<br>out / hour
+                  </th>
+                  <th>Failure Messages<br>/ hour
+                  </th>
                   <th>모니터링</th>
                 </tr>
               </thead>
               <tbody>
-                
+
               </tbody>
             </table>
-            
-          </div>
-          <div class="button__group">
 
           </div>
+          <div class="button__group"></div>
         </section>
       </fieldset>
     </form>
@@ -95,12 +97,12 @@
       <table>
         <tr>
           <td><span id="Number_"></span></td>
-          <td style="text-align:left"><span id="AdapterNm_"></span></td>
-          
-          <td><span style="display:none" id="AdapterId_"></span><button id="startDaemon_" class="button__outline w-68" type="button" style="display:none" >시작</button>
-            <button id="restartDaemon_" class="button__outline w-68" type="button" style="display:none" >재시작</button>
-            <button id="stopDaemon_" class="button__outline w-68" type="button" style="display:none" >종료</button>
-          </td>
+          <td style="text-align: left"><span id="AdapterNm_"></span></td>
+
+          <td><span style="display: none" id="AdapterId_"></span>
+          <button id="startDaemon_" class="button__outline w-68" type="button" style="display: none">시작</button>
+            <button id="restartDaemon_" class="button__outline w-68" type="button" style="display: none">재시작</button>
+            <button id="stopDaemon_" class="button__outline w-68" type="button" style="display: none">종료</button></td>
           <td><span id="instCnt_"></span></td>
           <td><span id="Status_"></span></td>
           <td><span id="msgIn_"></span></td>
@@ -114,152 +116,107 @@
     </div>
 
     <div id="divBtnpopMonitor" style="display: none">
-       <img src="/asset/images/mointering.png">
+      <img src="/asset/images/mointering.png">
     </div>
 
 <script>
-var AdapterTimer;
-$(document).ready(function() {
-  search();
-  
-});
+  var AdapterTimer;
+  $(document).ready(function() {
+    search();
 
-function getStatus() {
-  var len = $("#Feedback > tbody > tr").length;
-  if (len > 0) {
-    for (var i = 0; i < len; i++) {
-      var row = new RowData( $("#Feedback > tbody > tr").eq(i));
-      var param = { "id" : row.getValue("AdapterId_" + i) ,  "row":i };
-      cmUtl.exeAjax("POST", "/agent/status", JSON.stringify(param),  "_cbAfterStatus");      
+  });
+
+  function getStatus() {
+    var len = $("#Feedback > tbody > tr").length;
+    if (len > 0) {
+      for (var i = 0; i < len; i++) {
+        var row = new RowData($("#Feedback > tbody > tr").eq(i));
+        var param = {
+          "id" : row.getValue("AdapterId_" + i),
+          "row" : i
+        };
+        cmUtl.exeAjax("POST", "/agent/status", JSON.stringify(param), "_cbAfterStatus");
+      }
+
+      AdapterTimer = setTimeout(getStatus, 5000);
     }
-    
-    AdapterTimer = setTimeout(getStatus, 5000);
   }
-}
 
-
-function search() {
-  cmUtl.showEmptyLine('Feedback', true);
-  var url = "/monitor/agent/" + $("#agent_id").val();
-  var data = {'agent_id' : $("#agent_id").val() };
-  cmUtl.exeAjax("get", url,data, "_cbAfterSearch" );
-}
-
-
-function _cbAfterSearch(data){
-  $("#info_agent_id").html(data.agent_id);
-  $("#info_agent_nm").html(data.agent_nm); 
-  $("#info_ip_addr").html(data.ip_addr); 
-  $("#info_port_number").html(data.port_number);
-  
-  
-  cmUtl.showEmptyLine('Feedback', false);
-  var list = data.list;
-  if (list.length == 0) {
+  function search() {
     cmUtl.showEmptyLine('Feedback', true);
-  } else {
-    
-    for (var idx = 0; idx < list.length; idx++) {
-      var tmpObj = $("#commTypeRow").find("tr:first").clone();
-      var rowData = new RowData( tmpObj );
-      
-      rowData.setChangeIdValue(idx, "Number_" , idx + 1);
-      rowData.setChangeIdValue(idx, "AdapterId_" , list[idx].adapter_id);
-      rowData.setChangeIdValue(idx, "AdapterNm_" , list[idx].adapter_nm);
-      rowData.setChangeIdValue(idx, "instCnt_" , list[idx].ins_cnt);
-      rowData.setChangeIdValue(idx, "Status_" , "stop");
-      
-      rowData.setChangeIdValue(idx, "msgIn_" , list[idx].m_i);
-      rowData.setChangeIdValue(idx, "msgOut_" , list[idx].m_o);
-      rowData.setChangeIdValue(idx, "bytesIn_" , list[idx].b_i);
-      rowData.setChangeIdValue(idx, "bytesOut_" , list[idx].b_o);
-      rowData.setChangeIdValue(idx, "failMsg_" , list[idx].f_m);
-      
-      rowData.setChangeIdValue(idx, "Monit_" , "" );
+    var url = "/monitor/agent/" + $("#agent_id").val();
+    var data = {
+      'agent_id' : $("#agent_id").val()
+    };
+    cmUtl.exeAjax("get", url, data, "_cbAfterSearch");
+  }
 
-      rowData.setChangeId(idx, "startDaemon_" );
-      rowData.setChangeId(idx, "stopDaemon_" );
-      rowData.setChangeId(idx, "restartDaemon_" );
-      
-      $('#Feedback > tbody:last').append(rowData.toObject());
+  function _cbAfterSearch(data) {
+    $("#info_agent_id").html(data.agent_id);
+    $("#info_agent_nm").html(data.agent_nm);
+    $("#info_ip_addr").html(data.ip_addr);
+    $("#info_port_number").html(data.port_number);
+
+    cmUtl.showEmptyLine('Feedback', false);
+    var list = data.list;
+    if (list.length == 0) {
+      cmUtl.showEmptyLine('Feedback', true);
+    } else {
+
+      for (var idx = 0; idx < list.length; idx++) {
+        var tmpObj = $("#commTypeRow").find("tr:first").clone();
+        var rowData = new RowData(tmpObj);
+
+        rowData.setChangeIdValue(idx, "Number_", idx + 1);
+        rowData.setChangeIdValue(idx, "AdapterId_", list[idx].adapter_id);
+        rowData.setChangeIdValue(idx, "AdapterNm_", list[idx].adapter_nm);
+        rowData.setChangeIdValue(idx, "instCnt_", list[idx].ins_cnt);
+        rowData.setChangeIdValue(idx, "Status_", "stop");
+
+        rowData.setChangeIdValue(idx, "msgIn_", list[idx].m_i);
+        rowData.setChangeIdValue(idx, "msgOut_", list[idx].m_o);
+        rowData.setChangeIdValue(idx, "bytesIn_", list[idx].b_i);
+        rowData.setChangeIdValue(idx, "bytesOut_", list[idx].b_o);
+        rowData.setChangeIdValue(idx, "failMsg_", list[idx].f_m);
+
+        rowData.setChangeIdValue(idx, "Monit_", "");
+
+        rowData.setChangeId(idx, "startDaemon_");
+        rowData.setChangeId(idx, "stopDaemon_");
+        rowData.setChangeId(idx, "restartDaemon_");
+
+        $('#Feedback > tbody:last').append(rowData.toObject());
+      }
+
+      for (var i = 0; i < list.length; i++) {
+        var adapter_id = list[i].adapter_id;
+        var param = {
+          "id" : adapter_id,
+          "row" : i
+        };
+        cmUtl.exeAjax("POST", "/agent/status", JSON.stringify(param), "_cbAfterStatus");
+      }
     }
 
-    for (var i = 0; i < list.length; i++) {
-      var adapter_id = list[i].adapter_id;
-      var param = { "id" : adapter_id, "row":i };
-      cmUtl.exeAjax("POST", "/agent/status", JSON.stringify(param),  "_cbAfterStatus");  
-    }
+    getStatus();
   }
-  
-  getStatus();
-}
 
+  function _cbAfterStatus(data) {
 
-function _cbAfterStatus(data){
-  
-  var result = JSON.parse(data.result);
-  
-  $("#Status_" + data.row).html(result.status.toCapitalize());
-  
-  if(result.status == "stop" || result.status == "start" || result.status == "running" ) {
-    $("#Monit_" + data.row).html($("#divBtnpopMonitor").children().clone());
-    $("#Monit_" + data.row).attr("onclick", "popupLog('"+data.id+"','"+result.status+"')");
-    
-    
-    $("#startDaemon_" + data.row).attr("onclick", "startDaemon('"+data.id+"', '"+data.row+"')");
-    $("#stopDaemon_" + data.row).attr("onclick", "stopDaemon('"+data.id+"', '"+data.row+"')");
-    $("#restartDaemon_" + data.row).attr("onclick", "restartDaemon('"+data.id+"', '"+data.row+"')");
-    
-  }
-  
-  if (result.status == "stop") {
-    $("#startDaemon_" + data.row).show();
-    $("#stopDaemon_" + data.row).hide();
-    $("#restartDaemon_" + data.row).hide();
-  } else if (result.status == "running") {
-    $("#startDaemon_" + data.row).hide();
-    $("#stopDaemon_" + data.row).show();
-    $("#restartDaemon_" + data.row).show();
-  }
-  
-}
-
-
-function mntIns(adt_id) {
-  location.href = "/monitoring_instance/" + $("#agent_id").val() + "/" + adt_id;
-}
-
-function popupLog(adapter_id, status) {
-  clearTimeout(AdapterTimer);
-  var url = "/monitor/popup/popupMonitorAdapter";
-  var param = { "adapter_id":adapter_id,"status":status};
-  cmUtl.openLayerPopup(url, param, "모니터링 로그팝업", "_cbAfterPopup");
-}
-
-function _cbAfterPopup(data) {
-  getStatus();
-}
-
-function startDaemon(id, row){
-  var form = {"id" : id,"row" : row};
-  cmUtl.exeAjax("POST", "/agent/start", JSON.stringify(form),  "_cbAfterDaemonStatus");
-}
-
-function stopDaemon(id, row){
-  var form = {"id" : id,"row" : row};
-  cmUtl.exeAjax("POST", "/agent/stop", JSON.stringify(form),  "_cbAfterDaemonStatus");
-}
-
-function restartDaemon(id, row){
-  var form = {"id" : id,"row" : row};
-  cmUtl.exeAjax("POST", "/agent/restart", JSON.stringify(form),  "_cbAfterDaemonStatus");
-}
-
-function _cbAfterDaemonStatus(data){
-  
-  if (data.hasOwnProperty("result")) {
     var result = JSON.parse(data.result);
-    $("#Status_" + data.row).html(result.status);
+
+    $("#Status_" + data.row).html(result.status.toCapitalize());
+
+    if (result.status == "stop" || result.status == "start" || result.status == "running") {
+      $("#Monit_" + data.row).html($("#divBtnpopMonitor").children().clone());
+      $("#Monit_" + data.row).attr("onclick", "popupLog('" + data.id + "','" + result.status + "')");
+
+      $("#startDaemon_" + data.row).attr("onclick", "startDaemon('" + data.id + "', '" + data.row + "')");
+      $("#stopDaemon_" + data.row).attr("onclick", "stopDaemon('" + data.id + "', '" + data.row + "')");
+      $("#restartDaemon_" + data.row).attr("onclick", "restartDaemon('" + data.id + "', '" + data.row + "')");
+
+    }
+
     if (result.status == "stop") {
       $("#startDaemon_" + data.row).show();
       $("#stopDaemon_" + data.row).hide();
@@ -269,13 +226,72 @@ function _cbAfterDaemonStatus(data){
       $("#stopDaemon_" + data.row).show();
       $("#restartDaemon_" + data.row).show();
     }
+
   }
-}
 
+  function mntIns(adt_id) {
+    location.href = "/monitoring_instance/" + $("#agent_id").val() + "/" + adt_id;
+  }
 
+  function popupLog(adapter_id, status) {
+    clearTimeout(AdapterTimer);
+    var url = "/monitor/popup/popupMonitorAdapter";
+    var param = {
+      "adapter_id" : adapter_id,
+      "status" : status
+    };
+    cmUtl.openLayerPopup(url, param, "모니터링 로그팝업", "_cbAfterPopup");
+  }
+
+  function _cbAfterPopup(data) {
+    getStatus();
+  }
+
+  function startDaemon(id, row) {
+    var form = {
+      "id" : id,
+      "row" : row
+    };
+    cmUtl.exeAjax("POST", "/agent/start", JSON.stringify(form), "_cbAfterDaemonStatus");
+  }
+
+  function stopDaemon(id, row) {
+    var form = {
+      "id" : id,
+      "row" : row
+    };
+    cmUtl.exeAjax("POST", "/agent/stop", JSON.stringify(form), "_cbAfterDaemonStatus");
+  }
+
+  function restartDaemon(id, row) {
+    var form = {
+      "id" : id,
+      "row" : row
+    };
+    cmUtl.exeAjax("POST", "/agent/restart", JSON.stringify(form), "_cbAfterDaemonStatus");
+  }
+
+  function _cbAfterDaemonStatus(data) {
+
+    if (data.hasOwnProperty("result")) {
+      var result = JSON.parse(data.result);
+      $("#Status_" + data.row).html(result.status);
+      if (result.status == "stop") {
+        $("#startDaemon_" + data.row).show();
+        $("#stopDaemon_" + data.row).hide();
+        $("#restartDaemon_" + data.row).hide();
+      } else if (result.status == "running") {
+        $("#startDaemon_" + data.row).hide();
+        $("#stopDaemon_" + data.row).show();
+        $("#restartDaemon_" + data.row).show();
+      }
+    }
+  }
 </script>
 
-<script>setNavi("Agent","Operation");</script>
-</div>
+<script>
+  setNavi("Agent", "Operation");
+</script>
+  </div>
 </body>
 </html>

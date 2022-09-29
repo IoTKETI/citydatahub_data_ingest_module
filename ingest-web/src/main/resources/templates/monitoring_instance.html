@@ -3,63 +3,61 @@
 <head>
 <title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">모니터링</title>
 <script type="text/javascript" th:inline="javascript">
-/*<![CDATA[*/
-var adapter_id = /*[[ ${adtId} ]]*/ '';
-/*]]>*/
+  /*<![CDATA[*/
+  var adapter_id = /*[[ ${adtId} ]]*/'';
+  /*]]>*/
 
-var select_adapter_id = "";
-var select_status = "";
-function layer_popup(el, adapter_id, status){
-  select_adapter_id = adapter_id;
-  select_status = status;
-  $('#select_adapter_id').html(select_adapter_id);
-  
-  if(select_status == "Stop"){
-    $("#startDaemon").show();
-    $("#stopDaemon").hide();
-    $("#restartDaemon").hide();
-  }else if(select_status == "Running"){
-    $("#startDaemon").hide();
-    $("#stopDaemon").show();
-    $("#restartDaemon").show();
-  }
-  
-  var $el = $('#'+el);        //레이어의 id를 $el 변수에 저장
-  var isDim = $el.prev().hasClass('dimBg');   //dimmed 레이어를 감지하기 위한 boolean 변수
+  var select_adapter_id = "";
+  var select_status = "";
+  function layer_popup(el, adapter_id, status) {
+    select_adapter_id = adapter_id;
+    select_status = status;
+    $('#select_adapter_id').html(select_adapter_id);
 
-  isDim ? $('.dim-layer').fadeIn() : $el.fadeIn();
+    if (select_status == "Stop") {
+      $("#startDaemon").show();
+      $("#stopDaemon").hide();
+      $("#restartDaemon").hide();
+    } else if (select_status == "Running") {
+      $("#startDaemon").hide();
+      $("#stopDaemon").show();
+      $("#restartDaemon").show();
+    }
 
-  var $elWidth = ~~($el.outerWidth()),
-      $elHeight = ~~($el.outerHeight()),
-      docWidth = $(document).width(),
-      docHeight = $(document).height();
+    var $el = $('#' + el); //레이어의 id를 $el 변수에 저장
+    var isDim = $el.prev().hasClass('dimBg'); //dimmed 레이어를 감지하기 위한 boolean 변수
 
-  // 화면의 중앙에 레이어를 띄운다.
-  if ($elHeight < docHeight || $elWidth < docWidth) {
+    isDim ? $('.dim-layer').fadeIn() : $el.fadeIn();
+
+    var $elWidth = ~~($el.outerWidth()), $elHeight = ~~($el.outerHeight()), docWidth = $(document).width(), docHeight = $(document).height();
+
+    // 화면의 중앙에 레이어를 띄운다.
+    if ($elHeight < docHeight || $elWidth < docWidth) {
       $el.css({
-          marginTop: -$elHeight /2,
-          marginLeft: -$elWidth/2 + 125
+        marginTop : -$elHeight / 2,
+        marginLeft : -$elWidth / 2 + 125
       })
-  } else {
-      $el.css({top: 0, left: 0});
-  }
-  
-  
-  $("#pop-conts").load("daemonCtrl.html");
-  
-  
-  $el.find('.btn-layerClose').click(function(){
-    isDim ? $('.dim-layer').fadeOut() : $el.fadeOut(); // 닫기 버튼을 클릭하면 레이어가 닫힌다.
-    return false;
-  });
-  
-  $('.layer .dimBg').click(function(){
+    } else {
+      $el.css({
+        top : 0,
+        left : 0
+      });
+    }
+
+    $("#pop-conts").load("daemonCtrl.html");
+
+    $el.find('.btn-layerClose').click(function() {
+      isDim ? $('.dim-layer').fadeOut() : $el.fadeOut(); // 닫기 버튼을 클릭하면 레이어가 닫힌다.
+      return false;
+    });
+
+    $('.layer .dimBg').click(function() {
       $('.dim-layer').fadeOut();
       return false;
-  });
-  
-  $( "#startTail" ).trigger( "click" );
-}
+    });
+
+    $("#startTail").trigger("click");
+  }
 </script>
 </head>
 <body>
@@ -118,7 +116,7 @@ function layer_popup(el, adapter_id, status){
               <colgroup>
                 <col style="width: 50px">
                 <col style="width: 100px">
-                <col >
+                <col>
                 <col style="width: 120px">
                 <col style="width: 70px">
                 <col style="width: 50px">
@@ -164,109 +162,112 @@ function layer_popup(el, adapter_id, status){
     </form>
 
 
-    
+
 
 <script type="text/javascript">
   $(document).ready(function() {
     search_instance_list();
   });
-  
-  function search_instance_list() {
-    
-    var param = "/instanceListAll/"+adapter_id;
-    
-    var type = "GET";
-    $.ajax({
-      type : type,
-      contentType : "application/json",
-      url : param,
-      dataType : 'json',
-      param : {'agent_id':$("#agent_id").val()},
-      cache : false,
-      timeout : 600000,
-      success : function(data) {
-        cmUtl.showEmptyLine('AdtFeedback', false);
-        if (data.length == 0) {
-          cmUtl.showEmptyLine('AdtFeedback', true);
-        }else{
-          
-          var html = '';
-          for(var i=0; i<data.length; i++){
-            
-            html += '<tr>';
-            html += '<td>'+(i+1)+'</td>'; 
-            html += '<td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:100px;text-align:center;text-decoration:underline;color:blue;cursor:pointer" bgcolor="#ffffff">'+data[i].instance_id+'</td>';
-            html += '<td>'+data[i].instance_nm+'</td>';
-            html += '<td></td>';
-            html += '<td></td>';
-            html += '<td>'+data[i].use_yn+'</td>';
-            
-            //여기에 내용 추가
-            html += '<td></td>';
-            html += '<td></td>';
-            html += '<td></td>';
-            html += '<td></td>';
-            html += '<td></td>';
-            //여기에 내용 추가
-            
-            html += '<td><span id="Monit_'+data[i].adapter_id+'"></span></td>';
-            html += '</tr>';
-          }
-          
-          $('#AdtFeedback > tbody').append(html);
-          
-          
-          for(var i=0; i<data.length; i++){
-            var adapter_id = data[i].adapter_id;
-            var form = {
-                "id" : adapter_id
-              };
-            var status = "";
-            
-            $.ajax({
-              method : 'post',
-              url : '/agent/status', // #### Caution: The name of the source file
-              contentType : "application/json",
-              dataType : 'json',
-              data : JSON.stringify(form),
-              async: false,
-              success : function(data2) {
-                
-                if(data2.status == "running"){
-                  status = "Running";
-                }else if(data2.status == "stop"){
-                  status = "Stop";
-                }
-                $("#Status_"+adapter_id).html(status);
-                
-                if(status != ""){
-                  $("#Monit_"+adapter_id).html('<a href="#" onclick="layer_popup(\'layer2\',\''+adapter_id+'\', \''+status+'\');"><img src="/asset/images/mointering.png"></a>');  
-                }
-                
-              },
-              error : function(e) {
-                status = "상태조회실패";
-                $("#Status_"+adapter_id).html(status);
-              }
-            });
-          }
 
-          
-        }
-      },
-      error : function(e) {
-        var result = JSON.parse(e.responseText);
-        if(result.resultCode == "404"){
-          cmUtl.showEmptyLine('AdtFeedback', true);
-        }
-      }
-    });
+  function search_instance_list() {
+
+    var param = "/instanceListAll/" + adapter_id;
+
+    var type = "GET";
+    $
+        .ajax({
+          type : type,
+          contentType : "application/json",
+          url : param,
+          dataType : 'json',
+          param : {
+            'agent_id' : $("#agent_id").val()
+          },
+          cache : false,
+          timeout : 600000,
+          success : function(data) {
+            cmUtl.showEmptyLine('AdtFeedback', false);
+            if (data.length == 0) {
+              cmUtl.showEmptyLine('AdtFeedback', true);
+            } else {
+
+              var html = '';
+              for (var i = 0; i < data.length; i++) {
+
+                html += '<tr>';
+                html += '<td>' + (i + 1) + '</td>';
+                html += '<td style="border:1px solid #eee;Font-size:12px;Font-color:#555;padding-left:0px;width:100px;text-align:center;text-decoration:underline;color:blue;cursor:pointer" bgcolor="#ffffff">'
+                    + data[i].instance_id + '</td>';
+                html += '<td>' + data[i].instance_nm + '</td>';
+                html += '<td></td>';
+                html += '<td></td>';
+                html += '<td>' + data[i].use_yn + '</td>';
+
+                //여기에 내용 추가
+                html += '<td></td>';
+                html += '<td></td>';
+                html += '<td></td>';
+                html += '<td></td>';
+                html += '<td></td>';
+                //여기에 내용 추가
+
+                html += '<td><span id="Monit_'+data[i].adapter_id+'"></span></td>';
+                html += '</tr>';
+              }
+
+              $('#AdtFeedback > tbody').append(html);
+
+              for (var i = 0; i < data.length; i++) {
+                var adapter_id = data[i].adapter_id;
+                var form = {
+                  "id" : adapter_id
+                };
+                var status = "";
+
+                $.ajax({
+                  method : 'post',
+                  url : '/agent/status', // #### Caution: The name of the source file
+                  contentType : "application/json",
+                  dataType : 'json',
+                  data : JSON.stringify(form),
+                  async : false,
+                  success : function(data2) {
+
+                    if (data2.status == "running") {
+                      status = "Running";
+                    } else if (data2.status == "stop") {
+                      status = "Stop";
+                    }
+                    $("#Status_" + adapter_id).html(status);
+
+                    if (status != "") {
+                      $("#Monit_" + adapter_id).html('<a href="#" onclick="layer_popup(\'layer2\',\'' + adapter_id + '\', \'' + status + '\');"><img src="/asset/images/mointering.png"></a>');
+                    }
+
+                  },
+                  error : function(e) {
+                    status = "상태조회실패";
+                    $("#Status_" + adapter_id).html(status);
+                  }
+                });
+              }
+
+            }
+          },
+          error : function(e) {
+            var result = JSON.parse(e.responseText);
+            if (result.resultCode == "404") {
+              cmUtl.showEmptyLine('AdtFeedback', true);
+            }
+          }
+        });
   }
-  
 </script>
 
 
-    <script>setNavi("Agent","Adapter");</script>
+<script>
+  setNavi("Agent", "Adapter");
+</script>
   </div>
 </body>
 </html>

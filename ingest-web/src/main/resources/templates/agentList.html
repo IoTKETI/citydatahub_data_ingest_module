@@ -8,93 +8,95 @@
 <body>
   <div class="container" layout:fragment="content">
     <h3 class="content__title">Agent 설정</h3>
-        <form>
-          <fieldset>
-            <legend>필드셋 제목</legend>
-            <section class="section">
-              <div class="section__header">
-                <h4 class="section__title">Agent 설정</h4>
-              </div>
-              <div class="section__content">
-                <table class="table--column" id = "agentList">
-                  <caption>테이블 제목</caption>
-                  <colgroup>
-                    <col style="width:50px">                    
-                    <col style="width:100px">
-                    <col style="width:300px">
-                    <col style="width:100px">
-                    <col style="width:100px">
-                    <col style="width:auto">
-                    <col style="width:200px">                                                          
-                  </colgroup>
-                  <thead>
-                    <th>순번</th>
-                    <th>Agent ID</th>
-                    <th>Agent 명</th>
-                    <th>어댑터 수</th>
-                    <th>사용여부</th> 
-                    <th>비고</th>
-                    <th>등록일</th>
-                  </thead>                  
-                  <tbody>
-                                  
-                  </tbody>
-                </table>
-              </div>
-              <div class="button__group">
-                  <button class="button__primary" type="button" onclick = "location.href = '/agentDetailNew' " onfocus="this.blur()">신규추가</button>
-              </div>              
-            </section>
-          </fieldset>
-        </form>
+    <form>
+      <fieldset>
+        <legend>필드셋 제목</legend>
+        <section class="section">
+          <div class="section__header">
+            <h4 class="section__title">Agent 설정</h4>
+          </div>
+          <div class="section__content">
+            <table class="table--column" id="agentList">
+              <caption>테이블 제목</caption>
+              <colgroup>
+                <col style="width: 50px">
+                <col style="width: 100px">
+                <col style="width: 300px">
+                <col style="width: 100px">
+                <col style="width: 100px">
+                <col style="width: auto">
+                <col style="width: 200px">
+              </colgroup>
+              <thead>
+                <th>순번</th>
+                <th>Agent ID</th>
+                <th>Agent 명</th>
+                <th>어댑터 수</th>
+                <th>사용여부</th>
+                <th>비고</th>
+                <th>등록일</th>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
+          </div>
+          <div class="button__group">
+            <button class="button__primary" type="button" onclick="location.href = '/agentDetailNew' " onfocus="this.blur()">신규추가</button>
+          </div>
+        </section>
+      </fieldset>
+    </form>
 <script type="text/javascript">
-    $(document).ready(function() {
-      agentDataList();
-    });
-    
-    function agentDataList(){
-        var url = "/agents";
-        cmUtl.exeAjax("GET", url, null, "_cbAfterAgentDataList" );
-    } 
-    
-    function _cbAfterAgentDataList(data) {
-      if (data.length == 0) {
-        cmUtl.showEmptyLine('agentList', true);
-      }
-      
-      var html = '';
-      for (var i = 0; i < data.length; i++) {
-        var index = i+1;
-        html += '<tr>';
-        html += '<td>'+index+'</td>';
-        html += '<td><a href="/agentDetail/'+data[i].agent_id+'">'+data[i].agent_id+'</td>';
-        html += '<td><a href="/agentDetail/'+data[i].agent_id+'">'+data[i].agent_nm+'</td>';
-        html += '<td>'+data[i].adt_cnt+'</td>';
-        html += '<td>'+yn(data[i].use_yn)+'</td>';
-        html += '<td>'+data[i].etc_note+'</td>';
-        html += '<td>'+data[i].first_create_dt+'</td>';
-        html += '</tr>';    
-      }
-      $('#agentList > tbody').append(html);
-      
+  $(document).ready(function() {
+    agentDataList();
+  });
+
+  function agentDataList() {
+    var url = "/agents";
+    cmUtl.exeAjax("GET", url, null, "_cbAfterAgentDataList");
+  }
+
+  function _cbAfterAgentDataList(data) {
+    if (data.length == 0) {
+      cmUtl.showEmptyLine('agentList', true);
     }
-    
-    function yn(val){
-      var rtn = "";
-      switch (val) {
-      case "Y":
-        rtn ="사용";
-        break;
-      case "N":
-        rtn ="미사용";
-        break;
-      }
-      return rtn;
+
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+      var index = i + 1;
+      html += '<tr>';
+      html += '<td>' + index + '</td>';
+      html += '<td><a href="/agentDetail/'+data[i].agent_id+'">' + data[i].agent_id + '</td>';
+      html += '<td><a href="/agentDetail/'+data[i].agent_id+'">' + data[i].agent_nm + '</td>';
+      html += '<td>' + data[i].adt_cnt + '</td>';
+      html += '<td>' + yn(data[i].use_yn) + '</td>';
+      html += '<td>' + data[i].etc_note + '</td>';
+      html += '<td>' + data[i].first_create_dt + '</td>';
+      html += '</tr>';
     }
+    $('#agentList > tbody').append(html);
+
+  }
+
+  function yn(val) {
+    var rtn = "";
+    switch (val) {
+    case "Y":
+      rtn = "사용";
+      break;
+    case "N":
+      rtn = "미사용";
+      break;
+    }
+    return rtn;
+  }
 </script>
-<!-- script -->
-<script>setNavi("Agent 관리```/agentList/","Agent 설정```/agentList/");</script>
-<!-- //script -->
+    <!-- script -->
+    <script>
+          setNavi("Agent 관리```/agentList/", "Agent 설정```/agentList/");
+        </script>
+    <!-- //script -->
 
   </div>
 </body>

@@ -1,3 +1,5 @@
+package com.cityhub.source.core;
+
 /**
  *
  * Copyright 2021 PINE C&I CO., LTD
@@ -14,19 +16,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cityhub.environment;
-
-public class Error {
-
-  public String getTextLogger(String agentId) {
-    return new String();
-  }
-
-  public String getPeriodErrorCount(int period, String agentId) {
-    return new String();
-  }
 
 
+import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.flume.channel.ChannelProcessor;
+import org.json.JSONObject;
 
-}
+public interface ReflectNormalSystem  {
+
+  public void init(ChannelProcessor channelProcessor , JSONObject configEnv);
+
+  public String doit(BasicDataSource ds) ;
+
+  public String doit() ;
+
+  public void sendEvent(List<Map<String, Object>> bodyMap,String DATASET_ID) ;
+
+  public void setup();
+
+} // end of class

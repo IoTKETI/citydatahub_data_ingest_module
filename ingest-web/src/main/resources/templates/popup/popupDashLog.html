@@ -3,29 +3,63 @@
 <head>
 <title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">모니터링</title>
 <style type="text/css">
-.console {  background-color: white;  color: black;  font-size: 15px;}
-
+.console {
+  background-color: white;
+  color: black;
+  font-size: 15px;
+}
 
 .table--column {
-    display: block;
-/*     width: 1276px; */
+  display: block;
+  /*     width: 1276px; */
 }
-.table--column tbody {
-    display: block;
-    height: 500px;
-    overflow: auto;
-}
-.table--column th:nth-of-type(1), .table--column td:nth-of-type(1) { width: 50px; }
-.table--column th:nth-of-type(2), .table--column td:nth-of-type(2) { width: 170px; }
-.table--column th:nth-of-type(3), .table--column td:nth-of-type(3) { width: 120px; }
-.table--column th:nth-of-type(4), .table--column td:nth-of-type(4) { width: 170px; }
-.table--column th:nth-of-type(5), .table--column td:nth-of-type(5) { width: 100px; }
-.table--column th:nth-of-type(6), .table--column td:nth-of-type(6) { width: 200px; }
-.table--column th:nth-of-type(7), .table--column td:nth-of-type(7) { width: 80px;}
-.table--column td:nth-of-type(7) { text-align: right}
-.table--column th:last-child { width: 384px; }
-.table--column td:last-child { width: calc( 384px - 19px ); text-align: left; }
 
+.table--column tbody {
+  display: block;
+  height: 500px;
+  overflow: auto;
+}
+
+.table--column th:nth-of-type(1), .table--column td:nth-of-type(1) {
+  width: 50px;
+}
+
+.table--column th:nth-of-type(2), .table--column td:nth-of-type(2) {
+  width: 170px;
+}
+
+.table--column th:nth-of-type(3), .table--column td:nth-of-type(3) {
+  width: 120px;
+}
+
+.table--column th:nth-of-type(4), .table--column td:nth-of-type(4) {
+  width: 170px;
+}
+
+.table--column th:nth-of-type(5), .table--column td:nth-of-type(5) {
+  width: 100px;
+}
+
+.table--column th:nth-of-type(6), .table--column td:nth-of-type(6) {
+  width: 200px;
+}
+
+.table--column th:nth-of-type(7), .table--column td:nth-of-type(7) {
+  width: 80px;
+}
+
+.table--column td:nth-of-type(7) {
+  text-align: right
+}
+
+.table--column th:last-child {
+  width: 384px;
+}
+
+.table--column td:last-child {
+  width: calc(384px - 19px);
+  text-align: left;
+}
 </style>
 </head>
 <body>
@@ -39,99 +73,89 @@
     </div>
     <div class="modal__body">
       <div class="section">
-      
-      
-        <!-- 내용  -->        
+
+
+        <!-- 내용  -->
         <div class="section__header">
           <h4 class="section__title">로그 조회 설정</h4>
-          <div class="button__group" style="margin-top:5px;">
+          <div class="button__group" style="margin-top: 5px;">
             <button class="button__primary" type="button" id="btn-search" onfocus="this.blur()" onclick="itemList();">조회</button>
           </div>
         </div>
-              <div class="section__content">
-                <table class="table--row">
-                  <caption>테이블 제목</caption>
-                  <colgroup>
-                    <col style="width:100px">
-                    <col style="width:auto">
-                    <col style="width:100px">
-                    <col style="width:auto">
-                    <col style="width:100px">
-                    <col style="width:auto">
-                  </colgroup>
-                  <tbody>
-                    <tr>
-                      <th>어댑터 ID</th>
-                      <td>
-                        <input class="input__text" type="text" id="adapter_id" placeholder="검색어를 입력하세요.">
-                      </td>
-                      <th>어댑터 유형</th>
-                      <td>
-                        <select class="select select--full" id="adapter_type">
-                          <option value="">선택</option>
-                          <option value="OpenAPI">OpenAPI</option>
-                          <option value="OneM2M">OneM2M</option>
-                          <option value="LegacyPlatform">LegacyPlatform</option>
-                          <option value="Fiware">Fiware</option>
-                          <option value="기타">기타</option>
-                        </select>
-                      </td>
-                      <th>표준모델</th>
-					<td>
-                        <input class="input__text" type="text" id="st_datamodel" placeholder="검색어를 입력하세요.">
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>진행단계</th>
-                      <td>
-                        <select class="select select--full" id="step">
-                          <option value="">선택</option>
-                          <option value="2001">[2001] 데이터를 받았습니다.</option>
-                          <option value="2002">[2002] 데이터 변환 요청 중입니다.</option>
-                          <option value="2003">[2003] 데이터를 변환을 성공했습니다.</option>
-                          <option value="2004">[2004] 데이터 적재를 요청합니다.</option>
-<!--                           <option value="2005">[2005]데이터를 적재했습니다.</option> -->
-                          <option value="9001">[9001] 데이터를 변환을 실패했습니다.</option>
-                          <option value="9002">[9002] 데이터 모델이 없습니다.</option>
-                          <option value="9003">[9003] 소켓 연결에 실패하였습니다.</option>
-                          <option value="9800">[9800] 일반에러</option>
-                          <option value="9900">[9900] 시스템에러</option>
-                        </select>
-                      </td>
-                      
-                      <th>로그 내용</th>
-                      <td colspan="3">
-                        <input class="input__text" type="text" placeholder="검색어를 입력하세요."  id="log_desc">
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+        <div class="section__content">
+          <table class="table--row">
+            <caption>테이블 제목</caption>
+            <colgroup>
+              <col style="width: 100px">
+              <col style="width: auto">
+              <col style="width: 100px">
+              <col style="width: auto">
+              <col style="width: 100px">
+              <col style="width: auto">
+            </colgroup>
+            <tbody>
+              <tr>
+                <th>어댑터 ID</th>
+                <td><input class="input__text" type="text" id="adapter_id" placeholder="검색어를 입력하세요."></td>
+                <th>어댑터 유형</th>
+                <td><select class="select select--full" id="adapter_type">
+                    <option value="">선택</option>
+                    <option value="OpenAPI">OpenAPI</option>
+                    <option value="OneM2M">OneM2M</option>
+                    <option value="LegacyPlatform">LegacyPlatform</option>
+                    <option value="Fiware">Fiware</option>
+                    <option value="기타">기타</option>
+                </select></td>
+                <th>표준모델</th>
+                <td><input class="input__text" type="text" id="st_datamodel" placeholder="검색어를 입력하세요."></td>
+              </tr>
+              <tr>
+                <th>진행단계</th>
+                <td><select class="select select--full" id="step">
+                    <option value="">선택</option>
+                    <option value="2001">[2001] 데이터를 받았습니다.</option>
+                    <option value="2002">[2002] 데이터 변환 요청 중입니다.</option>
+                    <option value="2003">[2003] 데이터를 변환을 성공했습니다.</option>
+                    <option value="2004">[2004] 데이터 적재를 요청합니다.</option>
+                    <!--                           <option value="2005">[2005]데이터를 적재했습니다.</option> -->
+                    <option value="9001">[9001] 데이터를 변환을 실패했습니다.</option>
+                    <option value="9002">[9002] 데이터 모델이 없습니다.</option>
+                    <option value="9003">[9003] 소켓 연결에 실패하였습니다.</option>
+                    <option value="9800">[9800] 일반에러</option>
+                    <option value="9900">[9900] 시스템에러</option>
+                </select></td>
+
+                <th>로그 내용</th>
+                <td colspan="3"><input class="input__text" type="text" placeholder="검색어를 입력하세요." id="log_desc"></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div class="section" style="margin-top:5px">
-              <div class="section__header">
-                <h4 class="section__title">로그 목록</h4>
-              </div>
-              <div class="section__content" style="height:500px">
-                <table class="table--column" id="adtItem">
-                  <caption>테이블 제목</caption>
-                  <thead>
-                    <tr>
-                      <th>순번</th>
-                      <th>로그발생일시</th>
-                      <th>어댑터 ID</th>
-                      <th>어댑터 유형</th>
-                      <th>진행단계</th>
-                      <th>표준모델</th>
-                      <th>Byte</th>
-                      <th>로그내용</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    
-                  </tbody>
-                </table>
-              </div>
+      </div>
+      <div class="section" style="margin-top: 5px">
+        <div class="section__header">
+          <h4 class="section__title">로그 목록</h4>
+        </div>
+        <div class="section__content" style="height: 500px">
+          <table class="table--column" id="adtItem">
+            <caption>테이블 제목</caption>
+            <thead>
+              <tr>
+                <th>순번</th>
+                <th>로그발생일시</th>
+                <th>어댑터 ID</th>
+                <th>어댑터 유형</th>
+                <th>진행단계</th>
+                <th>표준모델</th>
+                <th>Byte</th>
+                <th>로그내용</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
 
 
         <!-- // 내용  -->
@@ -144,44 +168,39 @@
     </div>
 
 <script th:inline="javascript">
-/* <![CDATA[ */ 
-var stList = /*[[ ${stList} ]]*/ '';
-/* ]]> */
-
+  /* <![CDATA[ */
+  var stList = /*[[ ${stList} ]]*/'';
+  /* ]]> */
 
   function resizeContents() {
     if ($(window).height() > 800) {
-      $("#tailConsole").css("height","600px");
+      $("#tailConsole").css("height", "600px");
     } else {
-      $("#tailConsole").css("height",$(window).height() - 400 );
+      $("#tailConsole").css("height", $(window).height() - 400);
     }
   }
 
-  
   $(document).ready(function() {
     $(window).resize(resizeContents);
     resizeContents();
-    
+
     $(".button__modal--close").click(function(data) {
       $("#divLayerPopup").empty();
     });
-    
-    
+
   });
-  
-  
-  
+
   function itemList() {
     var param = "/monitor/selectLog?";
-    param+= "adapter_id="+$("#adapter_id").val();
-    param+= "&adapter_type="+$("#adapter_type").val();
-    param+= "&st_datamodel="+$("#st_datamodel").val();
-    param+= "&step="+$("#step").val();
-    param+= "&log_desc="+$("#log_desc").val();
+    param += "adapter_id=" + $("#adapter_id").val();
+    param += "&adapter_type=" + $("#adapter_type").val();
+    param += "&st_datamodel=" + $("#st_datamodel").val();
+    param += "&step=" + $("#step").val();
+    param += "&log_desc=" + $("#log_desc").val();
 
     cmUtl.exeAjax("GET", param, null, "_cbAfterItemList");
   }
-  
+
   function _cbAfterItemList(data) {
 
     if (data.length == 0) {
@@ -192,33 +211,26 @@ var stList = /*[[ ${stList} ]]*/ '';
       $("#adtItem").clearBody();
       cmUtl.showEmptyLine('adtItem', false);
     }
-    
+
     for (var i = 0; i < data.length; i++) {
       var tmpObj = $("#itemRow").find("tr:first").clone();
       var rowIndex = $('#adtItem').find('tbody > tr').length;
-      
-      
+
       var rowItem = "<tr>"
-        rowItem += "<td>"+(i+1)+"</td>"
-        rowItem += "<td>"+data[i].log_dt+"</td>"
-        rowItem += "<td>"+data[i].adapter_id+"</td>"
-        rowItem += "<td>"+data[i].adapter_type+"</td>"
-        rowItem += "<td>"+data[i].step+"</td>"
-        rowItem += "<td>"+data[i].st_datamodel+"</td>"
-        rowItem += "<td align='right'>"+data[i].length+"</td>"
-        rowItem += "<td>"+data[i].log_desc+"</td>"
-        rowItem += "</tr>"
-      
+      rowItem += "<td>" + (i + 1) + "</td>"
+      rowItem += "<td>" + data[i].log_dt + "</td>"
+      rowItem += "<td>" + data[i].adapter_id + "</td>"
+      rowItem += "<td>" + data[i].adapter_type + "</td>"
+      rowItem += "<td>" + data[i].step + "</td>"
+      rowItem += "<td>" + data[i].st_datamodel + "</td>"
+      rowItem += "<td align='right'>" + data[i].length + "</td>"
+      rowItem += "<td>" + data[i].log_desc + "</td>"
+      rowItem += "</tr>"
+
       $('#adtItem > tbody:last').append(rowItem);
-      
+
     }
   }
-  
-  
-  
-
-
-  
 </script>
 
 

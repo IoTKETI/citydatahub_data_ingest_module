@@ -1,412 +1,359 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:sd="http://www.thymeleaf.org/spring-data"
-	layout:decorator="layout/main"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sd="http://www.thymeleaf.org/spring-data" layout:decorator="layout/main" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
 <head>
 <title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">데이터 허브 ID 목록 - 상세</title>
 </head>
 <body>
 
-	<div class="container" layout:fragment="content">
-		<h3 class="content__title">데이터 허브 ID 목록</h3>
+  <div class="container" layout:fragment="content">
+    <h3 class="content__title">데이터 허브 ID 목록</h3>
 
-		<form>
-			<fieldset>
-				<legend>필드셋 제목</legend>
-				<section class="section">
-					<div class="section__header">
-						<h4 class="section__title">데이터 허브 ID</h4>
-					</div>
+    <form>
+      <fieldset>
+        <legend>필드셋 제목</legend>
+        <section class="section">
+          <div class="section__header">
+            <h4 class="section__title">데이터 허브 ID</h4>
+          </div>
 
-					<div class="section__content" id="gs1modelcodeMaster">
-						<input name="wholetype" type="hidden" th:value="*{gs1_code_id}">
-						<table class="table--column" id="gs1modelcode">
-							<caption>테이블 제목</caption>
-							<colgroup>
-								<col style="width: 250px">
-								<col style="width: 200px">
-								<col style="width: 150px">
-								<col style="width: 100px">
-								<col style="width: 120px">
-								<col style="width: 120px">
-								<col style="width: 120px">
-								<col style="width: auto">
-							</colgroup>
-							<thead>
-								<tr>
-									<th>URN포멧</th>
-									<th>국가코드</th>
-									<th>부처/지자체코드</th>
-									<th>코드</th>
-									<th>대분류</th>
-									<th>중분류</th>
-									<th>소분류</th>
-									<th>도시 자산 일련번호</th>
-								</tr>
-							</thead>
-							<tbody>
+          <div class="section__content" id="gs1modelcodeMaster">
+            <input name="wholetype" type="hidden" th:value="*{gs1_code_id}">
+            <table class="table--column" id="gs1modelcode">
+              <caption>테이블 제목</caption>
+              <colgroup>
+                <col style="width: 250px">
+                <col style="width: 200px">
+                <col style="width: 150px">
+                <col style="width: 100px">
+                <col style="width: 120px">
+                <col style="width: 120px">
+                <col style="width: 120px">
+                <col style="width: auto">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>URN포멧</th>
+                  <th>국가코드</th>
+                  <th>부처/지자체코드</th>
+                  <th>코드</th>
+                  <th>대분류</th>
+                  <th>중분류</th>
+                  <th>소분류</th>
+                  <th>도시 자산 일련번호</th>
+                </tr>
+              </thead>
+              <tbody>
 
-							</tbody>
-						</table>
-					</div>
+              </tbody>
+            </table>
+          </div>
 
-					<div class="button__group">
-						<button class="button__primary" type="button"
-							onclick="location.href = '/gs1Model'" onfocus="this.blur()">목록</button>
-						<button class="button__primary" type="submit" id="btn-save"
-							onfocus="this.blur()">수정</button>
-					</div>
-				</section>
+          <div class="button__group">
+            <button class="button__primary" type="button" onclick="location.href = '/gs1Model'" onfocus="this.blur()">목록</button>
+            <button class="button__primary" type="submit" id="btn-save" onfocus="this.blur()">수정</button>
+          </div>
+        </section>
 
-				<section class="section">
+        <section class="section">
 
-					<div class="section__content" id="gs1modelcodedetailMaster">
-						<table class="table--column" id="gs1modelcodedetail">
-							<caption>테이블 제목</caption>
-							<colgroup>
-								<col style="width: 200px">
-								<col style="width: auto">
-								<col style="width: 200px">
-								<col style="width: auto">
-							</colgroup>
-							<tbody>
+          <div class="section__content" id="gs1modelcodedetailMaster">
+            <table class="table--column" id="gs1modelcodedetail">
+              <caption>테이블 제목</caption>
+              <colgroup>
+                <col style="width: 200px">
+                <col style="width: auto">
+                <col style="width: 200px">
+                <col style="width: auto">
+              </colgroup>
+              <tbody>
 
-							</tbody>
-						</table>
-					</div>
+              </tbody>
+            </table>
+          </div>
 
-				</section>
-			</fieldset>
-		</form>
-		
-		<form>
-          <table>
-            <tr>
-              <td><input type="hidden" id="gs1_code_id" th:value="*{gs1_code_id}"></td>
-            </tr>
-          </table>
-        </form>
+        </section>
+      </fieldset>
+    </form>
+
+    <form>
+      <table>
+        <tr>
+          <td><input type="hidden" id="gs1_code_id" th:value="*{gs1_code_id}"></td>
+        </tr>
+      </table>
+    </form>
 
 
-		<script>
-		setNavi("데이터 허브 ID 관리```/gs1Model/", "데이터 허브 ID 목록```/gs1Model/",
-		"데이터 허브 ID 목록 상세");
-		</script>
-		
-		<script th:inline="javascript">
-			var isCodeMod = false;
-			var isTypeMode = true;
-			var check = 1;
-			var gs1RowData = new Object();
-			var Data;
-			var gs1_code_master = $("#gs1modelcodeMaster").find("input[name=wholetype]").val();
-			var urncode;
-			var countrycode;
-			var municode;
-			var origincode;
-			var mcategorycode;
-			var ccategorycode;
-			var scategorycode;
-			
-			$(document).ready(function() {
-					gs1categorybefore();
-			      $("#btn-save").click(function(event) {
-			        if(!isCodeMod){
-			          if (validation("gs1modelcodeMaster") && validation("gs1modelcodedetailMaster")) {
-			            if (confirm("저장하시겠습니까?")){
-			              event.preventDefault();
-			              gs1ModelSave();
-			            }
-			          }  
-			        } else {
-			          if(confirm("공통코드항목에 수정된 데이터가 있습니다.\n저장하지 않은 데이터는 초기화됩니다.\n진행 하시겠습니까?")){
-			            event.preventDefault();
-			            gs1ModelSave();
-			          } 
-			        }        
-			      });
-			    });
-			
-			function gs1categorybefore(){
-				var url = "/getgs1codecategory/" + gs1_code_master;
-				cmUtl.exeAjax("GET", url, null, "gs1categoryList");
-			}
-			
-			function gs1categoryList(data){
-				var html = '<tr>';
-				html += '<td><select label="URN포맷" name="URN포맷" id="URN포맷" style="width : 225px" required><option value="">선택</option></select></td>';
-				html += '<td><select label="국가코드" name="국가코드" id="국가코드" style="width : 175px" required><option value="">선택</option></select></td>';
-				html += '<td><select label="부처/지자체 코드" name="bgcode" id="bgcode" style="width : 125px" required><option value="">선택</option></select></td>';
-				html += '<td><select label="코드" name="코드" id="코드" style="width : 75px" required><option value="">선택</option></select></td>';
-				html += '<td><select label="대분류" name="대분류" id="대분류" style="width : 95px" onchange="cChange()" required><option value="">선택</option></select></td>';
-				html += '<td><select label="중분류" name="중분류" id="중분류" style="width : 95px" onchange="sChange()" required><option value="">선택</option></select></td>';
-				html += '<td><select label="소분류" name="소분류" id="소분류" style="width : 95px" required><option value="">선택</option></select></td>';
-				html += '<td><input label="도시 자산 일련번호" type="text" name="city_assets" style="width: 600px" value = "'+data[0].city_assets+'" maxlength="15" required></td>';
-				html += '</tr>';
+<script>
+  setNavi("데이터 허브 ID 관리```/gs1Model/", "데이터 허브 ID 목록```/gs1Model/", "데이터 허브 ID 목록 상세");
+</script>
 
-				gs1categoryaddList();
+<script th:inline="javascript">
+  var isCodeMod = false;
+  var isTypeMode = true;
+  var check = 1;
+  var gs1RowData = new Object();
+  var Data;
+  var gs1_code_master = $("#gs1modelcodeMaster").find("input[name=wholetype]").val();
+  var urncode;
+  var countrycode;
+  var municode;
+  var origincode;
+  var mcategorycode;
+  var ccategorycode;
+  var scategorycode;
 
-				$('#gs1modelcode').appendBody(html);
-				
-				var html2 = '<tr>';
-				html2 += '<th>수집대상 플랫폼</th>';
-				html2 += '<td style="text-align: left;"><input label="수집대상 플랫폼" name="c_platform" type="text" style="width: 485px" value="'+data[0].c_platform+'" required></td>';
-				html2 += '<th>원천 ID</th>';
-				html2 += '<td style="text-align: left;"><input label="원천 ID" name="source_id" type="text" style="width: 485px" value="'+data[0].source_id+'" required></td>';
-				html2 += '</tr>';
-				html2 += '<tr>';
-				html2 += '<th>데이터셋</th>';
-				html2 += '<td style="text-align: left;"><input label="데이터셋" name="data_set" type="text" style="width: 485px" value="'+data[0].data_set+'" required></td>';
-				html2 += '<th>데이터 모델명</th>';
-				html2 += '<td style="text-align: left;"><input label="데이터 모델명" name="data_model" type="text" style="width: 485px" value="'+data[0].data_model+'" required></td>';
-				html2 += '</tr>';
-				html2 += '<tr>';
-				html2 += '<th>데이터 모델 버전</th>';
-				html2 += '<td style="text-align: left;"><input label="데이터 모델 버전" name="data_version" type="text" style="width: 485px" value="'+data[0].data_version+'" required></td>';
-				html2 += '<th>이동여부</th>';
-				html2 += '<td style="text-align: left;"><select label="이동여부" name="move" style="width: 100px" required><option value="">선택</option><option value="Y">예</option><option value="N">아니오</option></select></td>';
-				html2 += '</tr>'
-				
-				$('#gs1modelcodedetail').appendBody(html2);
-				$("#gs1modelcodedetail").find("select[name='move']").val(data[0].move).prop("selected",true);
-				
-				urncode = data[0].urn;
-				countrycode = data[0].country;
-				municode = data[0].municipality;
-				origincode = data[0].code;
-				mcategorycode = data[0].m_category;
-				ccategorycode = data[0].c_category;
-				scategorycode = data[0].s_category;
-				
-			}
+  $(document).ready(function() {
+    gs1categorybefore();
+    $("#btn-save").click(function(event) {
+      if (!isCodeMod) {
+        if (validation("gs1modelcodeMaster") && validation("gs1modelcodedetailMaster")) {
+          if (confirm("저장하시겠습니까?")) {
+            event.preventDefault();
+            gs1ModelSave();
+          }
+        }
+      } else {
+        if (confirm("공통코드항목에 수정된 데이터가 있습니다.\n저장하지 않은 데이터는 초기화됩니다.\n진행 하시겠습니까?")) {
+          event.preventDefault();
+          gs1ModelSave();
+        }
+      }
+    });
+  });
 
-// 			function _mcategory(data) {
+  function gs1categorybefore() {
+    var url = "/getgs1codecategory/" + gs1_code_master;
+    cmUtl.exeAjax("GET", url, null, "gs1categoryList");
+  }
 
-// 				for (var i = 0; i < data.length; i++) {
-					
-// 					var option = $("<option value='"+data[i].m+"'>" + data[i].m_nm + "</option>");
-// 					$('#m_category_id').append(option);
-// 				}
-// 			}
-			
-			function cChange(){
-				var selectItem = $('#대분류').val();
-// 				alert("selectItem : " +selectItem);
-				if(selectItem == ""){
-					selectItem = mcategorycode;
-// 					alert("selectItem11 : " +selectItem);
-				}
-				var url = "/gs1category/" + selectItem;
-				cmUtl.exeAjax("GET", url, null, "_ccategory");
-			}
-			
-			function _ccategory(data) {
-				
-// 				$('#중분류').empty();
-				$("#gs1modelcode").find("select[name='중분류']").val(ccategorycode).prop("selected",true);
-				
-				for (var i = 0; i < data.length; i++) {
-// 					if(i == 0){
-// 						var base = $("<option>선택</option>");
-// 						$('#중분류').append(base);
-// 					}
-					
-					var option = $("<option value='"+data[i].g_code+"'>" + data[i].g_code_nm + "</option>");
-					
-					
-					$('#중분류').append(option);
-					
-				}
-				
-				
-			}
-			
-			function sChange() {
-				
-				var selectItem2 = $('#중분류').val();
-// 				alert("selectItem2 : " +selectItem2);
-				if(selectItem2 == ""){
-					selectItem2 = mcategorycode + ccategorycode;
-// 					alert("selectItem22 : " +selectItem2);
-				}
-				var url = "/gs1category_s/" + selectItem2;
-				
-				cmUtl.exeAjax("GET", url, null, "_scategory");
-				
-			}
-			
-			function _scategory(data){
-				
-				$('#소분류').empty();
-				
-// 				if(data == ""){
-// 					alert("데이터를 추가해 주세요.");
-// 					var link = document.location.href;
-// 					location.replace(link);
-// 				}
-				
-				for(var i=0; i<=data.length; i++){
-// 					if(i == 0){
-//						var base = $("<option>선택</option>");
-//						$('#소분류').append(base);
-//					}
-// 					alert("<option value='"+data[i].g_code+"'>" + data[i].g_code_nm + "</option>");
-					var option = $("<option value='"+data[i].g_code+"'>" + data[i].g_code_nm + "</option>");
-					if(data[i].g_code == null && data[i].g_code_nm == null)
-						continue;
-					
-					if(data[i+1].code_nm == "중분류"){
-						$('#중분류').append(option);
-						$("#gs1modelcode").find("select[name='중분류']").val(ccategorycode).prop("selected",true);
-						continue;
-					}
-					
-					var ID = "#" + data[i+1].code_nm;
-					$(ID).append(option);
+  function gs1categoryList(data) {
+    var html = '<tr>';
+    html += '<td><select label="URN포맷" name="URN포맷" id="URN포맷" style="width : 225px" required><option value="">선택</option></select></td>';
+    html += '<td><select label="국가코드" name="국가코드" id="국가코드" style="width : 175px" required><option value="">선택</option></select></td>';
+    html += '<td><select label="부처/지자체 코드" name="bgcode" id="bgcode" style="width : 125px" required><option value="">선택</option></select></td>';
+    html += '<td><select label="코드" name="코드" id="코드" style="width : 75px" required><option value="">선택</option></select></td>';
+    html += '<td><select label="대분류" name="대분류" id="대분류" style="width : 95px" onchange="cChange()" required><option value="">선택</option></select></td>';
+    html += '<td><select label="중분류" name="중분류" id="중분류" style="width : 95px" onchange="sChange()" required><option value="">선택</option></select></td>';
+    html += '<td><select label="소분류" name="소분류" id="소분류" style="width : 95px" required><option value="">선택</option></select></td>';
+    html += '<td><input label="도시 자산 일련번호" type="text" name="city_assets" style="width: 600px" value = "'+data[0].city_assets+'" maxlength="15" required></td>';
+    html += '</tr>';
 
-					
-					if(data[i+1].code_nm == "중분류") {
-						$("#gs1modelcode").find("select[name='중분류']").val(ccategorycode).prop("selected",true);
-					}
-				}
-			}
-			 
-			function gs1ModelSave(){
-				$('#btn-save').prop("disabled", true);
-				var gs1_modelcode_length = $("#gs1modelcode").getLength();
-				var gs1_modeldetail_length = $("#gs1modelcodedetail").getLength();
-				
-				var gs1_type_data = new Array();
-				item = $("#gs1modelcode").getRow(0);
-				gs1RowData.gs1_code_id = gs1_code_master;
-				gs1RowData.urn = item.find("select[name=URN포맷]").val();
-				gs1RowData.country = item.find("select[name=국가코드]").val();
-				gs1RowData.municipality = item.find("select[name=bgcode]").val();
-				gs1RowData.code = item.find("select[name=코드]").val();
-				gs1RowData.m_category = item.find("select[name=대분류]").val();
-				gs1RowData.c_category = item.find("select[name=중분류]").val().substring(1,2);
-				gs1RowData.s_category = item.find("select[name=소분류]").val().substring(2,5);
-				gs1RowData.city_assets = item.find("input[name=city_assets]").val();
-				
-				var gs1_code = '';
-				gs1_code += item.find("select[name=URN포맷]").val() + item.find("select[name=국가코드]").val() + item.find("select[name=bgcode]").val() + ".";
-// 				gs1_code += item.find("select[name=코드]").val() + item.find("select[name=소분류]").val() + item.find("input[name=city_assets]").val()	;
-				gs1_code += item.find("select[name=코드]").val() + item.find("select[name=소분류]").val();
-				var cs = item.find("input[name=city_assets]").val();
-				if(cs != ""){
-					gs1_code += "." + cs;
-				}
-				gs1RowData.gs1_code = gs1_code;
-				
-				for(var i=0; i<gs1_modeldetail_length; i++){
-					item = $("#gs1modelcodedetail").getRow(i);
-					if(i==0){
-						gs1RowData.c_platform = item.find("input[name=c_platform]").val(); 
-						gs1RowData.source_id = item.find("input[name=source_id]").val();
-					}
-					else if(i==1){
-						gs1RowData.data_set = item.find("input[name=data_set]").val();
-						gs1RowData.data_model = item.find("input[name=data_model]").val();
-					} else if(i == 2){
-						gs1RowData.data_version = item.find("input[name=data_version]").val();
-						gs1RowData.move = item.find("select[name=move]").val();
-					}
-				}
-				gs1RowData.use_yn = "N";
-				
-				gs1_type_data.push(gs1RowData);
+    gs1categoryaddList();
 
-				Data = {
-						"gs1_type_data" : gs1_type_data
-				};
-				
-				DataCheck();
-			}
-			
-			function DataCheck() {		//데이터 목록 전체 조회
-				
-				var url = "/gs1modelUpdate";
-				cmUtl.exeAjax("POST", url, JSON.stringify(Data), "_cbAfterAdtTypeSave");
-			}
-			
-			function _cbAfterAdtTypeSave(data){
-				alert("저장되었습니다.");
-				$("#btn-save").prop("disabled", false);
-				var link = '/gs1Model';
-				location.replace(link);
-			}
-			
-			//-----------------------------------------------------------------------------------------------
-			function gs1categoryaddList(){
-				var url = "/getcommgs1code";
-				cmUtl.exeAjax("GET", url, null, "getgcodenm");
-			}
-			
-			function getgcodenm(data){
-				for(var i=0; i<data.length; i++){
-					codenm = data[i].code_nm;
-					var url = "/getgcodenm/" + data[i].code_id;
-					
-// 					if(data[i].code_nm == "중분류" || data[i].code_nm == "소분류"){
-// 						continue;
-// 					}
-// 					cmUtl.exeAjax("GET", url, null, "addcategory");
-					if(data[i].code_nm == "중분류"){
-						cChange();
-					} else if (data[i].code_nm == "소분류"){
-						sChange();
-					} else{
-						cmUtl.exeAjax("GET", url, null, "addcategory");
-					}
-				}
-			}
-			
-			function addcategory(data){
-				
-				for(var i = 0; i<=data.length; i++){
-					
-					var option = $("<option value='"+data[i].g_code+"'>" + data[i].g_code_nm + "</option>");
-					if(data[i].g_code == null && data[i].g_code_nm == null)
-						continue;
+    $('#gs1modelcode').appendBody(html);
 
-					if(data[data.length-1].code_nm == "부처/지자체 코드"){
-						$('#bgcode').append(option);
-						$("#gs1modelcode").find("select[name='bgcode']").val(municode).prop("selected",true);
-						continue;
-					}
-// 					else if(data[data.length-1].code_nm == "중분류"){
-// 						$('#중분류').append(option);
-// 						$("#gs1modelcode").find("select[name='중분류']").val(municode).prop("selected",true);
-// 						continue;
-// 					}else if(data[data.length-1].code_nm == "소분류"){
-// 						$('#소분류').append(option);
-// 						$("#gs1modelcode").find("select[name='소분류']").val(municode).prop("selected",true);
-// 						continue;
-// 					}
-					
-					var ID = "#" + data[data.length-1].code_nm;
-					$(ID).append(option);
-					
-					if(data[i+1].code_nm == "URN포맷"){
-						$("#gs1modelcode").find("select[name='URN포맷']").val(urncode).prop("selected",true);
-					} else if(data[i+1].code_nm == "코드") {
-						$("#gs1modelcode").find("select[name='코드']").val(origincode).prop("selected",true);
-					} else if(data[i+1].code_nm == "국가코드") {
-						$("#gs1modelcode").find("select[name='국가코드']").val(countrycode).prop("selected",true);
-					} else if(data[i+1].code_nm == "대분류") {
-// 						alert("mcategorycode : " + mcategorycode);
-						$("#gs1modelcode").find("select[name='대분류']").val(mcategorycode).prop("selected",true);
-// 					}else if(data[data.length-1].code_nm == "중분류") {
-// 						$("#gs1modelcode").find("select[name='중분류']").val(ccategorycode).prop("selected",true);
-// 					}else if(data[data.length-1].code_nm == "소분류") {
-// 						$("#gs1modelcode").find("select[name='소분류']").val(scategorycode).prop("selected",true);
-					}
-				}
-			}
-			
-		</script>
-	</div>
+    var html2 = '<tr>';
+    html2 += '<th>수집대상 플랫폼</th>';
+    html2 += '<td style="text-align: left;"><input label="수집대상 플랫폼" name="c_platform" type="text" style="width: 485px" value="'+data[0].c_platform+'" required></td>';
+    html2 += '<th>원천 ID</th>';
+    html2 += '<td style="text-align: left;"><input label="원천 ID" name="source_id" type="text" style="width: 485px" value="'+data[0].source_id+'" required></td>';
+    html2 += '</tr>';
+    html2 += '<tr>';
+    html2 += '<th>데이터셋</th>';
+    html2 += '<td style="text-align: left;"><input label="데이터셋" name="data_set" type="text" style="width: 485px" value="'+data[0].data_set+'" required></td>';
+    html2 += '<th>데이터 모델명</th>';
+    html2 += '<td style="text-align: left;"><input label="데이터 모델명" name="data_model" type="text" style="width: 485px" value="'+data[0].data_model+'" required></td>';
+    html2 += '</tr>';
+    html2 += '<tr>';
+    html2 += '<th>데이터 모델 버전</th>';
+    html2 += '<td style="text-align: left;"><input label="데이터 모델 버전" name="data_version" type="text" style="width: 485px" value="'+data[0].data_version+'" required></td>';
+    html2 += '<th>이동여부</th>';
+    html2 += '<td style="text-align: left;"><select label="이동여부" name="move" style="width: 100px" required><option value="">선택</option><option value="Y">예</option><option value="N">아니오</option></select></td>';
+    html2 += '</tr>'
+
+    $('#gs1modelcodedetail').appendBody(html2);
+    $("#gs1modelcodedetail").find("select[name='move']").val(data[0].move).prop("selected", true);
+
+    urncode = data[0].urn;
+    countrycode = data[0].country;
+    municode = data[0].municipality;
+    origincode = data[0].code;
+    mcategorycode = data[0].m_category;
+    ccategorycode = data[0].c_category;
+    scategorycode = data[0].s_category;
+
+  }
+
+  function cChange() {
+    var selectItem = $('#대분류').val();
+    if (selectItem == "") {
+      selectItem = mcategorycode;
+    }
+    var url = "/gs1category/" + selectItem;
+    cmUtl.exeAjax("GET", url, null, "_ccategory");
+  }
+
+  function _ccategory(data) {
+    $("#gs1modelcode").find("select[name='중분류']").val(ccategorycode).prop("selected", true);
+
+    for (var i = 0; i < data.length; i++) {
+      var option = $("<option value='"+data[i].g_code+"'>" + data[i].g_code_nm + "</option>");
+      $('#중분류').append(option);
+    }
+  }
+
+  function sChange() {
+
+    var selectItem2 = $('#중분류').val();
+    if (selectItem2 == "") {
+      selectItem2 = mcategorycode + ccategorycode;
+    }
+    var url = "/gs1category_s/" + selectItem2;
+    cmUtl.exeAjax("GET", url, null, "_scategory");
+  }
+
+  function _scategory(data) {
+    $('#소분류').empty();
+    for (var i = 0; i <= data.length; i++) {
+      var option = $("<option value='"+data[i].g_code+"'>" + data[i].g_code_nm + "</option>");
+      if (data[i].g_code == null && data[i].g_code_nm == null)
+        continue;
+
+      if (data[i + 1].code_nm == "중분류") {
+        $('#중분류').append(option);
+        $("#gs1modelcode").find("select[name='중분류']").val(ccategorycode).prop("selected", true);
+        continue;
+      }
+
+      var ID = "#" + data[i + 1].code_nm;
+      $(ID).append(option);
+
+      if (data[i + 1].code_nm == "중분류") {
+        $("#gs1modelcode").find("select[name='중분류']").val(ccategorycode).prop("selected", true);
+      }
+    }
+  }
+
+  function gs1ModelSave() {
+    $('#btn-save').prop("disabled", true);
+    var gs1_modelcode_length = $("#gs1modelcode").getLength();
+    var gs1_modeldetail_length = $("#gs1modelcodedetail").getLength();
+
+    var gs1_type_data = new Array();
+    item = $("#gs1modelcode").getRow(0);
+    gs1RowData.gs1_code_id = gs1_code_master;
+    gs1RowData.urn = item.find("select[name=URN포맷]").val();
+    gs1RowData.country = item.find("select[name=국가코드]").val();
+    gs1RowData.municipality = item.find("select[name=bgcode]").val();
+    gs1RowData.code = item.find("select[name=코드]").val();
+    gs1RowData.m_category = item.find("select[name=대분류]").val();
+    gs1RowData.c_category = item.find("select[name=중분류]").val().substring(1, 2);
+    gs1RowData.s_category = item.find("select[name=소분류]").val().substring(2, 5);
+    gs1RowData.city_assets = item.find("input[name=city_assets]").val();
+
+    var gs1_code = '';
+    gs1_code += item.find("select[name=URN포맷]").val() + item.find("select[name=국가코드]").val() + item.find("select[name=bgcode]").val() + ".";
+    // 				gs1_code += item.find("select[name=코드]").val() + item.find("select[name=소분류]").val() + item.find("input[name=city_assets]").val()	;
+    gs1_code += item.find("select[name=코드]").val() + item.find("select[name=소분류]").val();
+    var cs = item.find("input[name=city_assets]").val();
+    if (cs != "") {
+      gs1_code += "." + cs;
+    }
+    gs1RowData.gs1_code = gs1_code;
+
+    for (var i = 0; i < gs1_modeldetail_length; i++) {
+      item = $("#gs1modelcodedetail").getRow(i);
+      if (i == 0) {
+        gs1RowData.c_platform = item.find("input[name=c_platform]").val();
+        gs1RowData.source_id = item.find("input[name=source_id]").val();
+      } else if (i == 1) {
+        gs1RowData.data_set = item.find("input[name=data_set]").val();
+        gs1RowData.data_model = item.find("input[name=data_model]").val();
+      } else if (i == 2) {
+        gs1RowData.data_version = item.find("input[name=data_version]").val();
+        gs1RowData.move = item.find("select[name=move]").val();
+      }
+    }
+    gs1RowData.use_yn = "N";
+
+    gs1_type_data.push(gs1RowData);
+
+    Data = {
+      "gs1_type_data" : gs1_type_data
+    };
+
+    DataCheck();
+  }
+
+  function DataCheck() { //데이터 목록 전체 조회
+
+    var url = "/gs1modelUpdate";
+    cmUtl.exeAjax("POST", url, JSON.stringify(Data), "_cbAfterAdtTypeSave");
+  }
+
+  function _cbAfterAdtTypeSave(data) {
+    alert("저장되었습니다.");
+    $("#btn-save").prop("disabled", false);
+    var link = '/gs1Model';
+    location.replace(link);
+  }
+
+  //-----------------------------------------------------------------------------------------------
+  function gs1categoryaddList() {
+    var url = "/getcommgs1code";
+    cmUtl.exeAjax("GET", url, null, "getgcodenm");
+  }
+
+  function getgcodenm(data) {
+    for (var i = 0; i < data.length; i++) {
+      codenm = data[i].code_nm;
+      var url = "/getgcodenm/" + data[i].code_id;
+
+      if (data[i].code_nm == "중분류") {
+        cChange();
+      } else if (data[i].code_nm == "소분류") {
+        sChange();
+      } else {
+        cmUtl.exeAjax("GET", url, null, "addcategory");
+      }
+    }
+  }
+
+  function addcategory(data) {
+
+    for (var i = 0; i <= data.length; i++) {
+
+      var option = $("<option value='"+data[i].g_code+"'>" + data[i].g_code_nm + "</option>");
+      if (data[i].g_code == null && data[i].g_code_nm == null)
+        continue;
+
+      if (data[data.length - 1].code_nm == "부처/지자체 코드") {
+        $('#bgcode').append(option);
+        $("#gs1modelcode").find("select[name='bgcode']").val(municode).prop("selected", true);
+        continue;
+      }
+      // 					else if(data[data.length-1].code_nm == "중분류"){
+      // 						$('#중분류').append(option);
+      // 						$("#gs1modelcode").find("select[name='중분류']").val(municode).prop("selected",true);
+      // 						continue;
+      // 					}else if(data[data.length-1].code_nm == "소분류"){
+      // 						$('#소분류').append(option);
+      // 						$("#gs1modelcode").find("select[name='소분류']").val(municode).prop("selected",true);
+      // 						continue;
+      // 					}
+
+      var ID = "#" + data[data.length - 1].code_nm;
+      $(ID).append(option);
+
+      if (data[i + 1].code_nm == "URN포맷") {
+        $("#gs1modelcode").find("select[name='URN포맷']").val(urncode).prop("selected", true);
+      } else if (data[i + 1].code_nm == "코드") {
+        $("#gs1modelcode").find("select[name='코드']").val(origincode).prop("selected", true);
+      } else if (data[i + 1].code_nm == "국가코드") {
+        $("#gs1modelcode").find("select[name='국가코드']").val(countrycode).prop("selected", true);
+      } else if (data[i + 1].code_nm == "대분류") {
+        // 						alert("mcategorycode : " + mcategorycode);
+        $("#gs1modelcode").find("select[name='대분류']").val(mcategorycode).prop("selected", true);
+        // 					}else if(data[data.length-1].code_nm == "중분류") {
+        // 						$("#gs1modelcode").find("select[name='중분류']").val(ccategorycode).prop("selected",true);
+        // 					}else if(data[data.length-1].code_nm == "소분류") {
+        // 						$("#gs1modelcode").find("select[name='소분류']").val(scategorycode).prop("selected",true);
+      }
+    }
+  }
+</script>
+  </div>
 </body>
 </html>

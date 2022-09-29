@@ -57,7 +57,7 @@
             success : function(data) {
               endPoint = data.endPoint == false ? 0 : data.endPoint;
               logdata = decodeURIComponent(data.log);
-              
+
               consoleLog.val(consoleLog.val() + logdata);
               consoleLog.scrollTop(consoleLog.prop('scrollHeight'));
 
@@ -74,13 +74,13 @@
     });
     $('#stopTail').on('click', function() {
       tailFlag = false;
-      
+
       runningFlag.html('Stop');
     });
     $('#clearTail').on('click', function() {
       consoleLog.val("");
       consoleLog.scrollTop(consoleLog.prop('scrollHeight'));
-      
+
     });
 
   });
@@ -89,11 +89,8 @@
 <body>
   <div id="header">
     <h2>Log Tail</h2>
-    tail 
-    <input id="startTail" type="button" value="startTail" />&nbsp;&nbsp;&nbsp; 
-    <input id="stopTail" type="button" value="stopTail" />&nbsp;&nbsp;&nbsp; 
-    <input id="clearTail" type="button" value="Clear" />&nbsp;&nbsp;&nbsp;
-    <span id="runningFlag">Stop</span>
+    tail <input id="startTail" type="button" value="startTail" />&nbsp;&nbsp;&nbsp; <input id="stopTail" type="button" value="stopTail" />&nbsp;&nbsp;&nbsp; <input id="clearTail" type="button"
+      value="Clear" />&nbsp;&nbsp;&nbsp; <span id="runningFlag">Stop</span>
 
 
   </div>
