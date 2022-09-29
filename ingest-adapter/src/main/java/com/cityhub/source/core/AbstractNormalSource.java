@@ -92,31 +92,31 @@ public abstract class AbstractNormalSource  implements ReflectOpenApi {
   }
 
   protected void toLogger(SocketCode sc, String id, byte[] byteBody) {
-    JSONObject confItem = new JSONObject(ConfItem);
 
-    log.info("`{}`{}`{}`{}`{}`{}`{}", confItem.getString("sourceName"), confItem.getString("modelId"), sc.toMessage(), id, byteBody.length, confItem.getString("adapterType"), confItem.getString("invokeClass"));
+
+    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("modelId"), sc.toMessage(), id, byteBody.length, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
 
     StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-    l.append("`").append(confItem.getString("sourceName"));
-    l.append("`").append(confItem.getString("modelId"));
+    l.append("`").append(ConfItem.getString("sourceName"));
+    l.append("`").append(ConfItem.getString("modelId"));
     l.append("`").append(sc.getMessage());
     l.append("`").append(id);
     l.append("`").append(byteBody.length);
-    l.append("`").append(confItem.getString("adapterType"));
-    l.append("`").append(confItem.getString("invokeClass"));
+    l.append("`").append(ConfItem.getString("adapterType"));
+    l.append("`").append(ConfItem.getString("invokeClass"));
 
     LoggerVO logVo = new LoggerVO();
-    logVo.setSourceName(confItem.getString("sourceName"));
+    logVo.setSourceName(ConfItem.getString("sourceName"));
     logVo.setPayload(l.toString());
     logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-    logVo.setType(confItem.getString("modelId"));
+    logVo.setType(ConfItem.getString("modelId"));
     logVo.setStep(sc.getCode());
     logVo.setDesc(sc.getMessage());
     logVo.setId(id);
     logVo.setLength(String.valueOf(byteBody.length));
-    logVo.setAdapterType(confItem.getString("invokeClass"));
-    logToDaemonApi(confItem, logVo);
+    logVo.setAdapterType(ConfItem.getString("invokeClass"));
+    logToDaemonApi(ConfItem, logVo);
   }
 
   private void logToDaemonApi(JSONObject confItem, LoggerVO logVo) {

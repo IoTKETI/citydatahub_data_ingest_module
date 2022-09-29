@@ -229,59 +229,25 @@ public class $classname$ extends AbstractNormalSource {
 
       JSONArray svcList = ConfItem.getJSONArray("serviceList");
       for (int i = 0; i < svcList.length(); i++) {
-        JSONObject iSvc = svcList.getJSONObject(i);
+        JSONObject svcItem = svcList.getJSONObject(i);
         
-        //소스코드 첨가부분 - 시작    
-        id = iSvc.getString("gs1Code");
+        id = svcItem.getString("gs1Code");
+        
+        JsonUtil jsonModel = new JsonUtil(modelTemplate.toString()); 
 
-        JsonUtil ju = new JsonUtil((JSONObject) CommonUtil.getData(iSvc));
-        if (!ju.has("response.body.items.item")) {
-          throw new CoreException(ErrorCode.NORMAL_ERROR);
-        } else {
-         
-          toLogger(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
-          JSONArray arrList = ju.getArray("response.body.items.item");
-          Map&lt;String, Object&gt; tMap = modelTemplate.toMap();
-
-          Map&lt;String, Object&gt; wMap = new LinkedHashMap&lt;&gt;();
-          if (arrList.length() &gt; 0) {
-            for (Object obj : arrList) {
-              JSONObject item = (JSONObject) obj;
-              if ("PTY".equals(item.getString("category"))) {
-                wMap.put("rainType", WeatherType.findBy(item.getInt("obsrValue")).getEngNm());
-              }
-              if ("T1H".equals(item.getString("category"))) {
-                wMap.put("temperature", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
-              }
-              if ("RN1".equals(item.getString("category"))) {
-                wMap.put("rainfall", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
-                wMap.put("hourlyRainfall", JsonUtil.nvl(item.get("obsrValue"), DataType.INTEGER));
-              }
-              if ("WSD".equals(item.getString("category"))) {
-                wMap.put("windSpeed", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
-              }
-              if ("REH".equals(item.getString("category"))) {
-                wMap.put("humidity", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
-              }
-              if ("S06".equals(item.getString("category"))) {
-                wMap.put("snowfall", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
-              }
-            } // end for
-          
-            tMap.put("id", iSvc.getString("gs1Code"));
-            Map&lt;String, Object&gt; weatherObservation = new LinkedHashMap&lt;&gt;();
-            weatherObservation.put("type", "Property");
-            weatherObservation.put("observedAt", DateUtil.getTime());
-            weatherObservation.put("value", wMap);
-            tMap.put("weatherObservation", weatherObservation);
-
-          } else {
-            toLogger(SocketCode.DATA_CONVERT_FAIL, id );
-          } // end if (arrList.length() &gt; 0)
-
-          
-          //소스코드 첨가부분 - 종료  
-        } // if (!ju.has("response.body.items.item") )
+        JsonUtil reqDataList = new JsonUtil((JSONObject) CommonUtil.getData(svcItem));
+        toLogger(SocketCode.DATA_RECEIVE, id, reqDataList.toString().getBytes());
+        
+        
+        //소스코드 첨가부분 - 시작
+        
+        jsonModel.put("category.value", reqDataList.getString("category"));
+        
+        //소스코드 첨가부분 - 종료
+        
+        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, jsonModel.toString().getBytes());
+        rtnList.add(jsonModel.toMap());
+        
       } // for (int i = 0; i &lt; svcList.length(); i++)
       
       toLogger(SocketCode.DATA_SAVE_REQ, id, objectMapper.writeValueAsBytes(rtnList));
@@ -323,17 +289,17 @@ public class $classname$ extends AbstractLegacySystemSource {
       String id = ConfItem.getString("id_prefix");
       while (rs.next()) {
         toLogger(SocketCode.DATA_RECEIVE, id, id.getBytes());
-        JsonUtil jsonUtil = new JsonUtil(modelTemplate.toString());    
+        JsonUtil jsonModel = new JsonUtil(modelTemplate.toString());    
 
         //소스코드 첨가부분 - 시작
 
-        jsonUtil.put("eventType.value", rs.getString("EVT_ID"));
-        jsonUtil.put("eventName.value", rs.getString("EVT_DTL"));
+        jsonModel.put("eventType.value", rs.getString("EVT_ID"));
+        jsonModel.put("eventName.value", rs.getString("EVT_DTL"));
         
         //소스코드 첨가부분 - 종료
 
-        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, jsonUtil.toString().getBytes());
-        rtnList.add(jsonUtil.toMap());
+        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, jsonModel.toString().getBytes());
+        rtnList.add(jsonModel.toMap());
         count++;
         
         if (count == bufferCount) {
