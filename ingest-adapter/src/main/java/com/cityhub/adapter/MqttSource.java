@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cityhub.adapter.convex;
+package com.cityhub.adapter;
 
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
@@ -91,6 +91,16 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
   @Override
   public void configure(Context context) {
     super.configure(context);
+
+    String confFile = context.getString("CONF_FILE", "");
+    if (!"".equals(confFile)) {
+      ConfItem = new JsonUtil().getFileJsonObject(confFile);
+    } else {
+      ConfItem = new JSONObject();
+    }
+    String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "http://localhost:8888/logToDbApi");
+    ConfItem.put("daemonServerLogApi", DAEMON_SERVER_LOGAPI);
+
     urlAddr = context.getString(DefaultConstants.URL_ADDR, "");
     topic = context.getString("TOPIC", "");
     metaInfo = context.getString("META_INFO", "");
@@ -105,18 +115,6 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     datasetId = context.getString("DATASET_ID", "");
     ArrDatasetId = StrUtil.strToArray(datasetId, ",");
 
-    String confFile = context.getString("CONF_FILE", "");
-    if (!"".equals(confFile)) {
-      ConfItem = new JsonUtil().getFileJsonObject(confFile);
-    } else {
-      ConfItem = new JSONObject();
-    }
-    String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "");
-    if (!"".equals(DAEMON_SERVER_LOGAPI)) {
-      ConfItem.put("daemonServerLogApi", context.getString("DAEMON_SERVER_LOGAPI", ""));
-    } else {
-      ConfItem.put("daemonServerLogApi", "http://localhost:8888/logToDbApi");
-    }
     ConfItem.put("topic", topic);
     ConfItem.put("req_topic", reqTopic + "/#");
     ConfItem.put("resp_topic", respTopic + "/json");
@@ -252,10 +250,8 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
               }
               Thread.sleep(10);
             }
-
           }
         }
-
       }
     } catch (NullPointerException npe) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(npe));

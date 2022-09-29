@@ -18,9 +18,14 @@ package com.cityhub.adapter;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flume.Context;
+import org.apache.flume.CounterGroup;
+import org.apache.flume.EventDeliveryException;
+import org.apache.flume.PollableSource;
+import org.apache.flume.conf.Configurable;
+import org.apache.flume.source.AbstractSource;
 import org.json.JSONObject;
 
-import com.cityhub.core.AbstractPollSource;
+import com.cityhub.environment.DefaultConstants;
 import com.cityhub.model.DataModelEx;
 import com.cityhub.source.core.ReflectLegacySystem;
 import com.cityhub.source.core.ReflectLegacySystemManager;
@@ -34,56 +39,63 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class LegacyDbSource extends AbstractPollSource {
+public class LegacyPlatform extends AbstractSource implements PollableSource , Configurable {
+  protected CounterGroup counterGroup;
+  private int connTerm;
 
   private String modelId;
   private JSONObject templateItem;
   private JSONObject ConfItem;
+
   private String[] ArrModel = null;
   private String adapterType;
-  private String schemaSrv;
 
   @Override
-  public void setup(Context context) {
+  public void configure(Context context) {
+    if (counterGroup == null) {
+      counterGroup = new CounterGroup();
+    }
+
     log.info("source Name:::{}", this.getName());
-    modelId = context.getString("MODEL_ID", "");
-    ArrModel = StrUtil.strToArray(modelId, ",");
-    schemaSrv = context.getString("DATAMODEL_API_URL", "");
+
     String confFile = context.getString("CONF_FILE", "");
     if (!"".equals(confFile)) {
       ConfItem = new JsonUtil().getFileJsonObject(confFile);
     } else {
       ConfItem = new JSONObject();
     }
+    String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "http://localhost:8888/logToDbApi");
+    ConfItem.put("daemonServerLogApi", DAEMON_SERVER_LOGAPI);
 
-    String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "");
-    if (!"".equals(DAEMON_SERVER_LOGAPI)) {
-      ConfItem.put("daemonServerLogApi", context.getString("DAEMON_SERVER_LOGAPI", ""));
-    } else {
-      ConfItem.put("daemonServerLogApi", "http://localhost:8888/logToDbApi");
-    }
+    modelId = context.getString("MODEL_ID", "");
+    ArrModel = StrUtil.strToArray(modelId, ",");
+    connTerm = context.getInteger(DefaultConstants.CONN_TERM, 600);
+
 
     ConfItem.put("DATAMODEL_API_URL", context.getString("DATAMODEL_API_URL", ""));
     ConfItem.put("username", context.getString("DB_USERNAME", ""));
     ConfItem.put("password", context.getString("DB_PASSWORD", ""));
     ConfItem.put("driverClassName", context.getString("DB_DRIVER_CLASS_NAME", ""));
     ConfItem.put("jdbcUrl", context.getString("DB_JDBC_URL", ""));
-    ConfItem.put("model_id", context.getString("MODEL_ID", ""));
+
     ConfItem.put("invokeClass", context.getString("INVOKE_CLASS", ""));
+    ConfItem.put("modelId", context.getString("MODEL_ID", ""));
+    ConfItem.put("datasetId", context.getString("DATASET_ID", ""));
     ConfItem.put("adapterType", adapterType);
     ConfItem.put("sourceName", this.getName());
-    ConfItem.put("datasetId", context.getString("DATASET_ID", ""));
   }
 
   @Override
-  public void execFirst() {
+  public void start() {
+    super.start();
+    log.debug("source {} started. Metrics:{}", this.getName(), counterGroup);
 
     try {
       templateItem = new JSONObject();
       if (ArrModel != null) {
         for (String model : ArrModel) {
-          HttpResponse resp = OkUrlUtil.get(schemaSrv + "?id=" + model, "Accept", "application/json");
-          log.info("schema info: {},{},{}", model, resp.getStatusCode(), schemaSrv + "?id=" + model);
+          HttpResponse resp = OkUrlUtil.get(ConfItem.getString("DATAMODEL_API_URL") + "?id=" + model, "Accept", "application/json");
+          log.info("schema info: {},{},{}", model, resp.getStatusCode(), ConfItem.getString("DATAMODEL_API_URL") + "?id=" + model);
           if (resp.getStatusCode() == 200) {
             DataModelEx dm = new DataModelEx(resp.getPayload());
             if (dm.hasModelId(model)) {
@@ -97,7 +109,7 @@ public class LegacyDbSource extends AbstractPollSource {
           }
         }
       } else {
-        log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, getStr(SocketCode.DATA_NOT_EXIST_MODEL), "", 0, adapterType);
+        log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType);
       }
 
       ConfItem.put("MODEL_TEMPLATE",templateItem);
@@ -107,47 +119,58 @@ public class LegacyDbSource extends AbstractPollSource {
     }
   }
 
-  @Override
-  public void exit() {
 
-  }
-
-  @Override
   public void processing() {
     log.info("::::::::::::::::::{} - Processing :::::::::::::::::", this.getName());
 
     try (HikariDataSource ds = new HikariDataSource();){
-
       ds.setJdbcUrl(ConfItem.getString("jdbcUrl"));
       ds.setUsername(ConfItem.getString("username"));
       ds.setPassword(ConfItem.getString("password"));
-
-      ReflectLegacySystem reflectExecuter = ReflectLegacySystemManager.getInstance(getInvokeClass());
+      ReflectLegacySystem reflectExecuter = ReflectLegacySystemManager.getInstance(ConfItem.getString("invokeClass"));
       reflectExecuter.init(getChannelProcessor(), ConfItem);
-
       String sb = reflectExecuter.doit(ds);
-      /*
-      if (sb != null && sb.lastIndexOf(",") > 0) {
-        JSONArray JSendArr = new JSONArray("[" + sb.substring(0, sb.length() - 1) + "]");
-        for (Object itm : JSendArr) {
-          JSONObject jo = (JSONObject) itm;
-          log.info("`{}`{}`{}`{}`{}`{}", this.getName(), jo.getString("type"), getStr(SocketCode.DATA_SAVE_REQ), jo.getString("id"), jo.toString().getBytes().length, adapterType);
-          //sendEventEx(createSendJson(jo));
-          Thread.sleep(10);
-        }
-      }
-       */
+    } catch (NullPointerException e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     } catch (Exception e) {
-      log.error(e.getMessage());
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
-  public String getStr(SocketCode sc) {
-    return sc.getCode() + ";" + sc.getMessage();
+  @Override
+  public Status process() throws EventDeliveryException {
+    Status status = Status.READY;
+    try {
+      long eventCounter = counterGroup.get("events.success");
+      counterGroup.addAndGet("events.success", eventCounter);
+      processing();
+      Thread.sleep(connTerm * 1000); // second * 1000
+      status = Status.READY;
+    } catch (Exception e) {
+      counterGroup.incrementAndGet("events.failed");
+      status = Status.BACKOFF;
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
+    return status;
   }
 
-  public String getStr(SocketCode sc, String msg) {
-    return sc.getCode() + ";" + sc.getMessage() + "-" + msg;
+
+  @Override
+  public void stop() {
+    super.stop();
+    log.debug("source {} stopped. Metrics:{}", this.getName(), counterGroup);
   }
+
+
+  @Override
+  public long getBackOffSleepIncrement() {
+    return 0;
+  }
+
+  @Override
+  public long getMaxBackOffSleepInterval() {
+    return 0;
+  }
+
 
 } // end of class

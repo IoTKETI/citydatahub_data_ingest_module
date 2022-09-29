@@ -58,12 +58,8 @@ public class UCityPlatformEventSource extends AbstractPollSource {
     ConfItem.put("schema_srv", schemaSrv);
     ConfItem.put("adapterType", adapterType);
 
-    String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "");
-    if (!"".equals(DAEMON_SERVER_LOGAPI)) {
-      ConfItem.put("daemonServerLogApi", context.getString("DAEMON_SERVER_LOGAPI", ""));
-    } else {
-      ConfItem.put("daemonServerLogApi", "http://localhost:8888/logToDbApi");
-    }
+    String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "http://localhost:8888/logToDbApi");
+    ConfItem.put("daemonServerLogApi", DAEMON_SERVER_LOGAPI);
 
   }
 

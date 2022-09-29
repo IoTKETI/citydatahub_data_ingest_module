@@ -22,9 +22,6 @@
                     <col style="width:50px">                    
                     <col style="width:100px">
                     <col style="width:300px">
-<!--                     
-                    <col style="width:200px">
- -->                    
                     <col style="width:100px">
                     <col style="width:100px">
                     <col style="width:auto">
@@ -34,9 +31,6 @@
                     <th>순번</th>
                     <th>Agent ID</th>
                     <th>Agent 명</th>
-<!--                     
-                    <th>IP/PORT</th>
- -->                    
                     <th>어댑터 수</th>
                     <th>사용여부</th> 
                     <th>비고</th>
@@ -59,7 +53,6 @@
     });
     
     function agentDataList(){
-        //var url = "/agentDataList";
         var url = "/agents";
         cmUtl.exeAjax("GET", url, null, "_cbAfterAgentDataList" );
     } 
@@ -76,7 +69,6 @@
         html += '<td>'+index+'</td>';
         html += '<td><a href="/agentDetail/'+data[i].agent_id+'">'+data[i].agent_id+'</td>';
         html += '<td><a href="/agentDetail/'+data[i].agent_id+'">'+data[i].agent_nm+'</td>';
-//        html += '<td>'+(data[i].ip_addr)+" / "+(data[i].port_number)+'</td>';
         html += '<td>'+data[i].adt_cnt+'</td>';
         html += '<td>'+yn(data[i].use_yn)+'</td>';
         html += '<td>'+data[i].etc_note+'</td>';

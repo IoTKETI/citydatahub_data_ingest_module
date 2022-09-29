@@ -86,7 +86,7 @@
                 </table>
               </div>
               <div class="button__group">
-                  <button class="button__util " type="button" id="ins_sending" onfocus="this.blur()">전송</button>
+                  <button class="button__util " type="button" id="ins_sending" onfocus="this.blur()">설정적용</button>
                   <button class="button__util button__util--add material-icons" type="button" id="new_ins" onfocus="this.blur()">신규추가</button>
                   <button class="button__primary" type="button" id="ins_save" onfocus="this.blur()" >저장</button>
               </div>
@@ -334,8 +334,8 @@
     
   <script th:inline="javascript">
   /* <![CDATA[ */ 
-  var id = /*[[${id}]]*/ 'default';
-  var adapter_type_arr = /*[[${adapter_type}]]*/;
+  var id = /*[[${id}]]*/ '';
+  var adapter_type_arr = /*[[${adapter_type}]]*/'';
   /* ]]> */
   var ins_id = "";
   
@@ -349,7 +349,7 @@
   });
   
   $("#ins_sending").click(function(event) {
-    if (confirm("전송하시겠습니까?")){
+    if (confirm("설정을 적용하시겠습니까?")){
       event.preventDefault();
       insSending();
     }
@@ -363,7 +363,7 @@
   
   function _cbAfterInsSending(data) {
     $("#ins_sending").prop("disabled", false);
-    alert("전송되었습니다.");
+    alert("설정이 적용되었습니다.");
   }
   
   $("#ins_save").click(function(event) {

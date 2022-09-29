@@ -34,20 +34,6 @@
                       <th>Agent 명</th>
                       <td label ="Agent 명"><input id="agent_nm" name="agent_nm" type="text" class="input__text" required></td>                                            
                     </tr>
-<!--                     
-                    <tr>
-                      <th >IP</th>
-                      <td class="ta-l">
-                        <select class="select select--full" id="ip_addr" name="ip_addr">
-                          <option value="IP001" >192.168.10.101</option>
-                          <option value="IP002" >192.168.10.102</option>
-                          <option value="IP003" >192.168.10.103</option>
-                        </select>
-                      </td>
-                      <th>Port</th>
-                      <td label ="Port"><input id="port_number" name="port_number" type="text" class="input__text" required></td>                      
-                    </tr>
- -->                    
                     <tr>                      
                       <th>사용여부</th>
                       <td class="ta-l" colspan="3">
@@ -250,8 +236,6 @@
     var row = new RowData( $("#agentInfo > tbody") );
     row.setValue("agent_id",data.agent_id);
     row.setValue("agent_nm",data.agent_nm);
-//    row.setValue("ip_addr",data.ip_addr);
-//    row.setValue("port_number",data.port_number);  
     row.setValue("use_yn",data.use_yn);
     row.setValue("etc_note",data.etc_note);
 
@@ -371,11 +355,6 @@
     }
   }
   
-//   function _cbAfterAdtSave(){
-//     $("#btn-save2").prop("disabled", false);
-//     alert("저장되었습니다.");
-//     location.replace('/agentDetail/' + $("#agent_id").val());
-//   }
   
   function _cbAfterAdtSave(data) {
     if(!data.hasOwnProperty("resultCode")){
@@ -395,8 +374,6 @@
   
   function adapter_modify() {
     $("#btn-modify2").prop("disabled", true);
-    
-    //var param = "/adapterModify";
         
     var Row = new RowData( $("#adaptorFormInfo > tbody") );
     

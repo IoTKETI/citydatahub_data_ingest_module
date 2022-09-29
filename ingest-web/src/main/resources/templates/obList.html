@@ -45,9 +45,6 @@
               </div>
               <div class="button__group">
                 <button class="button__primary" type="button" onclick = "location.href = '/obDetail' ">신규추가</button>
-<!--                 <button class="button__primary" type="button" onclick = "location.href = 'http://192.168.1.91:8888' ">test8888</button> -->
-<!--                 <button class="button__primary" type="button" onclick = "location.href = 'http://192.168.1.91:8880' ">test8880</button> -->
-<!--                 <button class="button__primary" type="button" onclick = "location.href = 'http://192.168.1.91:50070' ">test50070</button> -->
               </div>
             </section>
           </fieldset>
@@ -59,7 +56,6 @@
   });
   
   function obListView (){
-    //var url = "/obListView";
     var url = "/sourceModels";
     cmUtl.exeAjax("GET", url, null, "_cbAfterObListView");
   }

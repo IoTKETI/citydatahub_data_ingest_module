@@ -77,12 +77,6 @@
                         </select>
                       </td>
                       <th>표준모델</th>
-<!--                       <td> -->
-<!--                         <select class="select select--full" id="st_datamodel"> -->
-<!--                           <option value="">선택</option> -->
-<!--                           <option th:each="itemData : ${stList}" th:value="${itemData.stId}" th:text="'['+${itemData.stId} + '] ' + ${itemData.stNm}"></option> -->
-<!--                         </select> -->
-<!--                       </td> -->
 					<td>
                         <input class="input__text" type="text" id="st_datamodel" placeholder="검색어를 입력하세요.">
                       </td>
@@ -121,16 +115,6 @@
               <div class="section__content" style="height:500px">
                 <table class="table--column" id="adtItem">
                   <caption>테이블 제목</caption>
-<!--                   <colgroup> -->
-<!--                     <col style="width:50px"> -->
-<!--                     <col style="width:170px"> -->
-<!--                     <col style="width:120px"> -->
-<!--                     <col style="width:170px"> -->
-<!--                     <col style="width:100px"> -->
-<!--                     <col style="width:200px"> -->
-<!--                     <col style="width:80px"> -->
-<!--                     <col style="width:auto"> -->
-<!--                   </colgroup> -->
                   <thead>
                     <tr>
                       <th>순번</th>
@@ -161,7 +145,7 @@
 
 <script th:inline="javascript">
 /* <![CDATA[ */ 
-var stList = /*[[ ${stList} ]]*/;
+var stList = /*[[ ${stList} ]]*/ '';
 /* ]]> */
 
 

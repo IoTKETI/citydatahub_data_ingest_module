@@ -31,14 +31,7 @@
               <th>Agent 명</th>
               <td id="info_agent_nm"></td>
             </tr>
-<!--             
-            <tr>
-              <th>IP</th>
-              <td id="info_ip_addr">192.168.1.214</td>
-              <th>Port</th>
-              <td id="info_port_number"></td>
-            </tr>
- -->            
+  
           </tbody>
         </table>
       </div>
@@ -58,7 +51,7 @@
               <caption>상세 목록</caption>
               <colgroup>
                 <col style="width:60px">
-                <col style="width:*">
+                <col >
                 <col style="width:180px">
                 <col style="width:100px">
                 <col style="width:100px">
@@ -176,12 +169,6 @@ function _cbAfterSearch(data){
       rowData.setChangeIdValue(idx, "instCnt_" , list[idx].ins_cnt);
       rowData.setChangeIdValue(idx, "Status_" , "stop");
       
-//      rowData.setChangeIdValue(idx, "msgIn_" , Math.round( Math.random()*100 ));
-//      rowData.setChangeIdValue(idx, "msgOut_" , Math.round( Math.random()*100 ));
-//      rowData.setChangeIdValue(idx, "bytesIn_" , Math.round( Math.random()*10000 ));
-//      rowData.setChangeIdValue(idx, "bytesOut_" , Math.round( Math.random()*10000 ));
-//      rowData.setChangeIdValue(idx, "failMsg_" , Math.round( Math.random()*100 ));
-
       rowData.setChangeIdValue(idx, "msgIn_" , list[idx].m_i);
       rowData.setChangeIdValue(idx, "msgOut_" , list[idx].m_o);
       rowData.setChangeIdValue(idx, "bytesIn_" , list[idx].b_i);

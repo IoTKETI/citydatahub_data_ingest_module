@@ -66,6 +66,10 @@ public class JsonUtil {
   public String toString() {
     return _jsonObject.toString();
   }
+  public Map toMap() {
+    return _jsonObject.toMap();
+  }
+
 
   public void setStrToObject(String strBody) {
     _jsonObject = new JSONObject(strBody);

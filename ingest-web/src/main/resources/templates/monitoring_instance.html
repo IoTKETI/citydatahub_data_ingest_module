@@ -4,7 +4,7 @@
 <title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">모니터링</title>
 <script type="text/javascript" th:inline="javascript">
 /*<![CDATA[*/
-var adapter_id = /*[[ ${adtId} ]]*/;
+var adapter_id = /*[[ ${adtId} ]]*/ '';
 /*]]>*/
 
 var select_adapter_id = "";
@@ -118,7 +118,7 @@ function layer_popup(el, adapter_id, status){
               <colgroup>
                 <col style="width: 50px">
                 <col style="width: 100px">
-                <col style="width: *">
+                <col >
                 <col style="width: 120px">
                 <col style="width: 70px">
                 <col style="width: 50px">

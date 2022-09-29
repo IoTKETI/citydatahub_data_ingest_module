@@ -1189,13 +1189,10 @@ INSERT INTO public.comm_code (code_type_id,code_id,code_nm,use_yn,first_create_d
    ('I12','I1203','선택(Combo Box)','Y','2019-08-30 13:22:53.244',NULL,'2019-08-30 13:22:53.244',NULL),
    ('I12','I1220','jdbc 연결','Y','2019-08-26 12:29:24',NULL,'2019-08-26 12:29:24',NULL),
    ('I12','I1221','SQL','Y','2019-08-26 12:29:24',NULL,'2019-08-26 12:29:24',NULL),
-   ('SAD','12','13','Y','2021-02-09 11:05:21.255835',NULL,'2021-02-09 11:05:21.255835',NULL),
-   ('T99','TEST','test','N','2021-02-09 16:54:19.394693',NULL,'2021-02-09 16:54:19.394693',NULL),
-   ('T99','TEST2','test4','N','2021-02-09 16:54:19.394693',NULL,'2021-02-09 16:54:19.394693',NULL),
    ('I01','I0101','송수신용 Agent','Y','2021-02-09 17:09:20.877546',NULL,'2021-02-09 17:09:20.877546',NULL),
    ('I01','I0102','연결용 Agent','Y','2021-02-09 17:09:20.877546',NULL,'2021-02-09 17:09:20.877546',NULL),
-   ('I01','I0103','연결용 Agent','Y','2021-02-09 17:09:20.877546',NULL,'2021-02-09 17:09:20.877546',NULL),
-   ('T95','TEST','TTTT','Y','2021-02-09 17:16:49.88268',NULL,'2021-02-09 17:16:49.88268',NULL);
+   ('I01','I0103','연결용 Agent','Y','2021-02-09 17:09:20.877546',NULL,'2021-02-09 17:09:20.877546',NULL);
+
 INSERT INTO public.comm_code (code_type_id,code_id,code_nm,use_yn,first_create_dt,first_create_id,last_update_dt,last_update_id) VALUES
    ('GS1','GS101','URN포맷','Y','2021-06-10 14:17:13.693596',NULL,'2021-06-10 14:17:13.693596',NULL),
    ('GS1','GS102','국가코드','Y','2021-06-10 14:17:13.700865',NULL,'2021-06-10 14:17:13.700865',NULL),
@@ -1228,15 +1225,9 @@ INSERT INTO public.comm_type (code_type_id,code_type_nm,use_yn,first_create_dt,f
    ('I10','데이터접근모드','Y','2019-08-21 16:09:07.444',NULL,'2021-02-10 16:28:08.339166',NULL),
    ('I11','대상 플랫폼 연계유형','Y',NULL,NULL,'2021-02-10 16:28:08.339166',NULL),
    ('I12','설정방법','Y','2019-08-26 12:21:30.344',NULL,'2021-02-10 16:28:08.339166',NULL),
-   ('I13','사용용도','Y','2019-08-26 12:21:43.89',NULL,'2021-02-10 16:28:08.339166',NULL),
-   ('SAD','asdf','N','2021-02-09 09:30:46.89296',NULL,'2021-02-10 16:28:08.339166',NULL),
-   ('T95','test','Y','2021-02-09 17:16:32.683481',NULL,'2021-02-10 16:28:08.339166',NULL),
-   ('T96','test','Y','2021-02-09 16:53:33.481181',NULL,'2021-02-10 16:28:08.339166',NULL),
-   ('T97','test','Y','2021-02-08 14:37:08.440832',NULL,'2021-02-10 16:28:08.339166',NULL),
-   ('T98','TEST','Y','2021-02-08 14:36:03.788559',NULL,'2021-02-10 16:28:08.339166',NULL),
-   ('T99','test','N','2021-02-08 14:33:02.880621',NULL,'2021-02-10 16:28:08.339166',NULL);
+   ('I13','사용용도','Y','2019-08-26 12:21:43.89',NULL,'2021-02-10 16:28:08.339166',NULL);
+   
 INSERT INTO public.comm_type (code_type_id,code_type_nm,use_yn,first_create_dt,first_create_id,last_update_dt,last_update_id) VALUES
-   ('TT9','TTT','Y','2021-02-10 15:28:15.928068',NULL,'2021-02-10 16:28:08.339166',NULL),
    ('GS1','GS1 코드관리','Y','2021-06-10 14:17:13.68638',NULL,'2021-06-10 14:17:13.68638',NULL),
    ('S02','교통','Y','2021-06-10 14:17:13','SYSTEM','2021-06-10 14:17:13','SYSTEM'),
    ('S03','안전','Y','2021-06-10 14:17:13','SYSTEM','2021-06-10 14:17:13','SYSTEM'),
@@ -1268,12 +1259,26 @@ INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES 
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('INVOKE_CLASS', '수집 변환할 클래스', 'I1130');
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('DATASET_ID', '데이터코어의 데이터셋아이디', 'I1130');
 
+INSERT INTO public.keyword_info (item,item_described,relation_code_id) values ('MODEL_ID','데이터의 모델 아이디','I1140');
+INSERT INTO public.keyword_info (item,item_described,relation_code_id) values ('CONN_TERM','갱신주기(초)','I1140');
+INSERT INTO public.keyword_info (item,item_described,relation_code_id) values ('INVOKE_CLASS','수집 변환할 클래스','I1140');
+INSERT INTO public.keyword_info (item,item_described,relation_code_id) values ('DATASET_ID','데이터코어의 데이터셋아이디','I1140');
+INSERT INTO public.keyword_info (item,item_described,relation_code_id) values ('DB_USERNAME','레가시 DB 접속아이디','I1140');
+INSERT INTO public.keyword_info (item,item_described,relation_code_id) values ('DB_PASSWORD','레가시 DB 접속 암호','I1140');
+INSERT INTO public.keyword_info (item,item_described,relation_code_id) values ('DB_DRIVER_CLASS_NAME','레가시 DB 클래스 네임','I1140');
+INSERT INTO public.keyword_info (item,item_described,relation_code_id) values ('DB_JDBC_URL','레가시 JDBC_URL','I1140');
+
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('URL_ADDR', NULL, 'I1150');
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('MODEL_ID', '데이터의 모델 아이디', 'I1150');
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('CONN_TERM', '갱신주기(초)', 'I1150');
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('INVOKE_CLASS', '수집 변환할 클래스', 'I1150');
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('DATASET_ID', '데이터코어의 데이터셋아이디', 'I1150');
 
+INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('URL_ADDR', NULL, 'I1160');
+INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('MODEL_ID', '데이터의 모델 아이디', 'I1160');
+INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('DATASET_ID', '데이터코어의 데이터셋아이디', 'I1160');
+INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('CONN_TERM', '갱신주기(초)', 'I1160');
+INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('INVOKE_CLASS', '수집 변환할 클래스', 'I1160');
 
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('URL_ADDR', NULL, 'I1190');
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('MODEL_ID', '데이터의 모델 아이디', 'I1190');
@@ -1281,7 +1286,6 @@ INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES 
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('INVOKE_CLASS', '수집 변환할 클래스', 'I1190');
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('DATASET_ID', '데이터코어의 데이터셋아이디', 'I1190');
 
-  
   
 
 INSERT INTO public.adapter_type_info (adapter_type_id,adapter_type_nm,adapter_type_div,use_yn) VALUES ('A000000003','기상청 날씨 측정','I1110','Y');

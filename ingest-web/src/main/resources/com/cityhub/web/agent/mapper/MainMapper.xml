@@ -320,15 +320,14 @@
     , B.adapter_id
     , C.instance_id
     , C.instance_nm
-    <!-- , 'com.cityhub.adapter.MqttSource' AS "type" -->
     , B.target_platform_type
     , D.code_nm
     ,CASE
-    WHEN D.code_nm = 'Open API' THEN 'com.cityhub.adapter.convex.OpenApiSource'
-    WHEN D.code_nm = 'OneM2M' THEN 'com.cityhub.adapter.convex.OneM2M'
-    WHEN D.code_nm = 'Legacy Platform' THEN 'com.cityhub.adapter.convex.LegacyPlatform'
-    WHEN D.code_nm = '도시통합 Platform' THEN 'com.cityhub.adapter.convex.UrbanintegrationPlatform'
-    WHEN D.code_nm = 'Fiware' THEN 'com.cityhub.adapter.convex.Fiware'
+    WHEN D.code_nm = 'Open API' THEN 'com.cityhub.adapter.OpenApiSystem'
+    WHEN D.code_nm = 'Legacy Platform' THEN 'com.cityhub.adapter.LegacyPlatform'
+    WHEN D.code_nm = 'OneM2M' THEN 'com.cityhub.adapter.OneM2M'
+    WHEN D.code_nm = '도시통합 Platform' THEN 'com.cityhub.adapter.UrbanintegrationPlatform'
+    WHEN D.code_nm = 'Fiware' THEN 'com.cityhub.adapter.Fiware'
     END AS "type"
     , 1800 AS CONN_TERM
     , 'WeatherObserved' AS TEMPLATE_FILE
@@ -506,6 +505,7 @@
     , a.adapter_id
     , d.agent_id
     , a.datamodel_tf_id
+    , b.adapter_type_div
     FROM instance_info a
     inner join adapter_info d ON a.adapter_id = d.adapter_id
     left outer join adapter_type_info b on a.adapter_type_id = b.adapter_type_id

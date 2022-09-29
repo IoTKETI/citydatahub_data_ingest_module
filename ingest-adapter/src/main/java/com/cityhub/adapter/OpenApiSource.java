@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cityhub.adapter.convex;
+package com.cityhub.adapter;
 
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
@@ -62,31 +62,23 @@ public class OpenApiSource extends AbstractPollSource {
 
   @Override
   public void setup(Context context) {
-    modelId = context.getString("MODEL_ID", "");
-    datasetId = context.getString("DATASET_ID", "");
-
-    log.info("*****************************1datasetId:{}", datasetId);
     String confFile = context.getString("CONF_FILE", "");
-    adapterType = context.getString("type", "");
-
-    schemaSrv = context.getString("DATAMODEL_API_URL", "");
-    ArrModel = StrUtil.strToArray(modelId, ",");
-
     if (!"".equals(confFile)) {
       configInfo = new JsonUtil().getFileJsonObject(confFile);
     } else {
       configInfo = new JSONObject();
     }
+    String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "http://localhost:8888/logToDbApi");
+    configInfo.put("daemonServerLogApi", DAEMON_SERVER_LOGAPI);
 
-    String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "");
-    if (!"".equals(DAEMON_SERVER_LOGAPI)) {
-      configInfo.put("daemonServerLogApi", context.getString("DAEMON_SERVER_LOGAPI", ""));
-    } else {
-      configInfo.put("daemonServerLogApi", "http://localhost:8888/logToDbApi");
-    }
+    adapterType = context.getString("type", "");
+
+    schemaSrv = context.getString("DATAMODEL_API_URL", "");
+    ArrModel = StrUtil.strToArray(modelId, ",");
+    modelId = context.getString("MODEL_ID", "");
+    datasetId = context.getString("DATASET_ID", "");
 
     configInfo.put("modelId", modelId);
-    configInfo.put("model_id", modelId);
     configInfo.put("datasetId", datasetId);
     configInfo.put("schemaSrv", schemaSrv);
     configInfo.put("sourceName", this.getName());
@@ -97,7 +89,6 @@ public class OpenApiSource extends AbstractPollSource {
     this.objectMapper.setSerializationInclusion(Include.NON_NULL);
     this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
     this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
-
   }
 
   @Override

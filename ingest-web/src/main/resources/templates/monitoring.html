@@ -21,10 +21,7 @@
               <colgroup>
                 <col style="width:50px">
                 <col style="width:150px">
-                <col style="width:*">
-<!--                 
-                <col style="width:150px">
- -->                
+                <col >
                 <col style="width:100px">
                 <col style="width:100px">
                 <col style="width:100px">
@@ -35,9 +32,6 @@
                 <th>순번</th>
                 <th>Agent ID</th>
                 <th>Agent 명</th>
-<!--                 
-                <th>IP / PORT</th>
- -->                
                 <th>어댑터 수</th>
                 <th>사용여부</th>
                 <th>비고</th>
@@ -60,9 +54,6 @@
           <td ></td>
           <td style="text-decoration:underline;color:blue;"><a href="#" ></a></td>
           <td></td>
-<!--           
-          <td></td>
- -->          
           <td></td>
           <td></td>
           <td></td>
@@ -90,7 +81,6 @@ function _cbAfterSearch(data){
       html += '<td>'+(i + 1)+'</td>';
       html += '<td style="text-decoration:underline;color:blue;"><a href="/monitor/agent/'+data[i].agent_id+'/view" >'+data[i].agent_id+'</a></td>';
       html += '<td>'+data[i].agent_nm+'</td>';
-//      html += '<td>'+data[i].ip_addr+ ' / ' + data[i].port_number +'</td>';
       html += '<td>'+data[i].adt_cnt+'</td>';
       html += '<td>'+data[i].use_yn+'</td>';
       html += '<td>'+data[i].etc_note+'</td>';

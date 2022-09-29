@@ -32,6 +32,7 @@ import com.cityhub.source.core.AbstractLegacySystemSource;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
+import com.cityhub.utils.JsonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -42,24 +43,25 @@ public class ConvUCityPlatformEvent_Postgres extends AbstractLegacySystemSource 
 
   @Override
   public String doit(HikariDataSource datasource)  {
-
     List<Map<String, Object>> rtnList = new LinkedList<>();
-    int count = 1;
-    final int bufferCount = 1000;
     String rtnStr = "";
 
-    String sql = ConfItem.getString("query");
-
-    String id = ConfItem.getString("id_prefix");
     JSONObject templateItem = ConfItem.getJSONObject("MODEL_TEMPLATE");
-    toLogger(SocketCode.SOCKET_CONNECT, id, id.getBytes());
+    JSONObject modelTemplate = templateItem.getJSONObject(ConfItem.getString("modelId"));
+    toLogger(SocketCode.SOCKET_CONNECT, ConfItem.getString("modelId"), "".getBytes());
+
+    String sql = ConfItem.getString("query");
     try (PreparedStatement pstmt = datasource.getConnection().prepareStatement(sql);
         ResultSet rs = pstmt.executeQuery();
         ){
-
       int gs1number = 0;
+      String id = ConfItem.getString("id_prefix");
       while (rs.next()) {
         toLogger(SocketCode.DATA_RECEIVE, id, id.getBytes());
+        JsonUtil jsonUtil = new JsonUtil(modelTemplate.toString());
+        jsonUtil.put("eventType.value", rs.getString("EVT_ID"));
+        jsonUtil.put("eventName.value", rs.getString("EVT_DTL"));
+
         Map<String, Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String, Object>>() {});
         Map<String, Object> wMap;
         ArrayList<Double> coordinates = new ArrayList<>();
@@ -106,11 +108,13 @@ public class ConvUCityPlatformEvent_Postgres extends AbstractLegacySystemSource 
         locValueMap.put("coordinates", coordinates);
 
         tMap.put("id", id);
-        rtnList.add(tMap);
+
+        rtnList.add(jsonUtil.toMap());
+
         count++;
 
 
-        String str = objectMapper.writeValueAsString(tMap);
+        String str = objectMapper.writeValueAsString(jsonUtil.toMap());
         toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
 
         if (count == bufferCount) {

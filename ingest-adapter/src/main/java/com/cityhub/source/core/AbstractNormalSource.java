@@ -41,12 +41,11 @@ import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zaxxer.hikari.HikariDataSource;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AbstractLegacySystemSource implements ReflectLegacySystem {
+public abstract class AbstractNormalSource  implements ReflectOpenApi {
   protected ChannelProcessor channelProcessor = null;
   protected JSONObject ConfItem = new JSONObject();
   protected ObjectMapper objectMapper;
@@ -65,7 +64,7 @@ public abstract class AbstractLegacySystemSource implements ReflectLegacySystem 
   }
 
   @Override
-  public String doit(HikariDataSource datasource) {
+  public String doit() {
     return null;
   }
 
@@ -83,6 +82,7 @@ public abstract class AbstractLegacySystemSource implements ReflectLegacySystem 
     }
   }
 
+
   protected void toLogger(SocketCode sc) {
     toLogger(sc, "", "".getBytes());
   }
@@ -90,6 +90,7 @@ public abstract class AbstractLegacySystemSource implements ReflectLegacySystem 
   protected void toLogger(SocketCode sc, String id) {
     toLogger(sc, id, "".getBytes());
   }
+
   protected void toLogger(SocketCode sc, String id, byte[] byteBody) {
     JSONObject confItem = new JSONObject(ConfItem);
 
