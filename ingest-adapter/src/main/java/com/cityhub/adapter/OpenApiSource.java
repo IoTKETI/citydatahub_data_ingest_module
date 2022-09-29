@@ -74,11 +74,13 @@ public class OpenApiSource extends AbstractPollSource {
     adapterType = context.getString("type", "");
 
     schemaSrv = context.getString("DATAMODEL_API_URL", "");
-    ArrModel = StrUtil.strToArray(modelId, ",");
+
     modelId = context.getString("MODEL_ID", "");
+    ArrModel = StrUtil.strToArray(modelId, ",");
     datasetId = context.getString("DATASET_ID", "");
 
     configInfo.put("modelId", modelId);
+    configInfo.put("model_id", modelId);
     configInfo.put("datasetId", datasetId);
     configInfo.put("schemaSrv", schemaSrv);
     configInfo.put("sourceName", this.getName());

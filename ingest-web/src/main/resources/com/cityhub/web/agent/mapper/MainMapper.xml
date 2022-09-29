@@ -333,6 +333,7 @@
     , 'WeatherObserved' AS TEMPLATE_FILE
     , rank() OVER (PARTITION BY A.agent_id ORDER BY B.adapter_id) AS ADT_I
     , COUNT(*) OVER(PARTITION BY A.agent_id) AS ADT_CNT
+    , C.datamodel_conv_div
     FROM agent_info A
     INNER JOIN adapter_info B ON A.agent_id = B.agent_id AND B.use_yn = 'Y'
     INNER JOIN instance_info C ON B.adapter_id = C.adapter_id AND C.use_yn = 'Y'
@@ -348,7 +349,7 @@
     C.instance_id
     FROM agent_info A
     INNER JOIN adapter_info B ON A.agent_id = B.agent_id AND B.use_yn = 'Y'
-    INNER JOIN instance_info C ON B.adapter_id = C.adapter_id --AND C.use_yn = 'Y'
+    INNER JOIN instance_info C ON B.adapter_id = C.adapter_id 
     WHERE A.USE_YN = 'Y'
     AND A.agent_id = #{agent_id}
     AND B.adapter_id = #{adapter_id}
@@ -365,6 +366,7 @@
     , D.item
     , D.value
     , D.sector
+    , C.datamodel_conv_div
     FROM agent_info A
     INNER JOIN adapter_info B ON A.agent_id = B.agent_id
     INNER JOIN instance_info C ON B.adapter_id = C.adapter_id

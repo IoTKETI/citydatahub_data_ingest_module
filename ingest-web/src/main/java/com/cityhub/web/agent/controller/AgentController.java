@@ -639,11 +639,10 @@ public class AgentController {
 
         bodyInstance.put("channels", "logCh");
 
-        bodyInstance.put("type", curMap.get("type"));
         bodyInstance.put("CONF_FILE", "openapi/" + curMap.get("instance_id") + ".conf");
         bodyInstance.put("DATAMODEL_API_URL", configEnv.getDataModelApiUrl());
         bodyInstance.put("DAEMON_SERVER_LOGAPI", configEnv.getDaemonSrv() + "/logToDbApi");
-        bodyInstance.put("INVOKE_CLASS", "com.cityhub.adapter.convex." + curMap.get("instance_id"));
+
         for (Map<String, String> keyword : keywordInfoList) {
           for (Map<String, String> vMp : insDetail) {
             if (keyword.get("item").equals(vMp.get("item").toString()) && !"type".equals(vMp.get("item").toString())) {
@@ -651,6 +650,16 @@ public class AgentController {
             }
           }
         }
+
+        if ("Y".equalsIgnoreCase(curMap.get("datamodel_conv_div").toString())) {
+          bodyInstance.put("type", curMap.get("type"));
+          bodyInstance.put("INVOKE_CLASS", "com.cityhub.adapter.convex." + curMap.get("instance_id"));
+        } else {
+          String type = curMap.get("type").toString().replace("OpenApiSystem","OpenApiSource");
+          bodyInstance.put("type", type );
+        }
+
+
 
         body.put((String) curMap.get("instance_id"), bodyInstance);
 
