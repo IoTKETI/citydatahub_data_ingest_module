@@ -52,7 +52,7 @@ public class ConvWeatherMeasurement_Asos_Siheung extends AbstractConvert {
   private String gettime;
 
   @Override
-  public String doit() throws CoreException {
+  public String doit() {
     List<Map<String, Object>> rtnList = new LinkedList<>(); // buffer대신 List로 데이터 받을예정
     String rtnStr = ""; // list로 받은것 string으로 변환해서 적재할거임
 
@@ -218,7 +218,7 @@ public class ConvWeatherMeasurement_Asos_Siheung extends AbstractConvert {
       }
     } catch (Exception e) {
       log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return rtnStr;

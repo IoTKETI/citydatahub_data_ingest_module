@@ -46,7 +46,7 @@ import okhttp3.Response;
 public class ConvEnergyBemsElec extends AbstractConvert {
 
   @Override
-  public String doit() throws CoreException {
+  public String doit() {
 //		StringBuffer sendJson = new StringBuffer();
     List<Map<String, Object>> rtnList = new LinkedList<>(); // buffer대신 List로 데이터 받을예정
     String rtnStr = ""; // list로 받은것 string으로 변환해서 적재할거임
@@ -123,17 +123,6 @@ public class ConvEnergyBemsElec extends AbstractConvert {
     templateJsonUtil.put("measurementType.value", JsonUtil.nvl(iSvc.getString("measurementType"), DataType.STRING));
     templateJsonUtil.put("id", JsonUtil.nvl(iSvc.getString("gs1Code"), DataType.STRING) + "." + JsonUtil.nvl(jobj.get("ctagCode"), DataType.STRING));
 
-//		Map<String,Object> addrValue = (Map)((Map)tMap.get("address")).get("value");
-//        addrValue.put("addressCountry",addressCountry);
-//        addrValue.put("addressRegion", addressRegion);
-//        addrValue.put("addressLocality", addressLocality );
-//        addrValue.put("addressTown", addressTown );
-//        addrValue.put("streetAddress",streetAddress);
-//
-//        Map<String,Object> locMap = (Map)tMap.get("location");
-//        locMap.put("observedAt",createdAt);
-//        Map<String,Object> locValueMap  = (Map)locMap.get("value");
-//        locValueMap.put("coordinates", location);
 
   }
 

@@ -47,7 +47,7 @@ public class ConvAirQualityMeasurement_Move_SiheungLivingLab extends AbstractCon
   private String gettime;
 
   @Override
-  public String doit() throws CoreException {
+  public String doit() {
     List<Map<String, Object>> rtnList = new LinkedList<>();
     String rtnStr = "";
     try {
@@ -227,7 +227,7 @@ public class ConvAirQualityMeasurement_Move_SiheungLivingLab extends AbstractCon
       }
     } catch (Exception e) {
       log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnStr;
   }

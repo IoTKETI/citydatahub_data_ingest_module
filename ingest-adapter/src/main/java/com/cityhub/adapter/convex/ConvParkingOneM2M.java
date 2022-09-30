@@ -29,7 +29,6 @@ import org.json.JSONObject;
 
 import com.cityhub.exception.CoreException;
 import com.cityhub.source.core.AbstractConvert;
-import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DataType;
 import com.cityhub.utils.DateUtil;
@@ -82,7 +81,7 @@ public class ConvParkingOneM2M extends AbstractConvert {
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
-  public String doit(byte[] message) throws CoreException {
+  public String doit(byte[] message) {
     List<Map<String, Object>> rtnList = new LinkedList<>();
     String rtnStr = "";
     String modelType = "";
@@ -106,7 +105,7 @@ public class ConvParkingOneM2M extends AbstractConvert {
           });
           modelType = tMap.get("type").toString();
           id = "urn:datahub:" + tMap.get("type") + ":" + Park[2];
-          log(SocketCode.DATA_RECEIVE, id, parkInfo.toString().getBytes(), tMap.get("type").toString());
+          log(SocketCode.DATA_RECEIVE, id, parkInfo.toString().getBytes());
 
           Map<String, Object> address = new LinkedHashMap<>();
           address.put("type", "Property");
@@ -147,7 +146,7 @@ public class ConvParkingOneM2M extends AbstractConvert {
 
           rtnList.add(tMap);
           String str = objectMapper.writeValueAsString(tMap);
-          log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes(), tMap.get("type").toString());
+          log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
         } else {
           if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3])) {
             JsonUtil parkInfo = null;
@@ -162,7 +161,7 @@ public class ConvParkingOneM2M extends AbstractConvert {
             });
             id = "urn:datahub:" + tMap.get("type") + ":" + Park[3];
             modelType = tMap.get("type").toString();
-            log(SocketCode.DATA_RECEIVE, id, parkInfo.toString().getBytes(), tMap.get("type").toString());
+            log(SocketCode.DATA_RECEIVE, id, parkInfo.toString().getBytes());
 
             Map<String, Object> address = new LinkedHashMap<>();
             address.put("type", "Property");
@@ -190,7 +189,7 @@ public class ConvParkingOneM2M extends AbstractConvert {
 
             rtnList.add(tMap);
             String str = objectMapper.writeValueAsString(tMap);
-            log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes(), tMap.get("type").toString());
+            log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
           } // if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3]) )
 
         } // if (Park.length == 4)
@@ -201,12 +200,12 @@ public class ConvParkingOneM2M extends AbstractConvert {
     } catch (CoreException e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage(), modelType);
+        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage(), modelType);
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
+      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnStr;
   }

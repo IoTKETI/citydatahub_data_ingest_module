@@ -45,9 +45,9 @@ public abstract class AbstractNormalSource  implements ReflectNormalSystem {
   protected ObjectMapper objectMapper;
   protected JSONObject ConfItem = new JSONObject();
   protected JSONObject templateItem;
-  protected final static int bufferCount = 100;
+  protected final static int bufferLength = 1000;
 
-  protected int count = 0;
+  protected int bufferCount = 0;
 
   @Override
   public void init(ChannelProcessor channelProcessor, JSONObject ConfItem) {
@@ -59,6 +59,7 @@ public abstract class AbstractNormalSource  implements ReflectNormalSystem {
     this.objectMapper.setSerializationInclusion(Include.NON_NULL);
     this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
     this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
+    setup();
   }
 
   @Override

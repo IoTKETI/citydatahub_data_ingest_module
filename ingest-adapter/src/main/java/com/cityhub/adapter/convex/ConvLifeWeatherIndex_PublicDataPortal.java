@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -39,7 +40,7 @@ public class ConvLifeWeatherIndex_PublicDataPortal extends AbstractConvert {
 
 
   @Override
-  public String doit() throws CoreException {
+  public String doit() {
 
     List<Map<String, Object>> rtnList = new LinkedList<>();
     String rtnStr = "";
@@ -150,7 +151,7 @@ public class ConvLifeWeatherIndex_PublicDataPortal extends AbstractConvert {
 
     } catch (Exception e) {
       log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnStr;
   }

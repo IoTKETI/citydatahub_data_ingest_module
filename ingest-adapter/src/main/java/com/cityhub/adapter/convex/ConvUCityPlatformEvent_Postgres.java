@@ -27,9 +27,7 @@ import java.util.Map;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.cityhub.exception.CoreException;
 import com.cityhub.source.core.AbstractNormalSource;
-import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
@@ -102,37 +100,28 @@ public class ConvUCityPlatformEvent_Postgres extends AbstractNormalSource {
 
         tMap.put("id", id);
 
+
+        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, jsonUtil.toString().getBytes());
+        toLogger(SocketCode.DATA_SAVE_REQ, id, jsonUtil.toString().getBytes());
         modelList.add(jsonUtil.toMap());
+        bufferCount++;
 
-        count++;
-
-
-        String str = objectMapper.writeValueAsString(jsonUtil.toMap());
-        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
-
-        if (count == bufferCount) {
+        if (bufferCount == bufferLength) {
           sendEvent(modelList, ConfItem.getString("datasetId"));
-          toLogger(SocketCode.DATA_SAVE_REQ, id, objectMapper.writeValueAsBytes(modelList));
-          count = 0;
+          bufferCount = 0;
           modelList = new LinkedList<>();
         }
       }
 
-      if (modelList.size() < bufferCount) {
+      if (modelList.size() < bufferLength) {
         sendEvent(modelList, ConfItem.getString("datasetId"));
-        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, objectMapper.writeValueAsBytes(modelList));
       }
 
 
     } catch (SQLException e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    } catch (CoreException e) {
-      if ("!C0099".equals(e.getErrorCode())) {
-        toLogger(SocketCode.DATA_CONVERT_FAIL, ConfItem.getString("id_prefix"), "".getBytes());
-      }
     } catch (Exception e) {
-      toLogger(SocketCode.DATA_CONVERT_FAIL, ConfItem.getString("id_prefix"), "".getBytes());
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + ConfItem.getString("id_prefix"), e);
+      toLogger(SocketCode.DATA_CONVERT_FAIL, ConfItem.getString("id_prefix"), e.getMessage());
     }
 
     return "Success";

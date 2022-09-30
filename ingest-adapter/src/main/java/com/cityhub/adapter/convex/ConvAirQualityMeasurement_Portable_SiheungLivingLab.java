@@ -47,7 +47,7 @@ public class ConvAirQualityMeasurement_Portable_SiheungLivingLab extends Abstrac
   private String gettime;
 
   @Override
-  public String doit() throws CoreException {
+  public String doit() {
     List<Map<String, Object>> rtnList = new LinkedList<>();
     String rtnStr = "";
     try {
@@ -226,7 +226,7 @@ public class ConvAirQualityMeasurement_Portable_SiheungLivingLab extends Abstrac
       }
     } catch (Exception e) {
       log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage(), e);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnStr;
   }

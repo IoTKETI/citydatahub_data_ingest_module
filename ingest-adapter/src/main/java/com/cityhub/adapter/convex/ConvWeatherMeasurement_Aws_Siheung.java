@@ -53,7 +53,7 @@ public class ConvWeatherMeasurement_Aws_Siheung extends AbstractConvert {
 
 
   @Override
-  public String doit() throws CoreException {
+  public String doit() {
 
     List<Map<String, Object>> rtnList = new LinkedList<>();
     String rtnStr = "";
@@ -226,7 +226,7 @@ public class ConvWeatherMeasurement_Aws_Siheung extends AbstractConvert {
       }
     } catch (Exception e) {
       log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return rtnStr;

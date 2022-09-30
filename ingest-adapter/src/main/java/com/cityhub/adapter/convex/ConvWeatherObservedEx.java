@@ -40,13 +40,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConvWeatherObservedEx extends AbstractNormalSource {
   private String id = "";
+
   @Override
   public String doit() {
     List<Map<String, Object>> modelList = new LinkedList<>();
     try {
       JSONObject templateItem = ConfItem.getJSONObject("MODEL_TEMPLATE");
       JSONObject modelTemplate = templateItem.getJSONObject(ConfItem.getString("modelId"));
-
 
       JSONArray svcList = ConfItem.getJSONArray("serviceList");
       for (int i = 0; i < svcList.length(); i++) {
@@ -113,7 +113,7 @@ public class ConvWeatherObservedEx extends AbstractNormalSource {
             toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
 
           } else {
-            toLogger(SocketCode.DATA_CONVERT_FAIL, id );
+            toLogger(SocketCode.DATA_CONVERT_FAIL, id);
           } // end if (arrList.length() > 0)
 
           toLogger(SocketCode.DATA_SAVE_REQ, id, objectMapper.writeValueAsBytes(modelList));
@@ -122,14 +122,9 @@ public class ConvWeatherObservedEx extends AbstractNormalSource {
         } // if (!ju.has("response.body.items.item") )
       } // for (int i = 0; i < svcList.length(); i++)
 
-    } catch (CoreException e) {
-      if ("!C0099".equals(e.getErrorCode())) {
-        toLogger(SocketCode.DATA_CONVERT_FAIL, id);
-      }
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     } catch (Exception e) {
       toLogger(SocketCode.DATA_CONVERT_FAIL, id);
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return "Success";
   }

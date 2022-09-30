@@ -21,13 +21,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cityhub.exception.CoreException;
 import com.cityhub.source.core.AbstractConvert;
 import com.cityhub.utils.CommonUtil;
-import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
@@ -39,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ConvWeatherMeasurement_PublicDataPortal extends AbstractConvert {
 
   @Override
-  public String doit() throws CoreException {
+  public String doit() {
 //		StringBuffer sendJson = new StringBuffer();
     List<Map<String, Object>> rtnList = new LinkedList<>(); // buffer대신 List로 데이터 받을예정
     String rtnStr = ""; // list로 받은것 string으로 변환해서 적재할거임
@@ -134,7 +134,7 @@ public class ConvWeatherMeasurement_PublicDataPortal extends AbstractConvert {
       }
     } catch (Exception e) {
       log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return rtnStr;

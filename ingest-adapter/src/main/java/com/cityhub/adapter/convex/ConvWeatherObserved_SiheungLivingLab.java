@@ -31,7 +31,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.cityhub.exception.CoreException;
 import com.cityhub.source.core.AbstractConvert;
 import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.SocketCode;
@@ -48,7 +47,7 @@ public class ConvWeatherObserved_SiheungLivingLab extends AbstractConvert {
   private String gettime;
 
   @Override
-  public String doit() throws CoreException {
+  public String doit() {
     List<Map<String, Object>> rtnList = new LinkedList<>();
     String rtnStr = "";
     JSONArray serviceList = ConfItem.getJSONArray("serviceList");

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 
 import com.cityhub.exception.CoreException;
@@ -187,7 +188,7 @@ public class ConvCCTV_DisasterMonitoring_Postgres extends AbstractNormalSource {
       }
     } catch (Exception e) {
       toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnStr;
   } // end of doit

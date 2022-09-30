@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -40,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ConvHealthWeatherIndex_PublicDataPortal extends AbstractConvert {
 
   @Override
-  public String doit() throws CoreException {
+  public String doit() {
 
     String[][] types = { { "asthmaIndex", "getAsthmaIdx" }, { "strokeIndex", "getStrokeIdx" }, { "foodPoisonIndex", "getFoodPoisoningIdx" }, { "oakPollenRiskIndex", "getOakPollenRiskIdx" },
         { "coldIndex", "getColdIdx" }, { "weedsPollenRiskIndex", "getWeedsPollenRiskndx" }, { "pinePollenRiskIndex", "getPinePollenRiskIdx" }, { "skinDiseaseIndex", "getSkinDiseaseIdx" } };
@@ -147,7 +148,7 @@ public class ConvHealthWeatherIndex_PublicDataPortal extends AbstractConvert {
       }
     } catch (Exception e) {
       log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnStr;
   }

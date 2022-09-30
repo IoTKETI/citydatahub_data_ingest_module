@@ -30,7 +30,6 @@ import org.json.JSONObject;
 
 import com.cityhub.exception.CoreException;
 import com.cityhub.source.core.AbstractNormalSource;
-import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -110,7 +109,7 @@ public class ConvWaterTapUsage_Legacy extends AbstractNormalSource {
       }
     } catch (Exception e) {
       toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return "Success";

@@ -20,15 +20,13 @@ package com.cityhub.environment;
 import org.apache.flume.channel.ChannelProcessor;
 import org.json.JSONObject;
 
-import com.cityhub.exception.CoreException;
-
 public interface ReflectExecuter {
 
   public void init(ChannelProcessor channelProcessor, JSONObject ConfItem, JSONObject templateItem);
 
-  public String doit(byte[] t2) throws CoreException;
+  public String doit(byte[] t2) ;
 
-  public String doit() throws CoreException;
+  public String doit() ;
 
   public void setup();
 

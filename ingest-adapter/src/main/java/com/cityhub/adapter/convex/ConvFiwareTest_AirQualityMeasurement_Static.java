@@ -30,7 +30,6 @@ import org.json.XML;
 
 import com.cityhub.exception.CoreException;
 import com.cityhub.source.core.AbstractConvert;
-import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.OkUrlUtil;
@@ -42,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ConvFiwareTest_AirQualityMeasurement_Static extends AbstractConvert {
 
   @Override
-  public String doit() throws CoreException {
+  public String doit() {
     List<Map<String, Object>> rtnList = new LinkedList<>();
 
     String rtnStr = "";
@@ -91,7 +90,7 @@ public class ConvFiwareTest_AirQualityMeasurement_Static extends AbstractConvert
       }
     } catch (Exception e) {
       log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnStr;
   }

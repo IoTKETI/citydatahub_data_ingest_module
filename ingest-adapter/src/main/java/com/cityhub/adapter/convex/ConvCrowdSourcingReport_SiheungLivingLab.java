@@ -22,13 +22,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cityhub.exception.CoreException;
 import com.cityhub.source.core.AbstractConvert;
 import com.cityhub.utils.CommonUtil;
-import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
@@ -37,11 +37,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ConvCrowdSourcingReport_SiheungLivingLab_set extends AbstractConvert {
+public class ConvCrowdSourcingReport_SiheungLivingLab extends AbstractConvert {
 
 
   @Override
-  public String doit() throws CoreException {
+  public String doit() {
     List<Map<String, Object>> rtnList = new LinkedList<>();
     String rtnStr = "";
     try {
@@ -131,7 +131,7 @@ public class ConvCrowdSourcingReport_SiheungLivingLab_set extends AbstractConver
       }
     } catch (Exception e) {
       log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnStr;
   }

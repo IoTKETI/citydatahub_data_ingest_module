@@ -203,17 +203,18 @@ public class $classname$ extends AbstractNormalSource {
     List&lt;Map&lt;String,Object&gt;&gt; modelList = new LinkedList&lt;&gt;();
     String id = "";
     try {
-      JSONObject templateItem = ConfItem.getJSONObject("MODEL_TEMPLATE");
+      // 표준모델 가져오기
       JSONObject modelTemplate = templateItem.getJSONObject(ConfItem.getString("modelId"));
-
+            
       JSONArray svcList = ConfItem.getJSONArray("serviceList");
       for (int i = 0; i < svcList.length(); i++) {
         JSONObject svcItem = svcList.getJSONObject(i);
         
         id = svcItem.getString("gs1Code");
         
-        JsonUtil jsonModel = new JsonUtil(modelTemplate.toString()); 
-
+        JsonUtil jsonModel = new JsonUtil(modelTemplate.toString());
+         
+        // 원시데이터 가져오기
         JsonUtil reqDataList = new JsonUtil((JSONObject) CommonUtil.getData(svcItem));
         toLogger(SocketCode.DATA_RECEIVE, id, reqDataList.toString().getBytes());
         
@@ -225,21 +226,17 @@ public class $classname$ extends AbstractNormalSource {
         //소스코드 첨가부분 - 종료
         
         toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, jsonModel.toString().getBytes());
+        toLogger(SocketCode.DATA_SAVE_REQ, id, jsonModel.toString().getBytes());
         modelList.add(jsonModel.toMap());
         
       } // for (int i = 0; i &lt; svcList.length(); i++)
       
-      toLogger(SocketCode.DATA_SAVE_REQ, id, objectMapper.writeValueAsBytes(modelList));
+      // 데이터허브에 전송
       sendEvent(modelList, ConfItem.getString("datasetId"));
       
-    } catch (CoreException e) {
-      if ("!C0099".equals(e.getErrorCode())) {
-        toLogger(SocketCode.DATA_CONVERT_FAIL, id);
-      }
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     } catch (Exception e) {
-      toLogger(SocketCode.DATA_CONVERT_FAIL, id);
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return "Success";    
     
@@ -257,51 +254,64 @@ public class $classname$ extends AbstractNormalSource {
   public String doit(HikariDataSource datasource)  {
     List&lt;Map&lt;String,Object&gt;&gt; modelList = new LinkedList&lt;&gt;();
     
-    JSONObject templateItem = ConfItem.getJSONObject("MODEL_TEMPLATE");
+    // 표준 모델 가져오기
     JSONObject modelTemplate = templateItem.getJSONObject(ConfItem.getString("modelId"));
     
+    // 원시 데이터를 가져오기 위한  쿼리
     String sql = ConfItem.getString("query");
-    try (PreparedStatement pstmt = datasource.getConnection().prepareStatement(sql);
-        ResultSet rs = pstmt.executeQuery();
+    try (PreparedStatement pstmt = datasource.getConnection().prepareStatement(sql)
         ){
-      String id = ConfItem.getString("id_prefix");
-      while (rs.next()) {
-        toLogger(SocketCode.DATA_RECEIVE, id, id.getBytes());
-        JsonUtil jsonModel = new JsonUtil(modelTemplate.toString());    
-
-        //소스코드 첨가부분 - 시작
-        // 예제
-        jsonModel.put("eventType.value", rs.getString("EVT_ID"));
-        jsonModel.put("eventName.value", rs.getString("EVT_DTL"));
-        
-        //소스코드 첨가부분 - 종료
-
-        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, jsonModel.toString().getBytes());
-        modelList.add(jsonModel.toMap());
-        count++;
-        
-        if (count == bufferCount) {
-          sendEvent(modelList, ConfItem.getString("datasetId"));
-          toLogger(SocketCode.DATA_SAVE_REQ, id, objectMapper.writeValueAsBytes(modelList));
-          count = 0;
-          modelList = new LinkedList&lt;&gt;();
-        }
-      }
-
-      if (modelList.size() &lt; bufferCount) {
-        sendEvent(modelList, ConfItem.getString("datasetId"));
-        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, objectMapper.writeValueAsBytes(modelList));
-      }
+      pstmt.setString("id","변수값");
       
-    } catch (SQLException e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    } catch (CoreException e) {
-      if ("!C0099".equals(e.getErrorCode())) {
-        toLogger(SocketCode.DATA_CONVERT_FAIL, ConfItem.getString("id_prefix"), "".getBytes());
+      try(ResultSet rs = pstmt.executeQuery()) {
+        String id = ConfItem.getString("id_prefix");
+        while (rs.next()) {
+          toLogger(SocketCode.DATA_RECEIVE, id, id.getBytes());
+          
+          // 표준모델 JsonUtil , JSON 항목에 접근을 쉽게 하기 위한 유틸리티
+          JsonUtil jsonModel = new JsonUtil(modelTemplate.toString());    
+  
+  
+          //소스코드 첨가부분 - 시작
+          // 예제
+          jsonModel.put("eventType.value", rs.getString("EVT_ID"));
+          jsonModel.put("eventName.value", rs.getString("EVT_DTL"));
+          
+          //소스코드 첨가부분 - 종료
+  
+        
+          toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, jsonModel.toString().getBytes());
+          toLogger(SocketCode.DATA_SAVE_REQ, id, jsonModel.toString().getBytes());
+          // 변환 작업이 완료된 모델을 modelList에 추가
+          modelList.add(jsonModel.toMap());
+          bufferCount++;
+          
+          // 레가시 같은 경우 대량 처리가 많아서 버퍼를 이용해서 처리, bufferLength 의 크기는 1000 
+          if (bufferCount == bufferLength) {
+            // 데이터허브에 전송
+            sendEvent(modelList, ConfItem.getString("datasetId"));
+            bufferCount = 0;
+            // 초기화
+            modelList = new LinkedList&lt;&gt;();
+          }
+        }
+  
+        // 처리되지 않은 나머지 부분 처리
+        if (modelList.size() &lt; bufferLength) {
+          // 데이터허브에 전송
+          sendEvent(modelList, ConfItem.getString("datasetId"));
+        }
+      
+      } catch (SQLException e) {
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       }
+    
+    } catch (SQLException e) {
+      toLogger(SocketCode.DATA_CONVERT_FAIL, ConfItem.getString("id_prefix"), e.getMessage());
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     } catch (Exception e) {
-      toLogger(SocketCode.DATA_CONVERT_FAIL, ConfItem.getString("id_prefix"), "".getBytes());
-      throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + ConfItem.getString("id_prefix"), e);
+      toLogger(SocketCode.DATA_CONVERT_FAIL, ConfItem.getString("id_prefix"), e.getMessage());
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return "Success";
   } // end of doit              

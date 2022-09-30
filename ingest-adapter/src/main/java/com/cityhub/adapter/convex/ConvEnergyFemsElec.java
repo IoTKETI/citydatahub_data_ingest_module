@@ -41,7 +41,7 @@ public class ConvEnergyFemsElec extends AbstractConvert {
 
 
   @Override
-  public String doit() throws CoreException {
+  public String doit() {
     StringBuffer sendJson = new StringBuffer();
 
     try {
