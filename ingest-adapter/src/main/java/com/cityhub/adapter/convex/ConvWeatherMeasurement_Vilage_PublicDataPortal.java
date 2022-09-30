@@ -84,7 +84,7 @@ public class ConvWeatherMeasurement_Vilage_PublicDataPortal extends AbstractConv
             for (Object obj : arrList) {
               JSONObject item = (JSONObject) obj;
               if (item != null) {
-                log(SocketCode.SOCKET_CONNECT_TRY, id);
+                toLogger(SocketCode.SOCKET_CONNECT_TRY, id);
                 // 해발 고도(m)
                 TempSwich(Tempitem, item, "altitude", "altitude", "Double");
                 // 풍향(deg)
@@ -145,14 +145,14 @@ public class ConvWeatherMeasurement_Vilage_PublicDataPortal extends AbstractConv
                 TempSwich(Tempitem, item, "S03", "snowfallHour3", "Double");
                 // 시정 (10m)
                 TempSwich(Tempitem, item, "visibility", "visibility", "Double");
-                log(SocketCode.SOCKET_CONNECT, id);
+                toLogger(SocketCode.SOCKET_CONNECT, id);
               } else {
-                log(SocketCode.SOCKET_CONNECT_FAIL, id);
+                toLogger(SocketCode.SOCKET_CONNECT_FAIL, id);
                 continue;
               }
             } // end for
 
-            log(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
+            toLogger(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
 
             Find_wMap2(tMap, Tempitem, "altitude", "Double");
             Find_wMap2(tMap, Tempitem, "windDirection", "Double");
@@ -196,7 +196,7 @@ public class ConvWeatherMeasurement_Vilage_PublicDataPortal extends AbstractConv
 
             rtnList.add(tMap);
             String str = objectMapper.writeValueAsString(tMap);
-            log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+            toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
           }
         }
       } // end for
@@ -206,10 +206,10 @@ public class ConvWeatherMeasurement_Vilage_PublicDataPortal extends AbstractConv
       }
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+        toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnStr;

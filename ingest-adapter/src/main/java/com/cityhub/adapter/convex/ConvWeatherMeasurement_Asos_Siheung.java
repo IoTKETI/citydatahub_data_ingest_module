@@ -70,7 +70,7 @@ public class ConvWeatherMeasurement_Asos_Siheung extends AbstractConvert {
             for (Object obj : arrList) { // array를 json object에 못넣기때문에 object에 넣고 다시 옮기는방식
               JSONObject item = (JSONObject) obj;
               if (item != null) {
-                log(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
+                toLogger(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
 
                 Map<String, Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String, Object>>() {
                 });
@@ -202,7 +202,7 @@ public class ConvWeatherMeasurement_Asos_Siheung extends AbstractConvert {
 
                 rtnList.add(tMap);
                 String str = objectMapper.writeValueAsString(tMap);
-                log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+                toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
               }
             }
           }
@@ -214,10 +214,10 @@ public class ConvWeatherMeasurement_Asos_Siheung extends AbstractConvert {
       }
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+        toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 

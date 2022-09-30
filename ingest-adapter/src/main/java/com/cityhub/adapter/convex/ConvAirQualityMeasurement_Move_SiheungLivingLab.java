@@ -75,7 +75,7 @@ public class ConvAirQualityMeasurement_Move_SiheungLivingLab extends AbstractCon
                 (JSONObject) CommonUtil.getData(_serviceList, _serviceList.getString("getMeasureValueList_url_addr") + "&" + "deviceId" + "=" + deviceId + "&" + "pastReqTime" + "=" + thistime));
 
             if (gMVL.has("list")) {
-              log(SocketCode.DATA_RECEIVE, id, gDL.toString().getBytes());
+              toLogger(SocketCode.DATA_RECEIVE, id, gDL.toString().getBytes());
               JSONArray MVLList = gMVL.getArray("list");
               for (Object MVLobj : MVLList) {
                 JSONObject MVLitem = (JSONObject) MVLobj;
@@ -84,7 +84,7 @@ public class ConvAirQualityMeasurement_Move_SiheungLivingLab extends AbstractCon
                   continue;
                 }
 
-                log(SocketCode.DATA_RECEIVE, id, gDL.toString().getBytes());
+                toLogger(SocketCode.DATA_RECEIVE, id, gDL.toString().getBytes());
 
                 Map<String, Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String, Object>>() {
                 });
@@ -210,7 +210,7 @@ public class ConvAirQualityMeasurement_Move_SiheungLivingLab extends AbstractCon
 
                 rtnList.add(tMap);
                 String str = objectMapper.writeValueAsString(tMap);
-                log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+                toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
               }
             }
           }
@@ -223,10 +223,10 @@ public class ConvAirQualityMeasurement_Move_SiheungLivingLab extends AbstractCon
 
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+        toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnStr;

@@ -66,7 +66,7 @@ public class ConvLifeWeatherIndex_PublicDataPortal extends AbstractConvert {
             JSONArray arrList = ju.getArray("response.body.items.item");
             JSONObject item = arrList.getJSONObject(0);
             if (item != null) {
-              log(SocketCode.SOCKET_CONNECT_TRY, id, ju.toString().getBytes());
+              toLogger(SocketCode.SOCKET_CONNECT_TRY, id, ju.toString().getBytes());
 
               Object[][] A08 = { { 0, "low" }, { 25, "normal" }, { 75, "high" }, { 100, "very high" } };
               Object[][] A07_1 = { { 0, "low" }, { 3, "normal" }, { 6, "high" }, { 8, "very high" }, { 11, "danger" } };
@@ -101,15 +101,15 @@ public class ConvLifeWeatherIndex_PublicDataPortal extends AbstractConvert {
               if ("A47".equals(item.getString("code"))) {
                 TempItemSet(Tempitem, item, A44, 8, "sensibleTemperatureWork");
               }
-              log(SocketCode.SOCKET_CONNECT, id, Tempitem.toString());
+              toLogger(SocketCode.SOCKET_CONNECT, id, Tempitem.toString());
             } else {
-              log(SocketCode.SOCKET_CONNECT_FAIL, id);
+              toLogger(SocketCode.SOCKET_CONNECT_FAIL, id);
             }
           } else {
-            log(SocketCode.SOCKET_CONNECT_FAIL, id);
+            toLogger(SocketCode.SOCKET_CONNECT_FAIL, id);
           }
         } // end j for
-        log(SocketCode.DATA_RECEIVE, id, Tempitem.toString());
+        toLogger(SocketCode.DATA_RECEIVE, id, Tempitem.toString());
 
         TempFind(tMap, Tempitem, "freeze");
         TempFind(tMap, Tempitem, "airDiffusion");
@@ -138,7 +138,7 @@ public class ConvLifeWeatherIndex_PublicDataPortal extends AbstractConvert {
 
         rtnList.add(tMap);
         String str = objectMapper.writeValueAsString(tMap);
-        log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
       } // end i for
       rtnStr = objectMapper.writeValueAsString(rtnList);
       if (rtnStr.length() < 10) {
@@ -146,11 +146,11 @@ public class ConvLifeWeatherIndex_PublicDataPortal extends AbstractConvert {
       }
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+        toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
 
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnStr;

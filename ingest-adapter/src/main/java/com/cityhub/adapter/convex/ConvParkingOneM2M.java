@@ -105,7 +105,7 @@ public class ConvParkingOneM2M extends AbstractConvert {
           });
           modelType = tMap.get("type").toString();
           id = "urn:datahub:" + tMap.get("type") + ":" + Park[2];
-          log(SocketCode.DATA_RECEIVE, id, parkInfo.toString().getBytes());
+          toLogger(SocketCode.DATA_RECEIVE, id, parkInfo.toString().getBytes());
 
           Map<String, Object> address = new LinkedHashMap<>();
           address.put("type", "Property");
@@ -146,7 +146,7 @@ public class ConvParkingOneM2M extends AbstractConvert {
 
           rtnList.add(tMap);
           String str = objectMapper.writeValueAsString(tMap);
-          log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+          toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
         } else {
           if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3])) {
             JsonUtil parkInfo = null;
@@ -161,7 +161,7 @@ public class ConvParkingOneM2M extends AbstractConvert {
             });
             id = "urn:datahub:" + tMap.get("type") + ":" + Park[3];
             modelType = tMap.get("type").toString();
-            log(SocketCode.DATA_RECEIVE, id, parkInfo.toString().getBytes());
+            toLogger(SocketCode.DATA_RECEIVE, id, parkInfo.toString().getBytes());
 
             Map<String, Object> address = new LinkedHashMap<>();
             address.put("type", "Property");
@@ -189,7 +189,7 @@ public class ConvParkingOneM2M extends AbstractConvert {
 
             rtnList.add(tMap);
             String str = objectMapper.writeValueAsString(tMap);
-            log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+            toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
           } // if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3]) )
 
         } // if (Park.length == 4)
@@ -200,11 +200,11 @@ public class ConvParkingOneM2M extends AbstractConvert {
     } catch (CoreException e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+        toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnStr;

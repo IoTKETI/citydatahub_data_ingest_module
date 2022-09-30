@@ -44,10 +44,10 @@ public class ConvWaterQualityTap_PublicDataPortal extends AbstractConvert {
         JsonUtil ju = new JsonUtil((JSONObject) CommonUtil.getData(iSvc));
         Thread.sleep(300);
         if (ju.getObj("response.body.items").toString().equals("")) {
-          log(SocketCode.SOCKET_CONNECT_FAIL, id);
+          toLogger(SocketCode.SOCKET_CONNECT_FAIL, id);
           continue;
         } else {
-          log(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
+          toLogger(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
           JSONArray arr = new JSONArray();
           Integer arrlength;
           boolean JsonArrayAs = ju.getObj("response.body.items.item") instanceof JSONArray;
@@ -58,7 +58,7 @@ public class ConvWaterQualityTap_PublicDataPortal extends AbstractConvert {
           } else if (ju.getObj("response.body.items.item") instanceof JSONObject) {
             arrlength = 1;
           } else {
-            log(SocketCode.SOCKET_CONNECT_FAIL, id);
+            toLogger(SocketCode.SOCKET_CONNECT_FAIL, id);
             continue;
           }
 
@@ -130,7 +130,7 @@ public class ConvWaterQualityTap_PublicDataPortal extends AbstractConvert {
 
               rtnList.add(tMap);
               String str = objectMapper.writeValueAsString(tMap);
-              log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+              toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
             }
           }
         }
@@ -143,10 +143,10 @@ public class ConvWaterQualityTap_PublicDataPortal extends AbstractConvert {
 
     CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+        toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 

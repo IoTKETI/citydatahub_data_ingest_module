@@ -1177,7 +1177,7 @@ INSERT INTO public.comm_code (code_type_id,code_id,code_nm,use_yn,first_create_d
 INSERT INTO public.comm_code (code_type_id,code_id,code_nm,use_yn,first_create_dt,first_create_id,last_update_dt,last_update_id) VALUES
    ('I11','I1120','OneM2M','Y','2019-08-26 09:37:33.402',NULL,'2019-08-26 09:37:33.402',NULL),
    ('I11','I1110','Open API','Y','2019-08-26 09:37:33.402',NULL,'2019-08-26 09:37:33.402',NULL),
-   ('I11','I1130','Smart City Platform','Y','2019-08-26 09:37:33.402',NULL,'2019-08-26 09:37:33.402',NULL),
+   ('I11','I1130','U-City Platform','Y','2019-08-26 09:37:33.402',NULL,'2019-08-26 09:37:33.402',NULL),
    ('I11','I1140','Legacy Platform','Y','2019-08-26 09:37:33.402',NULL,'2019-08-26 09:37:33.402',NULL),
    ('I11','I1150','도시통합 Platform','Y','2019-08-26 09:37:33.402',NULL,'2019-08-26 09:37:33.402',NULL),
    ('I11','I1190','기타','Y','2019-08-26 09:37:33.402',NULL,'2019-08-26 09:37:33.402',NULL),

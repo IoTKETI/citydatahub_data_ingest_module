@@ -69,7 +69,7 @@ public class ConvHealthWeatherIndex_PublicDataPortal extends AbstractConvert {
           Thread.sleep(500);
 
           if (new JsonUtil(datum).has("response.body.items.item")) {
-            log(SocketCode.SOCKET_CONNECT_TRY, id, datum.toString().getBytes());
+            toLogger(SocketCode.SOCKET_CONNECT_TRY, id, datum.toString().getBytes());
             JSONArray jArrItem = new JsonUtil(datum).getArray("response.body.items.item");
             JSONObject item = jArrItem.getJSONObject(0);
             if (item != null) {
@@ -95,12 +95,12 @@ public class ConvHealthWeatherIndex_PublicDataPortal extends AbstractConvert {
 
               Tempitem.put(types[j][0], resultVal);
 
-              log(SocketCode.SOCKET_CONNECT, id, Tempitem.toString());
+              toLogger(SocketCode.SOCKET_CONNECT, id, Tempitem.toString());
             } else {
-              log(SocketCode.SOCKET_CONNECT_FAIL, id);
+              toLogger(SocketCode.SOCKET_CONNECT_FAIL, id);
             }
           } else {
-            log(SocketCode.SOCKET_CONNECT_FAIL, id);
+            toLogger(SocketCode.SOCKET_CONNECT_FAIL, id);
           }
         }
 
@@ -112,7 +112,7 @@ public class ConvHealthWeatherIndex_PublicDataPortal extends AbstractConvert {
           }
         }
 
-        log(SocketCode.DATA_RECEIVE, id, Tempitem.toString());
+        toLogger(SocketCode.DATA_RECEIVE, id, Tempitem.toString());
 
         wMap = (Map) tMap.get("dataProvider");
         wMap.put("value", iSvc.optString("dataProvider", "https://www.weather.go.kr"));
@@ -136,7 +136,7 @@ public class ConvHealthWeatherIndex_PublicDataPortal extends AbstractConvert {
 
         rtnList.add(tMap);
         String str = objectMapper.writeValueAsString(tMap);
-        log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
       } // for i end
       rtnStr = objectMapper.writeValueAsString(rtnList);
       if (rtnStr.length() < 10) {
@@ -144,10 +144,10 @@ public class ConvHealthWeatherIndex_PublicDataPortal extends AbstractConvert {
       }
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
+        toLogger(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
+      toLogger(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnStr;

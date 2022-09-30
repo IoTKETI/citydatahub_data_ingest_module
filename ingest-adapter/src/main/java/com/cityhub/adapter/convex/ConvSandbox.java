@@ -89,9 +89,9 @@ public class ConvSandbox extends AbstractConvert {
               log.info("DS_AirQualityMeasurement_AirKorea_Siheung" + df5.format(cal.getTime()));
 
               String str = objectMapper.writeValueAsString(tMap);
-              log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+              toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
             } else {
-              log(SocketCode.DATA_CONVERT_FAIL, id);
+              toLogger(SocketCode.DATA_CONVERT_FAIL, id);
             } // end if (arrList.length() > 0)
           }
         }
@@ -101,10 +101,10 @@ public class ConvSandbox extends AbstractConvert {
     } catch (CoreException e) {
 
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+        toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
     return rtnStr;

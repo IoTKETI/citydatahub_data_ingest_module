@@ -76,10 +76,10 @@ public abstract class AbstractConvert implements ReflectExecuter {
     return null;
   }
 
-  public void log(SocketCode sc, String id) {
-    log(sc, id , "");
+  public void toLogger(SocketCode sc, String id) {
+    toLogger(sc, id , "");
   }
-  public void log(SocketCode sc, String id, String errMsg) {
+  public void toLogger(SocketCode sc, String id, String errMsg) {
     log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("modelId"), sc.toMessage() + "-" + errMsg, id, 0, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
     StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
@@ -106,7 +106,7 @@ public abstract class AbstractConvert implements ReflectExecuter {
   }
 
 
-  public void log(SocketCode sc, String id, byte[] byteBody) {
+  public void toLogger(SocketCode sc, String id, byte[] byteBody) {
     log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("modelId"), sc.toMessage() , id, byteBody.length, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
     StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));

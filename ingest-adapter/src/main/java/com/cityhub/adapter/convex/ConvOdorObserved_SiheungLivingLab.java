@@ -144,7 +144,7 @@ public class ConvOdorObserved_SiheungLivingLab extends AbstractConvert {
 
                   rtnList.add(tMap);
                   String str = objectMapper.writeValueAsString(tMap);
-                  log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+                  toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
                 }
 
               }

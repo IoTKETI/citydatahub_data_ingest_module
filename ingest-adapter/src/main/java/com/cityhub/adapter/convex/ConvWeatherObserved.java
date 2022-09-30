@@ -56,7 +56,7 @@ public class ConvWeatherObserved extends AbstractConvert {
         if (!ju.has("response.body.items.item") ) {
           throw new CoreException(ErrorCode.NORMAL_ERROR);
         } else {
-          log(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
+          toLogger(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
           JSONArray arrList = ju.getArray("response.body.items.item");
           Map<String,Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String,Object>>(){});
 
@@ -108,9 +108,9 @@ public class ConvWeatherObserved extends AbstractConvert {
             log.info("tMap:{}", tMap);
             rtnList.add(tMap);
             String str = objectMapper.writeValueAsString(tMap);
-            log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+            toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
           } else {
-            log(SocketCode.DATA_CONVERT_FAIL, id);
+            toLogger(SocketCode.DATA_CONVERT_FAIL, id);
           } // end if (arrList.length() > 0)
         } // if (!ju.has("response.body.items.item") )
       }  // for (int i = 0; i < svcList.length(); i++)
@@ -118,10 +118,10 @@ public class ConvWeatherObserved extends AbstractConvert {
     } catch (CoreException e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+        toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL,  id, e.getMessage() );
+      toLogger(SocketCode.DATA_CONVERT_FAIL,  id, e.getMessage() );
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 

@@ -74,10 +74,10 @@ public class ConvEnergyFemsElec extends AbstractConvert {
 
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
+        toLogger(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
+      toLogger(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
       throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
     }
     return sendJson.toString();

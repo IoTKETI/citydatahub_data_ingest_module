@@ -71,7 +71,7 @@ vi ~/.bash_profile
 
 ```bash
 # .bash_profile에 다음 내용 삽입
-export MAVEN_HOME=~/apache-maven-3.8.4
+export MAVEN_HOME=~/apache-maven-3.8.6
 PATH=$PATH:$HOME/bin:$MAVEN_HOME/bin
 ```
 
@@ -198,17 +198,21 @@ services:
     image: pinecni/ingest-daemon:latest
     hostname: ingest-daemon
     ports:
-      - 8888:8888    
+      - 8888:8888
     volumes:
       -  log-data:/opt/logs  
     environment:
       - TZ=Asia/Seoul
+      - DATASOURCE_DRIVER=org.postgresql.Driver
+      - DATASOURCE_URL=jdbc:postgresql://ingest-db:5432/postgres
+      - DATASOURCE_ID=postgres
+      - DATASOURCE_PW=pine1234      
       - DATAMODEL_API_URL=http://10.0.0.36:8080/datamodels
       - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
     depends_on:
       ingest-db:
         condition: service_healthy
-
+        
   ingest-web:
     container_name: ingest-web
     image: pinecni/ingest-web:latest 
@@ -216,32 +220,34 @@ services:
     ports:
       - 8080:8080
     volumes:
-      -  log-data:/opt/logs 
+      -  log-data:/opt/logs        
     environment:
       - TZ=Asia/Seoul
       - DATASOURCE_DRIVER=org.postgresql.Driver
-      - DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
+      - DATASOURCE_URL=jdbc:postgresql://ingest-db:5432/postgres
       - DATASOURCE_ID=postgres
       - DATASOURCE_PW=pine1234
-      - DAEMON_URL=http://ingestdaemon:8888
+      - DAEMON_URL=http://ingest-daemon:8888
       - DATAMODEL_API_URL=http://10.0.0.36:8080/datamodels
       - INGEST_INTERFACE_API_USE_YN=Y
-      - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert
+      - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
       - AUTH_YN=N
       - AUTH_EXTERNAL_URL=http://203.253.128.181:30084
       - AUTH_INTERNAL_URL=http://10.0.0.237:30000
       - AUTH_CLIENT_ID=V43z0o2boLrXia0E5zn6
       - AUTH_CLIENT_SECRET=YikQaYqOaHvIvOpGt42lfGvxAiJ4DsYY
-      - AUTN_REDIRECT_URL=http://203.253.128.181:9208
+      - AUTH_REDIRECT_URL=http://203.253.128.181:9208
       - EUREKA_ENABLED=false
       - EUREKA_EUREKA_DEFAULT_ZONE=http://10.0.0.144:8888/eureka
     depends_on:
       ingest-db:
         condition: service_healthy
       ingest-daemon:
-        condition: service_started
+        condition: service_started        
+
 volumes:
-  log-data:        
+  db-data:
+  log-data:
 ```
 
 **docker-compose.yml 변수 설명**
@@ -376,11 +382,11 @@ docker logs ingest-web
 - *streetAddress* : '**경기도 성남시 수정구 수정로 319**' 를 입력합니다. WeatherObserved 모델의 구성 요소입니다.
 - *location* : '**[127.14858, 37.4557691]**' 를 입력합니다. WeatherObserved 모델의 구성 요소입니다.
 
-8. 성남시기상관측을 인스턴스를 저장을 합니다. ![전송](./images/전송.png) 버튼을 클릭하여 저장된 설정을 적용합니다.
+8. 성남시기상관측 인스턴스를 저장합니다. ![전송](./images/전송.png) 클릭하여 설정을 적용합니다.
    ![인스턴스저장후화면](./images/인스턴스저장후화면.png)
 9. **Agent관리** > **Agent 운영** 메뉴에서 **Agent ID** -> **M000000001** 을 클릭합니다.
    ![성남시_기상관측_모니터링](./images/성남시_기상관측_모니터링.png)
-   '**성남시 기상관측**' 어댑터에서 **시작/중지** , **모니터링**이 가능합니다, 모니터링 버트을 클릭하면 다음과 같이 **모니터링 로그팝업** 이 뜹니다.
+   '**성남시 기상관측**' 어댑터에서 **시작/중지** , **모니터링**이 가능합니다, 모니터링 클릭하면 **모니터링 로그팝업** 이 뜹니다.
   ![성남시기상관측_로그모니터링](./images/성남시기상관측_로그모니터링.png) 
 
 
@@ -388,83 +394,51 @@ docker logs ingest-web
 
 - **어댑터유형관리**
 ![아답터유형목록](./images/아답터유형목록.png)</br>
-어댑터 유형 (Open API, oneM2M Platform, U-City Platform, LegacySystem(RDBMS), FIWARE Platform, 기타)의 기본 항목을 저장할 수 있습니다. 여기서 등록된 항목은 인스턴스 등록의 "Adaptor 유형"에서 활용됩니다.</br>
+어댑터 유형 (Open API, oneM2M Platform, U-City Platform, Legacy Platform(RDBMS),  기타)의 기본 항목을 저장할 수 있습니다. 여기서 등록된 항목은 인스턴스 등록의 "Adaptor 유형"에서 활용됩니다.</br>
+![추가버튼](./images/추가버튼.png)을 클릭하여 **성남시 기상관측** 유형을 등록해 보겠습니다.
+![어댑터유형-성남시기상관측등록예제](./images/어댑터유형-성남시기상관측등록예제.png)</br>
+*대상플랫폼 연계 유형* : 콤보 박스에서 '**Open API**' 를 선택합니다.
+*어댑터 유형* : 입력란에 **성남시 기상관측** 입력합니다. 
+*사용여부* : 콤보박스에서 **사용** 을 선택합니다.
 </br>
 
-- 다음 그림은 어댑터 유형의 세부항목의 입력예제입니다. 성남시 기상관측에 필요한 기본정보 예제화면입니다.
-![아답터유형_세부항목_입력예제](./images/아답터유형_세부항목_입력예제.png)</br>
+어댑터 유형을 저장 후에 **어댑터 유형ID** ** 'A000000007' 을 클릭하면 아답터 유형의 상세 항목을 등록할 수 있습니다.
+![어댑터유형-성남시기상관측등록예제](./images/어댑터유형-성남시기상관측등록예제2.png)</br>
+화면은  **아답터 파라미터 관리** , **[성남시기상관측] 세부항목** 으로 두 부분으로 나누어져 있으며, 어댑터 파라미터 관리에서는 아답터가 작동하기 위한 필수 항목들입니다. 반드시 등록해야합니다. **[성남시기상관측] 세부항목** 은 공공데이터포털에서 데이터를 가지고 오기 위한 파라미터를 설정하는 곳입니다.
 
-- 어댑터 유형에서 필요한 정보를 기입 후 agent 관리메뉴에서 에이전트를 등록합니다.
-![에이전트 목록](./images/000_에이전트_목록.png)</br>
-등록된 에이전트 목록을 볼 수 있는 화면입니다.</br>
-신규추가버튼을 클릭하면 에이전트를 등록할 수 있습니다.</br>
-수정 및 삭제는 목록에서 Agent명을 클릭 후 이동한 화면에서 처리합니다.</br>
+**아답터 파라미터 관리** 항목
 
+- *MODEL_ID* : City Data Hub 시스템에서 사용하는 모델의 ID 값을 입력합니다. '**WeatherObserved**' 를 입력합니다.
+- *CONN_TERM* : 갱신 주기를 입력합니다. 단위는 초단위 입니다. '**3600**' 을 입력합니다. 1시간 주기입니다.
+- *INVOKE_CLASS* : 기 등록된 실핼 클래스를 등록합니다. 또는 원천데이터에서 표준데이터 변환하는 클래스를 입력합니다. '**com.cityhub.adapter.convex.ConvWeatherObserved**' 을 입력합니다.
+- *DATASET_ID* : City Data Hub 시스템에서 등록된 DATASET_ID 를 입력합니다. '**pocWeatherObserved**' 를 입력합니다.
+
+**[성남시기상관측] 세부항목**  항목
+- *url_addr* : 공공데이터포털에서 기상관측 서비스의 URL을 입력합니다. '**http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?dataType=json&numOfRows=1000&nx=63&ny=124&serviceKey=인증키**' 입력합니다. 파라미터 값 중에 **serviceKey** 는 공공데이터포털에서 활성화된 인증키를 등록합니다.**nx=37&ny=127**  값은 측정하고자 하는 위치의 위경도 입니다.
+- *ParamVariable* : 기상관측의 경우 **base_date, base_time** 이 가변값입니다. 어댑터 관리 시스템의 예약어인 **ParamVariable** 를 이용하여 가변값을 처리합니다. **base_date,base_time**
+- *base_date* : 현재 연월일을 가지고 오기 위해서 '**yyyyMMdd,MINUTE,-40**' 를 입력합니다. 'MINUTE,-40' 갱싱 주기 차이 때문에 현시간으로 부터 40분전 연월일을 가져옵니다.
+- *base_time* : 현재 시간을 가지고 오기 위해서 '**HHmm,MINUTE,-40**' 를 입력합니다. 'MINUTE,-40' 갱싱 주기 차이 때문에 현시간으로 부터 40분전 시간을 가져옵니다.
+- *location* : '**[127.14858, 37.4557691]**' 를 입력합니다. 
+- *addressCountry*  : '**KR**' , 표준모델에서 쓰이는 메타정보의 국가를 입력합니다. 
+- *addressRegion*  : '**경기도**' , 표준모델에서 쓰이는 메타정보의 지역명(도)을 입력합니다. 
+- *addressLocality*  : '**성남시**' , 표준모델에서 쓰이는 메타정보의 지역명(시)을  입력합니다. 
+- *addressTown*  : '**수정구**' , 표준모델에서 쓰이는 메타정보의 지역명(군구) 입력합니다. 
+- *streetAddress*  : '**경기도 성남시 수정구 수정로 319**' , 표준모델에서 쓰이는 메타정보의 도로명주소를 입력합니다. 
+- *gs1Code* : '**urn:datahub:WeatherObserved:14858**' , 항목명칭인 **gs1Code** 편의상 등록한 이름이며, **ID , id_prefix** 등 필요에 맞게 등록 가능합니다.
 </br>
 
-- **에이전트 등록**
-![에이전트 등록](./images/000_에이전트_등록화면.png)</br>
-에이전트 등록화면이며 Agent ID,Agent 명,사용여부,비고 를 입력하여 에이전트를 등록합니다.</br>
-
-</br>
-
-- **에이전트 등록 후 화면**
-![에이전트 등록후화면](./images/000_에이전트_등록_후화면.png)</br>
-에이전트를 등록 후에 나오는 화면입니다.</br>
-에이전트의 수정 및 삭제가 가능합니다.</br>
-어댑터의 등록/수정/삭제 또한 가능합니다.</br>
-목록에서 Adaptor ID, Adaptor 명을 클릭하면 인스턴스 관리 화면으로 이동합니다.</br>
-
-</br>
-
-- **어댑터 신규추가화면**
-![아답터 등록화면](./images/000_아답터신규추가화면.png)</br>
-어댑터의 신규추가 화면이며 Adaptor ID, Adaptor 명, Platform 유형, 사용여부를 입력하여 어댑터를 등록합니다.</br>
-
-</br>
-
-- **인스턴스 관리화면**
-![인스턴스 관리화면](./images/000_인스턴스관리화면.png)</br>
-인스턴스 관리화면입니다.</br>
-
-</br>
-
-- **인스턴스 등록화면**
-![인스턴스등록화면](./images/000_인스턴스등록화면.png)</br>
-인스턴스 등록화면입니다.</br>
-인스턴스 명, 데이터모델 변환, Adaptor 유형, 사용여부, 비고를 입력하여 인스턴스를 등록합니다.</br>
-"Adaptor 유형"은 메뉴에서 어댑터 유형관리에서 추가 가능하며, 인스턴스의 기본 추가 옵션항목을 가져올 수 있습니다.</br>
-"데이터모델 변환"은 변환을 선택했을 경우 ![인스턴스 등록화면](./images/000_데이터변환관리.png) 버튼이 생기며 변환 컴파일이 가능합니다. 미 변환을 선택할 경우 등록된 표준모델변환 파일을 이용할 수 있습니다.</br>
-"Adaptor 유형"에서 기등록된 성남시 기상관측을 선택하면 인스턴스의 추가 옵션등록/변경화면이 보여집니다.</br>
-
-</br>
-
-- **인스턴스 추가옵션등록화면**
-![인스턴스추가옵션등록변경화면](./images/000_인스턴스추가옵션등록변경화면.png)</br>
-인스턴스 추가옵션화면이여 성남시 기상관측의 등록예제입니다.</br>
-사용 중 성남시 기상관측 API의 주소가 변경되었거나, 인증키가 변경되었을 경우 이곳에서 수정을 할 수 있습니다.</br>
-항목을 추가,삭제,변경 후 저장을 클릭하면 변경사항이 저장됩니다.</br>
-
-</br>
+### 4.1.2 데이터변환 관리
 
 - **데이터변환관리화면**
-![원천데이터모델선택](./images/000_데이터변환관리1.png)</br>
-![데이터변환관리](./images/000_데이터변환관리.png) 버튼을 클릭하면 변환관리 화면으로 이동합니다.</br>
-![다음단계](./images/000_다음단계.png) 를 클릭하여 변환클래스화면까지 이동합니다.</br>
+![데이터변환관리_전체](./images/데이터변환관리_전체.png)
+데이터 변환관리 화면입니다. **변환클래스 작성** 탭에서 원천데이터를 표준모델에 맞게 변환클래스를 작성합니다.
+![컴파일확인](./images/컴파일확인.png) 은 작성 중인 파일의 유효성을 체크합니다. 컴파일 오류가 없으면 하단의 회색구역에 **컴파일에 성공했습니다.** 라고 메세지를 출력합니다. 오류가 있을 경우 해당 오류를 회색구역에 출력합니다.
 
-</br>
-
-- **변환클래스작성**
-![변환클래스작성](./images/000_데이터변환관리3.png)</br>
-원천소스의 항목과 표준모델의 변환 클래스를 직접 작성하여 컴파일을 하고자 할 때 이용합니다.</br>
-"컴파일확인" 버튼을 클릭하면 현재 작성 중인 파일의 유효성을 체크합니다.</br>
-![컴파일성공](./images/컴파일성공.png)</br>
-컴파일이 정상적으로 되었을 경우 하단의 텍스트박스에 "컴파일에 성공했습니다" 란 메세지가 출력됩니다.</br>
-컴파일이 정상적으로 안될경우 그에 해당하는 메세지를 출력합니다.</br>
-
-</br>
+![데이터변환관리_코딩부분](./images/데이터변환관리_코딩부분.png)
+변환클래스의 코딩 부분이며 주석 부분인 **소스코드 첨부부분** 의 시작에서 종료 사이에 변환 부분을 작성합니다.
 
 ## 4.2 oneM2M Platform 데이터 연계
+
 
 oneM2M Platform 중 모비우스에서 주차장 정보를 예제로 하는 데이터 연계입니다.
 
@@ -634,8 +608,7 @@ U-City Platform 중 스마트시티 통합플랫폼에서 이벤트 정보를 �
 아답터 모니터링화면입니다. 메뉴에서 Agent 관리화면에서 Agent ID를 클릭하여 모니터링 화면으로 이동합니다.</br>
 ![아답터 실행중지](./images/000_에이전트실행중지.png)</br>
 아답터의 시작/중지 및 로그를 확인할 수 있습니다.</br>
-에이전트 모니터링에서 시작 버튼이 보이지 않을 시에는 해당 모델의 pushConf api를 호출하셔야 합니다</br>
-`http://localhost:8080/restApi/pushConf/AgentWeatherObserved/weatherObserved`
+
 아답터 시작버튼을 클릭하면 "재시작", "종료" 버튼이 보여집니다. "모니터링"을 클릭하면 로그를 확인할 수 있습니다.</br>
 
 ## 5.2 로그 확인

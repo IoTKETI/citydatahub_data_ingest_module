@@ -59,11 +59,11 @@ public class ConvWeatherForecast extends AbstractConvert {
         JsonUtil ju = new JsonUtil(jsonData);
         log.info("ju : {}", ju);
         if (!ju.has("response.body.items.item") == true) {
-          log(SocketCode.DATA_RECEIVE, id);
-          log(SocketCode.DATA_CONVERT_FAIL, id, "파싱하기 위한 필수항목이 존재하지 않습니다");
+          toLogger(SocketCode.DATA_RECEIVE, id);
+          toLogger(SocketCode.DATA_CONVERT_FAIL, id, "파싱하기 위한 필수항목이 존재하지 않습니다");
           throw new CoreException(ErrorCode.NORMAL_ERROR);
         } else {
-          log(SocketCode.DATA_RECEIVE, id, jsonData.toString().getBytes());
+          toLogger(SocketCode.DATA_RECEIVE, id, jsonData.toString().getBytes());
           JSONArray arrList = ju.getArray("response.body.items.item");
 
           if (arrList.length() > 0) {
@@ -144,10 +144,10 @@ public class ConvWeatherForecast extends AbstractConvert {
 
             rtnList.add(tMap);
             String str = objectMapper.writeValueAsString(tMap);
-            log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+            toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
 
           } else {
-            log(SocketCode.DATA_CONVERT_FAIL, id);
+            toLogger(SocketCode.DATA_CONVERT_FAIL, id);
           } // if (arrList.length() > 0)
 
         } // if (!ju.has("response.body.items.item") == true)
@@ -157,10 +157,10 @@ public class ConvWeatherForecast extends AbstractConvert {
       log.info("rtnStr:{}", rtnStr);
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+        toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 

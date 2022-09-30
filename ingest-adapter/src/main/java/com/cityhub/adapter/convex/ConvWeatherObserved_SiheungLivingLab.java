@@ -166,7 +166,7 @@ public class ConvWeatherObserved_SiheungLivingLab extends AbstractConvert {
                   tMap.put("id", id);
                   rtnList.add(tMap);
                   String str = objectMapper.writeValueAsString(tMap);
-                  log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+                  toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
                 }
 
               }
