@@ -19,7 +19,6 @@ package com.cityhub.adapter.convex;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -46,7 +45,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConvRoadLinkTrafficInformation_PublicDataPortal extends AbstractConvert {
   private String gettime;
-
 
   @Override
   public String doit() throws CoreException {
@@ -118,44 +116,16 @@ public class ConvRoadLinkTrafficInformation_PublicDataPortal extends AbstractCon
           addrValue.put("addressCountry", iSvc.optString("addressCountry", ""));
           addrValue.put("addressRegion", iSvc.optString("addressRegion", ""));
           addrValue.put("addressLocality", iSvc.optString("addressLocality", ""));
-          addrValue.put("addressTown", iSvc.optString("dongne", ""));
-          addrValue.put("streetAddress", iSvc.optString("juso", ""));
-
-          ArrayList<ArrayList<Double>> location = new ArrayList<>();
-          ArrayList<Double> location2 = new ArrayList<>();
-          location2.add(-109.05d);
-          location2.add(41.00d);
-          location.add(location2);
-
-          location2 = new ArrayList<>();
-          location2.add(-102.06);
-          location2.add(40.99d);
-          location.add(location2);
-
-          location2 = new ArrayList<>();
-          location2.add(-102.03d);
-          location2.add(36.99d);
-          location.add(location2);
-
-          location2 = new ArrayList<>();
-          location2.add(-109.04d);
-          location2.add(36.99d);
-          location.add(location2);
-
-          location2 = new ArrayList<>();
-          location2.add(-109.05);
-          location2.add(41.00);
-          location.add(location2);
+          addrValue.put("addressTown", iSvc.optString("addressTown", ""));
+          addrValue.put("streetAddress", iSvc.optString("streetAddress", ""));
 
           Map<String, Object> locMap = (Map) tMap.get("location");
           locMap.put("observedAt", DateUtil.getTime());
           Map<String, Object> locValueMap = (Map) locMap.get("value");
-          locValueMap.put("type", "Polygon");
-          locValueMap.put("coordinates", location);
+          locValueMap.put("coordinates", iSvc.getJSONArray("location").toList());
 
           tMap.put("id", iSvc.optString("gs1Code"));
 
-          log.info("tMap : " + tMap);
           rtnList.add(tMap);
           String str = objectMapper.writeValueAsString(tMap);
           log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());

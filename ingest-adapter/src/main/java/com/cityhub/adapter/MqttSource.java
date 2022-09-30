@@ -79,7 +79,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
   private ReflectExecuter reflectExecuter = null;
 
   private String datasetId;
-  private String schemaSrv;
+  private String DATAMODEL_API_URL;
   private String[] ArrDatasetId = null;
   private ObjectMapper objectMapper;
 
@@ -106,16 +106,15 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     ArrModel = StrUtil.strToArray(modelId, ",");
 
     adapterType = context.getString("type", "");
-    schemaSrv = context.getString("DATAMODEL_API_URL", "");
+    DATAMODEL_API_URL = context.getString("DATAMODEL_API_URL", "");
     datasetId = context.getString("DATASET_ID", "");
     ArrDatasetId = StrUtil.strToArray(datasetId, ",");
 
     ConfItem.put("topic", topic);
     ConfItem.put("req_topic", reqTopic + "/#");
     ConfItem.put("resp_topic", respTopic + "/json");
-    ConfItem.put("schemaSrv", schemaSrv);
+    ConfItem.put("DATAMODEL_API_URL", DATAMODEL_API_URL);
     ConfItem.put("modelId", modelId);
-    ConfItem.put("model_id", modelId);
     ConfItem.put("metaInfo", metaInfo);
     ConfItem.put("sourceName", this.getName());
     ConfItem.put("adapterType", adapterType);
@@ -166,13 +165,13 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     templateItem = new JSONObject();
     if (ArrModel != null) {
       for (String model : ArrModel) {
-        HttpResponse resp = OkUrlUtil.get(schemaSrv + "?id=" + model, "Accept", "application/json");
-        log.info("schema info: {},{},{}", model, resp.getStatusCode(), schemaSrv + "?id=" + model);
+        HttpResponse resp = OkUrlUtil.get(DATAMODEL_API_URL + "?id=" + model, "Accept", "application/json");
+        log.info("DATAMODEL_API_URL info: {},{},{}", model, resp.getStatusCode(), DATAMODEL_API_URL + "?id=" + model);
         if (resp.getStatusCode() == 200) {
           DataModelEx dm = new DataModelEx(resp.getPayload());
           if (dm.hasModelId(model)) {
             templateItem.put(model, dm.createModel(model));
-            log.info("schema server: {},{}", model, templateItem);
+            log.info("DATAMODEL_API_URL server: {},{}", model, templateItem);
           } else {
             templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
           }
@@ -189,7 +188,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
       log.debug("templateItem:{} -- {}", topic, templateItem);
     }
     try {
-      reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(), ConfItem, templateItem);
+      reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(),getChannelProcessor(), ConfItem, templateItem);
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
@@ -204,7 +203,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
 
     try {
       if (reflectExecuter == null) {
-        reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(), ConfItem, templateItem);
+        reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(),getChannelProcessor(), ConfItem, templateItem);
       }
       if (mqttMessage.getPayload() != null && reflectExecuter != null) {
         JsonUtil je = new JsonUtil(new String(mqttMessage.getPayload()));

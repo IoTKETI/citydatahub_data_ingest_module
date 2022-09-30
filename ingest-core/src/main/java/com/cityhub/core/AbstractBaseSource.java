@@ -30,9 +30,7 @@ import org.apache.flume.Event;
 import org.apache.flume.conf.Configurable;
 import org.apache.flume.event.EventBuilder;
 import org.apache.flume.source.AbstractSource;
-import org.json.JSONObject;
 
-import com.cityhub.utils.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -41,21 +39,10 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractBaseSource extends AbstractSource implements Configurable {
 
   protected CounterGroup counterGroup;
-  private JSONObject init = null;
-  private String schemaSrv;
 
   @Override
   public void configure(Context context) {
-    setInit(new JsonUtil().getFileJsonObject("init.conf"));
-    try {
-      if (getInit().has("SCHEMA_SERVER")) {
-        if (!"".equals(getInit().getString("SCHEMA_SERVER"))) {
-          setSchemaSrv(getInit().getString("SCHEMA_SERVER"));
-        }
-      }
-    } catch (Exception e) {
 
-    }
 
     if (counterGroup == null) {
       counterGroup = new CounterGroup();
@@ -112,20 +99,5 @@ public abstract class AbstractBaseSource extends AbstractSource implements Confi
   }
 
 
-  public String getSchemaSrv() {
-    return schemaSrv;
-  }
-
-  public void setSchemaSrv(String schemaSrv) {
-    this.schemaSrv = schemaSrv;
-  }
-
-  public JSONObject getInit() {
-    return init;
-  }
-
-  public void setInit(JSONObject init) {
-    this.init = init;
-  }
 
 } // end of class

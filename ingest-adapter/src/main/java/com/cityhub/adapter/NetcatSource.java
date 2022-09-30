@@ -130,14 +130,12 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
   private Thread acceptThread;
   private ExecutorService handlerService;
 
-  private String urlAddr;
   private String invokeClass;
   private String modelId;
-  private String schemaSrv;
+  private String DATAMODEL_API_URL;
   private JSONObject templateItem;
   private JSONObject ConfItem;
   private String[] ArrModel = null;
-  private JSONObject init = null;
 
   public NetcatSource() {
     super();
@@ -161,12 +159,11 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
     maxLineLength = context.getInteger(DefaultConstants.CONFIG_MAX_LINE_LENGTH, DefaultConstants.DEFAULT_MAX_LINE_LENGTH);
     sourceEncoding = context.getString(DefaultConstants.CONFIG_SOURCE_ENCODING, DefaultConstants.DEFAULT_ENCODING);
 
-    urlAddr = context.getString(DefaultConstants.URL_ADDR, "");
     invokeClass = context.getString(DefaultConstants.INVOKE_CLASS, "");
     modelId = context.getString("MODEL_ID", "");
     String confFile = context.getString("CONF_FILE", "");
-    setInit(new JsonUtil().getFileJsonObject("init.conf"));
-    schemaSrv = getInit().getString("SCHEMA_SERVER");
+
+    DATAMODEL_API_URL = context.getString("DATAMODEL_API_URL");
     ArrModel = StrUtil.strToArray(modelId, ",");
 
     if (!"".equals(confFile)) {
@@ -174,17 +171,10 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
     } else {
       ConfItem = new JSONObject();
     }
-    ConfItem.put("model_id", modelId);
-    ConfItem.put("schema_srv", schemaSrv);
+    ConfItem.put("modelId", modelId);
+    ConfItem.put("DATAMODEL_API_URL", DATAMODEL_API_URL);
   }
 
-  public void setInit(JSONObject init) {
-    this.init = init;
-  }
-
-  public JSONObject getInit() {
-    return init;
-  }
 
   @Override
   public void start() {
@@ -195,8 +185,8 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
 
     templateItem = new JSONObject();
     if (ArrModel != null) {
-      HttpResponse resp = OkUrlUtil.get(schemaSrv, "Content-type", "application/json");
-      log.info("schema connected: {}", resp.getStatusCode());
+      HttpResponse resp = OkUrlUtil.get(DATAMODEL_API_URL, "Content-type", "application/json");
+      log.info("DATAMODEL_API_URL connected: {}", resp.getStatusCode());
       if (resp.getStatusCode() == 200) {
         DataModel dm = new DataModel(new JSONArray(resp.getPayload()));
         for (String model : ArrModel) {
@@ -254,7 +244,6 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
     acceptRunnable.modelId = modelId;
     acceptRunnable.name = this.getName();
     acceptRunnable.ArrModel = ArrModel;
-    acceptRunnable.init = init;
 
     acceptThread = new Thread(acceptRunnable);
 
@@ -366,7 +355,6 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
           request.modelId = modelId;
           request.name = name;
           request.ArrModel = ArrModel;
-          request.init = init;
 
           handlerService.submit(request);
 
@@ -398,7 +386,6 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
     private String modelId;
     private String name;
     private String[] ArrModel = null;
-    private JSONObject init = null;
 
     public NetcatSocketHandler(int maxLineLength) {
       this.maxLineLength = maxLineLength;
@@ -534,7 +521,7 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
 
               String sb = "";
               try {
-                ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(this.invokeClass, ConfItem, templateItem);
+                ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(this.invokeClass, source.getChannelProcessor(),ConfItem, templateItem);
                 sb = reflectExecuter.doit(body);
                 sendClient(writer, SocketCode.DATA_CONVERT_SUCCESS);
               } catch (Exception e) {
@@ -599,8 +586,8 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
       JSONObject body = new JSONObject();
       body.put("requestId", Uuid);
       body.put("e2eRequestId", Uuid);
-      body.put("owner", init.getString("owner"));
-      body.put("operation", init.getString("operation"));
+      body.put("owner", "dataingest");
+      body.put("operation", "FULL_UPSERT");
       body.put("to", "DataCore/entities/" + (content.has("id") ? content.getString("id") : ""));
       body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : ""));
       body.put("queryString", "");

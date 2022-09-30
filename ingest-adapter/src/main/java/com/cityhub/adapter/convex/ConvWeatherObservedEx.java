@@ -42,8 +42,7 @@ public class ConvWeatherObservedEx extends AbstractNormalSource {
   private String id = "";
   @Override
   public String doit() {
-    List<Map<String, Object>> rtnList = new LinkedList<>();
-    String rtnStr = "";
+    List<Map<String, Object>> modelList = new LinkedList<>();
     try {
       JSONObject templateItem = ConfItem.getJSONObject("MODEL_TEMPLATE");
       JSONObject modelTemplate = templateItem.getJSONObject(ConfItem.getString("modelId"));
@@ -109,7 +108,7 @@ public class ConvWeatherObservedEx extends AbstractNormalSource {
 
             tMap.remove("airQualityIndexObservation");
 
-            rtnList.add(tMap);
+            modelList.add(tMap);
             String str = objectMapper.writeValueAsString(tMap);
             toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
 
@@ -117,12 +116,12 @@ public class ConvWeatherObservedEx extends AbstractNormalSource {
             toLogger(SocketCode.DATA_CONVERT_FAIL, id );
           } // end if (arrList.length() > 0)
 
-          toLogger(SocketCode.DATA_SAVE_REQ, id, objectMapper.writeValueAsBytes(rtnList));
-          sendEvent(rtnList, ConfItem.getString("datasetId"));
+          toLogger(SocketCode.DATA_SAVE_REQ, id, objectMapper.writeValueAsBytes(modelList));
+          sendEvent(modelList, ConfItem.getString("datasetId"));
 
         } // if (!ju.has("response.body.items.item") )
       } // for (int i = 0; i < svcList.length(); i++)
-      rtnStr = objectMapper.writeValueAsString(rtnList);
+
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
         toLogger(SocketCode.DATA_CONVERT_FAIL, id);
@@ -132,8 +131,7 @@ public class ConvWeatherObservedEx extends AbstractNormalSource {
       toLogger(SocketCode.DATA_CONVERT_FAIL, id);
       throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
     }
-
-    return rtnStr;
+    return "Success";
   }
 
 } // end of class

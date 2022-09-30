@@ -18,19 +18,20 @@
 package com.cityhub.environment;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.flume.channel.ChannelProcessor;
 import org.json.JSONObject;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ReflectExecuterManager {
-  public static ReflectExecuter getInstance(String invokeClass, JSONObject ConfItem, JSONObject templateItem ) {
+  public static ReflectExecuter getInstance(String invokeClass, ChannelProcessor channelProcessor ,JSONObject ConfItem, JSONObject templateItem ) {
     ReflectExecuter reflectExecuter = null;
 
     try {
       Class<?> clz = Class.forName(invokeClass);
       reflectExecuter  = (ReflectExecuter)clz.newInstance();
-      reflectExecuter.init(ConfItem, templateItem);
+      reflectExecuter.init(channelProcessor, ConfItem, templateItem);
     } catch (Exception e) {
       log.error("Exception : "+ExceptionUtils.getStackTrace(e));
     }

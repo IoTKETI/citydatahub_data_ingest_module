@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UCityPlatformEventSource extends AbstractPollSource {
 
   private String modelId;
-  private String schemaSrv;
+  private String DATAMODEL_API_URL;
   private String adapterType;
   private String EXCEL_FILE_FULL_PATH;
   private JSONObject templateItem = new JSONObject();
@@ -50,12 +50,12 @@ public class UCityPlatformEventSource extends AbstractPollSource {
 
     modelId = context.getString("MODEL_ID"); // UCityPlatformEvent
     adapterType = context.getString("type"); // com.cityhub.adapter.UCityPlatformEventSource
-    schemaSrv = context.getString("DATAMODEL_API_URL", "");
+    DATAMODEL_API_URL = context.getString("DATAMODEL_API_URL", "");
     EXCEL_FILE_FULL_PATH = context.getString("EXCEL_FILE"); // event.xls
     ConfItem.put("EXCEL", EXCEL_FILE_FULL_PATH);
     ConfItem.put("sourceName", this.getName());
-    ConfItem.put("model_id", modelId);
-    ConfItem.put("schema_srv", schemaSrv);
+    ConfItem.put("modelId", modelId);
+    ConfItem.put("DATAMODEL_API_URL", DATAMODEL_API_URL);
     ConfItem.put("adapterType", adapterType);
     ConfItem.put("invokeClass", context.getString("invokeClass", "") );
 
@@ -66,11 +66,9 @@ public class UCityPlatformEventSource extends AbstractPollSource {
 
   @Override
   public void execFirst() {
-    HttpResponse resp = OkUrlUtil.get(schemaSrv, "content-type", "application/json");
+    HttpResponse resp = OkUrlUtil.get(DATAMODEL_API_URL, "content-type", "application/json");
     if (resp.getStatusCode() == 200) {
       DataModel dm = new DataModel(new JSONArray(resp.getPayload()));
-      // DataModel(schema = [{ ... }])
-
       if (dm.hasModelId(modelId)) {
         templateItem = dm.createTamplate(modelId);
       } else {
@@ -90,7 +88,7 @@ public class UCityPlatformEventSource extends AbstractPollSource {
   @Override
   public void processing() {
     try {
-      ReflectExecuter exec = ReflectExecuterManager.getInstance(getInvokeClass(), ConfItem, templateItem);
+      ReflectExecuter exec = ReflectExecuterManager.getInstance(getInvokeClass(),getChannelProcessor(), ConfItem, templateItem);
       String sb = exec.doit();
 
       if (sb != null && sb.lastIndexOf(",") > 0) {

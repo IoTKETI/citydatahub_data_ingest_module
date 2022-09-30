@@ -95,12 +95,12 @@ public class LegacyPlatform extends AbstractSource implements PollableSource , C
       if (ArrModel != null) {
         for (String model : ArrModel) {
           HttpResponse resp = OkUrlUtil.get(ConfItem.getString("DATAMODEL_API_URL") + "?id=" + model, "Accept", "application/json");
-          log.info("schema info: {},{},{}", model, resp.getStatusCode(), ConfItem.getString("DATAMODEL_API_URL") + "?id=" + model);
+          log.info("DATAMODEL_API_URL info: {},{},{}", model, resp.getStatusCode(), ConfItem.getString("DATAMODEL_API_URL") + "?id=" + model);
           if (resp.getStatusCode() == 200) {
             DataModelEx dm = new DataModelEx(resp.getPayload());
             if (dm.hasModelId(model)) {
               templateItem.put(model, dm.createModel(model));
-              log.info("schema server: {},{}", model, templateItem);
+              log.info("DATAMODEL_API_URL server: {},{}", model, templateItem);
             } else {
               templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
             }

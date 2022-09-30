@@ -16,8 +16,6 @@
  */
 package com.cityhub.adapter.convex;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,12 +32,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cityhub.exception.CoreException;
-import com.cityhub.source.core.AbstractConvert;
+import com.cityhub.source.core.AbstractNormalSource;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
@@ -50,43 +48,25 @@ import com.ibm.icu.text.DecimalFormat;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ConvCCTV_ParkingEnforcement_Postgres extends AbstractConvert {
+public class ConvCCTV_ParkingEnforcement_Postgres extends AbstractNormalSource {
   @Override
-  public String doit() throws CoreException {
-
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-    JSONObject databaseInfo = ConfItem.getJSONObject("databaseInfo");
-
-    try {
-      String className = databaseInfo.getString("className");
-      String url = databaseInfo.getString("url");
-      String user = databaseInfo.getString("user");
-      String password = databaseInfo.getString("password");
-
-      Class.forName(className);
-      conn = DriverManager.getConnection(url, user, password);
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
-
+  public String doit(BasicDataSource datasource)  {
     String rtnStr = "";
+
+    List<Map<String, Object>> rtnList = new LinkedList<>();
+    String id = "";
     JSONArray cctvTypeArray = new JSONArray();
     cctvTypeArray.put("Parking Enforcement");
-    List<Map<String, Object>> rtnList = new LinkedList<>();
-
     try {
-
       for (Object obj : cctvTypeArray) {
 
         String cctvType = obj.toString();
         JSONObject cctvInfo = new JSONObject(new JsonUtil(ConfItem).get("cctvs." + cctvType).toString());
-        String sql = cctvInfo.getString("query");
 
-        try {
-          pstmt = conn.prepareStatement(sql);
-          rs = pstmt.executeQuery();
+        String sql = cctvInfo.getString("query");
+        try (PreparedStatement pstmt = datasource.getConnection().prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            ){
           int i = 0;
           while (rs.next()) {
             // 변수 선언
@@ -246,7 +226,6 @@ public class ConvCCTV_ParkingEnforcement_Postgres extends AbstractConvert {
               streetAddress = rs.getString("streetAddress");
               location.add(0.0d);
               location.add(0.0d);
-
             }
 
             Map<String, Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String, Object>>() {
@@ -291,45 +270,23 @@ public class ConvCCTV_ParkingEnforcement_Postgres extends AbstractConvert {
 
             rtnList.add(tMap);
             String str = objectMapper.writeValueAsString(tMap);
-            log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+            toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
 
           }
 
         } catch (SQLException e) {
-          log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
+          toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
         }
       }
       rtnStr = objectMapper.writeValueAsString(rtnList);
 
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
+        toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
-    } finally {
-      try {
-        if (rs != null) {
-          rs.close();
-        }
-      } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      }
-      try {
-        if (pstmt != null) {
-          pstmt.close();
-        }
-      } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      }
-      try {
-        if (conn != null) {
-          conn.close();
-        }
-      } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      }
     }
 
     return rtnStr;

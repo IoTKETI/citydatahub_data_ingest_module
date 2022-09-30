@@ -16,8 +16,6 @@
  */
 package com.cityhub.adapter.convex;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,11 +32,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.json.JSONObject;
 
 import com.cityhub.exception.CoreException;
-import com.cityhub.source.core.AbstractConvert;
+import com.cityhub.source.core.AbstractNormalSource;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
@@ -47,40 +45,21 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ConvCCTV_DisasterMonitoring_Postgres extends AbstractConvert {
+public class ConvCCTV_DisasterMonitoring_Postgres extends AbstractNormalSource {
 
 
   @Override
-  public String doit() throws CoreException {
-
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-    JSONObject databaseInfo = ConfItem.getJSONObject("databaseInfo");
-
-    try {
-      String className = databaseInfo.getString("className");
-      String url = databaseInfo.getString("url");
-      String user = databaseInfo.getString("user");
-      String password = databaseInfo.getString("password");
-
-      Class.forName(className);
-      conn = DriverManager.getConnection(url, user, password);
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
-
+  public String doit(BasicDataSource datasource)  {
     String rtnStr = "";
     List<Map<String, Object>> rtnList = new LinkedList<>();
+    String id ="";
+    String cctvType = "Disaster Monitoring";
+    JSONObject cctvInfo = ConfItem.getJSONObject(cctvType);
+    String sql = cctvInfo.getString("query");
 
-    try {
-
-      String cctvType = "Disaster Monitoring";
-      JSONObject cctvInfo = ConfItem.getJSONObject(cctvType);
-      String sql = cctvInfo.getString("query");
-
-      pstmt = conn.prepareStatement(sql);
-      rs = pstmt.executeQuery();
+    try (PreparedStatement pstmt = datasource.getConnection().prepareStatement(sql);
+        ResultSet rs = pstmt.executeQuery();
+        ){
       while (rs.next()) {
         // 변수 선언
         String name = "";
@@ -104,7 +83,7 @@ public class ConvCCTV_DisasterMonitoring_Postgres extends AbstractConvert {
         Float height = 4.0f;
 
         id = rs.getString("id");
-        log(SocketCode.DATA_RECEIVE, id);
+        toLogger(SocketCode.DATA_RECEIVE, id);
         id = cctvInfo.get("idPrefix") + id.replace("-", "_") + cctvInfo.get("idSurffix");
         name = rs.getString("name");
         try {
@@ -193,7 +172,7 @@ public class ConvCCTV_DisasterMonitoring_Postgres extends AbstractConvert {
 
         rtnList.add(tMap);
         String str = objectMapper.writeValueAsString(tMap);
-        log(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
 
       }
       rtnStr = objectMapper.writeValueAsString(rtnList);
@@ -201,36 +180,14 @@ public class ConvCCTV_DisasterMonitoring_Postgres extends AbstractConvert {
         throw new CoreException(ErrorCode.NORMAL_ERROR);
       }
     } catch (SQLException e) {
-      log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
-        log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
+        toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log(SocketCode.DATA_CONVERT_FAIL, e.getMessage(), id);
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + id, e);
-    } finally {
-      try {
-        if (rs != null) {
-          rs.close();
-        }
-      } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      }
-      try {
-        if (pstmt != null) {
-          pstmt.close();
-        }
-      } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      }
-      try {
-        if (conn != null) {
-          conn.close();
-        }
-      } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      }
     }
     return rtnStr;
   } // end of doit

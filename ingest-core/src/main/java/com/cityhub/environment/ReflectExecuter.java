@@ -17,19 +17,19 @@
 
 package com.cityhub.environment;
 
-import java.sql.Statement;
-
+import org.apache.flume.channel.ChannelProcessor;
 import org.json.JSONObject;
 
 import com.cityhub.exception.CoreException;
 
 public interface ReflectExecuter {
 
-  public void init(JSONObject ConfItem, JSONObject templateItem );
-  public String doit(Statement statement) throws CoreException ;
-  public String doit(byte[] t2) throws CoreException ;
-  public String doit() throws CoreException ;
-  public void setup();
+  public void init(ChannelProcessor channelProcessor, JSONObject ConfItem, JSONObject templateItem);
 
+  public String doit(byte[] t2) throws CoreException;
+
+  public String doit() throws CoreException;
+
+  public void setup();
 
 } // end of class

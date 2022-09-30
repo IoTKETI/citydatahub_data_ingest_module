@@ -55,7 +55,7 @@ public class ConvEnergyBemsElec extends AbstractConvert {
       JSONArray svcList = ConfItem.getJSONArray("serviceList");
       log.info("svcList:{}", svcList.toString());
 
-      String model = ConfItem.getString("model_id");
+      String model = ConfItem.getString("modelId");
       log.info("model : " + model);
 
       for (int i = 0; i < svcList.length(); i++) {

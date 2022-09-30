@@ -16,10 +16,17 @@
  */
 package com.cityhub.source.core;
 
-import java.sql.Statement;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.flume.Event;
+import org.apache.flume.channel.ChannelProcessor;
+import org.apache.flume.event.EventBuilder;
 import org.json.JSONObject;
 
 import com.cityhub.dto.LogVO;
@@ -35,13 +42,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class AbstractConvert implements ReflectExecuter {
+  protected ChannelProcessor channelProcessor = null;
   public String id = "";
   public JSONObject ConfItem = null;
   public JSONObject templateItem = null;
   public ObjectMapper objectMapper;
 
   @Override
-  public void init(JSONObject ConfItem, JSONObject templateItem) {
+  public void init(ChannelProcessor channelProcessor, JSONObject ConfItem, JSONObject templateItem) {
+    this.channelProcessor = channelProcessor;
     this.ConfItem = ConfItem;
     this.templateItem = templateItem;
     this.objectMapper = new ObjectMapper();
@@ -57,12 +66,6 @@ public abstract class AbstractConvert implements ReflectExecuter {
   }
 
   @Override
-  public String doit(Statement t1) throws CoreException {
-    // legacy db
-    return null;
-  }
-
-  @Override
   public String doit(byte[] t2) throws CoreException {
     // MQTT
     return null;
@@ -75,11 +78,11 @@ public abstract class AbstractConvert implements ReflectExecuter {
   }
 
   public void log(SocketCode sc, String id) {
-    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("model_id"), sc.getCode() + ";" + sc.getMessage() + "", id, 0, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
+    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("modelId"), sc.getCode() + ";" + sc.getMessage() + "", id, 0, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
     StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(ConfItem.getString("sourceName"));
-    l.append("`").append(ConfItem.getString("model_id"));
+    l.append("`").append(ConfItem.getString("modelId"));
     l.append("`").append(sc.toMessage());
     l.append("`").append(id);
     l.append("`").append(0);
@@ -89,7 +92,7 @@ public abstract class AbstractConvert implements ReflectExecuter {
     logVo.setSourceName(ConfItem.getString("sourceName"));
     logVo.setPayload(l.toString());
     logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-    logVo.setType(ConfItem.getString("model_id"));
+    logVo.setType(ConfItem.getString("modelId"));
     logVo.setStep(sc.getCode());
     logVo.setDesc(sc.getMessage());
     logVo.setId(id);
@@ -100,11 +103,11 @@ public abstract class AbstractConvert implements ReflectExecuter {
   }
 
   public void log(SocketCode sc, String id, String msg) {
-    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("model_id"), sc.toMessage() + "-" + msg, id, 0, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
+    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("modelId"), sc.toMessage() + "-" + msg, id, 0, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
     StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(ConfItem.getString("sourceName"));
-    l.append("`").append(ConfItem.getString("model_id"));
+    l.append("`").append(ConfItem.getString("modelId"));
     l.append("`").append(sc.toMessage() + "-" + msg);
     l.append("`").append(id);
     l.append("`").append(0);
@@ -114,7 +117,7 @@ public abstract class AbstractConvert implements ReflectExecuter {
     logVo.setSourceName(ConfItem.getString("sourceName"));
     logVo.setPayload(l.toString());
     logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-    logVo.setType(ConfItem.getString("model_id"));
+    logVo.setType(ConfItem.getString("modelId"));
     logVo.setStep(sc.getCode());
     logVo.setDesc(sc.getMessage()+ "-" + msg);
     logVo.setId(id);
@@ -152,11 +155,11 @@ public abstract class AbstractConvert implements ReflectExecuter {
   }
 
   public void log(SocketCode sc, String id, byte[] byteBody) {
-    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("model_id"), sc.toMessage() + "", id, byteBody.length, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
+    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("modelId"), sc.toMessage() + "", id, byteBody.length, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
     StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(ConfItem.getString("sourceName"));
-    l.append("`").append(ConfItem.getString("model_id"));
+    l.append("`").append(ConfItem.getString("modelId"));
     l.append("`").append(sc.toMessage());
     l.append("`").append(id);
     l.append("`").append(byteBody.length);
@@ -167,7 +170,7 @@ public abstract class AbstractConvert implements ReflectExecuter {
     logVo.setSourceName(ConfItem.getString("sourceName"));
     logVo.setPayload(l.toString());
     logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-    logVo.setType(ConfItem.getString("model_id"));
+    logVo.setType(ConfItem.getString("modelId"));
     logVo.setStep(sc.getCode());
     logVo.setDesc(sc.getMessage());
     logVo.setId(id);
@@ -183,7 +186,7 @@ public abstract class AbstractConvert implements ReflectExecuter {
     StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(ConfItem.getString("sourceName"));
-    l.append("`").append(ConfItem.getString("model_id"));
+    l.append("`").append(ConfItem.getString("modelId"));
     l.append("`").append(sc.toMessage());
     l.append("`").append(id);
     l.append("`").append(byteBody.length);
@@ -206,11 +209,11 @@ public abstract class AbstractConvert implements ReflectExecuter {
   }
 
   public void log(SocketCode sc, String id, String msg, byte[] byteBody) {
-    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("model_id"), sc.toMessage() + "-" + msg, id, byteBody.length, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
+    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("modelId"), sc.toMessage() + "-" + msg, id, byteBody.length, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
     StringBuilder l = new StringBuilder();
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(ConfItem.getString("sourceName"));
-    l.append("`").append(ConfItem.getString("model_id"));
+    l.append("`").append(ConfItem.getString("modelId"));
     l.append("`").append(sc.toMessage() + "-" + msg);
     l.append("`").append(id);
     l.append("`").append(byteBody.length);
@@ -220,7 +223,7 @@ public abstract class AbstractConvert implements ReflectExecuter {
     logVo.setSourceName(ConfItem.getString("sourceName"));
     logVo.setPayload(l.toString());
     logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-    logVo.setType(ConfItem.getString("model_id"));
+    logVo.setType(ConfItem.getString("modelId"));
     logVo.setStep(sc.getCode());
     logVo.setDesc(sc.getMessage() + "-" + msg);
     logVo.setId(id);
@@ -281,6 +284,16 @@ public abstract class AbstractConvert implements ReflectExecuter {
     logVo.setInvokeClass(ConfItem.getString("invokeClass"));
     LogWriterToDb.logToDaemonApi(ConfItem, logVo);
   }
-
+  public void sendEventEx(List<Map<String, Object>> entities, String datasetId) {
+    try {
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put("entities", entities);
+      body.put("datasetId", datasetId);
+      Event event = EventBuilder.withBody(objectMapper.writeValueAsString(body).getBytes(Charset.forName("UTF-8")));
+      channelProcessor.processEvent(event);
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
+  }
 
 } // end of class

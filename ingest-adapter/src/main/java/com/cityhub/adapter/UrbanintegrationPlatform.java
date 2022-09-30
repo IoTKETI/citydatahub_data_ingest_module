@@ -44,7 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UrbanintegrationPlatform extends AbstractPollSource {
 
   private String modelId;
-  private String schemaSrv;
+  private String DATAMODEL_API_URL;
   private JSONObject templateItem;
   private JSONObject ConfItem;
   private String[] ArrModel = null;
@@ -66,10 +66,10 @@ public class UrbanintegrationPlatform extends AbstractPollSource {
     ArrModel = StrUtil.strToArray(modelId, ",");
 
     adapterType = context.getString("type", "");
-    schemaSrv = context.getString("DATAMODEL_API_URL", "");
+    DATAMODEL_API_URL = context.getString("DATAMODEL_API_URL", "");
 
-    ConfItem.put("model_id", modelId);
-    ConfItem.put("schema_srv", schemaSrv);
+    ConfItem.put("modelId", modelId);
+    ConfItem.put("DATAMODEL_API_URL", DATAMODEL_API_URL);
     ConfItem.put("sourceName", this.getName());
     ConfItem.put("adapterType", adapterType);
     ConfItem.put("invokeClass", context.getString("invokeClass", "") );
@@ -88,8 +88,8 @@ public class UrbanintegrationPlatform extends AbstractPollSource {
     templateItem = new JSONObject();
 
     if (ArrModel != null) {
-      HttpResponse resp = OkUrlUtil.get(schemaSrv, "Content-type", "application/json");
-      log.debug("schema connected: {},{}",modelId, resp.getStatusCode());
+      HttpResponse resp = OkUrlUtil.get(DATAMODEL_API_URL, "Content-type", "application/json");
+      log.debug("DATAMODEL_API_URL connected: {},{}",modelId, resp.getStatusCode());
       if (resp.getStatusCode() == 200) {
         DataModel dm = new DataModel(new JSONArray(resp.getPayload()));
         for (String model : ArrModel) {
@@ -117,7 +117,7 @@ public class UrbanintegrationPlatform extends AbstractPollSource {
     try {
       if (ArrModel != null) {
 
-        ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass() ,  ConfItem, templateItem);
+        ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass() , getChannelProcessor(), ConfItem, templateItem);
         String sb = reflectExecuter.doit();
         if (sb != null && sb.lastIndexOf(",") > 0) {
           ObjectMapper objectMapper = new ObjectMapper();

@@ -48,7 +48,7 @@ public class OpenApiSource extends AbstractPollSource {
 
   private String modelId;
   private String datasetId;
-  private String schemaSrv;
+  private String DATAMODEL_API_URL;
   private JSONObject templateItem;
   private JSONObject ConfItem;
   private String[] ArrModel = null;
@@ -68,16 +68,15 @@ public class OpenApiSource extends AbstractPollSource {
 
     adapterType = context.getString("type", "");
 
-    schemaSrv = context.getString("DATAMODEL_API_URL", "");
+    DATAMODEL_API_URL = context.getString("DATAMODEL_API_URL", "");
 
     modelId = context.getString("MODEL_ID", "");
     ArrModel = StrUtil.strToArray(modelId, ",");
     datasetId = context.getString("DATASET_ID", "");
 
     ConfItem.put("modelId", modelId);
-    ConfItem.put("model_id", modelId);
     ConfItem.put("datasetId", datasetId);
-    ConfItem.put("schemaSrv", schemaSrv);
+    ConfItem.put("DATAMODEL_API_URL", DATAMODEL_API_URL);
     ConfItem.put("sourceName", this.getName());
     ConfItem.put("adapterType", adapterType);
     ConfItem.put("invokeClass", getInvokeClass());
@@ -93,13 +92,13 @@ public class OpenApiSource extends AbstractPollSource {
     templateItem = new JSONObject();
     if (ArrModel != null) {
       for (String model : ArrModel) {
-        HttpResponse resp = OkUrlUtil.get(schemaSrv + "?id=" + model, "Accept", "application/json");
-        log.info("schema info: {},{},{}", model, resp.getStatusCode(), schemaSrv + "?id=" + model);
+        HttpResponse resp = OkUrlUtil.get(DATAMODEL_API_URL + "?id=" + model, "Accept", "application/json");
+        log.info("DATAMODEL_API_URL info: {},{},{}", model, resp.getStatusCode(), DATAMODEL_API_URL + "?id=" + model);
         if (resp.getStatusCode() == 200) {
           DataModelEx dm = new DataModelEx(resp.getPayload());
           if (dm.hasModelId(model)) {
             templateItem.put(model, dm.createModel(model));
-            log.info("schema server: {},{}", model, templateItem);
+            log.info("DATAMODEL_API_URL server: {},{}", model, templateItem);
           } else {
             templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
           }
@@ -122,7 +121,7 @@ public class OpenApiSource extends AbstractPollSource {
     try {
       if (ArrModel != null) {
 
-        ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(), ConfItem, templateItem);
+        ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(),getChannelProcessor(), ConfItem, templateItem);
         String sb = reflectExecuter.doit();
         if (sb != null && !"".equals(sb)) {
           List<Map<String, Object>> entities = objectMapper.readValue(sb, new TypeReference<List<Map<String, Object>>>() {
@@ -150,7 +149,6 @@ public class OpenApiSource extends AbstractPollSource {
             logVo.setLength(String.valueOf(length));
             logVo.setAdapterType(ConfItem.getString("invokeClass"));
             LogWriterToDb.logToDaemonApi(ConfItem, logVo);
-
           }
 
           sendEventEx(entities, datasetId);

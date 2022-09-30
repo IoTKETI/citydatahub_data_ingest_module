@@ -111,8 +111,8 @@ public class MqttSubSource extends AbstractPollSource {
     JSONObject body = new JSONObject();
     body.put("requestId", Uuid);
     body.put("e2eRequestId", Uuid);
-    body.put("owner", getInit().getString("owner"));
-    body.put("operation", getInit().getString("operation"));
+    body.put("owner", "dataingest");
+    body.put("operation", "FULL_UPSERT");
     body.put("to", "DataCore/entities/" + (content.has("id") ? content.getString("id") : ""));
     body.put("contentType", "application/json;type=" + (content.has("type") ? content.getString("type") : ""));
     body.put("queryString", "");

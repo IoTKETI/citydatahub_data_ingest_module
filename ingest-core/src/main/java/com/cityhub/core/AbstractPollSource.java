@@ -34,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractPollSource extends AbstractBaseSource implements PollableSource {
 
-  private String urlAddr;
   private String invokeClass;
   private Integer connTerm; // second
 
@@ -42,7 +41,6 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
   public void configure(Context context) {
 
     super.configure(context);
-    urlAddr = context.getString(DefaultConstants.URL_ADDR, "");
     invokeClass = context.getString(DefaultConstants.INVOKE_CLASS, "");
     connTerm = context.getInteger(DefaultConstants.CONN_TERM, 600);
 
@@ -118,13 +116,6 @@ public abstract class AbstractPollSource extends AbstractBaseSource implements P
     return PollableSourceConstants.DEFAULT_MAX_BACKOFF_SLEEP;
   }
 
-  public String getUrlAddr() {
-    return urlAddr;
-  }
-
-  public void setUrlAddr(String urlAddr) {
-    this.urlAddr = urlAddr;
-  }
 
   public String getInvokeClass() {
     return invokeClass;

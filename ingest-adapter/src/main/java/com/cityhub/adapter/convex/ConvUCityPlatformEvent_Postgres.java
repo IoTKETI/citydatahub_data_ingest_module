@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.JSONObject;
 
 import com.cityhub.exception.CoreException;
 import com.cityhub.source.core.AbstractNormalSource;
@@ -43,12 +42,8 @@ public class ConvUCityPlatformEvent_Postgres extends AbstractNormalSource {
 
   @Override
   public String doit(BasicDataSource datasource)  {
-    List<Map<String, Object>> rtnList = new LinkedList<>();
-    String rtnStr = "";
+    List<Map<String, Object>> modelList = new LinkedList<>();
 
-    JSONObject templateItem = ConfItem.getJSONObject("MODEL_TEMPLATE");
-    JSONObject modelTemplate = templateItem.getJSONObject(ConfItem.getString("modelId"));
-    toLogger(SocketCode.SOCKET_CONNECT, ConfItem.getString("modelId"), "".getBytes());
 
     String sql = ConfItem.getString("query");
     try (PreparedStatement pstmt = datasource.getConnection().prepareStatement(sql);
@@ -58,9 +53,7 @@ public class ConvUCityPlatformEvent_Postgres extends AbstractNormalSource {
       String id = ConfItem.getString("id_prefix");
       while (rs.next()) {
         toLogger(SocketCode.DATA_RECEIVE, id, id.getBytes());
-        JsonUtil jsonUtil = new JsonUtil(modelTemplate.toString());
-        jsonUtil.put("eventType.value", rs.getString("EVT_ID"));
-        jsonUtil.put("eventName.value", rs.getString("EVT_DTL"));
+        JsonUtil jsonUtil = new JsonUtil(templateItem.getJSONObject(ConfItem.getString("modelId")).toString() );
 
         Map<String, Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String, Object>>() {});
         Map<String, Object> wMap;
@@ -109,7 +102,7 @@ public class ConvUCityPlatformEvent_Postgres extends AbstractNormalSource {
 
         tMap.put("id", id);
 
-        rtnList.add(jsonUtil.toMap());
+        modelList.add(jsonUtil.toMap());
 
         count++;
 
@@ -118,16 +111,16 @@ public class ConvUCityPlatformEvent_Postgres extends AbstractNormalSource {
         toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
 
         if (count == bufferCount) {
-          sendEvent(rtnList, ConfItem.getString("datasetId"));
-          toLogger(SocketCode.DATA_SAVE_REQ, id, objectMapper.writeValueAsBytes(rtnList));
+          sendEvent(modelList, ConfItem.getString("datasetId"));
+          toLogger(SocketCode.DATA_SAVE_REQ, id, objectMapper.writeValueAsBytes(modelList));
           count = 0;
-          rtnList = new LinkedList<>();
+          modelList = new LinkedList<>();
         }
       }
 
-      if (rtnList.size() < bufferCount) {
-        sendEvent(rtnList, ConfItem.getString("datasetId"));
-        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, objectMapper.writeValueAsBytes(rtnList));
+      if (modelList.size() < bufferCount) {
+        sendEvent(modelList, ConfItem.getString("datasetId"));
+        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, objectMapper.writeValueAsBytes(modelList));
       }
 
 
@@ -142,7 +135,7 @@ public class ConvUCityPlatformEvent_Postgres extends AbstractNormalSource {
       throw new CoreException(ErrorCode.NORMAL_ERROR, e.getMessage() + "`" + ConfItem.getString("id_prefix"), e);
     }
 
-    return rtnStr;
+    return "Success";
   } // end of doit
 
   Map<String, Object> Find_wMap(Map<String, Object> tMap, String Name) {

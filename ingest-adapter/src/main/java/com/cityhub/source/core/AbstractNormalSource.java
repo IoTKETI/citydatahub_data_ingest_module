@@ -42,8 +42,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractNormalSource  implements ReflectNormalSystem {
   protected ChannelProcessor channelProcessor = null;
-  protected JSONObject ConfItem = new JSONObject();
   protected ObjectMapper objectMapper;
+  protected JSONObject ConfItem = new JSONObject();
+  protected JSONObject templateItem;
   protected final static int bufferCount = 100;
 
   protected int count = 0;
@@ -52,6 +53,8 @@ public abstract class AbstractNormalSource  implements ReflectNormalSystem {
   public void init(ChannelProcessor channelProcessor, JSONObject ConfItem) {
     this.channelProcessor = channelProcessor;
     this.ConfItem = ConfItem;
+    this.templateItem = ConfItem.getJSONObject("MODEL_TEMPLATE");
+
     this.objectMapper = new ObjectMapper();
     this.objectMapper.setSerializationInclusion(Include.NON_NULL);
     this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
@@ -95,6 +98,33 @@ public abstract class AbstractNormalSource  implements ReflectNormalSystem {
   protected void toLogger(SocketCode sc, String id) {
     toLogger(sc, id, "".getBytes());
   }
+  protected void toLogger(SocketCode sc, String id,String errMsg) {
+    log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("modelId"), sc.toMessage(), id, errMsg.getBytes().length, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
+
+    StringBuilder l = new StringBuilder();
+    l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
+    l.append("`").append(ConfItem.getString("sourceName"));
+    l.append("`").append(ConfItem.getString("modelId"));
+    l.append("`").append(sc.toMessage() + " - " + errMsg);
+    l.append("`").append(id);
+    l.append("`").append(errMsg.getBytes());
+    l.append("`").append(ConfItem.getString("adapterType"));
+    l.append("`").append(ConfItem.getString("invokeClass"));
+
+    LogVO logVo = new LogVO();
+    logVo.setSourceName(ConfItem.getString("sourceName"));
+    logVo.setPayload(l.toString());
+    logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
+    logVo.setType(ConfItem.getString("modelId"));
+    logVo.setStep(sc.getCode());
+    logVo.setDesc(sc.getMessage() + " - " + errMsg );
+    logVo.setId(id);
+    logVo.setLength(String.valueOf(errMsg.getBytes().length));
+    logVo.setAdapterType(ConfItem.getString("adapterType"));
+    logVo.setInvokeClass(ConfItem.getString("invokeClass"));
+
+    LogWriterToDb.logToDaemonApi(ConfItem, logVo);
+  }
 
   protected void toLogger(SocketCode sc, String id, byte[] byteBody) {
     log.info("`{}`{}`{}`{}`{}`{}`{}", ConfItem.getString("sourceName"), ConfItem.getString("modelId"), sc.toMessage(), id, byteBody.length, ConfItem.getString("adapterType"), ConfItem.getString("invokeClass"));
@@ -103,7 +133,7 @@ public abstract class AbstractNormalSource  implements ReflectNormalSystem {
     l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
     l.append("`").append(ConfItem.getString("sourceName"));
     l.append("`").append(ConfItem.getString("modelId"));
-    l.append("`").append(sc.getMessage());
+    l.append("`").append(sc.toMessage());
     l.append("`").append(id);
     l.append("`").append(byteBody.length);
     l.append("`").append(ConfItem.getString("adapterType"));
