@@ -67,23 +67,22 @@ public class WebInterceptor implements HandlerInterceptor {
         if (token != null) {
           authService.cookieAddTokenByJson(response, token);
           authService.createTokenSession(token, request,response);
-        }
-      }
-      String tokenCheck = (String) session.getAttribute("token");
-      if (tokenCheck == null) {
-        try {
-          String authCodeUrl = authService.getAuthCode(request);
-          response.sendRedirect(authCodeUrl);
-          return false;
-        } catch (Exception e) {
-          log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+
+          if (authService.ValidateToken(authService.getPublicKey(), token, request, response)) {
+            try {
+              String authCodeUrl = authService.getAuthCode(request);
+              response.sendRedirect(authCodeUrl);
+              return false;
+            } catch (Exception e) {
+              log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+            }
+          }
         }
       }
       // 권한 없는 사용자 로그아웃 처리
-      if("adminSystem".equals(session.getAttribute("type"))  && !"Connectivity_Admin".equals(session.getAttribute("role"))   ) {
+      if( !"Connectivity_Admin".equals(session.getAttribute("role"))   ) {
         response.sendRedirect("/logout");
       }
-
     }
 
     return true;
