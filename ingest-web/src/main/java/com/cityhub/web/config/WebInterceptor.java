@@ -68,7 +68,7 @@ public class WebInterceptor implements HandlerInterceptor {
           authService.cookieAddTokenByJson(response, token);
           authService.createTokenSession(token, request,response);
 
-          if (authService.ValidateToken(authService.getPublicKey(), token, request, response)) {
+          if (!authService.ValidateToken(authService.getPublicKey(), token, request, response)) {
             try {
               String authCodeUrl = authService.getAuthCode(request);
               response.sendRedirect(authCodeUrl);
