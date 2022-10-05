@@ -61,8 +61,12 @@ public class AuthController {
 
     HttpSession session = request.getSession();
     // 권한 없는 사용자 로그아웃 처리
-    if (!"Connectivity_Admin".equals(session.getAttribute("role"))) {
-      return "redirect:/logout";
+    if ("Y".equalsIgnoreCase(authYn)) {
+      if (!"Connectivity_Admin".equals(session.getAttribute("role"))) {
+        return "redirect:/logout";
+      } else {
+        return "redirect:/monitor/dashView";
+      }
     } else {
       return "redirect:/monitor/dashView";
     }
@@ -86,7 +90,7 @@ public class AuthController {
       }
     } else {
       try {
-        response.sendRedirect("/");
+        response.sendRedirect("/monitor/dashView");
         return;
       } catch (Exception e) {
         log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -100,7 +104,7 @@ public class AuthController {
     authService.removeCookie(request, response);
     authService.removeSession(request);
 
-    return "redirect:lo";
+    return "redirect:login";
   }
 
   @RequestMapping("/callClient")
