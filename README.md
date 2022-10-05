@@ -310,7 +310,7 @@ docker compose logs
 docker logs ingest-web
 ```
 
-# 4. 데이터 연계
+# 4. 데이터 연계 예시
 
 ## 4.1 공공데이터포털(data.go.kr) Open API 데이터 연계
 
@@ -437,167 +437,134 @@ docker logs ingest-web
 ![데이터변환관리_코딩부분](./images/데이터변환관리_코딩부분.png)
 변환클래스의 코딩 부분이며 주석 부분인 **소스코드 첨부부분** 의 시작에서 종료 사이에 변환 부분을 작성합니다.
 
-## 4.2 oneM2M Platform 데이터 연계
+
+## 4.2 Legacy System (RDBMS) 데이터 연계
+
+1. 수집관리UI(<http://localhost:8080/>) 의 **Agent 관리** > **Agent 설정** 메뉴에서 ![신규추가버튼](./images/신규추가버튼.png) 을 클릭합니다.
+
+![에이전트-등록-레가시](./images/에이전트-등록-레가시.png)
+저장 후에는 **Adaptor 추가 등록 / 변경** 을 할 수 있습니다.
+
+- *Agent ID* : '**M000000003**' 을 입력합니다.(10자내 입력)
+- *Agent 명* : '**레가시 테스트**' 을 입력합니다.
+- *사용여부* : '**사용**' 를 선택합니다.
+
+2. **Agent설정** 화면에서 저장 후 **Adaptor 추가 등록/변경** 화면에서 ![신규추가버튼2](./images/신규추가버튼2.png) 을 클릭합니다. 
+![아답터-레가시등록](./images/아답터-레가시등록.png)
+
+- *Adaptor ID* : '**pocLegacyWeather**' 를 입력합니다.
+- *Adaptor 명* : '**레가시 테스트**' 을 입력합니다.
+- *Platform 유형* : '**Legacy Platform**' 선택합니다. (Open API, OneM2M, Legacy Platform, 도시통합 Platform, smartcity Platform, 기타, FIWARE)
+![아답터_등록후화면](./images/아답터_등록후화면.png)
+**아답터_등록 후 화면** 목록에서 **Adaptor ID** 인 **pocLegacyWeather** 를 클릭 하면 **Instance 관리** 화면으로 이동합니다.
+
+3. **Instance 관리** 화면에서 ![신규추가버튼2](./images/신규추가버튼2.png) 클릭합니다.
+   ![인스턴스-등록-레가시](./images/인스턴스-등록-레가시.png)
+
+- *인스턴스명* : '**레가시 테스트**' 을 입력합니다.
+- *데이터모델 변환* : '**변환**' 선택합니다. 변환은 Web 에서 직접 코딩을 하여 데이터를 컨버팅 합니다. 미변환은 기 제공된 Java Class 를 이용합니다.
+- *Adpator 유형* : '**레가시 테스트**' 을 선택합니다. 메뉴 **Adaptor 유형 관리**에서 등록 된 유형을 선택할 수 있습니다. 유형을 선택하면 인스턴스 상세 항목이 표시됩니다.
+- *사용여부* : '**사용**' 을 선택합니다.
+
+**인스턴스 등록 필수 정보**
+![인스턴스-레가시-필수정보](./images/인스턴스-레가시-필수정보.png)
+
+- *DATASET_ID* : '**poclegacyWeather**' 를 입력합니다. City Data Hub 시스템에서 정의한 데이터셋 아이디를 입력합니다.
+- *MODEL_ID* : '**WeatherObserved**' 를 입력합니다. City Data Hub 시스템에서 정의한 모델 아이디를 입력합니다.
+- *INVOKE_CLASS* : '**com.cityhub.adapter.convex.ConvLegacyWeather**' 를 입력합니다. 기 제공된 클래스 파일이며 여기서는 **데이터모델 변환관리**를 이용합니다.
+- *CONN_TERM* : '**3600**' 를 입력합니다. 초단위이며 1시간(60*60) 단위로 데이터를 가져옵니다.
+- *DB_DRIVER_CLASS_NAME* : **org.postgresql.Driver** 를 입력합니다.,  DATABASE JDBC Driver 입니다. 여기서는 postgresql을 예시롤 사용했습니다. 각 DB 벤더에 맞게 입력하시면 다양한 DB의 데이터를 가지고 올 수 있습니다.
+- *DB_JDBC_URL* : **jdbc:postgresql://localhost:5430/postgres**, JDBC 연결 문자열 입니다. 여기서는 postgresql jdbc 연결문자열을 예시로 사용했습니다.
+- *DB_USERNAME* : **postgres**, 연결하고자 하는 디비의 아이디를 입력합니다.
+- *DB_PASSWORD* : **pine1234** , 연결하고자 하는 디비의 패스워드를 입력합니다.
 
 
-oneM2M Platform 중 모비우스에서 주차장 정보를 예제로 하는 데이터 연계입니다.
+**인스턴스 데이터 메타정보**
+![인스턴스-레가시-메타정보](./images/인스턴스-레가시-메타정보.png)
 
-1. postman 또는 curl로 주차장 정보의 리소스를 확인합니다.
-   ```curl --location --request GET 'http://203.253.128.164:7579/Mobius/sync_parking_raw?fu=1&ty=3' --header 'Accept: application/json' --header 'X-M2M-Origin: SW001' --header 'X-M2M-RI: cityhub'```
-2. 수집관리UI 화면에서 adaptor유형관리의 oneM2M 구독관리 화면으로 이동합니다.
-3. 필요한 정보를 기입 후 하위컨테이너 검색 후 구독합니다.
-4. adaptor유형별 파라미터관리 화면으로 이동합니다.
-5. adaptor유형관리에서 '성남시 주차장' 명칭으로 등록합니다. 이때 대상플랫폼 연계유형은 'oneM2M Platform'를 선택합니다.
-6. '성남시 주차장'이 등록 된 후 클릭하면 세부항목을 등록할 수 있습니다.
-7. 세부항목으로는 MODEL_ID,DATASET_ID,INVOKE_CLASS,CONN_TERM의 필수 예약어가 있습니다. 주차장 정보를 가져오기 위해 URL_ADDR, REQ_PREFIX,RESP_PREFIX,TOPIC, META_INFO을 등록합니다
-8. agent관리의 agent설정화면으로 이동합니다.
-9. agent설정화면에서 'AgentMqttt' 명칭으로 agent를 등록합니다.
-10. agent를 등록후 'mqttOffstreet'명칭으로 adaptor를 등록합니다. 이때 'platform 유형'은 'oneM2M Platform'를 선택합니다.
-11. 'mqttOffstreet' adaptor 에서 'mqttOffstreet_001' 명칭으로 인스턴스를 등록합니다.
-12. 이때 'adaptor유형'에는 '성남시 주차장'을 선택하면 "인스턴스 등록/변경" , "데이터 메타정보 등록/변경" 화면이 나옵니다.
-13. 여기서 어댑터유형관리(성남시 주차장)에서 등록한 세부항목이 표시되며 수정할 황목이 있을 경우 수정하여 저장을 합니다.
-14. RESTful API로 최종 등록 된 성남시 주차장을 적용시킵니다.  
-    ```curl --location --request GET 'http://localhost:8080/restApi/pushConf/agent명칭/아답터명칭' --header 'Content-Type: application/json'```
-15. agent관리화면으로 이동합니다.
-16. '성남시 주차장' 어댑터에서 시작/중지 , 모니터링이 가능합니다
+- *query* : '**select adapter_id, adapter_nm......where last_update_dt between now()- interval '1 hour' and now()**' 를 입력합니다. City Data Hub 시스템에 적재할 원천데이터를 가지고 오기 위한 쿼리를 작성하여 데이터를 가져옵니다. 
+  등록된 쿼리는 예시이며 갱신주기가 한시간이기 때문에 현시간으로부터 1시간 이전 데이터를 가지고 오게끔 쿼리를 작성하였습니다. 
+  ![어댑터유형-레가시-쿼리](./images/어댑터유형-레가시-쿼리.png)
+  **쿼리예시 화면**
+- *id* : '**urn:datahub:legacyWeather:4798273**' 를 입력합니다. 예시로 입력한 아이디이며 실 모델에 맞게 작성하시면 됩니다.
 
-## 4.2.1 어댑터유형관리
+4. **레가시 테스트** 인스턴스를 저장합니다. ![전송](./images/전송.png) 클릭하여 설정을 적용합니다.
+   ![인스턴스-레가시-저장후화면](./images/인스턴스-레가시-저장후화면.png)
+ 인스턴스를 저장 후에 **데이터모델 변환관리** 클릭하여 데이터 모델을 직접 작성합니다.
+ ![인스턴스-레가시-변환클래스작성](./images/인스턴스-레가시-변환클래스작성.png)
 
-- **어댑터유형관리**
-![아답터유형목록](./images/아답터유형목록.png)</br>
-어댑터 유형 (Open API, oneM2M Platform, U-City Platform, RDBMS, FIWARE Platform, 기타)의 기본 항목을 저장할 수 있습니다. 여기서 등록된 항목은 인스턴스 등록의 "Adaptor 유형"에서 활용됩니다.</br>
-</br>
+```java
+      //소스코드 첨가부분 - 시작
+      jsonModel.put("eventType.value", rs.getString("EVT_ID"));
+      jsonModel.put("eventName.value", rs.getString("EVT_DTL"));
+      //소스코드 첨가부분 - 종료
+```
 
-- 다음 그림은 어댑터 유형의 세부항목의 입력 예제입니다. 성남시 주차장에 필요한 기본정보 예제화면입니다.
-![아답터유형_세부항목_입력예제](./images/아답터유형_세부항목_입력예제.png)</br>
+변환 클래스 부분에서 위에 해당하는 영역에 DB에서 읽어온 데이터를 표준 모델에 맞게 코딩을 합니다. 작성 완료 후 **컴파일 확인** 을 클릭하여 컴파일 결과를 하단 회색 박스에서 확인합니다.
 
-- 어댑터 유형에서 필요한 정보를 기입 후 agent 관리메뉴에서 에이전트를 등록합니다.
-![에이전트 목록](./images/000_에이전트_목록.png)</br>
-등록된 에이전트 목록을 볼 수 있는 화면입니다.</br>
-신규추가버튼을 클릭하면 에이전트를 등록할 수 있습니다.</br>
-수정 및 삭제는 목록에서 Agent명을 클릭 후 이동한 화면에서 처리합니다.</br>
+5. **Agent관리** > **Agent 운영** 메뉴에서 **Agent ID** -> **M000000003** 을 클릭합니다.
+   해당 아답터의 시작/종료 ,모니터링이 가능합니다.
 
-</br>
 
-- **에이전트 등록**
-![에이전트 등록](./images/000_에이전트_등록화면.png)</br>
-에이전트 등록화면이며 Agent ID, Agent 명, 사용여부, 비고 를 입력하여 에이전트를 등록합니다.</br>
+## 4.3 OneM2M Platform 데이터 연계
 
-</br>
+1. 수집관리UI(<http://localhost:8080/>) 의 **Agent 관리** > **Agent 설정** 메뉴에서 ![신규추가버튼](./images/신규추가버튼.png) 을 클릭합니다.
 
-- **에이전트 등록 후 화면**
-![에이전트 등록후화면](./images/000_에이전트_등록_후화면.png)</br>
-에이전트를 등록 후에 나오는 화면입니다.</br>
-에이전트의 수정 및 삭제가 가능합니다.</br>
-어댑터의 등록/수정/삭제 또한 가능합니다.</br>
-목록에서 Adaptor ID, Adaptor 명을 클릭하면 인스턴스 관리 화면으로 이동합니다.</br>
+![에이전트-onem2m-주차장예시](./images/에이전트-onem2m-주차장예시.png)
+저장 후에는 **Adaptor 추가 등록 / 변경** 을 할 수 있습니다.
 
-</br>
+- *Agent ID* : '**M000000004**' 을 입력합니다.(10자내 입력)
+- *Agent 명* : '**레가시 테스트oneM2M 성남시 주차장예시**' 을 입력합니다.
+- *사용여부* : '**사용**' 를 선택합니다.
 
-- **어댑터 신규추가화면**
-![아답터 등록화면](./images/000_아답터신규추가화면.png)</br>
-어댑터의 신규추구 화면이며 Adaptor ID, Adaptor 명, Platform 유형,사용여부를 입력하여 어댑터를 등록합니다.</br>
+2. **Agent설정** 화면에서 저장 후 **Adaptor 추가 등록/변경** 화면에서 ![신규추가버튼2](./images/신규추가버튼2.png) 을 클릭합니다. 
+![아답터-onem2m-주차장등록](./images/아답터-onem2m-주차장등록.png)
 
-</br>
+- *Adaptor ID* : '**pocOffStreetParking**' 를 입력합니다.
+- *Adaptor 명* : '**oneM2M 성남시 주차장예시**' 을 입력합니다.
+- *Platform 유형* : '**OneM2M**' 선택합니다. (Open API, OneM2M, Legacy Platform, 도시통합 Platform, smartcity Platform, 기타, FIWARE)
+![아답터-onem2m-주차장등록후화면](./images/아답터-onem2m-주차장등록후화면.png)
+**아답터_등록 후 화면** 목록에서 **Adaptor ID** 인 **pocOffStreetParking** 를 클릭 하면 **Instance 관리** 화면으로 이동합니다.
 
-- **인스턴스 관리화면**
-![인스턴스 관리화면](./images/000_인스턴스관리화면.png)</br>
-인스턴스 관리화면입니다.</br>
+3. **Instance 관리** 화면에서 ![신규추가버튼2](./images/신규추가버튼2.png) 클릭합니다.
+   ![인스턴스-onem2m-주차장예시](./images/인스턴스-onem2m-주차장예시.png)
 
-</br>
+- *인스턴스명* : '**oneM2M 성남시 주차장예시**' 을 입력합니다.
+- *데이터모델 변환* : '**변환**' 선택합니다. 변환은 Web 에서 직접 코딩을 하여 데이터를 컨버팅 합니다. 미변환은 기 제공된 Java Class 를 이용합니다.
+- *Adpator 유형* : '**성남시 주차장**' 을 선택합니다. 메뉴 **Adaptor 유형 관리**에서 등록 된 유형을 선택할 수 있습니다. 유형을 선택하면 인스턴스 상세 항목이 표시됩니다.
+- *사용여부* : '**사용**' 을 선택합니다.
 
-- **인스턴스 등록화면**
-![인스턴스등록화면](./images/000_인스턴스등록화면.png)</br>
-인스턴스 등록화면입니다.</br>
-인스턴스 명,데이터모델 변환,Adaptor 유형,사용여부,비고를 입력하여 인스턴스를 등록합니다.</br>
-"Adaptor 유형"은 메뉴에서 아답터 유형관리에서 추가 가능하며, 인스턴스의 기본 추가 옵션항목을 가져올 수 있습니다.</br>
-"데이터모델 변환"은 변환을 선택했을 경우 ![인스턴스 등록화면](./images/000_데이터변환관리.png) 버튼이 생기며 변환 컴파일이 가능합니다. 미 변환을 선택할 경우 등록된 표준모델변환 파일을 이용할 수 있습니다.</br>
-"Adaptor 유형"에서 기등록된 성남시 주차장을 선택하면 인스턴스의 추가 옵션등록/변경화면이 보여집니다.</br>
+**인스턴스 등록 필수 정보**
+![인스턴스-레가시-필수정보](./images/인스턴스-onem2m-필수정보.png)
 
-</br>
+- *DATASET_ID* : '**pocOffStreetParking,pocParkingSpot**' 를 입력합니다. City Data Hub 시스템에서 정의한 데이터셋 아이디를 입력합니다. 성남시 주차장의 경우 주차장(OffStreetParking),주차면(ParkingSpot) 정보가 넘어옵니다. 해서 콤마(,)를 기준으로 복수의 데이터셋을 등록합니다.
+- *MODEL_ID* : '**OffStreetParking,ParkingSpot**' 를 입력합니다. City Data Hub 시스템에서 정의한 모델 아이디를 입력합니다. 성남시 주차장의 경우 주차장(OffStreetParking),주차면(ParkingSpot) 정보가 넘어옵니다. 해서 콤마(,)를 기준으로 복수의 모델ID을 등록합니다.
+- *INVOKE_CLASS* : '**com.cityhub.adapter.convex.ConvParkingOneM2M**' 를 입력합니다. 기 제공된 클래스 파일이며 여기서는 **데이터모델 변환관리**를 이용합니다.
+- *CONN_TERM* : '**3600**' 를 입력합니다. 초단위이며 1시간(60*60) 단위로 데이터를 가져옵니다. 
+- *URL_ADDR* : **tcp://203.253.128.164:1883** 를 입력합니다. mqtt프로토콜의 연결주소입니다.
+- *REQ_PREFIX* : **/oneM2M/req/Mobius2/** 를 입력합니다. 성남시 주차장의 mqtt프로토콜의 요청접두사입니다.
+- *RESP_PREFIX* : **/oneM2M/resp/Mobius2/**를 입력합니다. 성남시 주차장의 mqtt프로토콜의 응답접두사입니다.
+- *TOPIC* : **SlotYatopParking** 를 입력합니다. 성남시 주차장의 mqtt프로토콜의 토픽입니다.
+- *META_INFO* : **http://203.253.128.164:7579/Mobius/sync_parking_raw** 입력합니다. 성남시 주차장의 메타정보 확인을 위한 주소입니다.
 
-- **인스턴스 추가옵션등록화면**
-![인스턴스추가옵션등록변경화면](./images/000_인스턴스추가옵션등록변경화면.png)</br>
-인스턴스 추가옵션화면이여 성남시 주차장의 등록예제입니다.</br>
-사용 중 성남시 주차장 API의 주소가 변경되었거나, 인증키가 변경되었을 경우 이곳에서 수정을 할 수 있습니다.</br>
-항목을 추가,삭제,변경 후 저장을 클릭하면 변경사항이 저장됩니다.</br>
 
-</br>
+4. **oneM2M 성남시 주차장예시** 인스턴스를 저장합니다. ![전송](./images/전송.png) 클릭하여 설정을 적용합니다.
+   ![인스턴스-onem2m-저장후화면](./images/인스턴스-onem2m-저장후화면.png)
+ 인스턴스를 저장 후에 **데이터모델 변환관리** 클릭하여 데이터 모델을 직접 작성합니다.
+ ![인스턴스-onem2m-변환클래스](./images/인스턴스-onem2m-변환클래스.png)
 
-- **데이터변환관리화면**
-![원천데이터모델선택](./images/000_데이터변환관리1.png)</br>
-![데이터변환관리](./images/000_데이터변환관리.png) 버튼을 클릭하면 변환관리 화면으로 이동합니다.</br>
-![다음단계](./images/000_다음단계.png) 를 클릭하여 변환클래스화면까지 이동합니다.</br>
+```java
+      //소스코드 첨가부분 - 시작
+      jsonModel.put("eventType.value", rs.getString("EVT_ID"));
+      jsonModel.put("eventName.value", rs.getString("EVT_DTL"));
+      //소스코드 첨가부분 - 종료
+```
 
-</br>
+변환 클래스 부분에서 위에 해당하는 영역에 DB에서 읽어온 데이터를 표준 모델에 맞게 코딩을 합니다. 작성 완료 후 **컴파일 확인** 을 클릭하여 컴파일 결과를 하단 회색 박스에서 확인합니다.
 
-- **변환클래스작성**
-![변환클래스작성](./images/000_데이터변환관리3.png)</br>
-원천소스의 항목과 표준모델의 변환 클래스를 직접 작성하여 컴파일을 하고자 할 때 이용합니다.</br>
-"컴파일확인" 버튼을 클릭하면 현재 작성 중인 파일의 유효성을 체크합니다.</br>
-![컴파일성공](./images/컴파일성공.png)</br>
-컴파일이 정상적으로 되었을 경우 하단의 텍스트박스에 "컴파일에 성공했습니다" 란 메세지가 출력됩니다.</br>
-컴파일이 정상적으로 안될경우 그에 해당하는 메세지를 출력합니다.</br>
+5. **Agent관리** > **Agent 운영** 메뉴에서 **Agent ID** -> **M000000003** 을 클릭합니다.
+   해당 아답터의 시작/종료 ,모니터링이 가능합니다.
 
-</br>
-
-## 4.3 FIWARE Platform 데이터 연계
-
-FIWARE Platform 중 Context Broker에서 온도/습도를 예제로 하는 데이터 연계입니다.
-
-1. adaptor유형별 파라미터관리 화면으로 이동합니다.
-2. adaptor유형관리에서 'FIWARE유형' 명칭으로 등록합니다. 이때 대상플랫폼연계유형은 'FIWARE Platform'를 선택합니다.
-3. 'FIWARE유형'이 등록 된 후 클릭하면 세부항목을 등록할 수 있습니다.
-4. 어댑터 파라미터 관리 항목 MODEL_ID,DATASET_ID,INVOKE_CLASS,CONN_TERM의 필수 예약어가 있습니다.
-5. agent관리의 agent설정화면으로 이동합니다.
-6. agent설정화면에서 'fiwareWeatherMeasurement' 명칭으로 agent를 등록합니다.
-7. agent를 등록후 'fiwareWeatherMeasurementAdator'명칭으로 adaptor를 등록합니다. 이때 platform 유형은 'FIWARE Platform'를 선택합니다.
-8. 'fiwareWeatherMeasurementAdator' adaptor 에서 'fiwareWeatherMeasurementAdator_001' 명칭으로 인스턴스를 등록합니다.
-9. 이때 'adaptor유형'에는 'FIWARE유형'을 선택하면 "인스턴스 등록/변경" , "데이터 메타정보 등록/변경" 화면이 나옵니다.
-10. 여기서 아답터유형관리(Fiware유형)에서 등록한 세부항목이 표시되며 수정할 황목이 있을 경우 수정하여 저장을 합니다.
-11. RESTful API로 최종 등록 된 WeatherMeasurement을 적용시킵니다.  
-    ```curl --location --request GET 'http://localhost:8080/restApi/pushConf/agent명칭/아답터명칭' --header 'Content-Type: application/json'```
-12. agent관리화면으로 이동합니다.
-13. 'WeatherMeasurement' 어댑터에서 시작/중지 , 모니터링이 가능합니다
-
-## 4.4 RDBMS 데이터 연계
-
-RDBMS 중 PostgreSQL에서 상수도 사용량을 예제로 하는 데이터 연계입니다.
-
-1. adaptor유형별 파라미터관리 화면으로 이동합니다.
-2. adaptor유형관리에서 'RDBMS상수도' 명칭으로 등록합니다. 이때 대상플랫폼연계유형은 'RDBMS'를 선택합니다.
-3. 'RDBMS상수도'이 등록 된 후 클릭하면 세부항목을 등록할 수 있습니다.
-4. 어댑터 파라미터 관리 항목으로는 MODEL_ID,DATASET_ID,INVOKE_CLASS,CONN_TERM의 필수 예약어가 있습니다.
-5. 'RDBMS 상수도'의 세부항목은 limitNum, offsetNum,id_prefix,addressCountry, addressRegion,addressLocality,className,url,user,password,sql 등록합니다
-6. agent관리의 agent설정화면으로 이동합니다.
-7. agent설정화면에서 'AgentRDBMS' 명칭으로 agent를 등록합니다.
-8. agent를 등록후 'WaterTapUsage_Legacy_Siheung'명칭으로 adaptor를 등록합니다. 이때 'platform 유형'은 'RDBMS'를 선택합니다.
-9. 'WaterTapUsage_Legacy_Siheung' adaptor 에서 'WaterTapUsage_Legacy_Siheung_001' 명칭으로 인스턴스를 등록합니다.
-10. 이때 'adaptor유형'에는 'RDBMS상수도'을 선택하면 "인스턴스 등록/변경" , "데이터 메타정보 등록/변경" 화면이 나옵니다.
-11. 여기서 아답터유형관리(RDBMS상수도)에서 등록한 세부항목이 표시되며 수정할 황목이 있을 경우 수정하여 저장을 합니다.
-12. RESTful API로 최종 등록 된 RDBMS상수도을 적용시킵니다.  
-    ```curl --location --request GET 'http://localhost:8080/restApi/pushConf/agent명칭/아답터명칭' --header 'Content-Type: application/json'```
-14. agent관리화면으로 이동합니다.
-15. 'RDBMS상수도' 어댑터에서 시작/중지 , 모니터링이 가능합니다
-
-## 4.5 U-City Platform 정보 데이터 연동하기
-
-U-City Platform 중 스마트시티 통합플랫폼에서 이벤트 정보를 예제로 하는 데이터 연계입니다.
-
-1. adaptor유형별 파라미터관리 화면으로 이동합니다.
-2. adaptor유형관리에서 'U-City 통합 플랫폼' 명칭으로 등록합니다. 이때 대상플랫폼연계유형은 'U-City Platform'를 선택합니다.
-3. 'UCityPlatformEventType'이 등록 된 후 클릭하면 세부항목을 등록할 수 있습니다.
-4. 어댑터 파라미터 관리 항목 MODEL_ID,DATASET_ID,INVOKE_CLASS,CONN_TERM의 필수 예약어가 있습니다. 'U-City 통합 플랫폼 UCityPlatformEvent'의 세부항목은 gs1Code, location, addressCountry, addressRegion, addressLocality, addressTown, streetAddress을 등록합니다
-5. agent관리의 agent설정화면으로 이동합니다.
-6. agent설정화면에서 'AgentUCityPlatformEvent' 명칭으로 agent를 등록합니다.
-7. agent를 등록후 'UCityPlatformEvent'명칭으로 adaptor를 등록합니다. 이때 'platform 유형'은 'U-City Platform'를 선택합니다.
-8. 'UCityPlatformEvent' adaptor 에서 'UCityPlatformEvent_001' 명칭으로 인스턴스를 등록합니다.
-9. 이때 'adaptor유형'에는 'UCityPlatformEventType'을 선택하면 "인스턴스 등록/변경" , "데이터 메타정보 등록/변경" 화면이 나옵니다.
-10. 여기서 아답터유형관리(UCityPlatformEventType)에서 등록한 세부항목이 표시되며 수정할 황목이 있을 경우 수정하여 저장을 합니다.
-11. restApi로 최종 등록 된 UCityPlatformEvent을 적용시킵니다.  
-    ```curl --location --request GET 'http://localhost:8080/restApi/pushConf/agent명칭/아답터명칭' --header 'Content-Type: application/json'```
-12. agent관리화면으로 이동합니다.
-13. 'UCityPlatformEvent' 어댑터에서 시작/중지 , 모니터링이 가능합니다
 
 # 5. 실행/중지
 

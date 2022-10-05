@@ -36,13 +36,11 @@ import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.OkUrlUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ConvParkingOneM2M extends AbstractConvert {
-  private ObjectMapper objectMapper;
 
   @Override
   public void setup() {
@@ -203,7 +201,6 @@ public class ConvParkingOneM2M extends AbstractConvert {
         toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
     } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }

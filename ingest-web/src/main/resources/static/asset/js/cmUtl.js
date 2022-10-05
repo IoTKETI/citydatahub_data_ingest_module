@@ -242,6 +242,7 @@ cmUtl.showEmptyLine = function(objId, isShow) {
     if ($('#'+objId).find('tfoot').length == 0 ) {
       $('<tfoot>').appendTo("#"+ objId);
     }
+    $('#'+objId).find('tfoot > tr').empty();
     $('#'+objId).find('tfoot:last').append(emptyInsEtc);
     $('#'+objId).find('tfoot > tr').children().attr("colspan",colspan);
   } else {

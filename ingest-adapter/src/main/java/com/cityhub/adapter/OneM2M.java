@@ -16,43 +16,71 @@
  */
 package com.cityhub.adapter;
 
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.TimeZone;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.flume.ChannelException;
 import org.apache.flume.Context;
-import org.json.JSONArray;
+import org.apache.flume.EventDrivenSource;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.json.JSONObject;
 
-import com.cityhub.core.AbstractPollSource;
-import com.cityhub.dto.LogVO;
+import com.cityhub.core.AbstractBaseSource;
+import com.cityhub.environment.Constants;
+import com.cityhub.environment.DefaultConstants;
 import com.cityhub.environment.ReflectExecuter;
 import com.cityhub.environment.ReflectExecuterManager;
-import com.cityhub.model.DataModel;
-import com.cityhub.source.core.LogWriterToDb;
+import com.cityhub.model.DataModelEx;
 import com.cityhub.utils.DataCoreCode.SocketCode;
-import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.OkUrlUtil;
 import com.cityhub.utils.StrUtil;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class OneM2M extends AbstractPollSource {
+public class OneM2M extends AbstractBaseSource implements EventDrivenSource, MqttCallbackExtended {
 
+  private MqttClient mqttClient;
+  private MqttConnectOptions mqttOptions;
+  private MqttDefaultFilePersistence dataStore;
+  private String urlAddr;
+  private String topic;
+  private String metaInfo;
+  protected String reqTopic;
+  protected String respTopic;
+  private String invokeClass;
   private String modelId;
-  private String DATAMODEL_API_URL;
-  private JSONObject templateItem;
-  private JSONObject ConfItem;
+
   private String[] ArrModel = null;
+
   private String adapterType;
+
+  private JSONObject ConfItem;
+  private JSONObject templateItem;
+  private ReflectExecuter reflectExecuter = null;
+
   private String datasetId;
+  private String DATAMODEL_API_URL;
+  private String[] ArrDatasetId = null;
+  private ObjectMapper objectMapper;
 
   @Override
-  public void setup(Context context) {
+  public void configure(Context context) {
+    super.configure(context);
+
     String confFile = context.getString("CONF_FILE", "");
     if (!"".equals(confFile)) {
       ConfItem = new JsonUtil().getFileJsonObject(confFile);
@@ -62,110 +90,211 @@ public class OneM2M extends AbstractPollSource {
     String DAEMON_SERVER_LOGAPI = context.getString("DAEMON_SERVER_LOGAPI", "http://localhost:8888/logToDbApi");
     ConfItem.put("daemonServerLogApi", DAEMON_SERVER_LOGAPI);
 
+    urlAddr = context.getString(DefaultConstants.URL_ADDR, "");
+    topic = context.getString("TOPIC", "");
+    metaInfo = context.getString("META_INFO", "");
+    reqTopic = context.getString("REQ_PREFIX", "") + topic;
+    respTopic = context.getString("RESP_PREFIX", "") + topic;
+    setInvokeClass(context.getString(DefaultConstants.INVOKE_CLASS, ""));
     modelId = context.getString("MODEL_ID", "");
-    String TEMP_VALUE = context.getString("TEMP_VALUE", "");
-    String TEMP_VALUE1 = context.getString("TEMP_VALUE1", "");
-    adapterType = context.getString("type", "");
-
-    DATAMODEL_API_URL = context.getString("DATAMODEL_API_URL", "");
     ArrModel = StrUtil.strToArray(modelId, ",");
 
+    adapterType = context.getString("type", "");
+    DATAMODEL_API_URL = context.getString("DATAMODEL_API_URL", "");
+    datasetId = context.getString("DATASET_ID", "");
+    ArrDatasetId = StrUtil.strToArray(datasetId, ",");
 
-    ConfItem.put("modelId", modelId);
+    ConfItem.put("topic", topic);
+    ConfItem.put("req_topic", reqTopic + "/#");
+    ConfItem.put("resp_topic", respTopic + "/json");
     ConfItem.put("DATAMODEL_API_URL", DATAMODEL_API_URL);
+    ConfItem.put("modelId", modelId);
+    ConfItem.put("metaInfo", metaInfo);
     ConfItem.put("sourceName", this.getName());
-    ConfItem.put("temp_value", TEMP_VALUE);
-    ConfItem.put("temp_value1", TEMP_VALUE1);
     ConfItem.put("adapterType", adapterType);
     ConfItem.put("invokeClass", getInvokeClass() );
-    ConfItem.put("datasetId", context.getString("DATASET_ID", ""));
+    ConfItem.put("datasetId", datasetId);
+
+    mqttOptions = new MqttConnectOptions();
+    mqttOptions.setCleanSession(true);
+    mqttOptions.setKeepAliveInterval(30);
+    mqttOptions.setAutomaticReconnect(true);
+    mqttOptions.setMaxReconnectDelay(5000);
+
+    String tmpDir = System.getProperty("java.io.tmpdir");
+    dataStore = new MqttDefaultFilePersistence(tmpDir);
+
+    this.objectMapper = new ObjectMapper();
+    this.objectMapper.setSerializationInclusion(Include.NON_NULL);
+    this.objectMapper.setDateFormat(new SimpleDateFormat(Constants.CONTENT_DATE_FORMAT));
+    this.objectMapper.setTimeZone(TimeZone.getTimeZone(Constants.CONTENT_DATE_TIMEZONE));
+
   }
 
   @Override
+  public void start() {
+    try {
+      String clientid = DefaultConstants.VENDOR + "-" + topic + "-" + MqttClient.generateClientId();
+
+      log.debug("source: {} , UrlAddr: {} , clientid: {}", this.getName(), urlAddr, clientid);
+      mqttClient = new MqttClient(urlAddr, clientid, dataStore);
+      mqttClient.setCallback(this);
+
+      IMqttToken iMqttToken = mqttClient.connectWithResult(mqttOptions);
+      iMqttToken.waitForCompletion();
+      log.info("connected: {}", iMqttToken.isComplete());
+
+    } catch (MqttException e) {
+      log.error("Error connecting to the MQTT broker.", e);
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      log.error("Please define a hostname to be used as clientId.", e);
+    }
+    execFirst();
+    super.start();
+  }
+
+  @SuppressWarnings("rawtypes")
   public void execFirst() {
-    // 유효성 부분 JSON 가져오기
-
     templateItem = new JSONObject();
-
     if (ArrModel != null) {
-      HttpResponse resp = OkUrlUtil.get(DATAMODEL_API_URL, "Content-type", "application/json");
-      log.debug("DATAMODEL_API_URL connected: {},{}",modelId, resp.getStatusCode());
-      if (resp.getStatusCode() == 200) {
-        DataModel dm = new DataModel(new JSONArray(resp.getPayload()));
-        for (String model : ArrModel) {
+      for (String model : ArrModel) {
+        HttpResponse resp = OkUrlUtil.get(DATAMODEL_API_URL + "?id=" + model, "Accept", "application/json");
+        log.info("DATAMODEL_API_URL info: {},{},{}", model, resp.getStatusCode(), DATAMODEL_API_URL + "?id=" + model);
+        if (resp.getStatusCode() == 200) {
+          DataModelEx dm = new DataModelEx(resp.getPayload());
           if (dm.hasModelId(model)) {
-            templateItem.put(model, dm.createTamplate(model));
+            templateItem.put(model, dm.createModel(model));
+            log.info("DATAMODEL_API_URL server: {},{}", model, templateItem);
           } else {
             templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
           }
-        }
-      } else {
-        for (String model : ArrModel) {
+        } else {
           templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
         }
       }
-
     } else {
-      log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId , SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
+      log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
     }
-
 
     if (log.isDebugEnabled()) {
-      log.debug("Template : {},{}", modelId, templateItem);
+      // log.debug("ConfItem:{} -- {}", topic, ConfItem);
+      log.debug("templateItem:{} -- {}", topic, templateItem);
     }
-
-
+    try {
+      reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(),getChannelProcessor(), ConfItem, templateItem);
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
   }
-
 
   @Override
-  public void processing() {
-    log.info("Processing - {},{}", this.getName(), modelId);
+  public void messageArrived(String topic, MqttMessage mqttMessage) {
+    long eventCounter = counterGroup.get("events.success");
+    counterGroup.addAndGet("events.success", eventCounter + 1);
+
+    log.debug("Source Topic: {}\tQoS: {}\tMessage: {}", topic, mqttMessage.getQos(), new String(mqttMessage.getPayload()));
+
     try {
-      if (ArrModel != null) {
-
-        ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass() , getChannelProcessor(), ConfItem, templateItem);
-        String sb = reflectExecuter.doit();
-        if (sb != null && sb.lastIndexOf(",") > 0) {
-          ObjectMapper objectMapper = new ObjectMapper();
-          List<Map<String, Object>> entities = objectMapper.readValue(sb, new TypeReference<List<Map<String, Object>>>() {
-          });
-          JSONArray JSendArr = new JSONArray("[" + sb.substring(0 , sb.length() - 1) + "]");
-          int cnt = 0;
-          for (Map<String, Object> itm : entities) {
-            int length = objectMapper.writeValueAsString(itm).getBytes().length;
-            log.info("`{}`{}`{}`{}`{}`{}", this.getName(), itm.get("type"), SocketCode.DATA_SAVE_REQ.toMessage(), itm.get("id"), length, adapterType,ConfItem.getString("invokeClass"));
-            StringBuilder l = new StringBuilder();
-            l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-            l.append("`").append(ConfItem.getString("sourceName"));
-            l.append("`").append(modelId);
-            l.append("`").append(SocketCode.DATA_SAVE_REQ.toMessage());
-            l.append("`").append(itm.get("id") + "");
-            l.append("`").append(length);
-            l.append("`").append(adapterType);
-            l.append("`").append(ConfItem.getString("invokeClass"));
-            LogVO logVo = new LogVO();
-            logVo.setSourceName(ConfItem.getString("sourceName"));
-            logVo.setPayload(l.toString());
-            logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-            logVo.setType(modelId);
-            logVo.setStep(SocketCode.DATA_SAVE_REQ.getCode());
-            logVo.setDesc(SocketCode.DATA_SAVE_REQ.getMessage());
-            logVo.setId(itm.get("id") + "");
-            logVo.setLength(String.valueOf(length));
-            logVo.setAdapterType(ConfItem.getString("invokeClass"));
-            LogWriterToDb.logToDaemonApi(ConfItem, logVo);
-
-          }
-          sendEventEx(entities,datasetId);
-        }
-
-      } else {
-        log.error("`{}`{}`{}`{}`{}`{}`{}",this.getName(), modelId , SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
+      if (reflectExecuter == null) {
+        reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(),getChannelProcessor(), ConfItem, templateItem);
       }
+      if (mqttMessage.getPayload() != null && reflectExecuter != null) {
+        JsonUtil je = new JsonUtil(new String(mqttMessage.getPayload()));
+        if (!"".equals(je.get("pc"))) {
+          callback(mqttMessage.getPayload());
+
+          String sb = reflectExecuter.doit(mqttMessage.getPayload());
+
+        }
+      }
+    } catch (NullPointerException npe) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(npe));
+      log.error("NullPointerException", npe);
+    } catch (ChannelException ex) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(ex));
+      log.error("Error writting to channel, event dropped", ex);
     } catch (Exception e) {
-      log.error("`{}`{}`{}`{}`{}`{}`{}",this.getName(), modelId , SocketCode.NORMAL_ERROR.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
-} // end of class
+
+  public void callback(byte[] msg) {
+    try {
+      JsonUtil je = new JsonUtil(new String(msg));
+      if (je.has("pc.m2m:sgn") == true) {
+        JSONObject sub = je.getObject("pc.m2m:sgn");
+
+        boolean vrq = sub.has("vrq") == false ? false : sub.getBoolean("vrq");
+        boolean sud = sub.has("sud") == false ? false : sub.getBoolean("sud");
+        if (vrq == true || sud == true) {
+          JSONObject resp = new JsonUtil().getFileJsonObject("openapi/CallbackOneM2M.template");
+          resp.put("fr", topic);
+          resp.put("rqi", je.get("rqi"));
+          mqttClient.publish(reqTopic + "/json", new MqttMessage(resp.toString().getBytes()));
+          log.debug("publish: {} \t {}", reqTopic, resp.toString());
+        }
+      }
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
+  }
+
+  @Override
+  public void stop() {
+    if (mqttClient != null) {
+      try {
+        mqttClient.disconnect();
+        mqttClient.close();
+      } catch (MqttException e) {
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      }
+    }
+    super.stop();
+  }
+
+  @Override
+  public void connectComplete(boolean reconnect, String serverURI) {
+    try {
+      int Qos = 0;
+      log.info("Subscribing to topic: {}, QoS: {}", reqTopic + "/#", Qos);
+      mqttClient.subscribe(reqTopic + "/#", Qos);
+    } catch (MqttException e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      log.error("Error connecting to the MQTT broker.", e);
+    }
+  }
+
+  @Override
+  public void connectionLost(Throwable throwable) {
+    try {
+      log.info("Connection to {} lost! : {}", urlAddr, ExceptionUtils.getStackTrace(throwable));
+      if (!mqttClient.isConnected()) {
+        IMqttToken iMqttToken = mqttClient.connectWithResult(mqttOptions);
+        iMqttToken.waitForCompletion();
+        log.info("connected: {}", iMqttToken.isComplete());
+      }
+    } catch (Exception e) {
+      log.error("Reconnection failed.", ExceptionUtils.getStackTrace(e));
+    }
+  }
+
+  @Override
+  public void deliveryComplete(IMqttDeliveryToken token) {
+    try {
+      log.debug("Topic - {} : Delivery complete.", Arrays.toString(token.getTopics()));
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
+  }
+
+  public String getInvokeClass() {
+    return invokeClass;
+  }
+
+  public void setInvokeClass(String invokeClass) {
+    this.invokeClass = invokeClass;
+  }
+
+} // end class
