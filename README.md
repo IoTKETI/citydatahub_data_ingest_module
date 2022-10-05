@@ -236,7 +236,7 @@ services:
       - AUTH_INTERNAL_URL=http://10.0.0.237:30000
       - AUTH_CLIENT_ID=V43z0o2boLrXia0E5zn6
       - AUTH_CLIENT_SECRET=YikQaYqOaHvIvOpGt42lfGvxAiJ4DsYY
-      - AUTH_REDIRECT_URL=http://203.253.128.181:9208
+      - AUTH_REDIRECT_URL=http://localhost:8080
       - EUREKA_ENABLED=false
       - EUREKA_EUREKA_DEFAULT_ZONE=http://10.0.0.144:8888/eureka
     depends_on:
@@ -266,7 +266,7 @@ volumes:
 - AUTH_INTERNAL_URL : City Data Hub 시스템의 인증서버 내부 URL 설정합니다.
 - AUTH_CLIENT_ID : City Data Hub 시스템의 인증서버에서 등록한 클라이언트 아이디 설정합니다.
 - AUTH_CLIENT_SECRET : City Data Hub 시스템의 인증서버에서 등록한 클라이언트 시크릿키 설정합니다.
-- AUTH_REDIRECT_URL : City Data Hub 시스템의 인증서버에서 등록한 리다이렉트되는 주소 설정
+- AUTH_REDIRECT_URL : City Data Hub 시스템의 인증서버에서 로그인 한 후에 리다이렉트되는 주소 설정 (예: http://localhost:8080)
 - EUREKA_ENABLED : City Data Hub 시스템의 EUREKA 서버의 사용여부를 설정합니다.(true, false)
 - EUREKA_EUREKA_DEFAULT_ZONE : City Data Hub 시스템의 EUREKA 서버의 URL 설정합니다.
 
@@ -294,7 +294,7 @@ docker ps -a
 **도커 명령어**
 
 ```bash
-# 도커 컴포즈 시박
+# 도커 컴포즈 시작
 docker compose start
 
 # 도커 컴포즈 중지

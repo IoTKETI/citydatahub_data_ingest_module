@@ -62,7 +62,7 @@ services:
       - AUTH_INTERNAL_URL=http://10.0.0.237:30000
       - AUTH_CLIENT_ID=V43z0o2boLrXia0E5zn6
       - AUTH_CLIENT_SECRET=YikQaYqOaHvIvOpGt42lfGvxAiJ4DsYY
-      - AUTH_REDIRECT_URL=http://203.253.128.181:9208
+      - AUTH_REDIRECT_URL=http://localhsot:8080
       - EUREKA_ENABLED=false
       - EUREKA_EUREKA_DEFAULT_ZONE=http://10.0.0.144:8888/eureka
     depends_on:
