@@ -61,7 +61,7 @@ public class AuthController {
 
     HttpSession session = request.getSession();
     // 권한 없는 사용자 로그아웃 처리
-    if ("adminSystem".equals(session.getAttribute("type")) && !"Connectivity_Admin".equals(session.getAttribute("role"))) {
+    if (!"Connectivity_Admin".equals(session.getAttribute("role"))) {
       return "redirect:/logout";
     } else {
       return "redirect:/monitor/dashView";

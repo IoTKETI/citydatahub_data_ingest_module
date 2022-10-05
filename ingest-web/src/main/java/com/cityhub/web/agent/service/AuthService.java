@@ -360,15 +360,10 @@ public class AuthService {
       String getInfo = callGetInfo(token.getString(target));
       if (getInfo != null && !"".equals(getInfo)) {
         JSONObject jsonInfo = new JSONObject(getInfo);
-        session.setAttribute("type", "adminSystem");
+        session.setAttribute("chaut", token.getString(target));
         session.setAttribute("role", jsonInfo.getString("role"));
-        session.setAttribute("iat", jsonInfo.getString("iat"));
-        session.setAttribute("exp", jsonInfo.getString("exp"));
-        session.setAttribute("aud", jsonInfo.getString("aud"));
-        session.setAttribute("iss", jsonInfo.getString("iss"));
         session.setAttribute("userId", jsonInfo.getString("userId"));
         session.setAttribute("nickname", jsonInfo.getString("nickname"));
-        session.setAttribute("email", jsonInfo.getString("email"));
       }
     }
   }
