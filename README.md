@@ -431,7 +431,93 @@ Agent설정 목록 화면에서 ![신규추가버튼](./images/신규추가버�
 
 ![데이터변환관리_코딩부분](./images/데이터변환관리_코딩부분.png)
 변환클래스의 코딩 부분이며 주석 부분인 **소스코드 첨부부분** 의 시작에서 종료 사이에 변환 부분을 작성합니다.
+아래 성남시 기상관측 변환 예제 전문입니다.
 
+```java
+List<Map<String,Object>> rtnList = new LinkedList<>();
+String rtnStr = "";
+try {
+  JSONArray svcList = ConfItem.getJSONArray("serviceList");
+  for (int i = 0; i < svcList.length(); i++) {
+    JSONObject iSvc = svcList.getJSONObject(i);
+    id = iSvc.getString("gs1Code");
+
+    JsonUtil ju = new JsonUtil((JSONObject) CommonUtil.getData(iSvc));
+    log.info("jujuju: {}",ju);
+    if (!ju.has("response.body.items.item") ) {
+      throw new CoreException(ErrorCode.NORMAL_ERROR);
+    } else {
+      toLogger(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
+      JSONArray arrList = ju.getArray("response.body.items.item");
+      Map<String,Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String,Object>>(){});
+
+      Map<String,Object> wMap = new LinkedHashMap<>();
+      if (arrList.length() > 0) {
+        for (Object obj : arrList) {
+          JSONObject item = (JSONObject) obj;
+          if ("PTY".equals(item.getString("category"))) {
+            wMap.put("rainType", WeatherType.findBy(item.getInt("obsrValue")).getEngNm());
+          }
+          if ("T1H".equals(item.getString("category"))) {
+            wMap.put("temperature", JsonUtil.nvl(item.get("obsrValue") , DataType.FLOAT));
+          }
+          if ("RN1".equals(item.getString("category"))) {
+            wMap.put("rainfall", JsonUtil.nvl(item.get("obsrValue") , DataType.FLOAT));
+            wMap.put("hourlyRainfall", JsonUtil.nvl(item.get("obsrValue") , DataType.INTEGER));
+          }
+          if ("WSD".equals(item.getString("category"))) {
+            wMap.put("windSpeed", JsonUtil.nvl(item.get("obsrValue") , DataType.FLOAT));
+          }
+          if ("REH".equals(item.getString("category"))) {
+            wMap.put("humidity", JsonUtil.nvl(item.get("obsrValue") , DataType.FLOAT));
+          }
+          if ("S06".equals(item.getString("category"))) {
+            wMap.put("snowfall", JsonUtil.nvl(item.get("obsrValue") , DataType.FLOAT));
+          }
+        } // end for
+
+        Map<String,Object> addrValue = (Map)((Map)tMap.get("address")).get("value");
+        addrValue.put("addressCountry", JsonUtil.nvl(iSvc.getString("addressCountry")) );
+        addrValue.put("addressRegion", JsonUtil.nvl(iSvc.getString("addressRegion")) );
+        addrValue.put("addressLocality", JsonUtil.nvl(iSvc.getString("addressLocality")) );
+        addrValue.put("addressTown", JsonUtil.nvl(iSvc.getString("addressTown")) );
+        addrValue.put("streetAddress", JsonUtil.nvl(iSvc.getString("streetAddress")) );
+
+        Map<String,Object> locMap = (Map)tMap.get("location");
+        locMap.put("observedAt",DateUtil.getTime());
+        Map<String,Object> locValueMap  = (Map)locMap.get("value");
+        locValueMap.put("coordinates", iSvc.getJSONArray("location").toList());
+
+        tMap.put("id", iSvc.getString("gs1Code"));
+        Map<String,Object> weatherObservation = new LinkedHashMap<>();
+        weatherObservation.put("type","Property");
+        weatherObservation.put("observedAt",DateUtil.getTime());
+        weatherObservation.put("value",wMap);
+        tMap.put("weatherObservation", weatherObservation);
+
+        tMap.remove("airQualityIndexObservation");
+        log.info("tMap:{}", tMap);
+        rtnList.add(tMap);
+        String str = objectMapper.writeValueAsString(tMap);
+        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+      } else {
+        toLogger(SocketCode.DATA_CONVERT_FAIL, id);
+      } // end if (arrList.length() > 0)
+    } // if (!ju.has("response.body.items.item") )
+  }  // for (int i = 0; i < svcList.length(); i++)
+  rtnStr = objectMapper.writeValueAsString(rtnList);
+} catch (CoreException e) {
+  log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+  if ("!C0099".equals(e.getErrorCode())) {
+    toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+  }
+} catch (Exception e) {
+  toLogger(SocketCode.DATA_CONVERT_FAIL,  id, e.getMessage() );
+  log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+}
+
+return rtnStr;
+```
 
 ## 4.2 Legacy System (RDBMS) 데이터 연계
 
@@ -489,13 +575,105 @@ Agent설정 목록 화면에서 ![신규추가버튼](./images/신규추가버�
 4. **레가시 테스트** 인스턴스를 저장합니다. ![전송](./images/전송.png) 클릭하여 설정을 적용합니다.
    ![인스턴스-레가시-저장후화면](./images/인스턴스-레가시-저장후화면.png)
  인스턴스를 저장 후에 **데이터모델 변환관리** 클릭하여 데이터 모델을 직접 작성합니다.
- ![인스턴스-레가시-변환클래스작성](./images/인스턴스-레가시-변환클래스작성.png)
+ ![데이터변환관리_전체](./images/데이터변환관리_전체.png)
+
+레가시 데이터 샘플 예제 전문입니다.
 
 ```java
-      //소스코드 첨가부분 - 시작
-      jsonModel.put("eventType.value", rs.getString("EVT_ID"));
-      jsonModel.put("eventName.value", rs.getString("EVT_DTL"));
-      //소스코드 첨가부분 - 종료
+@Override
+  public String doit(BasicDataSource datasource)  {
+    List<Map<String, Object>> rtnList = new LinkedList<>();
+    String rtnStr = "";
+    JSONObject location = ConfItem.getJSONObject("location");
+    String id = "";
+    String sql = ConfItem.getString("query");
+    try (PreparedStatement pstmt = datasource.getConnection().prepareStatement(sql);
+        ){
+      pstmt.setInt(1, ConfItem.getInt("limitNum"));
+      pstmt.setInt(2, ConfItem.getInt("offsetNum"));
+      try (ResultSet rs = pstmt.executeQuery()){
+        while (rs.next()) {
+          Map<String, Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String, Object>>() {
+          });
+          Map<String, Object> wMap = new LinkedHashMap<>();
+
+          int read_meter_date = rs.getInt("read_meter_date");
+
+          Find_wMap(tMap, "gauge").put("value", rs.getDouble("gauge"));
+          Find_wMap(tMap, "household").put("value", rs.getInt("household"));
+          if (rs.getString("sewer").equals("X"))
+            Find_wMap(tMap, "sewer").put("value", "FALSE");
+          else if (rs.getString("sewer").equals("O"))
+            Find_wMap(tMap, "sewer").put("value", "TRUE");
+          Find_wMap(tMap, "usage").put("value", rs.getDouble("usage"));
+          Find_wMap(tMap, "fee").put("value", rs.getDouble("fee"));
+          Find_wMap(tMap, "meterNumber").put("value", rs.getString("meter_number"));
+
+          String addressTown = rs.getString("address");
+
+          id = refineId(rs.getString("id")) + "_" + rs.getString("yearmonth") + read_meter_date;
+
+          wMap = (Map) tMap.get("dataProvider");
+          wMap.put("value", ConfItem.getString("dataProvider"));
+
+          wMap = (Map) tMap.get("globalLocationNumber");
+          wMap.put("value", id);
+
+          Map<String, Object> addrValue = (Map) ((Map) tMap.get("address")).get("value");
+          addrValue.put("addressCountry", ConfItem.getString("addressCountry"));
+          addrValue.put("addressRegion", ConfItem.getString("addressRegion"));
+          addrValue.put("addressLocality", ConfItem.getString("addressLocality"));
+          addrValue.put("addressTown", addressTown);
+          addrValue.put("streetAddress", "");
+
+          Map<String, Object> locMap = (Map) tMap.get("location");
+          locMap.put("observedAt", DateUtil.getTime());
+          Map<String, Object> locValueMap = (Map) locMap.get("value");
+          locValueMap.put("coordinates", location.get(addressTown));
+
+          tMap.put("id", id);
+
+          rtnList.add(tMap);
+          String str = objectMapper.writeValueAsString(tMap);
+          toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+        }
+        sendEvent(rtnList, ConfItem.getString("datasetId"));
+      } catch (SQLException e) {
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      }
+
+    } catch (SQLException e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    } catch (CoreException e) {
+      if ("!C0099".equals(e.getErrorCode())) {
+        toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      }
+    } catch (Exception e) {
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
+
+    return "Success";
+  } // end of doit
+
+  Map<String, Object> Find_wMap(Map<String, Object> tMap, String Name) {
+    Map<String, Object> ValueMap = (Map) tMap.get(Name);
+    ValueMap.put("observedAt", DateUtil.getTime());
+    return ValueMap;
+  }
+
+  private String refineId(String id) {
+
+    while (id.length() < 12) {
+      id = "0" + id;
+    }
+    StringBuffer idBuffer = new StringBuffer(id);
+    idBuffer.insert(10, "_");
+    idBuffer.insert(6, "_");
+    idBuffer.insert(3, "_");
+    id = ConfItem.getString("id_prefix") + idBuffer.toString();
+    return id;
+  }
 ```
 
 변환 클래스 부분에서 위에 해당하는 영역에 DB에서 읽어온 데이터를 표준 모델에 맞게 코딩을 합니다. 작성 완료 후 **컴파일 확인** 을 클릭하여 컴파일 결과를 하단 회색 박스에서 확인합니다.
@@ -552,13 +730,173 @@ Agent설정 목록 화면에서 ![신규추가버튼](./images/신규추가버�
 4. **oneM2M 성남시 주차장예시** 인스턴스를 저장합니다. ![전송](./images/전송.png) 클릭하여 설정을 적용합니다.
    ![인스턴스-onem2m-저장후화면](./images/인스턴스-onem2m-저장후화면.png)
  인스턴스를 저장 후에 **데이터모델 변환관리** 클릭하여 데이터 모델을 직접 작성합니다.
- ![인스턴스-onem2m-변환클래스](./images/인스턴스-onem2m-변환클래스.png)
-
+ ![데이터변환관리_전체](./images/데이터변환관리_전체.png)
+성남시 주차장 샘플 전문입니다.
 ```java
-      //소스코드 첨가부분 - 시작
-      jsonModel.put("eventType.value", rs.getString("EVT_ID"));
-      jsonModel.put("eventName.value", rs.getString("EVT_DTL"));
-      //소스코드 첨가부분 - 종료
+  @Override
+  public void setup() {
+    Map<String, String> headers = new HashMap<>();
+    headers.put(HttpHeaders.ACCEPT, "application/json");
+    headers.put("X-M2M-Origin", "SW001");
+    headers.put("X-M2M-RI", "cityhub");
+    try {
+      String u = ConfItem.getString("metaInfo");
+      HttpResponse discovery = OkUrlUtil.get(u + "?fu=1&ty=3", headers);
+      if (discovery.getStatusCode() == 200) {
+        JSONObject dis = new JSONObject(discovery.getPayload());
+        for (Object obj : dis.getJSONArray("m2m:uril")) {
+          String sp = (String) obj;
+          String[] args = sp.split("/", -1);
+          if (args.length == 3) {
+            String url = u + "/" + args[2] + "/meta/la";
+            HttpResponse info = OkUrlUtil.get(url, headers);
+            if (info.getStatusCode() == 200) {
+              JsonUtil ju = new JsonUtil(info.getPayload());
+              if (ju.has("m2m:cin.con")) {
+                JSONObject jObj = ju.getObject("m2m:cin.con");
+                ConfItem.put(args[2], jObj);
+              }
+            }
+          }
+        }
+        log.info("parkinfo:{}", objectMapper.writeValueAsString(ConfItem));
+      }
+
+    } catch (Exception e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
+  }
+
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @Override
+  public String doit(byte[] message) {
+    List<Map<String, Object>> rtnList = new LinkedList<>();
+    String rtnStr = "";
+    String modelType = "";
+    try {
+      String msg = new String(message);
+
+      if (JsonUtil.has(msg, "pc.m2m:sgn.nev.rep.m2m:cin.con") == true) {
+        String sur = JsonUtil.get(msg, "pc.m2m:sgn.sur");
+        String contents = JsonUtil.get(msg, "pc.m2m:sgn.nev.rep.m2m:cin.con");
+        String[] Park = sur.split("/", -1);
+        if (Park.length == 4) {
+          JsonUtil parkInfo = null;
+          try {
+            parkInfo = new JsonUtil(ConfItem.getJSONObject(Park[2]));
+          } catch (JSONException e) {
+            log.info("OffStreeting:{}", Park[2]);
+            parkInfo = new JsonUtil(ConfItem.getJSONObject("yt_lot_1"));
+          }
+
+          Map<String, Object> tMap = objectMapper.readValue(templateItem.getJSONObject("OffStreetParking").toString(), new TypeReference<Map<String, Object>>() {
+          });
+          modelType = tMap.get("type").toString();
+          id = "urn:datahub:" + tMap.get("type") + ":" + Park[2];
+          toLogger(SocketCode.DATA_RECEIVE, id, parkInfo.toString().getBytes());
+
+          Map<String, Object> address = new LinkedHashMap<>();
+          address.put("type", "Property");
+          address.put("observedAt", DateUtil.getTime());
+          address.put("value", JsonUtil.nvl(parkInfo.getObject("address").toMap()));
+          tMap.put("address", address);
+
+          Map<String, Object> locMap = (Map) tMap.get("location");
+          Map<String, Object> locValueMap = (Map) locMap.get("value");
+          locValueMap.put("coordinates", parkInfo.getArray("location.coordinates").toList());
+
+          tMap.put("id", "urn:datahub:" + tMap.get("type") + ":" + Park[2]);
+
+          ((Map) tMap.get("locationTag")).put("value", JsonUtil.nvl(parkInfo.get("locationTag")));
+          ((Map) tMap.get("category")).put("value", parkInfo.getArray("category").toList());
+          ((Map) tMap.get("paymentAccepted")).put("value", parkInfo.getArray("paymentAccepted").toList());
+          ((Map) tMap.get("priceRate")).put("value", JsonUtil.nvl(parkInfo.get("priceRate"), DataType.STRING));
+          ((Map) tMap.get("priceCurrency")).put("value", parkInfo.getArray("priceCurrency").toList());
+          ((Map) tMap.get("image")).put("value", parkInfo.get("image"));
+          ((Map) tMap.get("totalSpotNumber")).put("value", JsonUtil.nvl(parkInfo.get("totalSpotNumber"), DataType.INTEGER));
+          ((Map) tMap.get("maximumAllowedHeight")).put("value", JsonUtil.nvl(parkInfo.get("maximumAllowedHeight"), DataType.FLOAT));
+          ((Map) tMap.get("openingHours")).put("value", parkInfo.getArray("openingHours").toList());
+          ((Map) tMap.get("contactPoint")).put("value", JsonUtil.nvl(parkInfo.getObject("contactPoint").toMap()));
+          ((Map) tMap.get("status")).put("value", parkInfo.getArray("status").toList());
+          ((Map) tMap.get("name")).put("value", parkInfo.get("name"));
+
+          if (ConfItem.has(Park[2])) {
+            ((Map) tMap.get("refParkingSpots")).put("value", parkInfo.getArray("refParkingSpots").toList());
+          }
+
+          ((Map) tMap.get("availableSpotNumber")).put("value", JsonUtil.nvl(contents, DataType.INTEGER));
+          ((Map) tMap.get("availableSpotNumber")).put("observedAt", DateUtil.getTime());
+
+          tMap.remove("inAccident");
+          tMap.remove("category");
+          tMap.remove("congestionIndexPrediction");
+          tMap.remove("predictions");
+
+          rtnList.add(tMap);
+          String str = objectMapper.writeValueAsString(tMap);
+          toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+        } else {
+          if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3])) {
+            JsonUtil parkInfo = null;
+            try {
+              parkInfo = new JsonUtil(ConfItem.getJSONObject(Park[2]));
+            } catch (JSONException e) {
+              log.info("OffStreeting:{}", Park[2]);
+              parkInfo = new JsonUtil(ConfItem.getJSONObject("yt_lot_1"));
+            }
+
+            Map<String, Object> tMap = objectMapper.readValue(templateItem.getJSONObject("ParkingSpot").toString(), new TypeReference<Map<String, Object>>() {
+            });
+            id = "urn:datahub:" + tMap.get("type") + ":" + Park[3];
+            modelType = tMap.get("type").toString();
+            toLogger(SocketCode.DATA_RECEIVE, id, parkInfo.toString().getBytes());
+
+            Map<String, Object> address = new LinkedHashMap<>();
+            address.put("type", "Property");
+            address.put("value", JsonUtil.nvl(parkInfo.getObject("address").toMap()));
+            tMap.put("address", address);
+
+            Map<String, Object> locMap = (Map) tMap.get("location");
+            Map<String, Object> locValueMap = (Map) locMap.get("value");
+            locValueMap.put("coordinates", parkInfo.getArray("location.coordinates").toList());
+
+            tMap.put("id", "urn:datahub:" + tMap.get("type") + ":" + Park[3]);
+
+            ((Map) tMap.get("length")).put("value", 5.1);
+            ((Map) tMap.get("width")).put("value", 2.5);
+            List category = new LinkedList();
+            category.add("forDisabled");
+            ((Map) tMap.get("category")).put("value", category);
+            ((Map) tMap.get("refParkingLot")).put("value", "urn:datahub:OffStreetParking:" + Park[2]);
+            ((Map) tMap.get("name")).put("value", JsonUtil.nvl(Park[3]));
+
+            ((Map) tMap.get("status")).put("value", JsonUtil.nvl(contents));
+            ((Map) tMap.get("status")).put("observedAt", DateUtil.getTime());
+
+            tMap.remove("refParkingLot");
+
+            rtnList.add(tMap);
+            String str = objectMapper.writeValueAsString(tMap);
+            toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+          } // if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3]) )
+
+        } // if (Park.length == 4)
+
+        rtnStr = objectMapper.writeValueAsString(rtnList);
+      } // if ( JsonUtil.has(msg, "pc.m2m:sgn.nev.rep.m2m:cin.con") == true)
+
+    } catch (CoreException e) {
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      if ("!C0099".equals(e.getErrorCode())) {
+        toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      }
+    } catch (Exception e) {
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
+    return rtnStr;
+  }
 ```
 
 변환 클래스 부분에서 위에 해당하는 영역에 DB에서 읽어온 데이터를 표준 모델에 맞게 코딩을 합니다. 작성 완료 후 **컴파일 확인** 을 클릭하여 컴파일 결과를 하단 회색 박스에서 확인합니다.
