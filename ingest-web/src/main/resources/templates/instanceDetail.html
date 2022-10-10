@@ -314,6 +314,7 @@
   var id = /*[[${id}]]*/'';
   var adapter_type_arr = /*[[${adapter_type}]]*/'';
   /* ]]> */
+  var isSaveAfterInstance = false;
   var ins_id = "";
 
   $(document).ready(function() {
@@ -401,9 +402,10 @@
     var url = "/agents/" + data.adapter_id + "/adaptors/" + data.adapter_id + "/instance";
     cmUtl.exeAjaxDynamic("GET", url, " ", "", "_cbAfterinstanceControl");
   }
-
+ 
   function _cbAfterinstanceControl(data) {
     if (data.length > 0) {
+      isSaveAfterInstance = true;
       $("#ins_sending").show();
     }
 
@@ -804,10 +806,12 @@
   }
 
   function clickTM(tb) {
-    if ($(tb).val() == "Y") {
-      $("#transModelDiv").show();
-    } else {
-      $("#transModelDiv").hide();
+    if (isSaveAfterInstance == true) {
+      if ($(tb).val() == "Y") {
+        $("#transModelDiv").show();
+      } else {
+        $("#transModelDiv").hide();
+      }
     }
   }
 
