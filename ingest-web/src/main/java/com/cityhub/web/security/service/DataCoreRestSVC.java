@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,9 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.cityhub.web.security.exception.DataCoreUIException;
+import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -96,12 +100,16 @@ public class DataCoreRestSVC {
     ResponseEntity<T> response = null;
     try {
       response = restTemplate.exchange(uri, HttpMethod.GET, getRequestEntity(body, headers), responseType);
-    } catch (HttpClientErrorException e) {
-      log.error("Client Exception - Error Status Code: {}, Response Body as String: {}", e.getStatusCode(), e);
-    } catch (ResourceAccessException e) {
+    } catch(HttpClientErrorException e) {
+      ClientExceptionPayloadVO clientExceptionPayload = new Gson().fromJson(e.getResponseBodyAsString(), ClientExceptionPayloadVO.class);
+      log.error("Client Exception - Error Status Code: {}, Response Body as String: {}, {}", e.getStatusCode(), clientExceptionPayload, e.getMessage());
+      throw new DataCoreUIException(e.getStatusCode(), clientExceptionPayload);
+    } catch(ResourceAccessException e) {
       log.error("Connection refused - {}", moduleHost, e);
+      throw new DataCoreUIException(HttpStatus.SERVICE_UNAVAILABLE);
     } catch (RestClientException e) {
-      log.error("REST GET Exception, ", e);
+        log.error("REST GET Exception, ", e);
+        throw new DataCoreUIException(HttpStatus.BAD_REQUEST);
     }
 
     return response;
@@ -127,11 +135,15 @@ public class DataCoreRestSVC {
     try {
       response = restTemplate.exchange(uri, HttpMethod.POST, getRequestEntity(body, headers), responseType);
     } catch (HttpClientErrorException e) {
-      log.error("Client Exception - Error Status Code: {}, Response Body as String: {}", e.getStatusCode(), e);
+      ClientExceptionPayloadVO clientExceptionPayload = new Gson().fromJson(e.getResponseBodyAsString(), ClientExceptionPayloadVO.class);
+      log.error("Client Exception - Error Status Code: {}, Response Body as String: {}, {}", e.getStatusCode(), clientExceptionPayload, e);
+      throw new DataCoreUIException(e.getStatusCode(), clientExceptionPayload);
     } catch (ResourceAccessException e) {
       log.error("Connection refused - {}", moduleHost, e);
+      throw new DataCoreUIException(HttpStatus.SERVICE_UNAVAILABLE);
     } catch (RestClientException e) {
       log.error("REST POST Exception, ", e);
+      throw new DataCoreUIException(HttpStatus.BAD_REQUEST);
     }
 
     return response;

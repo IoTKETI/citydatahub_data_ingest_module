@@ -137,7 +137,7 @@ public class DataCoreUiSVC {
         setTokenToSessionAndCookie(request, response, tokenJson);
       }
     } catch (Exception e) {
-      log.error("Failed to get access_token.", e);
+      log.error("Failed to get access_token: {}", e.getMessage());
     }
   }
 
