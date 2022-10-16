@@ -16,23 +16,17 @@
  */
 package com.cityhub.web.agent.controller;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cityhub.web.agent.service.AuthService;
+import com.cityhub.web.security.service.DataCoreUiSVC;
+import com.cityhub.web.security.vo.UserVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,100 +34,50 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 public class AuthController {
 
-  @Value("${auth.yn:N}")
-  public String authYn; // 카프카 접속 URL
-
-  @Value("${logoutEndPoint}")
-  public String logoutEndPoint; // 카프카 접속 URL
-
   @Autowired
-  private AuthService authService;
+  DataCoreUiSVC dataCoreUiSVC;
 
-  @MessageMapping("/sendMessage")
-  @SendTo("/topic/broadMessage")
-  public Map<String, String> broadMessage(@RequestBody Map<String, String> param) throws Exception {
-    Thread.sleep(10); // simulated delay
-    return param;
+  @GetMapping("/accesstoken")
+  public @ResponseBody void getAccessToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+    dataCoreUiSVC.getAccessToken(request, response);
+
+    String contextPath = request.getContextPath();
+    response.sendRedirect(contextPath + "/");
   }
 
-  @RequestMapping("/")
-  public String index(HttpServletRequest request, HttpServletResponse response) {
 
-    HttpSession session = request.getSession();
-    // 권한 없는 사용자 로그아웃 처리
-    if ("Y".equalsIgnoreCase(authYn)) {
-      if (!"Connectivity_Admin".equals(session.getAttribute("role"))) {
-        return "redirect:/logout";
-      } else {
-        return "redirect:/monitor/dashView";
-      }
-    } else {
-      return "redirect:/monitor/dashView";
-    }
+  /**
+   * Responds to user information when requesting user url.
+   * @return        User information
+   * @throws Exception  Throw an exception when an error occurs.
+   */
+  @GetMapping("/user")
+  public ResponseEntity<UserVO> getUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    return dataCoreUiSVC.getUser(request);
   }
 
-  @RequestMapping("/login")
-  public void moveLogin(HttpServletRequest request, HttpServletResponse response) {
-    if ("Y".equalsIgnoreCase(authYn)) {
-      String tokenCheck = authService.getTokenFromCookie(request);
-      try {
-        if (tokenCheck == null) {
-          String authCodeUrl = authService.getAuthCode(request);
-          response.sendRedirect(authCodeUrl);
-          return;
-        } else {
-          response.sendRedirect("/");
-          return;
-        }
-      } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      }
-    } else {
-      try {
-        response.sendRedirect("/monitor/dashView");
-        return;
-      } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      }
-    }
+  /**
+   * Responds to user ID when requesting user url.
+   * @return        User ID
+   * @throws Exception  Throw an exception when an error occurs.
+   */
+  @GetMapping("/userId")
+  public ResponseEntity<String> getUserId(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    return dataCoreUiSVC.getUserId(request);
   }
 
-  @RequestMapping("/logout")
-  public String logOut(HttpServletRequest request, HttpServletResponse response) {
-    authService.removeLogout(request, response);
-    authService.removeCookie(request, response);
-    authService.removeSession(request);
+  /**
+   * Logout processing when requesting logout url.
+   * @return        Http status
+   * @throws Exception  Throw an exception when an IO error occurs.
+   */
+  @GetMapping("/logout")
+  public ResponseEntity<Object> logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    dataCoreUiSVC.logout(request, response, null);
 
-    return "redirect:login";
+    return ResponseEntity.ok().build();
   }
 
-  @RequestMapping("/callClient")
-  public void callClientCredentials(HttpServletRequest request, HttpServletResponse response) {
-
-    String tokenCheck = authService.getTokenFromCookie(request);
-    try {
-      if (tokenCheck == null) {
-        String token = authService.getTokenByClientCredentials();
-        if (token != null) {
-          authService.cookieAddTokenByString(response, authService.getTokenFromResponse(token));
-          authService.createTokenSession(token, request, response);
-          response.sendRedirect("moveTestA");
-        } else {
-          response.sendRedirect("");
-        }
-      } else {
-        response.sendRedirect("moveTestA");
-      }
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    } finally {
-    }
-  }
-
-  @ResponseBody
-  @RequestMapping("/getInfo")
-  public String getInfo(HttpServletRequest request, HttpServletResponse response) {
-    return authService.callGetInfo(authService.getTokenFromCookie(request));
-  }
 
 }

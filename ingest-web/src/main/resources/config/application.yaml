@@ -22,7 +22,7 @@ ingest:
 
 server:
   timezone: Asia/Seoul 
-  port: 8080
+  port: 18080
   servlet:
     encoding:
       charset: UTF-8
@@ -42,23 +42,18 @@ mybatis:
     
 
 # auth info
-auth.yn: N
-authEndpoint : http://203.253.128.181:30084/oauth2.0/authorize
-responseType : code  
-tokenEndpoint: http://203.253.128.181:30084/oauth2.0/token
-publicKeyEndPoint: http://203.253.128.181:30084/security/publickey
-getInfoEndPoint: http://203.253.128.181:30084/security/users/cityhub03
-logoutEndPoint: http://203.253.128.181:30084/security/logout
-redirectUri: http://222.107.32.38:18080
-clientId: ne5EhxiRYBtfFBIjKcOC  
-clientSecret: LzJY7pTTLVGN8PQRAdo78qmjPQHjG1FF  
-grantType: 
-  auth: authorization_code
-  client: client_credentials
-  password: password
-  refresh: refresh_token
+cityhub:
+  auth: 
+    yn: Y
+    clientId: 48qfjmrLZpj8  
+    clientSecret: imgVwgVXMJnDez11Tmp4  
+    authorizationUri: http://119.195.143.33:30000/oauth2.0/authorize
+    tokenUri: http://119.195.143.33:30000/oauth2.0/token
+    publicKeyUri: http://119.195.143.33:30000/security/publickey
+    logoutUri: http://119.195.143.33:30000/security/logout
+    userInfoUri: http://119.195.143.33:30000/security/users
+    redirectUri: http://222.107.32.38:18080/accesstoken
 
-    
   
 eureka:
   instance:

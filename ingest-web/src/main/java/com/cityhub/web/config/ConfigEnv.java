@@ -57,6 +57,36 @@ public class ConfigEnv {
   private String configUrl = "/exec/config";
 
 
+  @Value("${cityhub.auth.yn:N}")
+  private String authYn;
+
+  @Value("${cityhub.auth.clientId}")
+  private String clientId;
+
+  @Value("${cityhub.auth.clientSecret}")
+  private String clientSecret;
+
+  @Value("${cityhub.auth.authorizationUri}")
+  private String authorizationUri;
+
+  @Value("${cityhub.auth.tokenUri}")
+  private String tokenUri;
+
+  @Value("${cityhub.auth.publicKeyUri}")
+  private String publicKeyUri;
+
+  @Value("${cityhub.auth.logoutUri}")
+  private String logoutUri;
+
+  @Value("${cityhub.auth.redirectUri}")
+  private String redirectUri;
+
+  @Value("${cityhub.auth.userInfoUri}")
+  private String userInfoUri;
+
+
+
+
   public String getDaemonSrv() {
     return daemonSrv;
   }
@@ -102,6 +132,96 @@ public class ConfigEnv {
     return daemonSrv + configUrl;
   }
 
+  public void setLogUrl(String logUrl) {
+    this.logUrl = logUrl;
+  }
+
+  public void setAgentUrl(String agentUrl) {
+    this.agentUrl = agentUrl;
+  }
+
+  public void setCompileUrl(String compileUrl) {
+    this.compileUrl = compileUrl;
+  }
+
+  public void setConfigUrl(String configUrl) {
+    this.configUrl = configUrl;
+  }
+
+
+  public String getClientId() {
+    return clientId;
+  }
+
+  public void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
+
+  public String getClientSecret() {
+    return clientSecret;
+  }
+
+  public void setClientSecret(String clientSecret) {
+    this.clientSecret = clientSecret;
+  }
+
+
+  public String getPublicKeyUri() {
+    return publicKeyUri;
+  }
+
+  public void setPublicKeyUri(String publicKeyUri) {
+    this.publicKeyUri = publicKeyUri;
+  }
+
+  public String getLogoutUri() {
+    return logoutUri;
+  }
+
+  public void setLogoutUri(String logoutUri) {
+    this.logoutUri = logoutUri;
+  }
+
+  public String getRedirectUri() {
+    return redirectUri;
+  }
+
+  public void setRedirectUri(String redirectUri) {
+    this.redirectUri = redirectUri;
+  }
+
+  public String getUserInfoUri() {
+    return userInfoUri;
+  }
+
+  public void setUserInfoUri(String userInfoUri) {
+    this.userInfoUri = userInfoUri;
+  }
+
+  public String getAuthYn() {
+    return authYn;
+  }
+
+  public void setAuthYn(String authYn) {
+    this.authYn = authYn;
+  }
+
+
+  public String getTokenUri() {
+    return tokenUri;
+  }
+
+  public void setTokenUri(String tokenUri) {
+    this.tokenUri = tokenUri;
+  }
+
+  public String getAuthorizationUri() {
+    return authorizationUri;
+  }
+
+  public void setAuthorizationUri(String authorizationUri) {
+    this.authorizationUri = authorizationUri;
+  }
 
 
 

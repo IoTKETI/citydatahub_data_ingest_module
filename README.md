@@ -236,7 +236,7 @@ services:
       - AUTH_INTERNAL_URL=http://10.0.0.237:30000
       - AUTH_CLIENT_ID=V43z0o2boLrXia0E5zn6
       - AUTH_CLIENT_SECRET=YikQaYqOaHvIvOpGt42lfGvxAiJ4DsYY
-      - AUTH_REDIRECT_URL=http://localhost:8080
+      - AUTH_REDIRECT_URL=http://localhost:8080/accesstoken
       - EUREKA_ENABLED=false
       - EUREKA_EUREKA_DEFAULT_ZONE=http://10.0.0.144:8888/eureka
     depends_on:
@@ -262,11 +262,11 @@ volumes:
 - INGEST_INTERFACE_API_USE_YN : City Data Hub 시스템의 INTERFACE API 서버의 사용여부를 설정합니다.(Y,N)
 - INGEST_INTERFACE_API_URL : City Data Hub 시스템의 INTERFACE API 서버의 주소를 설정합니다.
 - AUTH_YN : City Data Hub 시스템의 인증서버의 사용여부를 설정합니다.(Y,N)
-- AUTH_EXTERNAL_URL : City Data Hub 시스템의 인증서버 외부 URL 설정합니다.
-- AUTH_INTERNAL_URL : City Data Hub 시스템의 인증서버 내부 URL 설정합니다.
+- AUTH_EXTERNAL_URL : City Data Hub 시스템의 인증서버 외부 URL 설정합니다. (예: http://203.253.128.181:30084)
+- AUTH_INTERNAL_URL : City Data Hub 시스템의 인증서버 내부 URL 설정합니다. (예: http://10.0.0.237:30000)
 - AUTH_CLIENT_ID : City Data Hub 시스템의 인증서버에서 등록한 클라이언트 아이디 설정합니다.
 - AUTH_CLIENT_SECRET : City Data Hub 시스템의 인증서버에서 등록한 클라이언트 시크릿키 설정합니다.
-- AUTH_REDIRECT_URL : City Data Hub 시스템의 인증서버에서 로그인 한 후에 리다이렉트되는 주소 설정 (예: http://localhost:8080)
+- AUTH_REDIRECT_URL : City Data Hub 시스템의 인증서버에서 로그인 한 후에 리다이렉트되는 주소 설정 (예: http://localhost:8080/accesstoken)
 - EUREKA_ENABLED : City Data Hub 시스템의 EUREKA 서버의 사용여부를 설정합니다.(true, false)
 - EUREKA_EUREKA_DEFAULT_ZONE : City Data Hub 시스템의 EUREKA 서버의 URL 설정합니다.
 

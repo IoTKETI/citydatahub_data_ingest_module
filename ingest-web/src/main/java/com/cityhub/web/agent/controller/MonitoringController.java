@@ -41,7 +41,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -60,7 +59,6 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @Slf4j
 @RestController
-@RequestMapping({ "/monitor" })
 public class MonitoringController {
 
   @Autowired
@@ -69,7 +67,7 @@ public class MonitoringController {
   @Autowired
   ConfigEnv configEnv;
 
-  @GetMapping({ "/dashView" })
+  @GetMapping({ "/" ,"/monitor/dashView" })
   public ModelAndView dashView(HttpServletRequest request, HttpServletResponse response) {
 
     log.debug("----- MonitoringController.dashView() -----");
@@ -81,7 +79,7 @@ public class MonitoringController {
 
   // 스케줄주석
   // @Scheduled(fixedDelay = 60000)
-  @GetMapping({ "/getLoggerAll" })
+  @GetMapping({ "/monitor/getLoggerAll" })
   public ResponseEntity<String> getLoggerAll() {
     log.debug("----- MonitoringController.getLoggerAll() -----");
     String rtnMsg;
@@ -166,7 +164,7 @@ public class MonitoringController {
     return param;
   }
 
-  @GetMapping("/selectHourSF")
+  @GetMapping("/monitor/selectHourSF")
   public ResponseEntity<List<Map>> selectHourSF(HttpServletRequest request, HttpServletResponse response) {
     log.debug("----- MonitoringController.selectHourSF() -----");
     List<Map> result = null;
@@ -181,7 +179,7 @@ public class MonitoringController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
-  @GetMapping("/selectFailType")
+  @GetMapping("/monitor/selectFailType")
   public ResponseEntity<List<Map>> selectFailType(HttpServletRequest request, HttpServletResponse response) {
     log.debug("----- MonitoringController.selectFailType() -----");
     List<Map> result = null;
@@ -196,7 +194,7 @@ public class MonitoringController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
-  @GetMapping("/selectTypeSF")
+  @GetMapping("/monitor/selectTypeSF")
   public ResponseEntity<List<Map>> selectTypeSF(HttpServletRequest request, HttpServletResponse response) {
     log.debug("----- MonitoringController.selectTypeSF() -----");
     List<Map> result = null;
@@ -211,7 +209,7 @@ public class MonitoringController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
-  @GetMapping("/selectTypeCnt")
+  @GetMapping("/monitor/selectTypeCnt")
   public ResponseEntity<List<Map>> selectTypeCnt(HttpServletRequest request, HttpServletResponse response) {
     log.debug("----- MonitoringController.selectTypeCnt() -----");
     List<Map> result = null;
@@ -226,7 +224,7 @@ public class MonitoringController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
-  @GetMapping({ "/agent/view" })
+  @GetMapping({ "/monitor/agent/view" })
   public ModelAndView agentView(HttpServletRequest request, HttpServletResponse response) {
 
     log.debug("----- MonitoringController.agentView() -----");
@@ -240,7 +238,7 @@ public class MonitoringController {
     return modelAndView;
   }
 
-  @GetMapping("/agent")
+  @GetMapping("/monitor/agent")
   public ResponseEntity<List<Map>> agent(HttpServletRequest request, HttpServletResponse response) {
     log.debug("----- MonitoringController.agent() -----");
     List<Map> result = null;
@@ -254,7 +252,7 @@ public class MonitoringController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
-  @GetMapping("/agent/{id}/view")
+  @GetMapping("/monitor/agent/{id}/view")
   public ModelAndView agentDetailView(@PathVariable("id") String id, HttpServletResponse response) {
     log.debug("----- MonitoringController.agentDetailView() -----");
     ModelAndView modelAndView = new ModelAndView();
@@ -263,7 +261,7 @@ public class MonitoringController {
     return modelAndView;
   }
 
-  @GetMapping("/agent/{id}")
+  @GetMapping("/monitor/agent/{id}")
   public ResponseEntity<Map> agentDetail(@PathVariable("id") String id, HttpServletResponse response) {
     log.debug("----- MonitoringController.agentDetail() -----");
     Map result = svc.getById(id);
@@ -279,7 +277,7 @@ public class MonitoringController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
-  @PostMapping({ "/popup/popupMonitorAdapter" })
+  @PostMapping({ "/monitor/popup/popupMonitorAdapter" })
   public ModelAndView popupMonitorAdapter(HttpServletRequest request, HttpServletResponse response) {
 
     log.debug("----- MonitoringController.popupMonitorAdapter() -----");
@@ -289,7 +287,7 @@ public class MonitoringController {
     return modelAndView;
   }
 
-  @GetMapping("/status/{agentId}")
+  @GetMapping("/monitor/status/{agentId}")
   public ResponseEntity<String> statusAgent(@PathVariable("agentId") String agentId, HttpServletResponse response) {
     log.debug("----- MonitoringController.statusAgent() -----");
     HttpResponse resp = null;
@@ -302,7 +300,7 @@ public class MonitoringController {
     return new ResponseEntity<>(resp.getPayload(), HttpStatus.OK);
   }
 
-  @PostMapping({ "/popup/popupDashLog" })
+  @PostMapping({ "/monitor/popup/popupDashLog" })
   public ModelAndView popupDashLog(HttpServletRequest request, HttpServletResponse response) {
 
     log.debug("----- MonitoringController.popupDashLog() -----");
@@ -393,7 +391,7 @@ public class MonitoringController {
     return returnText;
   }
 
-  @GetMapping("/selectLog")
+  @GetMapping("/monitor/selectLog")
   public ResponseEntity<List<Map>> selectLog(@RequestParam(value = "adapter_id", required = false, defaultValue = "") String adapter_id,
       @RequestParam(value = "adapter_type", required = false, defaultValue = "") String adapter_type, @RequestParam(value = "st_datamodel", required = false, defaultValue = "") String st_datamodel,
       @RequestParam(value = "step", required = false, defaultValue = "") String step, @RequestParam(value = "log_desc", required = false, defaultValue = "") String log_desc) {

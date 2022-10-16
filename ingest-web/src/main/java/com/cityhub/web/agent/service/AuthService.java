@@ -40,9 +40,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
+
+import com.cityhub.web.config.ConfigEnv;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -59,37 +61,23 @@ import okhttp3.Response;
 @Service
 public class AuthService {
 
-  @Value("${authEndpoint}")
-  private String authEndpoint;
-  @Value("${responseType}")
-  private String responseType;
-  @Value("${redirectUri}")
-  private String redirectUri;
-  @Value("${clientId}")
-  private String clientId;
-  @Value("${tokenEndpoint}")
-  private String tokenEndpoint;
-  @Value("${clientSecret}")
-  private String clientSecret;
-  @Value("${grantType.auth}")
-  private String grantAuthorizationCode;
-  @Value("${grantType.client}")
-  private String grantClientCredentials;
-  @Value("${grantType.password}")
-  private String grantPasswordCredentials;
-  @Value("${grantType.refresh}")
-  private String grantRefreshToken;
+  @Autowired
+  private ConfigEnv configEnv;
 
-  @Value("${publicKeyEndPoint}")
-  private String publicKeyEndPoint;
-  @Value("${getInfoEndPoint}")
-  private String getInfoUri;
+  final static String AUTHORIZATION = "Authorization";
+  final static String AUTHORIZATION_CODE = "authorization_code";
+  final static String CODE = "code";
+  final static String STATE = "state";
+  final static String ACCESS_TOKEN = "access_token";
+  final static String AUTHTOKEN = "authToken";
+  final static String REFRESHTOKEN = "refreshtoken";
+  final static String REFRESH_TOKEN = "refresh_token";
+  final static String CHAUT = "chaut";
+  final static Integer COOKIE_MAX_AGE = 60 * 60 * 1; // 1 hours
+  final static String SHA256 = "SHA-256";
 
-  @Value("${logoutEndPoint}")
-  public String logoutEndPoint; // 카프카 접속 URL
 
   private OkHttpClient client = new OkHttpClient();
-  private static final String COOKIE_IN_TOKEN_NAME = "chaut";
 
   /**
    * @Author : jungyun
@@ -100,8 +88,8 @@ public class AuthService {
   public String getAuthCode(HttpServletRequest request) {
 
     String state = sha256Encoder(request);
-    String urlParam = "?response_type=" + responseType + "&redirect_uri=" + redirectUri + "&client_id=" + clientId + "&state=" + state + "";
-    String apiUri = authEndpoint + urlParam;
+    String urlParam = "?response_type="+CODE+"&redirect_uri=" + configEnv.getRedirectUri() + "&client_id=" + configEnv.getClientId() + "&state=" + state + "";
+    String apiUri = configEnv.getAuthorizationUri() + urlParam;
 
     return apiUri;
   }
@@ -117,15 +105,15 @@ public class AuthService {
     JSONObject object = new JSONObject();
     String resMessage = "";
 
-    object.put("grant_type", "authorization_code");
-    object.put("client_id", clientId);
-    object.put("client_secret", clientSecret);
-    object.put("redirect_uri", redirectUri);
-    object.put("code", code);
+    object.put("grant_type", AUTHORIZATION_CODE);
+    object.put("client_id", configEnv.getClientId());
+    object.put("client_secret", configEnv.getClientSecret());
+    object.put("redirect_uri", configEnv.getRedirectUri());
+    object.put(CODE, code);
 
-    String url = tokenEndpoint + "?grant_type=authorization_code&client_id=" + clientId + "&client_secret=" + clientSecret + "&redirect_uri=" + redirectUri + "&code=" + code;
+    String url = configEnv.getTokenUri() + "?grant_type="+AUTHORIZATION_CODE+"&client_id=" + configEnv.getClientId() + "&client_secret=" + configEnv.getClientSecret() + "&redirect_uri=" + configEnv.getRedirectUri() + "&code=" + code;
 
-    log.info("###url:{},{}", tokenEndpoint, object.toString());
+    log.info("###url:{},{}", configEnv.getTokenUri(), object.toString());
 
     RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), object.toString());
     Request okRequest = new Request.Builder().url(url).post(requestBody).build();
@@ -156,14 +144,14 @@ public class AuthService {
    */
   public String getTokenByClientCredentials() {
 
-    String clientCredentials = clientId + ":" + clientSecret;
+    String clientCredentials = configEnv.getClientId() + ":" + configEnv.getClientSecret();
     String resMessage = "";
     String apiheader = "Basic " + Base64Utils.encodeToString(clientCredentials.getBytes());
     JSONObject object = new JSONObject();
 
-    object.put("grant_type", grantClientCredentials);
+    object.put("grant_type", "client_credentials");
 
-    resMessage = httpConnection(tokenEndpoint, "POST", apiheader, object.toString());
+    resMessage = httpConnection(configEnv.getTokenUri(), "POST", apiheader, object.toString());
     log.info("resMessage:{}", resMessage);
     return resMessage;
 
@@ -177,13 +165,13 @@ public class AuthService {
    */
   public String getTokenByPasswordCredentials() {
 
-    String passwordCredentials = clientId + ":" + clientSecret;
+    String passwordCredentials = configEnv.getClientId() + ":" + configEnv.getClientSecret();
     String apiheader = "Basic " + Base64Utils.encodeToString(passwordCredentials.getBytes());
     JSONObject object = new JSONObject();
     String resMessage = "";
 
-    object.put("grant_type", grantPasswordCredentials);
-    resMessage = httpConnection(tokenEndpoint, "POST", apiheader, object.toString());
+    object.put("grant_type", "password");
+    resMessage = httpConnection(configEnv.getTokenUri(), "POST", apiheader, object.toString());
     log.info("resMessage:{}", resMessage);
     return resMessage;
 
@@ -200,7 +188,7 @@ public class AuthService {
     HttpSession session = request.getSession();
     String sessionId = session.getId();
     StringBuffer state = null;
-    String encodingType = "SHA-256";
+    String encodingType = SHA256;
 
     try {
       MessageDigest digest = MessageDigest.getInstance(encodingType);
@@ -234,7 +222,7 @@ public class AuthService {
 
     if (cookies != null) {
       for (Cookie itr : cookies) {
-        if (itr.getName().equals(COOKIE_IN_TOKEN_NAME)) {
+        if (itr.getName().equals(CHAUT)) {
           token = itr.getValue();
           break;
         }
@@ -255,7 +243,7 @@ public class AuthService {
     Cookie cookie = null;
 
     if (tokenResponse != null) {
-      cookie = new Cookie(COOKIE_IN_TOKEN_NAME, tokenResponse);
+      cookie = new Cookie(CHAUT, tokenResponse);
 
       cookie.setHttpOnly(true);
       cookie.setSecure(false);
@@ -276,8 +264,8 @@ public class AuthService {
     Cookie cookie = null;
     if (tokenResponse != null) {
       JSONObject token = new JSONObject(tokenResponse);
-      String target = "access_token";
-      cookie = new Cookie(COOKIE_IN_TOKEN_NAME, token.getString(target));
+      String target = ACCESS_TOKEN;
+      cookie = new Cookie(CHAUT, token.getString(target));
 
       cookie.setHttpOnly(true);
       cookie.setSecure(false);
@@ -298,7 +286,7 @@ public class AuthService {
    */
   public void removeCookie(HttpServletRequest request, HttpServletResponse response) {
 
-    Cookie cookie = new Cookie(COOKIE_IN_TOKEN_NAME, null);
+    Cookie cookie = new Cookie(CHAUT, null);
     cookie.setMaxAge(0);
     response.addCookie(cookie);
   }
@@ -330,11 +318,11 @@ public class AuthService {
         body = okhttp3.RequestBody.create(MediaType.parse("application/json"), bodyStr);
 
         JSONObject token = new JSONObject(session.getAttribute("token").toString());
-        String target = "access_token";
+        String target = ACCESS_TOKEN;
 
         String resMessage = "";
 
-        resMessage = httpConnection(logoutEndPoint, "POST", "Basic " + token.getString(target), bodyStr);
+        resMessage = httpConnection(configEnv.getLogoutUri(), "POST", "Basic " + token.getString(target), bodyStr);
         log.info("resMessage:{}", resMessage);
 
       } catch (Exception e) {
@@ -356,7 +344,7 @@ public class AuthService {
     if (tokenResponse != null) {
       session.setAttribute("token", tokenResponse);
       JSONObject token = new JSONObject(tokenResponse);
-      String target = "access_token";
+      String target = ACCESS_TOKEN;
       String getInfo = callGetInfo(token.getString(target));
       if (getInfo != null && !"".equals(getInfo)) {
         JSONObject jsonInfo = new JSONObject(getInfo);
@@ -378,7 +366,7 @@ public class AuthService {
     String token = null;
     if (tokenResponse != null) {
       JSONObject tokenJsonObject = new JSONObject(tokenResponse);
-      String target = "access_token";
+      String target = ACCESS_TOKEN;
       token = tokenJsonObject.getString(target);
     }
 
@@ -438,12 +426,12 @@ public class AuthService {
    * @return : api콜 응답값(공개키)
    */
   public String getPublicKey() {
-    String clientCredentials = clientId + ":" + clientSecret;
-    String apiheader = "Basic " + Base64Utils.encodeToString(clientCredentials.getBytes());
-    log.info("apiheader :{},{}", publicKeyEndPoint, apiheader);
+    String clientCredentials = configEnv.getClientId() + ":" + configEnv.getClientSecret();
+    String apiheader = "Bearer " + Base64Utils.encodeToString(clientCredentials.getBytes());
+    log.info("apiheader :{},{}", configEnv.getPublicKeyUri(), apiheader);
     String resMessage = "";
 
-    resMessage = httpConnection(publicKeyEndPoint, "GET", apiheader, "");
+    resMessage = httpConnection(configEnv.getPublicKeyUri(), "GET", apiheader, "");
     log.info("resMessage:{}", resMessage);
 
     return resMessage;
@@ -517,7 +505,7 @@ public class AuthService {
 
     if (token != null) {
       JSONObject getRefreshToken = new JSONObject(token);
-      String target = "refresh_token";
+      String target = REFRESH_TOKEN;
       if (getRefreshToken.get(target) != null) {
         refreshToken = getRefreshToken.getString(target);
       }
@@ -533,7 +521,7 @@ public class AuthService {
    * @return : token발급 성공시true 실패시 false
    */
   public boolean callRefreshToken(HttpServletRequest request, HttpServletResponse response) {
-    String base64IdPw = clientId + ":" + clientSecret;
+    String base64IdPw = configEnv.getClientId() + ":" + configEnv.getClientSecret();
     String refreshHeader = "Basic " + Base64Utils.encodeToString(base64IdPw.getBytes());
     String refreshToken = getRefreshTokenFromSession(request);
     String resMessage = "";
@@ -543,10 +531,10 @@ public class AuthService {
       return false;
     }
 
-    object.put("grant_type", grantRefreshToken);
+    object.put("grant_type", REFRESH_TOKEN);
     object.put("refresh_token", refreshToken);
 
-    resMessage = httpConnection(tokenEndpoint, "POST", refreshHeader, object.toString());
+    resMessage = httpConnection(configEnv.getTokenUri(), "POST", refreshHeader, object.toString());
 
     log.debug("리프레시 토큰 값 : " + refreshToken);
     log.debug("리프레시 토큰 응답 : " + resMessage);

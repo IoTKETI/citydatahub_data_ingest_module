@@ -51,21 +51,18 @@ eureka:
 
 
 # auth info
-auth.yn: ${AUTH_YN}
-authEndpoint : ${AUTH_EXTERNAL_URL}/oauth2.0/authorize
-tokenEndpoint: ${AUTH_INTERNAL_URL}/oauth2.0/token
-publicKeyEndPoint: ${AUTH_EXTERNAL_URL}/security/publickey
-getInfoEndPoint: ${AUTH_EXTERNAL_URL}/security/users/cityhub03
-logoutEndPoint: ${AUTH_EXTERNAL_URL}/security/logout
-redirectUri: ${AUTH_REDIRECT_URL} 
-clientId: ${AUTH_CLIENT_ID}
-clientSecret: ${AUTH_CLIENT_SECRET}
-responseType : code
-grantType: 
-  auth: authorization_code
-  client: client_credentials
-  password: password
-  refresh: refresh_token
+cityhub:
+  auth: 
+    yn: ${AUTH_YN}
+    clientId: ${AUTH_CLIENT_ID}
+    clientSecret: ${AUTH_CLIENT_SECRET}
+    authorizationUri: ${AUTH_EXTERNAL_URL}/oauth2.0/authorize
+    tokenUri: ${AUTH_INTERNAL_URL}/oauth2.0/token
+    publicKeyUri: ${AUTH_INTERNAL_URL}/security/publickey
+    logoutUri: ${AUTH_INTERNAL_URL}/security/logout
+    userInfoUri: ${AUTH_INTERNAL_URL}/security/users
+    redirectUri: ${AUTH_REDIRECT_URL} 
+
 
 
 

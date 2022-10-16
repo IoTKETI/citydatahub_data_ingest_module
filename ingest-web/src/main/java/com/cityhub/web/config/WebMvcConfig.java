@@ -18,11 +18,13 @@ package com.cityhub.web.config;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.resource.PathResourceResolver;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -31,35 +33,33 @@ public class WebMvcConfig implements WebMvcConfigurer {
   @Autowired
   private WebInterceptor webInterceptor;
 
-  private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
-      "classpath:/META-INF/resources/", "classpath:/resources/",
-      "classpath:/static/", "classpath:/templates/"};
+  private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {"classpath:/static/"};
   private static final List<String> excludePattern = new ArrayList<>();
-
 
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
+    /*
     excludePattern.add("/login");
-    excludePattern.add("/logOut");
+    excludePattern.add("/logout");
     excludePattern.add("/restApi/**");
     excludePattern.add("/agents/**");
     excludePattern.add("/adaptorType/**");
     excludePattern.add("/sourceModel/**");
     excludePattern.add("/sourceModels/**");
     excludePattern.add("/sourceModelsTest");
-    excludePattern.add("/adaptorType/**");
-
-    registry.addInterceptor(webInterceptor).addPathPatterns("/**")
-      .excludePathPatterns(excludePattern);
-
+     */
+    registry.addInterceptor(webInterceptor).addPathPatterns("/**");
   }
 
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry.addResourceHandler("/**")
-    .addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS);
+    .addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS)
+    .setCachePeriod(3600)
+    .resourceChain(true)
+    .addResolver(new PathResourceResolver());
   }
 
 }
