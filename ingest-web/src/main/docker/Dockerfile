@@ -1,32 +1,23 @@
-FROM openjdk:8-alpine
+FROM openjdk:8-slim-bullseye
 LABEL name="Yonghak.An"
 LABEL email="neoshaby@gmail.com"
 
 ENV TZ=Asia/Seoul
 
-RUN apk --no-cache add ca-certificates bash tzdata curl && \
-    cp /usr/share/zoneinfo/$TZ /etc/localtime && \
-    echo $TZ > /etc/timezone
+RUN apt-get update && apt-get install -y locales && \
+    localedef -f UTF-8 -i ko_KR ko_KR.UTF-8 && \
+    cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime && \
+    echo $TZ > /etc/timezone && \
+    mkdir -p /opt/web/config
 
-COPY ./apk/sgerrand.rsa.pub /etc/apk/keys/sgerrand.rsa.pub
-COPY ./apk/ /
+ENV LC_ALL ko_KR.UTF-8
+ENV PYTHONIOENCODING=utf-8
 
-RUN apk add glibc-bin-2.35-r0.apk glibc-i18n-2.35-r0.apk glibc-2.35-r0.apk
-
-# install ko_KR locale
-RUN /usr/glibc-compat/bin/localedef -i ko_KR -f UTF-8 ko_KR.UTF-8 && \
-    echo "export LC_ALL='ko_KR.UTF-8'" >> /etc/profile && \
-    echo "export LANG='ko_KR.UTF-8'" >> /etc/profile && \
-    echo "export LANGUAGE='ko_KR.UTF-8'" >> /etc/profile
-ENV LC_ALL=ko_KR.UTF-8
-
-RUN mkdir -p /opt/web/config
-
-COPY ./config/ /opt/web/config/
+EXPOSE 8080
 
 WORKDIR /opt/web
 
-EXPOSE 8080
+COPY ./config/ /opt/web/config/
   
 ADD ingest-web-1.0.0.jar /opt/web/app.jar
 
