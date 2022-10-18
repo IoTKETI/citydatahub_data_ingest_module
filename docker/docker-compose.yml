@@ -3,7 +3,7 @@ version: '3'
 services:
   ingest-db:
     container_name: ingest-db
-    image: postgis/postgis:11-2.5-alpine
+    image: postgres:12.12-alpine3.16
     hostname: ingest-db
     environment:
       - TZ=Asia/Seoul
@@ -13,7 +13,7 @@ services:
     ports:
       - 5430:5432
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - ~/db-data:/var/lib/postgresql/data:Z
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: on-failure
     healthcheck:
@@ -26,7 +26,7 @@ services:
     ports:
       - 8888:8888
     volumes:
-      -  log-data:/opt/logs  
+      - ~/log-data:/opt/logs:Z  
     environment:
       - TZ=Asia/Seoul
       - DATASOURCE_DRIVER=org.postgresql.Driver
@@ -46,7 +46,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      -  log-data:/opt/logs        
+      - ~/log-data:/opt/logs:Z        
     environment:
       - TZ=Asia/Seoul
       - DATASOURCE_DRIVER=org.postgresql.Driver
@@ -70,8 +70,4 @@ services:
         condition: service_healthy
       ingest-daemon:
         condition: service_started        
-
-volumes:
-  db-data:
-  log-data:
 
