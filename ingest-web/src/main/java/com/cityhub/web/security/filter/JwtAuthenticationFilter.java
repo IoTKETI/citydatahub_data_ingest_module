@@ -76,13 +76,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       String jwt = getAccessToken(request.getHeader(COOKIE));
 
       if (jwt != null && isValidSession(request, response)) {
-        log.info("NOT NULL jwt:{}",jwt);
         PublicKey publicKey = getPublickey(jwt);
-
         Claims claims = getClaimsJws(jwt, publicKey);
         setSpringAuthentication(claims);
       } else {
-        log.info("NULL jwt:{}",jwt);
         String loginUri = dataCoreUiSVC.getLoginUri(request);
         response.sendRedirect(loginUri);
         return;

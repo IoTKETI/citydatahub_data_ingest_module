@@ -95,7 +95,7 @@ public class DataCoreRestSVC {
    */
   public <T> ResponseEntity<T> get(String moduleHost, String pathUri, Map<String, String> headers, Object body, Map<String, Object> params, Class<T> responseType) {
     URI uri = getUrl(moduleHost, pathUri, params);
-    log.info("GET - REST API URL : {},{},{}", uri,params, body );
+    log.info("GET - REST API URL : {}", uri);
 
     ResponseEntity<T> response = null;
     try {
@@ -129,7 +129,7 @@ public class DataCoreRestSVC {
   @SuppressWarnings("unchecked")
   public <T> ResponseEntity<T> post(String moduleHost, String pathUri, Map<String, String> headers, Object body, Map<String, Object> params, Class<T> responseType) {
     URI uri = getUrl(moduleHost, pathUri, params);
-    log.info("POST - REST API URL : {},{},{}", uri,params, body );
+    log.info("POST - REST API URL : {},{}", uri, body );
 
     ResponseEntity<T> response = null;
     try {

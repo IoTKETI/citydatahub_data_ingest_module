@@ -129,9 +129,7 @@ public class DataCoreUiSVC {
     form.setClient_secret(configEnv.getClientSecret());
 
     try {
-      log.info("!!!{}",new JSONObject(form).toString());
       ResponseEntity<String> result = dataCoreRestSVC.post(configEnv.getTokenUri(), null, null, form, null, String.class);
-      log.info("@@@@@@@@@@result:{}",result);
       if (result != null && result.getBody() != null) {
         String tokenJson = result.getBody();
         setTokenToSessionAndCookie(request, response, tokenJson);
