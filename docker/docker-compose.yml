@@ -15,6 +15,7 @@ services:
     volumes:
       - ~/db-data:/var/lib/postgresql/data:Z
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: postgres -c 'max_connections=300'
     restart: on-failure
     healthcheck:
       test: "exit 0"
