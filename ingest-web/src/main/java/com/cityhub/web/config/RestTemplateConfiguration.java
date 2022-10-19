@@ -3,6 +3,7 @@ package com.cityhub.web.config;
 import java.nio.charset.Charset;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -62,6 +63,7 @@ public class RestTemplateConfiguration {
     connectionManager.setValidateAfterInactivity(validateAfterInactivity);
 
     RequestConfig requestConfig = RequestConfig.custom()
+        .setCookieSpec(CookieSpecs.STANDARD)
         // The time for the server to return data (response) exceeds the throw of read
         // timeout
         .setSocketTimeout(readTimeout)
