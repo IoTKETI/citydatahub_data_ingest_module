@@ -159,7 +159,7 @@
 
 <script th:inline="javascript">
   /* <![CDATA[ */
-  var id = /*[[${id}]]*/'default';
+  var id = /*[[${id}]]*/'';
   /* ]]> */
 
   $(document).ready(function() {
@@ -169,6 +169,7 @@
   $("#btn-save").click(function(event) {
     if (validation("agent_info")) {
       if (confirm("저장하시겠습니까?")) {
+        $('#loading').show();
         event.preventDefault();
         agent_save();
       }
@@ -176,8 +177,40 @@
   });
 
   $("#btn-save2").click(function(event) {
+    var Row = new RowData($("#adaptorFormInfo > tbody"));
+    var size = Row.getValue("adapter_id").length;
+    var chk = 0;
+    var id = Row.getValue("adapter_id");
+    const arr = id.split("");
+
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i] >= 0 && arr[i] <= 9) {
+        continue;
+      } else {
+        chk = 1;
+        break;
+      }
+    }
+    const reghan = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+    const reguni = /[`~!@#$%^&*|\\\'\";:\/?]/gi
+
+    if (size > 20) {
+      alert("id의 길이가 맞지 않습니다.")
+      $("#btn-save2").prop("disabled", false);
+      return;
+    } else if (chk == 0) {
+      alert("숫자만으로 이루어진 id는 사용할 수 없습니다.")
+      $("#btn-save2").prop("disabled", false);
+      return;
+    } else if (reghan.test(Row.getValue("adapter_id")) || reguni.test(Row.getValue("adapter_id"))) {
+      alert("id에 사용할 수 없는 문자가 포함되어 있습니다.\n(한글 또는 _를 제외한 특수문자)");
+      $("#btn-save2").prop("disabled", false);
+      return;
+    }
+    
     if (validation("adtFrm")) {
       if (confirm("저장하시겠습니까?")) {
+        $('#loading').show();
         event.preventDefault();
         adapter_save();
       }
@@ -187,6 +220,7 @@
   $("#btn-modify2").click(function(event) {
     if (validation("adtFrm")) {
       if (confirm("수정하시겠습니까?")) {
+        $('#loading').show();
         event.preventDefault();
         adapter_modify();
       }
@@ -213,7 +247,6 @@
       $("#btn-del-agent").hide();
       return;
     }
-    //var url = "/agentDetail/"+id+"/agent";
     var url = "/agents/" + id;
     cmUtl.exeAjaxDynamic("GET", url, " ", "", "_cbAfterExistIdProcAgent");
   }
@@ -270,7 +303,6 @@
 
     $("#btn-save").prop("disabled", true);
 
-    //var param = "/agentDetail";
     var param = "/agents";
 
     var pRow = new RowData($("#agentInfo > tbody"));
@@ -294,55 +326,24 @@
   function _cbAfterAgentSave() {
     $("#btn-save").prop("disabled", false);
     alert("저장되었습니다.");
+    $('#loading').hide();
     location.replace('/agentDetail/' + $("#agent_id").val());
   }
 
   function adapter_save() {
     $("#btn-save2").prop("disabled", true);
 
-    //var param = "/adapterSave";
     var param = "/agents/" + $("#agent_id").val() + "/adaptors";
     var Row = new RowData($("#adaptorFormInfo > tbody"));
 
-    var size = Row.getValue("adapter_id").length;
-    var chk = 0;
-    var id = Row.getValue("adapter_id");
-    const arr = id.split("");
-
-    for (var i = 0; i < arr.length; i++) {
-      if (arr[i] >= 0 && arr[i] <= 9) {
-        continue;
-      } else {
-        chk = 1;
-        break;
-      }
-    }
-
-    const reghan = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
-    const reguni = /[`~!@#$%^&*|\\\'\";:\/?]/gi
-
-    if (size > 20) {
-      alert("id의 길이가 맞지 않습니다.")
-      $("#btn-save2").prop("disabled", false);
-      return;
-    } else if (chk == 0) {
-      alert("숫자만으로 이루어진 id는 사용할 수 없습니다.")
-      $("#btn-save2").prop("disabled", false);
-      return;
-    } else if (reghan.test(Row.getValue("adapter_id")) || reguni.test(Row.getValue("adapter_id"))) {
-      alert("id에 사용할 수 없는 문자가 포함되어 있습니다.\n(한글 또는 _를 제외한 특수문자)");
-      $("#btn-save2").prop("disabled", false);
-      return;
-    } else {
-      var data = {
-        "adapter_id" : Row.getValue("adapter_id"),
-        "adapter_nm" : Row.getValue("adapter_nm"),
-        "target_platform_type" : Row.getValue("platform_type"),
-        "use_yn" : Row.getValue("adt_use_yn"),
-        "agent_id" : $("#agent_id").val(),
-      };
-      cmUtl.exeAjax("POST", param, JSON.stringify(data), "_cbAfterAdtSave");
-    }
+    var data = {
+      "adapter_id" : Row.getValue("adapter_id"),
+      "adapter_nm" : Row.getValue("adapter_nm"),
+      "target_platform_type" : Row.getValue("platform_type"),
+      "use_yn" : Row.getValue("adt_use_yn"),
+      "agent_id" : $("#agent_id").val(),
+    };
+    cmUtl.exeAjax("POST", param, JSON.stringify(data), "_cbAfterAdtSave");
   }
 
   function _cbAfterAdtSave(data) {
@@ -357,7 +358,7 @@
     } else {
       alert(data.detail);
     }
-
+    $('#loading').hide();
     $("#btn-save2").prop("disabled", false);
   }
 
@@ -381,6 +382,7 @@
   function _cbAfterAdtModify() {
     $("#btn-modify2").prop("disabled", false);
     alert("저장되었습니다.");
+    $('#loading').hide();
     location.replace('/agentDetail/' + $("#agent_id").val());
   }
 
@@ -415,6 +417,7 @@
     var data = gridData[idx - 1];
     if (idx >= 1) {
       if (confirm("삭제하시겠습니까?"))
+        $('#loading').show();
         fireAjaxDelSubmit(data);
     } else {
       alert("삭제할 어댑터를 선택해 주세요.");
@@ -425,11 +428,11 @@
 
     if (data.ins_cnt > 0) {
       alert("인스턴스가 존재하는 어댑터는 삭제할 수 없습니다.");
+      $('#loading').hide();
     } else {
       $("#btn-del").prop("disabled", true);
 
       var type = "DELETE";
-      //var url = "/obDetail";
       var url = "/agents/" + $("#agent_id").val() + "/adaptors/" + data.adapter_id;
       cmUtl.exeAjax(type, url, "", "_cbAfterFireAjaxDelSubmit");
     }
@@ -450,16 +453,16 @@
       location.replace('/agentDetail/' + $("#agent_id").val());
     } else {
       alert(data.resultMsg);
-      //id = $("#ob_datamodel_id").val();
-      //$("#ob_datamodel_id").prop("readOnly" , true);
     }
-
+    $('#loading').hide();
     $("#btn-del").prop("disabled", false);
   }
 
   $('#btn-del-agent').on('click', function() {
-    if (confirm("삭제하시겠습니까?"))
+    if (confirm("삭제하시겠습니까?")) {
+      $('#loading').show();
       chkAdtCnt();
+    }
   });
 
   function chkAdtCnt() {
@@ -470,6 +473,7 @@
   function _chkAdtCnt(data) {
     if (data.length > 0) {
       alert("어댑터가 존재하는 에이전트는 삭제할 수 없습니다.");
+      $('#loading').hide();
     } else {
       $("#btn-del-agent").prop("disabled", true);
 
@@ -495,7 +499,7 @@
     } else {
       alert(data.resultMsg);
     }
-
+    $('#loading').hide();
     $("#btn-del-agent").prop("disabled", false);
   }
 </script>

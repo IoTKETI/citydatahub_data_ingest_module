@@ -78,7 +78,6 @@ public class MonitoringController {
   }
 
   // 스케줄주석
-  // @Scheduled(fixedDelay = 60000)
   @GetMapping({ "/monitor/getLoggerAll" })
   public ResponseEntity<String> getLoggerAll() {
     log.debug("----- MonitoringController.getLoggerAll() -----");
@@ -307,24 +306,26 @@ public class MonitoringController {
     ModelAndView modelAndView = new ModelAndView();
     modelAndView.setViewName("popup/popupDashLog");
 
-    List<Map> stList = null;
+    List<Map> stList = new ArrayList<>();
     try {
 
       stList = new ArrayList<>();
       log.debug(configEnv.getDataModelApiUrl() + "?level=000&");
       HttpResponse resp = UrlUtil.get(configEnv.getDataModelApiUrl() + "?level=000", "Content-type", "application/json");
-      JSONArray jsonarr = new JSONArray(resp.getPayload());
+      if (resp.getPayload().startsWith("[")) {
+        JSONArray jsonarr = new JSONArray(resp.getPayload());
 
-      for (int i = 0; i < jsonarr.length(); i++) {
-        JSONObject jsonObject = jsonarr.getJSONObject(i);
-        Map tmpMap = new HashMap();
-        tmpMap.put("stId", jsonObject.getString("id"));
-        tmpMap.put("stNm", jsonObject.getString("name"));
-        String[] tmpStr1 = jsonObject.getString("creationTime").split("\\.");
-        String[] tmpStr2 = tmpStr1[0].split("T");
-        tmpMap.put("creationTime", tmpStr2[0] + " " + tmpStr2[1]);
-        tmpMap.put("useYn", jsonObject.getString("useYn"));
-        stList.add(tmpMap);
+        for (int i = 0; i < jsonarr.length(); i++) {
+          JSONObject jsonObject = jsonarr.getJSONObject(i);
+          Map tmpMap = new HashMap();
+          tmpMap.put("stId", jsonObject.getString("id"));
+          tmpMap.put("stNm", jsonObject.getString("name"));
+          String[] tmpStr1 = jsonObject.getString("creationTime").split("\\.");
+          String[] tmpStr2 = tmpStr1[0].split("T");
+          tmpMap.put("creationTime", tmpStr2[0] + " " + tmpStr2[1]);
+          tmpMap.put("useYn", jsonObject.getString("useYn"));
+          stList.add(tmpMap);
+        }
       }
 
       log.debug("result : {}", stList);

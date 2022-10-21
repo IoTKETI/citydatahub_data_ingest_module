@@ -126,7 +126,7 @@
 
 <script th:inline="javascript">
   /*<![CDATA[*/
-  var id = /*[[${id}]]*/'default';
+  var id = /*[[${id}]]*/'';
   /*]]>*/
 
   $(document).ready(function() {
@@ -139,9 +139,11 @@
       if (item_size > 0) {
         if (validation("tableMainObDetail"))
           if (confirm("저장하시겠습니까?"))
+            $('#loading').show(); 
             fireAjaxSubmit();
       } else {
         if (confirm("저장하시겠습니까?"))
+          $('#loading').show(); 
           fireAjaxSubmit();
       }
     }
@@ -153,7 +155,6 @@
       $("#btn-del").hide();
       return;
     }
-    //     var url = "/obDetail/"+id+"/data";
     var url = "/sourceModels/" + id;
     cmUtl.exeAjaxDynamic("GET", url, " ", "", "_cbAfterExistIdProcData");
   }
@@ -241,7 +242,6 @@
     };
 
     var type = "POST";
-    //var url = "/obDetail";
     var url = "/sourceModel";
 
     if (id != "" && id != null) {
@@ -268,16 +268,16 @@
       location.replace('/obDetail/' + $("#ob_datamodel_id").val());
     } else {
       alert(data.detail);
-      //id = $("#ob_datamodel_id").val();
-      //$("#ob_datamodel_id").prop("readOnly" , true);
     }
-
+    $('#loading').hide(); 
     $("#btn-save").prop("disabled", false);
   }
 
   $('#btn-del').on('click', function() {
-    if (confirm("삭제하시겠습니까?"))
+    if (confirm("삭제하시겠습니까?")) {
+      $('#loading').show(); 
       fireAjaxDelSubmit();
+    }
   });
 
   function fireAjaxDelSubmit() {
@@ -285,8 +285,6 @@
 
     var type = "DELETE";
     var pRow = new RowData($("#tableMainData > tbody"));
-    //var url = "/obDetail";
-    //var url = "/sourceModel/"+pRow.getValue("ob_datamodel_id");
     var url = "/sourceModel/" + pRow.getValue("ob_datamodel_id");
 
     cmUtl.exeAjax(type, url, "", "_cbAfterFireAjaxDelSubmit");
@@ -307,10 +305,8 @@
       location.replace('/obList');
     } else {
       alert(data.resultMsg);
-      //id = $("#ob_datamodel_id").val();
-      //$("#ob_datamodel_id").prop("readOnly" , true);
     }
-
+    $('#loading').hide();
     $("#btn-del").prop("disabled", false);
   }
 

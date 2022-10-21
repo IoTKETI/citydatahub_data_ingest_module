@@ -206,7 +206,7 @@
     var result = JSON.parse(data.result);
 
     $("#Status_" + data.row).html(result.status.toCapitalize());
-
+    
     if (result.status == "stop" || result.status == "start" || result.status == "running") {
       $("#Monit_" + data.row).html($("#divBtnpopMonitor").children().clone());
       $("#Monit_" + data.row).attr("onclick", "popupLog('" + data.id + "','" + result.status + "')");

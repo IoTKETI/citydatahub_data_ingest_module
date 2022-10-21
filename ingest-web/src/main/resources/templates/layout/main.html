@@ -113,8 +113,47 @@ p {
     margin-inline-start: 0px;
     margin-inline-end: 0px;
 }
+
+#loading {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    display: block;
+    background: #ededed;
+    opacity: 0.7;
+    z-index: 99;
+    text-align: center;
+}
+#loading > #loading_bar {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 100;
+    transform : translate(-50%, -50%);
+}
 </style>
 <script>
+
+  function FunLoadingBarStart() {
+    var backHeight = $(document).height(); //뒷 배경의 상하 폭
+    var backWidth = window.document.body.clientWidth; //뒷 배경의 좌우 폭
+    var backGroundCover = "<div id='back'></div>"; //뒷 배경을 감쌀 커버
+    var loadingBarImage = ""; //가운데 띄워 줄 이미지
+    loadingBarImage += "<div id='loadingBar'>";
+    loadingBarImage += "     <img src='/asset/images/loadingbar.gif'/>"; //로딩 바 이미지
+    loadingBarImage += "</div>";
+    $("body").append(backGroundCover).append(loadingBarImage);
+    $("#back").css({ width: backWidth, height: backHeight, opacity: "0.3" });
+    $("#back").show();
+    $("#loadingBar").show();
+  }
+  function FunLoadingBarEnd() {
+    $("#back, #loadingBar").hide();
+    $("#back, #loadingBar").remove();
+  }
+
   function setNavi(p, c){
     $('.breadcrumb__list--current1').hide();
     $('.breadcrumb__list--current2').hide();
@@ -202,7 +241,6 @@ p {
               <ul class="nav__depth2">
                 <li class="nav__item"><a class="nav__link" href="#" onClick='move("/monitor/agent/view")'>Agent 운영</a></li>
                 <li class="nav__item"><a class="nav__link" href="#" onClick='move("/agentList")'>Agent 설정</a></li>
-<!--                 <li class="nav__item"><a class="nav__link" href="#" onClick='move("/agentDetail")'>Agent 상세</a></li> -->
               </ul>
             </li>
             <li class="nav__depth1 material-icons">
@@ -223,7 +261,7 @@ p {
             </li>
           
             <li class="nav__depth1 material-icons">
-              <button class="nav__link nav__button" type="button">시스템관리</button>
+              <button class="nav__link nav__button" type="button" >시스템관리</button>
               <ul class="nav__depth2">
                 <li class="nav__item"><a class="nav__link" href="#" onClick='move("/commList")'>공통코드 관리</a></li>
               </ul>
@@ -267,10 +305,8 @@ p {
     
   </div>
   
-<!--   <div style="padding-top:20px"></div> -->
 
-
-            <footer class="footer">
+<footer class="footer">
     <div class="footer-top">
         <div class="content-area">
             <div class="footer-link">
@@ -305,14 +341,19 @@ p {
     </div>
 </footer>
 
-  <div id="divLayerPopup"></div>
-  <hr>
+  
+<hr>
 
+<div id="divLayerPopup"></div>
 
-
+<div id="loading" style="display: none; ">
+    <div id="loading_bar">
+        <img src="/asset/images/loading.gif">
+        <p style="font-size: x-large; font-weight: bold;">로딩 중 입니다 ...</p>
+    </div>
+</div>
 
 <script>
-
   (function(){
     // common-ui
     showModal();
@@ -320,19 +361,7 @@ p {
     showMenu();
     setInputNumber();
   })();
-  
-  function showAlarm() {
-    $("#modal_alarm_alert").show();
-  }
-  
-  $(".button__modal--alert").on('click', function() {
-    // 최소화
-    $("#modal_alarm_alert").hide();
-    $("#modal__alert__content").html("");
-    $('#divLayerAlertMessage').html("");
-  });
-  
-  
 </script>
+
 </body>
 </html>

@@ -137,7 +137,7 @@
           <div id="itemRow2" style="display: none">
             <table>
               <tr>
-                <td><input type="checkbox" name="chk_info2" class="input__checkbox" id="chk_info2" value="del"><label class="label__checkbox" for="chk_info2"></label></td>
+                <td><input type="checkbox" name="chk_info2_" class="input__checkbox" id="chk_info2_" value="del"><label class="label__checkbox" for="chk_info2_"></label></td>
                 <td name="display_seq"></td>
                 <td><input label="항목명" name="item" type="text" class="input__text" required><input type="hidden" name="display_seq"></td>
                 <td><select label="값 유형" class="select select--full" name="value_select2" required>
@@ -167,129 +167,7 @@
             </table>
           </div>
 
-          <div id="itemRowEmpty" style="display: none">
-            <table>
-              <tr>
-                <td><input type="checkbox" name="chk_info2" class="input__checkbox" id="chk_info2" value="del"><label class="label__checkbox" for="chk_info2"></label></td>
-                <td name="display_seq"></td>
-                <td><input label="항목명" name="item" type="text" class="input__text" value="MODEL_ID" required><input type="hidden" name="display_seq" value="1"></td>
-                <td><select label="값 유형" class="select select--full" name="value_select2" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I07'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == 'string'"></option>
-                </select></td>
-                <td label="변경가능여부"><select class="select select--full" name="change_able_yn" required>
-                    <option value="Y">가능</option>
-                    <option value="N">불가능</option>
-                </select></td>
-                <td><select label="입력 방법" class="select select--full" name="setup_method" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I12'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == '입력(single line)'"></option>
-                </select></td>
-
-                <td><input label="값" name="value" type="text" class="input__text"> <textarea label="값" name="textarea_value" class="textarea" style="height: 30px; display: none" readonly></textarea>
-                </td>
-
-
-                <td label="필수여부"><select class="select select--full" name="essential_yn" required>
-                    <option value="Y">필수</option>
-                    <option value="N">선택</option>
-                </select></td>
-                <td><select label="사용용도" class="select select--full" name="use_purpose" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I13'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == 'parameter(URL)'"></option>
-                </select></td>
-                <td><textarea label="항목설명" name="item_described" class="textarea" style="height: 30px" onkeyup="this.style.height='30px'; this.style.height = this.scrollHeight + 'px';"></textarea></td>
-              </tr>
-
-              <tr>
-                <td><input type="checkbox" name="chk_info4" class="input__checkbox" id="chk_info4" value="del"><label class="label__checkbox" for="chk_info4"></label></td>
-                <td name="display_seq"></td>
-                <td><input label="항목명" name="item" type="text" class="input__text" value="DATASET_ID" required><input type="hidden" name="display_seq" value="1"></td>
-                <td><select label="값 유형" class="select select--full" name="value_select2" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I07'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == 'string'"></option>
-                </select></td>
-                <td label="변경가능여부"><select class="select select--full" name="change_able_yn" required>
-                    <option value="Y">가능</option>
-                    <option value="N">불가능</option>
-                </select></td>
-                <td><select label="입력 방법" class="select select--full" name="setup_method" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I12'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == '입력(single line)'"></option>
-                </select></td>
-                <td><input label="값" name="value" type="text" class="input__text"> <textarea label="값" name="textarea_value" class="textarea" style="height: 30px; display: none" readonly></textarea>
-                </td>
-
-                <td label="필수여부"><select class="select select--full" name="essential_yn" required>
-                    <option value="Y">필수</option>
-                    <option value="N">선택</option>
-                </select></td>
-                <td><select label="사용용도" class="select select--full" name="use_purpose" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I13'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == 'parameter(URL)'"></option>
-                </select></td>
-                <td><textarea label="항목설명" name="item_described" class="textarea" style="height: 30px" onkeyup="this.style.height='30px'; this.style.height = this.scrollHeight + 'px';"></textarea></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox" name="chk_info5" class="input__checkbox" id="chk_info5" value="del"><label class="label__checkbox" for="chk_info5"></label></td>
-                <td name="display_seq"></td>
-                <td><input label="항목명" name="item" type="text" class="input__text" value="CONN_TERM" required><input type="hidden" name="display_seq" value="1"></td>
-                <td><select label="값 유형" class="select select--full" name="value_select2" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I07'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == 'string'"></option>
-                </select></td>
-                <td label="변경가능여부"><select class="select select--full" name="change_able_yn" required>
-                    <option value="Y">가능</option>
-                    <option value="N">불가능</option>
-                </select></td>
-                <td><select label="입력 방법" class="select select--full" name="setup_method" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I12'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == '입력(single line)'"></option>
-                </select></td>
-                <td><input label="값" name="value" type="text" class="input__text"> <textarea label="값" name="textarea_value" class="textarea" style="height: 30px; display: none" readonly></textarea>
-                </td>
-
-                <td label="필수여부"><select class="select select--full" name="essential_yn" required>
-                    <option value="Y">필수</option>
-                    <option value="N">선택</option>
-                </select></td>
-                <td><select label="사용용도" class="select select--full" name="use_purpose" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I13'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == 'parameter(URL)'"></option>
-                </select></td>
-                <td><textarea label="항목설명" name="item_described" class="textarea" style="height: 30px" onkeyup="this.style.height='30px'; this.style.height = this.scrollHeight + 'px';"></textarea></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox" name="chk_info6" class="input__checkbox" id="chk_info6" value="del"><label class="label__checkbox" for="chk_info6"></label></td>
-                <td name="display_seq"></td>
-                <td><input label="항목명" name="item" type="text" class="input__text" value="INVOKE_CLASS" required><input type="hidden" name="display_seq" value="1"></td>
-                <td><select label="값 유형" class="select select--full" name="value_select2" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I07'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == 'string'"></option>
-                </select></td>
-                <td label="변경가능여부"><select class="select select--full" name="change_able_yn" required>
-                    <option value="Y">가능</option>
-                    <option value="N">불가능</option>
-                </select></td>
-                <td><select label="입력 방법" class="select select--full" name="setup_method" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I12'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == '입력(single line)'"></option>
-                </select></td>
-                <td><input label="값" name="value" type="text" class="input__text"> <textarea label="값" name="textarea_value" class="textarea" style="height: 30px; display: none" readonly></textarea>
-                </td>
-
-                <td label="필수여부"><select class="select select--full" name="essential_yn" required>
-                    <option value="Y">필수</option>
-                    <option value="N">선택</option>
-                </select></td>
-                <td><select label="사용용도" class="select select--full" name="use_purpose" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I13'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == 'parameter(URL)'"></option>
-                </select></td>
-                <td><textarea label="항목설명" name="item_described" class="textarea" style="height: 30px" onkeyup="this.style.height='30px'; this.style.height = this.scrollHeight + 'px';"></textarea></td>
-              </tr>
-            </table>
-          </div>
+         
 
         </section>
       </fieldset>
@@ -303,10 +181,10 @@
 
     <form style="display: none" id="adtTitle">
       <fieldset>
-        <legend>어댑터 파라미터 관리</legend>
+        <legend>상세정보</legend>
         <section class="section">
           <div class="section__header">
-            <h4 class="section__title" id="adt_nm">어댑터 파라미터 관리</h4>
+            <h4 class="section__title" id="adt_nm">상세정보</h4>
           </div>
           <div class="section__content" id="itemSlave">
             <input type="hidden" id="adapter_type_id" value="" />
@@ -348,10 +226,11 @@
             <button class="button__util button__util--remove material-icons" id="minus" onclick="itemDelRow('adtItem')" onfocus="this.blur()" type="button">삭제</button>
             <button class="button__primary" type="submit" id="btn-save2" onfocus="this.blur()">저장</button>
           </div>
+          
           <div id="itemRow" style="display: none">
             <table>
               <tr>
-                <td><input type="checkbox" name="chk_info" class="input__checkbox" id="chk_info" value="del"><label class="label__checkbox" for="chk_info"></label></td>
+                <td><input type="checkbox" name="chk_info_" class="input__checkbox" id="chk_info_" value="del"><label class="label__checkbox" for="chk_info_"></label></td>
                 <td name="display_seq"></td>
                 <td><input label="항목명" name="item" type="text" class="input__text" required><input type="hidden" name="display_seq"></td>
                 <td><select label="값 유형" class="select select--full" name="value_select" required>
@@ -381,41 +260,7 @@
             </table>
           </div>
 
-          <div id="itemRowEmpty_gs1" style="display: none">
-            <table>
-              <tr>
-                <td><input type="checkbox" name="chk_info" class="input__checkbox" id="chk_info" value="del"><label class="label__checkbox" for="chk_info"></label></td>
-                <td name="display_seq" value="1"></td>
-                <td><input label="항목명" name="item" type="text" value="gs1Code" class="input__text" required><input type="hidden" name="display_seq"></td>
-                <td><select label="값 유형" class="select select--full" name="value_select" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I07'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == 'string'"></option>
-                </select></td>
-                <td label="변경가능여부"><select class="select select--full" name="change_able_yn" required>
-                    <option value="Y">가능</option>
-                    <option value="N">불가능</option>
-                </select></td>
-                <td><select label="입력 방법" class="select select--full" name="setup_method" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I12'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == '입력(single line)'"></option>
-                </select></td>
-                <td><select label="값" id="gs1codeSelect" name="value" class="select seelct--full" style="width: 518px;" required>
-                    <option value="">선택</option>
-                    <option th:each="gs1combo : ${gs1combo}" th:value="${gs1combo.gs1_code}" th:text="${gs1combo.gs1_code}"></option>
-                </select></td>
-                <td label="필수여부"><select class="select select--full" name="essential_yn" required>
-                    <option value="Y">필수</option>
-                    <option value="N">선택</option>
-                </select></td>
-                <td><select label="사용용도" class="select select--full" name="use_purpose" required>
-                    <option value="">선택</option>
-                    <option th:each="combo : ${combo}" th:if="${combo.code_type_id} == 'I13'" th:value="${combo.code_id}" th:text="${combo.code_nm}" th:selected="${combo.code_nm} == 'parameter(URL)'"></option>
-                </select></td>
-                <td><textarea label="항목설명" name="item_described" class="textarea" style="height: 30px" onkeyup="this.style.height='30px'; this.style.height = this.scrollHeight + 'px';"></textarea></td>
-              </tr>
-            </table>
-          </div>
-
+          
         </section>
       </fieldset>
     </form>
@@ -506,12 +351,14 @@
       if (!isItemMod) {
         if (validation("adtMaster")) {
           if (confirm("저장하시겠습니까?")) {
+            $('#loading').show(); 
             event.preventDefault();
             adtTypeSave();
           }
         }
       } else {
         if (confirm("세부항목에 수정된 데이터가 있습니다.\n저장하지 않은 데이터는 초기화됩니다.\n진행 하시겠습니까?")) {
+          $('#loading').show(); 
           event.preventDefault();
           adtTypeSave();
         }
@@ -537,6 +384,7 @@
 
       if (validation("itemSlave")) {
         if (confirm("저장하시겠습니까?")) {
+          $('#loading').show(); 
           event.preventDefault();
           adtItemSave();
         }
@@ -562,6 +410,7 @@
 
       if (validation("itemSlave2")) {
         if (confirm("저장하시겠습니까?")) {
+          $('#loading').show(); 
           event.preventDefault();
           adtItemSave2();
         }
@@ -620,19 +469,14 @@
           itemRowData.value = item.find("input[name=value]").val();
         }
 
-        if (item.find("input[name=item]").val() == "gs1Code") {
-          if (item.find("input[name=value]").val() == null) {
-            itemRowData.value = String($("#gs1codeSelect option:selected").val());
-            itemRowData.display_seq = "1";
-          }
+        
+        itemRowData.display_seq = item.find("input[name=display_seq]").val();
+        if ("I1202" == setupMethod) {
+          itemRowData.value = item.find("[name=textarea_value]").val();
         } else {
-          itemRowData.display_seq = item.find("input[name=display_seq]").val();
-          if ("I1202" == setupMethod) {
-            itemRowData.value = item.find("[name=textarea_value]").val();
-          } else {
-            itemRowData.value = item.find("input[name=value]").val();
-          }
+          itemRowData.value = item.find("input[name=value]").val();
         }
+      
         itemsData.push(itemRowData);
       }
     }
@@ -647,6 +491,7 @@
     $("#btn-save2").prop("disabled", false);
     isItemMod = false;
     alert("저장되었습니다.");
+    $('#loading').hide(); 
   }
 
   function adtItemSave2() {
@@ -691,6 +536,7 @@
     $("#btn-save3").prop("disabled", false);
     isItemMod = false;
     alert("저장되었습니다.");
+    $('#loading').hide(); 
   }
 
   function adtTypeSave() {
@@ -718,8 +564,10 @@
 
   function _cbAfterAdtTypeSave(data) {
     alert("저장되었습니다.");
+    $('#loading').hide();
     $("#btn-save").prop("disabled", false);
     location.replace('/adapterDetail');
+     
   }
 
   function adtAddRow(tb) {
@@ -776,8 +624,8 @@
     var tmpObj = $("#itemRow").find("tr:first").clone();
     var length = obj.find("tbody > tr").length;
 
-    tmpObj.find("[name=chk_info]").prop("id", "chk_info" + length);
-    tmpObj.find("label[for=chk_info]").prop("for", "chk_info" + length);
+    tmpObj.find("[name=chk_info_]").prop("id", "chk_info_" + length);
+    tmpObj.find("label[for=chk_info_]").prop("for", "chk_info_" + length);
 
     tmpObj.find("input[name=display_seq]").val(length + 1);
     var rowIndex = obj.find('tbody > tr').length;
@@ -791,8 +639,8 @@
     var tmpObj = $("#itemRow2").find("tr:first").clone();
     var length = obj.find("tbody > tr").length;
 
-    tmpObj.find("[name=chk_info2]").prop("id", "chk_info2" + length);
-    tmpObj.find("label[for=chk_info2]").prop("for", "chk_info2" + length);
+    tmpObj.find("[name=chk_info2_]").prop("id", "chk_info2_" + length);
+    tmpObj.find("label[for=chk_info2_]").prop("for", "chk_info2_" + length);
 
     tmpObj.find("input[name=display_seq]").val(length + 1);
     var rowIndex = obj.find('tbody > tr').length;
@@ -853,15 +701,13 @@
     cmUtl.showEmptyLine('adtItem2', false);
 
     var tmpObj = $("#itemRowEmpty").find("tr").clone();
-    var tmpObj2 = $("#itemRowEmpty_gs1").find("tr").clone();
     var rowIndex = $('#adtItem2').find('tbody > tr').length;
 
-    //$('#adtItem > tbody:last').append(tmpObj2);
     $('#adtItem2 > tbody:last').append(tmpObj);
   }
 
   function _cbAfterItemList(data) {
-
+    // 세부항목
     if (data.length == 0) {
       $("#adtItem").clearBody();
       cmUtl.showEmptyLine('adtItem', false);
@@ -878,8 +724,8 @@
       $('#adtItem > tbody:last').append(tmpObj);
       item = $("#adtItem").getRow(i);
 
-      item.find("[name=chk_info]").prop("id", "chk_info" + i);
-      item.find("label[for=chk_info]").prop("for", "chk_info" + i);
+      item.find("[name=chk_info_]").prop("id", "chk_info_" + i);
+      item.find("label[for=chk_info_]").prop("for", "chk_info_" + i);
       item.find("[name=display_seq]").text(i + 1);
       item.find("input[name=display_seq]").val(i + 1);
       item.find("[name=item]").val(data[i].item);
@@ -907,7 +753,7 @@
         item.find("[name=value]").val(data[i].value);
       }
       if ('Y' == data[i].keyword_yn) {
-        item.find("[name=chk_info]").prop("disabled", true);
+        item.find("[name=chk_info_]").prop("disabled", true);
         item.find("[name=item]").prop("readonly", true);
         item.find("[name=essential_yn]").prop("disabled", true);
       }
@@ -915,7 +761,7 @@
   }
 
   function _cbAfterItemList2(data) {
-
+    // 파라미터 관리
     if (data.length == 0) {
       $("#adtItem2").clearBody(); //여기에 추가
       cmUtl.showEmptyLine('adtItem2', false);
@@ -932,8 +778,8 @@
       $('#adtItem2 > tbody:last').append(tmpObj);
       item = $("#adtItem2").getRow(i);
 
-      item.find("[name=chk_info2]").prop("id", "chk_info2" + i);
-      item.find("label[for=chk_info2]").prop("for", "chk_info2" + i);
+      item.find("[name=chk_info2_]").prop("id", "chk_info2_" + i);
+      item.find("label[for=chk_info2_]").prop("for", "chk_info2_" + i);
       item.find("[name=display_seq]").text(i + 1);
       item.find("input[name=display_seq]").val(i + 1);
       item.find("[name=item]").val(data[i].item);
@@ -961,7 +807,7 @@
         item.find("[name=value]").val(data[i].value);
       }
       if ('Y' == data[i].keyword_yn) {
-        item.find("[name=chk_info2]").prop("disabled", true);
+        item.find("[name=chk_info2_]").prop("disabled", true);
         item.find("[name=item]").prop("readonly", true);
         item.find("[name=essential_yn]").prop("disabled", true);
       }

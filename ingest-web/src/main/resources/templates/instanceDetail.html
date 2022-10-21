@@ -85,9 +85,7 @@
             </table>
           </div>
           <div class="button__group">
-            <button class="button__util " type="button" id="ins_sending" onfocus="this.blur()">설정적용</button>
             <button class="button__util button__util--add material-icons" type="button" id="new_ins" onfocus="this.blur()">신규추가</button>
-            <button class="button__primary" type="button" id="ins_save" onfocus="this.blur()">저장</button>
           </div>
         </section>
       </fieldset>
@@ -154,7 +152,9 @@
               </table>
             </div>
             <div class="button__group">
+              <button class="button__util " type="button" id="ins_sending" onfocus="this.blur()">설정적용</button>
               <button class="button__primary" type="submit" id="btn-del" onfocus="this.blur()">삭제</button>
+              <button class="button__primary" type="button" id="ins_save" onfocus="this.blur()">저장</button>
             </div>
           </section>
         </fieldset>
@@ -205,13 +205,13 @@
               <div id="keyValueRow2" style="display: none">
                 <table>
                   <tr class="keyValueClass" style="height: 34px">
-                    <td><input type="checkbox" name="chk_info2" class="input__checkbox" id="chk_info2" value="del"><label class="label__checkbox" for="chk_info2"> <input
+                    <td><input type="checkbox" name="chk_info2_" class="input__checkbox" id="chk_info2_" value="del"><label class="label__checkbox" for="chk_info2_"> <input
                         name="display_seq" type="hidden"> <input name="setup_method" type="hidden"></td>
                     <td><input name="essential_yn" type="text" class="input__text" readonly style="text-align: center; text-indent: 0px"></td>
                     <td><input name="value_type" type="text" class="input__text" readonly style="text-align: center; text-indent: 0px"></td>
                     <td><input name="key" type="text" class="input__text"></td>
                     <td><input name="change_able_yn" type="text" class="input__text" readonly style="text-align: center; text-indent: 0px"></td>
-                    <td><input name="value" type="text" class="input__text"> <textarea name="textarea_value" class="textarea" style="height: 30px; display: none" readonly></textarea> <select
+                    <td><input name="value" type="text" class="input__text" label="항목값(value)" > <textarea name="textarea_value" class="textarea" style="height: 30px; display: none" readonly></textarea> <select
                       label="항목값(value)" class="select select--full" name="select_value" style="display: none">
                         <option value="">선택</option>
                     </select></td>
@@ -271,13 +271,13 @@
               <div id="keyValueRow" style="display: none">
                 <table>
                   <tr class="keyValueClass" style="height: 34px">
-                    <td><input type="checkbox" name="chk_info" class="input__checkbox" id="chk_info" value="del"><label class="label__checkbox" for="chk_info"> <input
+                    <td><input type="checkbox" name="chk_info_" class="input__checkbox" id="chk_info_" value="del"><label class="label__checkbox" for="chk_info_"> <input
                         name="display_seq" type="hidden"> <input name="setup_method" type="hidden"></td>
                     <td><input name="essential_yn" type="text" class="input__text" readonly style="text-align: center; text-indent: 0px"></td>
                     <td><input name="value_type" type="text" class="input__text" readonly style="text-align: center; text-indent: 0px"></td>
                     <td><input name="key" type="text" class="input__text"></td>
                     <td><input name="change_able_yn" type="text" class="input__text" readonly style="text-align: center; text-indent: 0px"></td>
-                    <td><input name="value" type="text" class="input__text"> <textarea name="textarea_value" class="textarea" style="height: 30px; display: none" readonly></textarea> <select
+                    <td><input name="value" type="text" class="input__text" label="항목값(value)"> <textarea name="textarea_value" class="textarea" style="height: 30px; display: none" readonly></textarea> <select
                       label="항목값(value)" class="select select--full" name="select_value" style="display: none">
                         <option value="">선택</option>
                     </select></td>
@@ -316,9 +316,11 @@
   /* ]]> */
   var isSaveAfterInstance = false;
   var ins_id = "";
-
+  var ad_val = "";
+  
   $(document).ready(function() {
     $("#ins_sending").hide();
+    $("#ins_save").hide();
     adpInfo();
   });
 
@@ -328,6 +330,7 @@
 
   $("#ins_sending").click(function(event) {
     if (confirm("설정을 적용하시겠습니까?")) {
+      $('#loading').show(); 
       event.preventDefault();
       insSending();
     }
@@ -342,11 +345,13 @@
   function _cbAfterInsSending(data) {
     $("#ins_sending").prop("disabled", false);
     alert("설정이 적용되었습니다.");
+    $('#loading').hide();
   }
 
   $("#ins_save").click(function(event) {
     if (validation("inst_form_div")) {
       if (confirm("저장하시겠습니까?")) {
+        $('#loading').show();
         event.preventDefault();
         insSave();
       }
@@ -443,7 +448,11 @@
         $("#adapter_type option:eq(" + (i + 1) + ")").remove();
       }
     }
-
+    if($("#instance_id").val() == "") {
+      $("#btn-del").hide();  
+    } 
+    
+    $("#ins_save").show();
     $("#inst_form").show();
     $("#transModelDiv").hide();
     $("#instance_info").hide();
@@ -537,6 +546,7 @@
   function _cbAfterInsSave(data) {
     $("#ins_save").prop("disabled", false);
     alert("저장되었습니다.");
+    $('#loading').hide();
     var reurl = document.location.href;
     location.replace(reurl);
   }
@@ -546,7 +556,6 @@
     $("#instance_info2").show();
     ins_id = $(tb).text();
 
-    //var param = "/instanceControl/" + ins_id + "/insDetail/";
     var param = "/agents/" + $("#adapter_id").text() + "/adaptors/" + $("#adapter_id").text() + "/instance/" + ins_id;
     cmUtl.exeAjax("GET", param, null, "_cbAfterinsDetail");
   }
@@ -573,10 +582,11 @@
       $("input:radio[name=datamodel_yn]").prop("checked", false);
     }
 
-    var ins_id = data.instance_id;
+    ins_id = data.instance_id;
 
     var param = "/instanceControl/" + ins_id + "/insItem2/";
     cmUtl.exeAjax("GET", param, null, "_cbAfterInsItemSelect2");
+
 
     var param2 = "/instanceControl/" + ins_id + "/insItem3/";
     cmUtl.exeAjax("GET", param2, null, "_cbAfterInsItemSelect3");
@@ -587,16 +597,16 @@
     // 데이터 메타정보 등록/변경
     $("#instanceList > tbody > tr").remove();
     $("#inst_form").show();
-
+    $("#ins_save").show();
     if (data.length > 0) {
       cmUtl.showEmptyLine("instanceList", false);
       for (var i = 0; i < data.length; i++) {
         tmpIns = $('#inst_form').children().clone();
         if (data[i].item != "") {
           var tmpObj = $("#keyValueRow").find("tr:first").clone();
-          var chk_id = "chk_info" + i;
-          tmpObj.find("[name=chk_info]").prop("id", chk_id);
-          tmpObj.find("label[for=chk_info]").prop("for", chk_id);
+          var chk_id = "chk_info_" + i;
+          tmpObj.find("[name=chk_info_]").prop("id", chk_id);
+          tmpObj.find("label[for=chk_info_]").prop("for", chk_id);
           $(tmpObj).find("input[name=display_seq]").val(i + 1);
           $(tmpObj).find("input[name=setup_method]").val(data[i].setup_method);
           $(tmpObj).find("input[name=essential_yn]").val(data[i].essential_yn);
@@ -656,6 +666,8 @@
     } else {
       cmUtl.showEmptyLine("instanceList", true);
     }
+    
+
   }
 
   function _cbAfterInsItemSelect3(data) {
@@ -668,9 +680,9 @@
       for (var i = 0; i < data.length; i++) {
         if (data[i].item != "") {
           var tmpObj = $("#keyValueRow2").find("tr:first").clone();
-          var chk_id = "chk_info2" + i;
-          tmpObj.find("[name=chk_info2]").prop("id", chk_id);
-          tmpObj.find("label[for=chk_info2]").prop("for", chk_id);
+          var chk_id = "chk_info2_" + i;
+          tmpObj.find("[name=chk_info2_]").prop("id", chk_id);
+          tmpObj.find("label[for=chk_info2_]").prop("for", chk_id);
           $(tmpObj).find("input[name=display_seq]").val(i + 1);
           $(tmpObj).find("input[name=setup_method]").val(data[i].setup_method);
           $(tmpObj).find("input[name=essential_yn]").val(data[i].essential_yn);
@@ -731,25 +743,19 @@
       cmUtl.showEmptyLine("instanceList2", true);
     }
   }
-
+  
   function chageAdtSelect(ad) {
-
-    var ad_val = $(ad).val();
+    ad_val = $(ad).val();
     $("#instance_info").show();
     $("#instance_info2").show();
     $("#instanceList > tbody").empty();
 
-    var param = "/instanceBaseList/" + ad_val;
-
     var param2 = "/instanceBaseList2/" + ad_val;
-    var param3 = "/instanceBaseList3/" + ad_val;
     cmUtl.exeAjax("GET", param2, null, "_cbAfterInsItemSelect2");
+    var param3 = "/instanceBaseList3/" + ad_val;
     cmUtl.exeAjax("GET", param3, null, "_cbAfterInsItemSelect3");
   }
 
-  function linechange(tb) {
-
-  }
 
   function addrow(tb) {
     var obj = $('#' + tb);
@@ -758,8 +764,8 @@
     var tmpObj = $("#keyValueRow").find("tr:first").clone();
     var length = obj.find("tbody > tr").length;
 
-    tmpObj.find("[name=chk_info]").prop("id", "chk_info" + length);
-    tmpObj.find("label").prop("for", "chk_info" + length);
+    tmpObj.find("[name=chk_info_]").prop("id", "chk_info_" + length);
+    tmpObj.find("label").prop("for", "chk_info_" + length);
     tmpObj.find("[name=essential_yn]").val("N");
     tmpObj.find("[name=value_type]").val("사용자지정");
 
@@ -785,8 +791,8 @@
     var tmpObj = $("#keyValueRow2").find("tr:first").clone();
     var length = obj.find("tbody > tr").length;
 
-    tmpObj.find("[name=chk_info2]").prop("id", "chk_info2" + length);
-    tmpObj.find("label").prop("for", "chk_info2" + length);
+    tmpObj.find("[name=chk_info2_]").prop("id", "chk_info2_" + length);
+    tmpObj.find("label").prop("for", "chk_info2_" + length);
     tmpObj.find("[name=essential_yn]").val("N");
     tmpObj.find("[name=value_type]").val("사용자지정");
 
@@ -845,11 +851,11 @@
 
   $('#btn-del').on('click', function() {
     if (confirm("삭제하시겠습니까?"))
+      $('#loading').show();
       chkStatus();
   });
 
   function chkStatus() {
-
     var param = {
       "id" : id
     };
@@ -864,23 +870,18 @@
     }
     if (status == "running") {
       alert("작동중인 인스턴스는 삭제할 수 없습니다.");
+      $('#loading').hide();
     } else {
       fireAjaxDelSubmit();
     }
   }
-
   function fireAjaxDelSubmit() {
     $("#btn-del").prop("disabled", true);
-
     var type = "DELETE";
-    //var url = "/agents/"+id+"/adaptors/"+id+"/instance/"+ins_id;
     var url = "/agents/" + id + "/adaptors/" + id + "/instance/" + ins_id;
-
     cmUtl.exeAjax(type, url, "", "_cbAfterFireAjaxDelSubmit");
   }
-
   function _cbAfterFireAjaxDelSubmit(data) {
-
     if (!data.hasOwnProperty("responseCode")) {
       data.resultCode = data.type;
       data.resultMsg = data.detail;
@@ -891,11 +892,12 @@
 
     if (resultCode.substr(0, 1) == "2") {
       alert("삭제하였습니다.");
+      $('#loading').hide();
       location.replace('/instanceDetail/' + id);
     } else {
       alert(data.resultMsg);
     }
-
+    $('#loading').hide();
     $("#btn-del").prop("disabled", false);
   }
 </script>

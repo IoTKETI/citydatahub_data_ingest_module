@@ -112,6 +112,7 @@
     $("#btn-save2").click(function(event) {
       if (validation("commCode")) {
         if (confirm("저장하시겠습니까?")) {
+          $('#loading').show(); 
           event.preventDefault();
           commCodeSave();
         }
@@ -204,9 +205,10 @@
     cmUtl.exeAjax("POST", param, JSON.stringify(data), "_cbAftercommCodeSave");
   }
   function _cbAftercommCodeSave(data) {
+    alert("저장되었습니다.");
+    $('#loading').hide();
     $("#btn-save2").prop("disabled", false);
     isCodeMod = false;
-    alert("저장되었습니다.");
   }
 
   function codeAddRow(tb) {

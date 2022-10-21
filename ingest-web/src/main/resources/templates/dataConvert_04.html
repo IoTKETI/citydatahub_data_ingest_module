@@ -564,7 +564,6 @@ public class $classname$ extends AbstractConvert {
     } else {
       setEditorTemp();
     }
-    //obSelect();
   }
 
   $('#editor').resize(function(e) {
@@ -580,7 +579,6 @@ public class $classname$ extends AbstractConvert {
       mergeUndoDeltas : "always",
       behavioursEnabled : true,
       wrapBehavioursEnabled : true,
-      // this is needed if editor is inside scrollable page
       copyWithEmptySelection : true,
       useWorker : true
     })
@@ -588,6 +586,7 @@ public class $classname$ extends AbstractConvert {
 
 
   function fn_compile(tb) {
+    $('#loading').show(); 
     $("#btn-compile").prop("disabled", true);
 
     var tmpAdtId = $('#instance_id').text().split("_");
@@ -606,9 +605,13 @@ public class $classname$ extends AbstractConvert {
       msg = replaceAll(rtn.log, "null/root/flume/plugins.d/agent/lib/" + $('#instance_id').text() + ".java:", "");
       msg = replaceAll(msg, "/root/flume/plugins.d/agent/lib/" + $('#instance_id').text() + ".java:", "");
       $("#tailConsole").val(msg);
+      alert("컴파일에 실패했습니다.");
     } else {
       $("#tailConsole").val(" 컴파일에 성공했습니다.");
+      alert("컴파일에 성공했습니다.");      
     }
+    
+    $('#loading').hide();
     $("#btn-compile").prop("disabled", false);
   }
 

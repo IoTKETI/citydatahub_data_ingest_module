@@ -196,7 +196,7 @@
         <artifactId>docker-maven-plugin</artifactId>
         <version>1.2.2</version>
         <configuration>
-          <imageName>pinecni/${name}</imageName>
+          <imageName>pinecni/${project.name}</imageName>
           <dockerDirectory>src/main/docker</dockerDirectory>
           <resources>
             <resource>

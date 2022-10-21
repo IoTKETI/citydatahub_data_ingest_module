@@ -74,12 +74,14 @@
       if (!isCodeMod) {
         if (validation("commMaster")) {
           if (confirm("저장하시겠습니까?")) {
+            $('#loading').show(); 
             event.preventDefault();
             commTypeSave();
           }
         }
       } else {
         if (confirm("공통코드항목에 수정된 데이터가 있습니다.\n저장하지 않은 데이터는 초기화됩니다.\n진행 하시겠습니까?")) {
+          $('#loading').show(); 
           event.preventDefault();
           commTypeSave();
         }
@@ -138,6 +140,7 @@
   }
   function _cbAfterAdtTypeSave(data) {
     alert("저장되었습니다.");
+    $('#loading').hide(); 
     $("#btn-save").prop("disabled", false);
     location.replace('/commList');
   }
