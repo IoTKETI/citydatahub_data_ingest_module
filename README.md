@@ -209,6 +209,7 @@ services:
       - DATASOURCE_PW=pine1234      
       - DATAMODEL_API_URL=http://10.0.0.36:8080/datamodels
       - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
+      - LOG_LEVEL=info
     depends_on:
       ingest-db:
         condition: service_healthy
@@ -239,11 +240,12 @@ services:
       - AUTH_REDIRECT_URL=http://localhost:8080/accesstoken
       - EUREKA_ENABLED=false
       - EUREKA_EUREKA_DEFAULT_ZONE=http://10.0.0.144:8888/eureka
+      - LOG_LEVEL=info
     depends_on:
       ingest-db:
         condition: service_healthy
       ingest-daemon:
-        condition: service_started        
+        condition: service_started
 
 volumes:
   db-data:
@@ -269,6 +271,7 @@ volumes:
 - AUTH_REDIRECT_URL : City Data Hub 시스템의 인증서버에서 로그인 한 후에 리다이렉트되는 주소 설정 (예: http://localhost:8080/accesstoken)
 - EUREKA_ENABLED : City Data Hub 시스템의 EUREKA 서버의 사용여부를 설정합니다.(true, false)
 - EUREKA_EUREKA_DEFAULT_ZONE : City Data Hub 시스템의 EUREKA 서버의 URL 설정합니다.
+- LOG_LEVEL : 로그의 적재 level 설정합니다. debug, info , warn 설정가능합니다.
 
 ### 3.2. docker-compose 실행
 
@@ -348,7 +351,7 @@ Agent설정 목록 화면에서 ![신규추가버튼](./images/신규추가버�
    ![인스턴스_등록예시_변환](./images/인스턴스_등록예시_변환.png)
 
 - *인스턴스명* : '**성남시 기상관측**' 을 입력합니다.
-- *데이터모델 변환* : '**변환**' 선택합니다. 미변환은 기 제공된 Java Class 를 이용합니다. '**변환**'을 선택할 경우 인스턴스가 저장된 후에 데이터 변환관리가 가능합니다. '![000_데이터변환관리](./images/000_데이터변환관리.png)' 를 클릭하여 변환클래스를 직접 작성할 수 있습니다.
+- *데이터모델 변환* : '**미변환**' 선택합니다. 미변환은 기 제공된 Java Class 를 이용합니다. '**변환**'을 선택할 경우 인스턴스가 저장된 후에 데이터 변환관리가 가능합니다. '![000_데이터변환관리](./images/000_데이터변환관리.png)' 를 클릭하여 변환클래스를 직접 작성할 수 있습니다.
 - *Adpator 유형* : '**성남시 기상관측**' 을 선택합니다. 메뉴 **Adaptor 유형 관리**에서 등록 된 유형을 선택할 수 있습니다. 유형을 선택하면 인스턴스 상세 항목이 표시됩니다.
 - *사용여부* : '**사용**' 을 선택합니다.
 - 작성 완료 후 저장 버튼을 클릭합니다.
@@ -377,13 +380,12 @@ Agent설정 목록 화면에서 ![신규추가버튼](./images/신규추가버�
 - *location* : '**[127.14858, 37.4557691]**' 를 입력합니다. WeatherObserved 모델의 구성 요소입니다.
 - **인스턴스 정보** 및  **데이터 메타정보** 의 항목을 작성한 후 저장버튼을 클릭합니다.
 
-8. 성남시기상관측 인스턴스를 저장합니다. ![설정적용](./images/전송.png) 클릭하여 설정을 적용합니다.
-   ![인스턴스저장후화면](./images/인스턴스저장후화면.png)
-9. 메늉 **Agent관리** > **Agent 운영** 에서 **Agent ID** -> **M000000001** 을 클릭합니다.
+8. 성남시기상관측 인스턴스를 저장합니다. 저장된 instance 목록에서 Instance ID인  **pocWeatherObserved_001**를 클릭하시면 나오는 화면에서 반드시 ![설정적용](./images/전송.png) 클릭하여 설정을 적용합니다.
+   ![인스턴스저장후화면](./images/인스턴스저장후화면2.png)
+9. 메뉴 **Agent관리** > **Agent 운영** 에서 **Agent ID** -> **M000000001** 을 클릭합니다.
    ![성남시_기상관측_모니터링](./images/성남시_기상관측_모니터링.png)
    '**성남시 기상관측**' 어댑터에서 **시작/중지** , **모니터링**이 가능합니다, 모니터링 클릭하면 **모니터링 로그팝업** 이 뜹니다.
-  ![성남시기상관측_로그모니터링](./images/성남시기상관측_로그모니터링.png) 
-
+  ![성남시기상관측_로그모니터링](./images/성남시기상관측_로그모니터링.png)
 
 ### 4.1.1 어댑터유형관리
 
