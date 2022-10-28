@@ -36,6 +36,7 @@ services:
       - DATASOURCE_PW=pine1234      
       - DATAMODEL_API_URL=http://10.0.0.36:8080/datamodels
       - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
+      - LOG_LEVEL=debug
     depends_on:
       ingest-db:
         condition: service_healthy
@@ -66,6 +67,7 @@ services:
       - AUTH_REDIRECT_URL=http://localhost:8080/accesstoken
       - EUREKA_ENABLED=false
       - EUREKA_EUREKA_DEFAULT_ZONE=http://10.0.0.144:8888/eureka
+      - LOG_LEVEL=debug
     depends_on:
       ingest-db:
         condition: service_healthy

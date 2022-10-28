@@ -13,7 +13,7 @@ spring:
 logging:
   config: classpath:config/log4j2.xml
   level:
-    root: info
+    root: ${LOG_LEVEL}
 
 server:
   timezone: ${TZ} 
