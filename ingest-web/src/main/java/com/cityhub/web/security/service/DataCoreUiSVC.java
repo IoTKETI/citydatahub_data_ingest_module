@@ -65,9 +65,11 @@ public class DataCoreUiSVC {
 
   /**
    * Encrypt the string with SHA256.
-   * @param txt             The string to apply encryption to.
-   * @return                Encrypted string value.
-   * @throws NoSuchAlgorithmException   Throw an exception when a "NoSuchAlgorithm" error occurs.
+   *
+   * @param txt The string to apply encryption to.
+   * @return Encrypted string value.
+   * @throws NoSuchAlgorithmException Throw an exception when a "NoSuchAlgorithm"
+   *                                  error occurs.
    */
   public String stringToSHA256(String txt) throws NoSuchAlgorithmException {
     MessageDigest md = MessageDigest.getInstance(SHA256);
@@ -77,12 +79,13 @@ public class DataCoreUiSVC {
 
   /**
    * Encrypt the byte with HexString.
-   * @param data  Byte array data
-   * @return    Hex string
+   *
+   * @param data Byte array data
+   * @return Hex string
    */
   public String byteToHexString(byte[] data) {
     StringBuilder sb = new StringBuilder();
-    for(byte b : data) {
+    for (byte b : data) {
       sb.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
 
     }
@@ -181,7 +184,7 @@ public class DataCoreUiSVC {
     request.getSession().setAttribute(REFRESHTOKEN, (String) tokenMap.get(REFRESH_TOKEN));
     String jmsg = callGetInfo(accessToken);
     if (jmsg.startsWith("{")) {
-      JSONObject body = new JSONObject(jmsg) ;
+      JSONObject body = new JSONObject(jmsg);
       request.getSession().setAttribute("userId", body.getString("userId"));
       request.getSession().setAttribute("nickname", body.getString("nickname"));
     }
@@ -211,7 +214,6 @@ public class DataCoreUiSVC {
 
     return resMessage;
   }
-
 
   /**
    * Get public key or JWT

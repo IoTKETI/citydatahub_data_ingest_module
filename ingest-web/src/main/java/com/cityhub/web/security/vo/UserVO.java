@@ -7,9 +7,10 @@ import lombok.Data;
 
 /**
  * User VO class
+ *
  * @FileName UserVO.java
  * @Project citydatahub_datacore_ui
- * @Brief 
+ * @Brief
  * @Version 1.0
  * @Date 2022. 3. 25.
  * @Author Elvin
@@ -18,9 +19,9 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserVO {
-	private String userId;
-	private String nickname;
-	private String name;
-	private String email;
-	private String phone;
+  private String userId;
+  private String nickname;
+  private String name;
+  private String email;
+  private String phone;
 }

@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Data Core UI authentication entry point
+ *
  * @FileName DataCoreUIAuthenticationEntryPoint.java
  * @Project citydatahub_datacore_ui
  * @Brief
@@ -30,8 +31,7 @@ public class DataCoreUIAuthenticationEntryPoint implements AuthenticationEntryPo
    * Authentication commence
    */
   @Override
-  public void commence(HttpServletRequest request, HttpServletResponse response,
-      AuthenticationException authException) throws IOException, ServletException {
+  public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
     log.warn("Auth Failed", authException);
     if (authException instanceof JwtAuthentioncationException) {
       response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());

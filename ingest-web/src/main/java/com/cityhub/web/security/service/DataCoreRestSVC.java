@@ -95,21 +95,21 @@ public class DataCoreRestSVC {
    */
   public <T> ResponseEntity<T> get(String moduleHost, String pathUri, Map<String, String> headers, Object body, Map<String, Object> params, Class<T> responseType) {
     URI uri = getUrl(moduleHost, pathUri, params);
-    log.info("GET - REST API URL : {}", uri);
+    // log.info("GET - REST API URL : {}", uri);
 
     ResponseEntity<T> response = null;
     try {
       response = restTemplate.exchange(uri, HttpMethod.GET, getRequestEntity(body, headers), responseType);
-    } catch(HttpClientErrorException e) {
+    } catch (HttpClientErrorException e) {
       ClientExceptionPayloadVO clientExceptionPayload = new Gson().fromJson(e.getResponseBodyAsString(), ClientExceptionPayloadVO.class);
       log.error("Client Exception - Error Status Code: {}, Response Body as String: {}, {}", e.getStatusCode(), clientExceptionPayload, e.getMessage());
       throw new DataCoreUIException(e.getStatusCode(), clientExceptionPayload);
-    } catch(ResourceAccessException e) {
+    } catch (ResourceAccessException e) {
       log.error("Connection refused - {}", moduleHost, e);
       throw new DataCoreUIException(HttpStatus.SERVICE_UNAVAILABLE);
     } catch (RestClientException e) {
-        log.error("REST GET Exception, ", e);
-        throw new DataCoreUIException(HttpStatus.BAD_REQUEST);
+      log.error("REST GET Exception, ", e);
+      throw new DataCoreUIException(HttpStatus.BAD_REQUEST);
     }
 
     return response;
@@ -129,7 +129,7 @@ public class DataCoreRestSVC {
   @SuppressWarnings("unchecked")
   public <T> ResponseEntity<T> post(String moduleHost, String pathUri, Map<String, String> headers, Object body, Map<String, Object> params, Class<T> responseType) {
     URI uri = getUrl(moduleHost, pathUri, params);
-    log.info("POST - REST API URL : {},{}", uri, body );
+    log.info("POST - REST API URL : {},{}", uri, body);
 
     ResponseEntity<T> response = null;
     try {
