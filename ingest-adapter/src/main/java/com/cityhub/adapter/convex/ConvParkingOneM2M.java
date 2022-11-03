@@ -49,6 +49,7 @@ public class ConvParkingOneM2M extends AbstractConvert {
     headers.put("X-M2M-Origin", "SW001");
     headers.put("X-M2M-RI", "cityhub");
     try {
+
       String u = ConfItem.getString("metaInfo");
       HttpResponse discovery = OkUrlUtil.get(u + "?fu=1&ty=3", headers);
       if (discovery.getStatusCode() == 200) {
@@ -63,14 +64,14 @@ public class ConvParkingOneM2M extends AbstractConvert {
               JsonUtil ju = new JsonUtil(info.getPayload());
               if (ju.has("m2m:cin.con")) {
                 JSONObject jObj = ju.getObject("m2m:cin.con");
+                log.info("meta Info has: {},{},{}",url,ju.has("m2m:cin.con"), ju.getObject("m2m:cin.con"));
                 ConfItem.put(args[2], jObj);
               }
             }
           }
         }
-        log.info("parkinfo:{}", objectMapper.writeValueAsString(ConfItem));
       }
-
+      log.info("parkinfo:{}", ConfItem.toString());
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
