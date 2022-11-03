@@ -8,7 +8,7 @@ spring:
     mode: HTML
     cache: false
   datasource:
-    url: jdbc:postgresql://localhost:5430/postgres
+    url: jdbc:postgresql://localhost:5432/postgres
     username: postgres 
     password: pine1234
     driver-class-name: org.postgresql.Driver
@@ -44,7 +44,7 @@ mybatis:
 # auth info
 cityhub:
   auth: 
-    yn: Y
+    yn: N
     clientId: 48qfjmrLZpj8  
     clientSecret: imgVwgVXMJnDez11Tmp4  
     authorizationUri: http://119.195.143.33:30000/oauth2.0/authorize

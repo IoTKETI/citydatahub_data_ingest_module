@@ -24,7 +24,6 @@ import java.io.RandomAccessFile;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -32,7 +31,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -256,7 +254,7 @@ public class DaemonService {
         // 시작
         if (getStatus(filename) == null) {
           cmd = flumeHomePath + "/bin/flume-ng agent -n " + id + " --conf " + flumeConfPath + " -f " + flumeConfPath + filename;
-          log.debug("cmd::::::::::::::::::::::::::" + cmd);
+          log.info("cmd::::::::::::::::::::::::::" + cmd);
           String[] command = cmd.split(" ", -1);
           exec(command);
           rtn = status;
@@ -397,35 +395,6 @@ public class DaemonService {
     return "";
   }
 
-  /**
-   * 모델의 유효성 관리
-   *
-   * @param path
-   * @param param
-   * @return
-   */
-  @Deprecated
-  public String manageValidationConfFile(String path, Map param) {
-    try {
-      FileUtil fu = new FileUtil();
-      fu.setPath(path);
-      fu.setFile(param.get("apdater_id") + ".valid");
-      fu.open(false);
-
-      if (param.get("body") instanceof Map) {
-        fu.write(new JSONObject(param.get("body")).toString());
-      } else if (param.get("body") instanceof List) {
-        fu.write(new JSONArray(param.get("body")).toString());
-      }
-
-      fu.flush();
-      fu.close();
-
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
-    return "";
-  }
 
   /**
    * mqtt 의 구독 파일 관리
@@ -473,18 +442,16 @@ public class DaemonService {
     String result = null;
     try {
       String[] cmd2 = { "/bin/sh", "-c", "ps -ef | grep '" + filename + "' | grep -v grep | awk '{print $1}' " };
-      log.debug("status:{}", Arrays.toString(cmd2));
+      //log.info("status:{}", Arrays.toString(cmd2));
       String pid = null;
       ProcessBuilder builder = new ProcessBuilder(cmd2);
       Process process = builder.start();
       BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
       while ((pid = input.readLine()) != null) {
         result = pid;
-        if (log.isDebugEnabled()) {
-          log.debug("process ID : {}", pid);
-        }
+        log.debug("process ID : {}", pid);
       }
-      log.debug("result:{}", result);
+      log.info("result:{},{}", filename , result);
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }

@@ -1,24 +1,30 @@
-FROM openjdk:8-slim-bullseye
+FROM openjdk:8-alpine
 LABEL name="Yonghak.An"
 LABEL email="neoshaby@gmail.com"
 
 ENV TZ=Asia/Seoul
 
+COPY ./apk/sgerrand.rsa.pub /etc/apk/keys/sgerrand.rsa.pub
 COPY ./apk/ /
 
-RUN apt-get update && apt-get install -y locales \
-  && localedef -f UTF-8 -i ko_KR ko_KR.UTF-8 \
-  && ln -fs /usr/share/zoneinfo/$TZ /etc/localtime   \
-  && echo $TZ > /etc/timezone \
-  && mkdir -p /opt/logs \
+RUN apk --no-cache add ca-certificates bash tzdata curl && \
+    cp /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone
+
+RUN apk add glibc-bin-2.35-r0.apk glibc-i18n-2.35-r0.apk glibc-2.35-r0.apk && \
+    /usr/glibc-compat/bin/localedef -i ko_KR -f UTF-8 ko_KR.UTF-8 && \
+    echo "export LC_ALL='ko_KR.UTF-8'" >> /etc/profile && \
+    echo "export LANG='ko_KR.UTF-8'" >> /etc/profile && \
+    echo "export LANGUAGE='ko_KR.UTF-8'" >> /etc/profile
+  
+RUN mkdir -p /opt/logs \
   && mkdir -p /opt/daemon/config \
   && mkdir -p /opt/flume/plugins.d/agent \
-  && tar -zxvf apache-flume-1.9.0-bin.tar.gz -C /opt/flume --strip-components=1 \
+  && tar --extract --file apache-flume-1.9.0-bin.tar.gz --directory /opt/flume --strip-components 1 --no-same-owner \ 
   && rm -rf apache-flume-1.9.0-bin.tar.gz \
   && rm -rf /opt/flume/lib/commons-compress-1.4.1.jar
 
-ENV LC_ALL ko_KR.UTF-8
-ENV PYTHONIOENCODING=utf-8
+ENV LC_ALL=ko_KR.UTF-8
 EXPOSE 8888
 
 WORKDIR /opt/flume

@@ -44,8 +44,14 @@ public class LoggerService {
     String sourceName = jobj.get("sourceName").toString().replaceAll("\"", "");
     String length = String.valueOf(jobj.get("length")).replaceAll("\"", "");
     String desc = jobj.get("desc").toString().replaceAll("\"", "");
-    String adapterType = String.valueOf(jobj.get("adapterType")).replaceAll("\"", "");
-    String invokeClass = String.valueOf(jobj.get("invokeClass")).replaceAll("\"", "");
+    String adapterType = "";
+    if (jobj.get("adapterType") != null) {
+      adapterType = String.valueOf(jobj.get("adapterType")).replaceAll("\"", "");
+    }
+    String invokeClass = "";
+    if (jobj.get("invokeClass") != null) {
+      invokeClass = String.valueOf(jobj.get("invokeClass")).replaceAll("\"", "");
+    }
 
     param.put("timestamp", timestamp);
     param.put("payload", payload);

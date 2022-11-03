@@ -208,10 +208,6 @@ public class DaemonController {
         svc.manageModelConfFile(path, param);
         break;
 
-      case "validation":
-        path = svc.isWindoowsOS() == true ? "/temp/" : flumeHomePath + "/plugins.d/agent/lib/openapi/";
-        svc.manageValidationConfFile(path, param);
-        break;
       case "subscribe":
         path = svc.isWindoowsOS() == true ? "/temp/" : flumeHomePath + "/plugins.d/agent/lib/openapi/";
         svc.manageSubscribeFile(path, param);
