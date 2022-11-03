@@ -1252,6 +1252,7 @@ INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES 
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('MODEL_ID', '데이터의 모델 아이디', 'I1120');
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('DATASET_ID', '데이터코어의 데이터셋아이디', 'I1120');
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('META_INFO', '메타정보', 'I1120');
+INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('INVOKE_CLASS', '수집 변환할 클래스', 'I1120');
 
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('URL_ADDR', NULL, 'I1130');
 INSERT INTO public.keyword_info (item, item_described, relation_code_id) VALUES ('MODEL_ID', '데이터의 모델 아이디', 'I1130');

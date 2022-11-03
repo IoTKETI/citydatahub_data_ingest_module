@@ -7,10 +7,10 @@ INSERT INTO public.adapter_info (adapter_id, adapter_nm, agent_id, target_platfo
 'mqttOffstreet', '성남시 주차장 어댑터', 'AgentMqttt', 'I1120', NULL, 'Y', now(), now());
 
 INSERT INTO public.instance_info (instance_id, instance_nm, adapter_id,datamodel_conv_div, adapter_type_id, use_yn, etc_note) VALUES (
-'mqttOffStreet_001', 'mqttOffStreet', 'mqttOffstreet', 'Y', 'M000000002', 'Y', '성남시 주차장');
+'mqttOffStreet_001', 'mqttOffStreet', 'mqttOffstreet', 'N', 'M000000002', 'Y', '성남시 주차장');
 
-INSERT INTO public.instance_detail_conf (instance_id, item, value, item_described, display_seq, sector) VALUES ('mqttOffStreet_001', 'MODEL_ID', 'pocOffStreetParking,pocParkingSpot', 'model id', 1, 'b');
-INSERT INTO public.instance_detail_conf (instance_id, item, value, item_described, display_seq, sector) VALUES ('mqttOffStreet_001', 'DATASET_ID', ' dataset001,dataset002', 'dataset id', 2, 'b');
+INSERT INTO public.instance_detail_conf (instance_id, item, value, item_described, display_seq, sector) VALUES ('mqttOffStreet_001', 'MODEL_ID', 'OffStreetParking,ParkingSpot', 'model id', 1, 'b');
+INSERT INTO public.instance_detail_conf (instance_id, item, value, item_described, display_seq, sector) VALUES ('mqttOffStreet_001', 'DATASET_ID', ' pocOffStreetParking,pocParkingSpot', 'dataset id', 2, 'b');
 INSERT INTO public.instance_detail_conf (instance_id, item, value, item_described, display_seq, sector) VALUES ('mqttOffStreet_001', 'INVOKE_CLASS', 'com.cityhub.adapter.convex.ConvParkingOneM2M', '', 3, 'b');
 INSERT INTO public.instance_detail_conf (instance_id, item, value, item_described, display_seq, sector) VALUES ('mqttOffStreet_001', 'REQ_PREFIX', '/oneM2M/req/Mobius2/', '', 4, 'b');
 INSERT INTO public.instance_detail_conf (instance_id, item, value, item_described, display_seq, sector) VALUES ('mqttOffStreet_001', 'RESP_PREFIX', '/oneM2M/resp/Mobius2/', '', 5, 'b');
