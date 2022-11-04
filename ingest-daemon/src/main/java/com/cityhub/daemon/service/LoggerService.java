@@ -45,11 +45,11 @@ public class LoggerService {
     String length = String.valueOf(jobj.get("length")).replaceAll("\"", "");
     String desc = jobj.get("desc").toString().replaceAll("\"", "");
     String adapterType = "";
-    if (jobj.get("adapterType") != null) {
+    if (jobj.has("adapterType") ) {
       adapterType = String.valueOf(jobj.get("adapterType")).replaceAll("\"", "");
     }
     String invokeClass = "";
-    if (jobj.get("invokeClass") != null) {
+    if (jobj.has("invokeClass") ) {
       invokeClass = String.valueOf(jobj.get("invokeClass")).replaceAll("\"", "");
     }
 
@@ -59,6 +59,7 @@ public class LoggerService {
     param.put("step", step);
     param.put("id", id);
     param.put("sourceName", sourceName);
+    param.put("invokeClass", invokeClass);
     if ("null".equals(length)) {
       length = "0";
     }
