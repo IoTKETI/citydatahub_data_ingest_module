@@ -1,4 +1,4 @@
-FROM amd64/eclipse-temurin:11-jdk-alpine 
+FROM eclipse-temurin:11-jdk-alpine 
 LABEL name="Yonghak.An"
 LABEL email="neoshaby@gmail.com"
 
@@ -7,7 +7,7 @@ ENV TZ=Asia/Seoul
 COPY ./apk/sgerrand.rsa.pub /etc/apk/keys/sgerrand.rsa.pub
 COPY ./apk/ /
 
-RUN apk --no-cache add ca-certificates bash tzdata curl && \
+RUN apk --no-cache add ca-certificates tzdata curl && \
     cp /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone
 
@@ -16,7 +16,8 @@ RUN apk add glibc-bin-2.35-r0.apk glibc-i18n-2.35-r0.apk glibc-2.35-r0.apk && \
     /usr/glibc-compat/bin/localedef -i ko_KR -f EUC-KR ko_KR.EUC-KR && \
     echo "export LC_ALL='C.UTF-8'" >> /etc/profile && \
     echo "export LANG='C.UTF-8'" >> /etc/profile && \
-    echo "export LANGUAGE='C.UTF-8'" >> /etc/profile
+    echo "export LANGUAGE='C.UTF-8'" >> /etc/profile && \
+    rm -rf glibc-bin-2.35-r0.apk glibc-i18n-2.35-r0.apk glibc-2.35-r0.apk
  
 ENV LC_ALL=C.UTF-8
 

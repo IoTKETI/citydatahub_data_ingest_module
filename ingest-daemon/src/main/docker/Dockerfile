@@ -1,4 +1,4 @@
-FROM amd64/eclipse-temurin:11-jdk-alpine  
+FROM eclipse-temurin:11-jdk-alpine  
 LABEL name="Yonghak.An"
 LABEL email="neoshaby@gmail.com"
 
@@ -7,7 +7,7 @@ ENV TZ=Asia/Seoul
 COPY ./apk/sgerrand.rsa.pub /etc/apk/keys/sgerrand.rsa.pub
 COPY ./apk/ /
 
-RUN apk --no-cache add ca-certificates bash tzdata curl && \
+RUN apk --no-cache add ca-certificates tzdata curl && \
     cp /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone
 
@@ -22,7 +22,7 @@ RUN mkdir -p /opt/logs \
   && mkdir -p /opt/daemon/config \
   && mkdir -p /opt/flume/plugins.d/agent \
   && tar --extract --file apache-flume-1.11.0-bin.tar.gz --directory /opt/flume --strip-components 1 --no-same-owner \ 
-  && rm -rf apache-flume-1.11.0-bin.tar.gz 
+  && rm -rf apache-flume-1.11.0-bin.tar.gz glibc-bin-2.35-r0.apk glibc-i18n-2.35-r0.apk glibc-2.35-r0.apk 
 
 ENV LC_ALL=C.UTF-8
 EXPOSE 8888
