@@ -38,19 +38,26 @@ centos7 기준으로 설치를 진행합니다.
 
 ### 구동환경
 
-- openjdk 1.8
+- openjdk 11
 - git
 - docker
 - maven
 
 ```bash
-# openjdk 1.8 , git download
-sudo yum install -y java-1.8.0-openjdk  java-1.8.0-openjdk-devel git
+# openjdk 11 , git download
+sudo yum update
+sudo yum install -y java-11-openjdk.x86_64 java-11-openjdk-devel.x86_64
+sudo yum install -y git
+
+# 기존 자바 버전 변경(update-alternatives)
+update-alternatives --config java
+update-alternatives --config javac
 ```
+
 
 ### 2.1.1 apache maven 설치
 
-[https://maven.apache.org/](https://maven.apache.org/) 에서 3.8.4 다운로드
+[https://maven.apache.org/](https://maven.apache.org/) 에서 3.8.6 다운로드
 
 ```bash
 # wget install
@@ -186,7 +193,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=pine1234
     ports:
-      - 5430:5432
+      - 5432:5432
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: on-failure
