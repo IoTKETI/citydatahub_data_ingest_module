@@ -1,4 +1,4 @@
-FROM openjdk:8-alpine
+FROM amd64/eclipse-temurin:11-jdk-alpine  
 LABEL name="Yonghak.An"
 LABEL email="neoshaby@gmail.com"
 
@@ -13,18 +13,18 @@ RUN apk --no-cache add ca-certificates bash tzdata curl && \
 
 RUN apk add glibc-bin-2.35-r0.apk glibc-i18n-2.35-r0.apk glibc-2.35-r0.apk && \
     /usr/glibc-compat/bin/localedef -i ko_KR -f UTF-8 ko_KR.UTF-8 && \
-    echo "export LC_ALL='ko_KR.UTF-8'" >> /etc/profile && \
-    echo "export LANG='ko_KR.UTF-8'" >> /etc/profile && \
-    echo "export LANGUAGE='ko_KR.UTF-8'" >> /etc/profile
+    /usr/glibc-compat/bin/localedef -i ko_KR -f EUC-KR ko_KR.EUC-KR && \
+    echo "export LC_ALL='C.UTF-8'" >> /etc/profile && \
+    echo "export LANG='C.UTF-8'" >> /etc/profile && \
+    echo "export LANGUAGE='C.UTF-8'" >> /etc/profile
   
 RUN mkdir -p /opt/logs \
   && mkdir -p /opt/daemon/config \
   && mkdir -p /opt/flume/plugins.d/agent \
-  && tar --extract --file apache-flume-1.9.0-bin.tar.gz --directory /opt/flume --strip-components 1 --no-same-owner \ 
-  && rm -rf apache-flume-1.9.0-bin.tar.gz \
-  && rm -rf /opt/flume/lib/commons-compress-1.4.1.jar
+  && tar --extract --file apache-flume-1.11.0-bin.tar.gz --directory /opt/flume --strip-components 1 --no-same-owner \ 
+  && rm -rf apache-flume-1.11.0-bin.tar.gz 
 
-ENV LC_ALL=ko_KR.UTF-8
+ENV LC_ALL=C.UTF-8
 EXPOSE 8888
 
 WORKDIR /opt/flume
@@ -37,6 +37,6 @@ ADD ./config/log4j2.xml /opt/daemon/config/log4j2.xml
 RUN  chmod 755 plugins.d/agent/lib/compile.sh 
 
 
-COPY ingest-daemon-0.9.0.jar /opt/daemon/app.jar
+COPY ingest-daemon-1.0.0.jar /opt/daemon/app.jar
 
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-Dspring.profiles.active=dev","-jar","/opt/daemon/app.jar"]

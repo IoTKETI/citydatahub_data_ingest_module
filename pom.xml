@@ -30,145 +30,16 @@
     <rat.skip>true</rat.skip>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>utf-8</project.reporting.outputEncoding>
-    <sourceJavaVersion>1.8</sourceJavaVersion>
-    <targetJavaVersion>1.8</targetJavaVersion>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>    
-    <java.version>1.8</java.version>
+    <sourceJavaVersion>11</sourceJavaVersion>
+    <targetJavaVersion>11</targetJavaVersion>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>    
+    <java.version>11</java.version>
     <m2e.apt.activation>disabled</m2e.apt.activation>
     <test.exclude.pattern>$</test.exclude.pattern>
     <test.include.pattern>**/Test*.java</test.include.pattern>
   </properties>
 
-
-  <dependencies>
-
-
-  </dependencies>
-
-
-  <build>
-
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.0.0</version>
-        <dependencies>
-          <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <version>8.12</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <id>verify.checkstyle</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <configLocation>src/main/resources/checkstyle.xml</configLocation>
-          <suppressionsLocation>src/main/resources/checkstyle-suppressions.xml</suppressionsLocation>
-          <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
-          <encoding>UTF-8</encoding>
-          <includeTestSourceDirectory>true</includeTestSourceDirectory>
-          <linkXRef>false</linkXRef>
-
-        </configuration>
-      </plugin>
-
-
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.1</version>
-        <configuration>
-          <reuseForks>false</reuseForks>
-          <forkCount>1</forkCount>
-          <rerunFailingTestsCount>10</rerunFailingTestsCount>
-          <forkedProcessTimeoutInSeconds>900</forkedProcessTimeoutInSeconds>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
-          <includes>
-            <include>**/Test*.java</include>
-          </includes>
-          <excludes>
-            <exclude>**/*$*</exclude>
-            <exclude>$</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <version>0.12</version>
-        <configuration>
-          <excludes>
-            <exclude>**/.idea/</exclude>
-            <exclude>**/*.iml</exclude>
-            <exclude>**/nb-configuration.xml</exclude>
-            <exclude>.git/</exclude>
-            <exclude>patchprocess/</exclude>
-            <exclude>.gitignore</exclude>
-            <!-- ASF jenkins box puts the Maven repo in our root directory. -->
-            <exclude>.repository/</exclude>
-            <exclude>**/*.diff</exclude>
-            <exclude>**/*.patch</exclude>
-            <exclude>**/*.avsc</exclude>
-            <exclude>**/*.avro</exclude>
-            <exclude>**/docs/**</exclude>
-            <exclude>**/test/resources/**</exclude>
-            <exclude>**/.settings/*</exclude>
-            <exclude>**/.classpath</exclude>
-            <exclude>**/.project</exclude>
-            <exclude>**/target/**</exclude>
-            <exclude>**/derby.log</exclude>
-            <exclude>**/metastore_db/</exclude>
-            <exclude>.mvn/**</exclude>
-            <exclude>**/*.template</exclude>
-            <exclude>**/*.conf</exclude>
-            <exclude>**/*.csv</exclude>
-            <exclude>**/*.md</exclude>
-            <exclude>**/*.xml</exclude>
-            <exclude>**/application.properties</exclude>
-            <exclude>**/*.sql</exclude>
-            <exclude>**/*.sh</exclude>
-          </excludes>
-          <consoleOutput>true</consoleOutput>
-        </configuration>
-        <executions>
-          <execution>
-            <id>verify.rat</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-
-    </plugins>
-
-
-
-
-  </build>
 
 
 
