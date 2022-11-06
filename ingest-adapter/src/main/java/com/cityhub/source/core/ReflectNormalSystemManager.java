@@ -17,6 +17,8 @@
 package com.cityhub.source.core;
 
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +29,8 @@ public class ReflectNormalSystemManager {
     ReflectNormalSystem reflectExecuter = null;
     try {
       Class<?> clz = Class.forName(invokeClass);
-      reflectExecuter  = (ReflectNormalSystem)clz.newInstance();
-    } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+      reflectExecuter  = (ReflectNormalSystem)clz.getDeclaredConstructor().newInstance();
+    } catch (IllegalAccessException | InstantiationException | ClassNotFoundException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
       log.error("Exception : "+ExceptionUtils.getStackTrace(e));
     }
 

@@ -115,7 +115,7 @@ public class OpenApiSystem extends AbstractSource implements PollableSource, Con
         ReflectNormalSystem reflectExecuter = null;
         try {
           Class<?> clz = Class.forName(configInfo.get("invokeClass").toString());
-          reflectExecuter  = (ReflectNormalSystem)clz.newInstance();
+          reflectExecuter  = (ReflectNormalSystem)clz.getDeclaredConstructor().newInstance();
           reflectExecuter.init(getChannelProcessor(), configInfo);
           reflectExecuter.doit();
 
