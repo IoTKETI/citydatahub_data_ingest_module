@@ -129,7 +129,7 @@ public class LegacySQLSink extends AbstractBaseSink {
         requestMessageVO.setEntityType(entityType);
 
         Class<?> clz = Class.forName("com.cityhub.flow.conv." + entityType);
-        ReflectExecuterEx<RequestMessageVO, JSONObject> reflectExecuter = (ReflectExecuterEx) clz.newInstance();
+        ReflectExecuterEx<RequestMessageVO, JSONObject> reflectExecuter = (ReflectExecuterEx) clz.getDeclaredConstructor().newInstance();
         reflectExecuter.setInitial(requestMessageVO);
         Map<String, Object> param = reflectExecuter.doit();
 

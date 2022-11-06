@@ -17,6 +17,8 @@
 
 package com.cityhub.environment;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flume.channel.ChannelProcessor;
 import org.json.JSONObject;
@@ -30,9 +32,9 @@ public class ReflectExecuterManager {
 
     try {
       Class<?> clz = Class.forName(invokeClass);
-      reflectExecuter  = (ReflectExecuter)clz.newInstance();
+      reflectExecuter  = (ReflectExecuter)clz.getDeclaredConstructor().newInstance();
       reflectExecuter.init(channelProcessor, ConfItem, templateItem);
-    } catch (Exception e) {
+    } catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException  | SecurityException | ClassNotFoundException e) {
       log.error("Exception : "+ExceptionUtils.getStackTrace(e));
     }
 
