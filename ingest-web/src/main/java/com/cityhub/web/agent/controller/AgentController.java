@@ -652,7 +652,9 @@ public class AgentController {
         }
         */
         for (Map<String, String> vMp : insDetail) {
-          bodyInstance.put(vMp.get("item").toString(), vMp.get("value").toString());
+          if ("b".equalsIgnoreCase(vMp.get("sector").toString())) {
+            bodyInstance.put(vMp.get("item").toString(), vMp.get("value").toString());
+          }
         }
 
         if ("Y".equalsIgnoreCase(curMap.get("datamodel_conv_div").toString())) {
