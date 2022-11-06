@@ -374,7 +374,6 @@
     WHERE
     B.adapter_id = #{adapter_id}
     AND D.instance_id = #{instance_id}
-    AND d.sector = 'b'
     ORDER BY A.agent_id, B.adapter_id, C.instance_id, D.display_seq
   </select>
 

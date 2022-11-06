@@ -632,7 +632,6 @@ public class AgentController {
         }
         param.put("instance_id", curMap.get("instance_id"));
 
-        List<Map<String, String>> keywordInfoList = (List) svc.selectAdaptorKeywordInfo(param);
         List<Map> insDetail = svc.selectInstanceDetail(param);
 
         JSONObject bodyInstance = new JSONObject();
@@ -642,17 +641,11 @@ public class AgentController {
         bodyInstance.put("CONF_FILE", "openapi/" + curMap.get("instance_id") + ".conf");
         bodyInstance.put("DATAMODEL_API_URL", configEnv.getDataModelApiUrl());
         bodyInstance.put("DAEMON_SERVER_LOGAPI", configEnv.getDaemonSrv() + "/logToDbApi");
-        /*
-        for (Map<String, String> keyword : keywordInfoList) {
-          for (Map<String, String> vMp : insDetail) {
-            if (keyword.get("item").equals(vMp.get("item").toString()) && !"type".equals(vMp.get("item").toString())) {
-              bodyInstance.put(vMp.get("item").toString(), vMp.get("value").toString());
-            }
-          }
-        }
-         */
+
         for (Map<String, String> vMp : insDetail) {
-          bodyInstance.put(vMp.get("item").toString(), vMp.get("value").toString());
+          if ("b".equalsIgnoreCase(vMp.get("sector").toString())) {
+            bodyInstance.put(vMp.get("item").toString(), vMp.get("value").toString());
+          }
         }
 
         if ("Y".equalsIgnoreCase(curMap.get("datamodel_conv_div").toString())) {
@@ -685,7 +678,6 @@ public class AgentController {
                 locArr.put(Float.parseFloat(wo));
               }
               insDetailObj.put((String) curMap3.get("item"), locArr);
-
             }
             ////////////////////////////////////////////////////
             else if ("headers".equals(curMap3.get("item"))) {
