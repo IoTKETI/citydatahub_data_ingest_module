@@ -18,8 +18,6 @@ package com.cityhub.adapter;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -37,21 +35,17 @@ import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.json.JSONObject;
 
 import com.cityhub.core.AbstractBaseSource;
-import com.cityhub.core.LogWriterToDb;
 import com.cityhub.core.ReflectExecuter;
 import com.cityhub.core.ReflectExecuterManager;
-import com.cityhub.dto.LogVO;
 import com.cityhub.environment.Constants;
 import com.cityhub.environment.DefaultConstants;
 import com.cityhub.model.DataModelEx;
 import com.cityhub.utils.DataCoreCode.SocketCode;
-import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.OkUrlUtil;
 import com.cityhub.utils.StrUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +70,6 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
 
   private JSONObject ConfItem;
   private JSONObject templateItem;
-  private ReflectExecuter reflectExecuter = null;
 
   private String datasetId;
   private String DATAMODEL_API_URL;
@@ -101,7 +94,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     metaInfo = context.getString("META_INFO", "");
     reqTopic = context.getString("REQ_PREFIX", "") + topic;
     respTopic = context.getString("RESP_PREFIX", "") + topic;
-    setInvokeClass(context.getString(DefaultConstants.INVOKE_CLASS, ""));
+    invokeClass = context.getString(DefaultConstants.INVOKE_CLASS, "");
     modelId = context.getString("MODEL_ID", "");
     ArrModel = StrUtil.strToArray(modelId, ",");
 
@@ -118,7 +111,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     ConfItem.put("metaInfo", metaInfo);
     ConfItem.put("sourceName", this.getName());
     ConfItem.put("adapterType", adapterType);
-    ConfItem.put("invokeClass", getInvokeClass() );
+    ConfItem.put("invokeClass", invokeClass );
     ConfItem.put("datasetId", datasetId);
 
     mqttOptions = new MqttConnectOptions();
@@ -184,13 +177,7 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     }
 
     if (log.isDebugEnabled()) {
-      // log.debug("ConfItem:{} -- {}", topic, ConfItem);
       log.debug("templateItem:{} -- {}", topic, templateItem);
-    }
-    try {
-      reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(),getChannelProcessor(), ConfItem, templateItem);
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -202,9 +189,10 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     log.debug("Source Topic: {}\tQoS: {}\tMessage: {}", topic, mqttMessage.getQos(), new String(mqttMessage.getPayload()));
 
     try {
-      if (reflectExecuter == null) {
-        reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(),getChannelProcessor(), ConfItem, templateItem);
-      }
+      log.info("@@@@@@@@{}",invokeClass);
+      ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(invokeClass);
+      reflectExecuter.init(getChannelProcessor(), ConfItem, templateItem);
+
       if (mqttMessage.getPayload() != null && reflectExecuter != null) {
         JsonUtil je = new JsonUtil(new String(mqttMessage.getPayload()));
         if (!"".equals(je.get("pc"))) {
@@ -212,40 +200,6 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
 
           String sb = reflectExecuter.doit(mqttMessage.getPayload());
 
-          if (sb != null && !"".equals(sb)) {
-            List<Map<String, Object>> entities = objectMapper.readValue(sb, new TypeReference<List<Map<String, Object>>>() {
-            });
-            for (Map<String, Object> itm : entities) {
-              int length = objectMapper.writeValueAsString(itm).getBytes().length;
-              log.info("`{}`{}`{}`{}`{}`{}`{}", this.getName(), itm.get("type"), SocketCode.DATA_SAVE_REQ.toMessage(), itm.get("id"), length, adapterType,ConfItem.getString("invokeClass"));
-              StringBuilder l = new StringBuilder();
-              l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-              l.append("`").append(ConfItem.getString("sourceName"));
-              l.append("`").append(modelId);
-              l.append("`").append(SocketCode.DATA_SAVE_REQ.toMessage());
-              l.append("`").append(itm.get("id") + "");
-              l.append("`").append(length);
-              l.append("`").append(adapterType);
-              l.append("`").append(ConfItem.getString("invokeClass"));
-              LogVO logVo = new LogVO();
-              logVo.setSourceName(ConfItem.getString("sourceName"));
-              logVo.setPayload(l.toString());
-              logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-              logVo.setType(modelId);
-              logVo.setStep(SocketCode.DATA_SAVE_REQ.getCode());
-              logVo.setDesc(SocketCode.DATA_SAVE_REQ.getMessage());
-              logVo.setId(itm.get("id") + "");
-              logVo.setLength(String.valueOf(length));
-              logVo.setAdapterType(ConfItem.getString("invokeClass"));
-              LogWriterToDb.logToDaemonApi(ConfItem, logVo);
-              for (int i = 0; i < ArrModel.length; i++) {
-                if (ArrModel[i].equals(itm.get("type") + "")) {
-                  sendEventEx(itm, ArrDatasetId[i]);
-                }
-              }
-              Thread.sleep(10);
-            }
-          }
         }
       }
     } catch (NullPointerException npe) {
@@ -327,14 +281,6 @@ public class MqttSource extends AbstractBaseSource implements EventDrivenSource,
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
-  }
-
-  public String getInvokeClass() {
-    return invokeClass;
-  }
-
-  public void setInvokeClass(String invokeClass) {
-    this.invokeClass = invokeClass;
   }
 
 } // end class

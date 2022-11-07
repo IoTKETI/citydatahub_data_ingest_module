@@ -521,7 +521,8 @@ public class NetcatSource extends AbstractSource implements Configurable, EventD
 
               String sb = "";
               try {
-                ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(this.invokeClass, source.getChannelProcessor(),ConfItem, templateItem);
+                ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(this.invokeClass);
+                reflectExecuter.init(source.getChannelProcessor(), ConfItem, templateItem);
                 sb = reflectExecuter.doit(body);
                 sendClient(writer, SocketCode.DATA_CONVERT_SUCCESS);
               } catch (Exception e) {

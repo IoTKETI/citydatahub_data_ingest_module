@@ -17,16 +17,13 @@
 
 package com.cityhub.adapter;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-
 import org.apache.flume.Context;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cityhub.core.AbstractPollSource;
-import com.cityhub.core.ReflectExecuter;
-import com.cityhub.core.ReflectExecuterManager;
+import com.cityhub.core.ReflectNormalSystem;
+import com.cityhub.core.ReflectNormalSystemManager;
 import com.cityhub.model.DataModel;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
@@ -88,27 +85,10 @@ public class UCityPlatformEventSource extends AbstractPollSource {
   @Override
   public void processing() {
     try {
-      ReflectExecuter exec = ReflectExecuterManager.getInstance(getInvokeClass(),getChannelProcessor(), ConfItem, templateItem);
-      String sb = exec.doit();
+      ReflectNormalSystem reflectExecuter = ReflectNormalSystemManager.getInstance(ConfItem.getString("invokeClass"));
+      reflectExecuter.init(getChannelProcessor(), ConfItem);
+      String sb = reflectExecuter.doit();
 
-      if (sb != null && sb.lastIndexOf(",") > 0) {
-        JSONArray jsonAr = new JSONArray("[" + sb.substring(0, sb.length() - 1) + "]");
-        int cnt = 0;
-
-        for (Object itm : jsonAr) {
-          JSONObject jo = (JSONObject) itm;
-          log.info("" + jo);
-
-          cnt++;
-
-          JSONObject body = new JSONObject();
-          body.put("content", jo);
-          byte[] cont = body.toString().getBytes(Charset.forName("UTF-8"));
-
-          ByteBuffer byteBuffer = ByteBuffer.allocate(cont.length + 5);
-          byteBuffer.put(cont);
-        }
-      }
     } catch (Exception e) {
       log.info("ERROR");
     }

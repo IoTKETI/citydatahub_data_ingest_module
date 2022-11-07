@@ -17,28 +17,22 @@
 package com.cityhub.adapter;
 
 import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.flume.Context;
 import org.json.JSONObject;
 
 import com.cityhub.core.AbstractPollSource;
-import com.cityhub.core.LogWriterToDb;
-import com.cityhub.core.ReflectExecuter;
-import com.cityhub.core.ReflectExecuterManager;
-import com.cityhub.dto.LogVO;
+import com.cityhub.core.ReflectNormalSystem;
+import com.cityhub.core.ReflectNormalSystemManager;
 import com.cityhub.environment.Constants;
 import com.cityhub.model.DataModelEx;
 import com.cityhub.utils.DataCoreCode.SocketCode;
-import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.OkUrlUtil;
 import com.cityhub.utils.StrUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -113,6 +107,7 @@ public class OpenApiSource extends AbstractPollSource {
     if (log.isDebugEnabled()) {
       log.debug("Template : {},{}", modelId, templateItem);
     }
+    ConfItem.put("MODEL_TEMPLATE",templateItem);
   }
 
   @Override
@@ -121,39 +116,10 @@ public class OpenApiSource extends AbstractPollSource {
     try {
       if (ArrModel != null) {
 
-        ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(),getChannelProcessor(), ConfItem, templateItem);
-        String sb = reflectExecuter.doit();
-        if (sb != null && !"".equals(sb)) {
-          List<Map<String, Object>> entities = objectMapper.readValue(sb, new TypeReference<List<Map<String, Object>>>() {
-          });
-          for (Map<String, Object> itm : entities) {
-            int length = objectMapper.writeValueAsString(itm).getBytes().length;
-            log.info("`{}`{}`{}`{}`{}`{}", this.getName(), itm.get("type"), SocketCode.DATA_SAVE_REQ.toMessage(), itm.get("id"), length, adapterType,ConfItem.getString("invokeClass"));
-            StringBuilder l = new StringBuilder();
-            l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-            l.append("`").append(ConfItem.getString("sourceName"));
-            l.append("`").append(modelId);
-            l.append("`").append(SocketCode.DATA_SAVE_REQ.toMessage());
-            l.append("`").append(itm.get("id") + "");
-            l.append("`").append(length);
-            l.append("`").append(adapterType);
-            l.append("`").append(ConfItem.getString("invokeClass"));
-            LogVO logVo = new LogVO();
-            logVo.setSourceName(ConfItem.getString("sourceName"));
-            logVo.setPayload(l.toString());
-            logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-            logVo.setType(modelId);
-            logVo.setStep(SocketCode.DATA_SAVE_REQ.getCode());
-            logVo.setDesc(SocketCode.DATA_SAVE_REQ.getMessage());
-            logVo.setId(itm.get("id") + "");
-            logVo.setLength(String.valueOf(length));
-            logVo.setAdapterType(ConfItem.getString("invokeClass"));
-            LogWriterToDb.logToDaemonApi(ConfItem, logVo);
-          }
+        ReflectNormalSystem reflectNormalSystem = ReflectNormalSystemManager.getInstance(getInvokeClass());
+        reflectNormalSystem.init(getChannelProcessor(), ConfItem);
+        String sb = reflectNormalSystem.doit();
 
-          sendEventEx(entities, datasetId);
-          Thread.sleep(10);
-        }
       } else {
         log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
       }

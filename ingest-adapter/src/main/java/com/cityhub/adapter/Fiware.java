@@ -16,27 +16,19 @@
  */
 package com.cityhub.adapter;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.flume.Context;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cityhub.core.AbstractPollSource;
-import com.cityhub.core.LogWriterToDb;
-import com.cityhub.core.ReflectExecuter;
-import com.cityhub.core.ReflectExecuterManager;
-import com.cityhub.dto.LogVO;
+import com.cityhub.core.ReflectNormalSystem;
+import com.cityhub.core.ReflectNormalSystemManager;
 import com.cityhub.model.DataModel;
 import com.cityhub.utils.DataCoreCode.SocketCode;
-import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.OkUrlUtil;
 import com.cityhub.utils.StrUtil;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -125,42 +117,10 @@ public class Fiware extends AbstractPollSource {
     try {
       if (ArrModel != null) {
 
-        ReflectExecuter reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass() ,getChannelProcessor(),  ConfItem, templateItem);
+        ReflectNormalSystem reflectExecuter = ReflectNormalSystemManager.getInstance(ConfItem.getString("invokeClass"));
+        reflectExecuter.init(getChannelProcessor(), ConfItem);
         String sb = reflectExecuter.doit();
-        if (sb != null && sb.lastIndexOf(",") > 0) {
-          ObjectMapper objectMapper = new ObjectMapper();
-          List<Map<String, Object>> entities = objectMapper.readValue(sb, new TypeReference<List<Map<String, Object>>>() {
-          });
-          JSONArray JSendArr = new JSONArray("[" + sb.substring(0 , sb.length() - 1) + "]");
-          int cnt = 0;
-          for (Map<String, Object> itm : entities) {
-            int length = objectMapper.writeValueAsString(itm).getBytes().length;
-            log.info("`{}`{}`{}`{}`{}`{}", this.getName(), itm.get("type"), SocketCode.DATA_SAVE_REQ.toMessage(), itm.get("id"), length, adapterType,ConfItem.getString("invokeClass"));
-            StringBuilder l = new StringBuilder();
-            l.append(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-            l.append("`").append(ConfItem.getString("sourceName"));
-            l.append("`").append(modelId);
-            l.append("`").append(SocketCode.DATA_SAVE_REQ.toMessage());
-            l.append("`").append(itm.get("id") + "");
-            l.append("`").append(length);
-            l.append("`").append(adapterType);
-            l.append("`").append(ConfItem.getString("invokeClass"));
-            LogVO logVo = new LogVO();
-            logVo.setSourceName(ConfItem.getString("sourceName"));
-            logVo.setPayload(l.toString());
-            logVo.setTimestamp(DateUtil.getDate("yyyy-MM-dd HH:mm:ss.SSS"));
-            logVo.setType(modelId);
-            logVo.setStep(SocketCode.DATA_SAVE_REQ.getCode());
-            logVo.setDesc(SocketCode.DATA_SAVE_REQ.getMessage());
-            logVo.setId(itm.get("id") + "");
-            logVo.setLength(String.valueOf(length));
-            logVo.setAdapterType(ConfItem.getString("invokeClass"));
-            LogWriterToDb.logToDaemonApi(ConfItem, logVo);
 
-          }
-          sendEventEx(entities,datasetId);
-
-        }
       } else {
         log.error("`{}`{}`{}`{}`{}`{}`{}",this.getName(), modelId , SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
       }
