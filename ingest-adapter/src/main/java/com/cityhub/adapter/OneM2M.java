@@ -70,7 +70,6 @@ public class OneM2M extends AbstractBaseSource implements EventDrivenSource, Mqt
 
   private JSONObject ConfItem;
   private JSONObject templateItem;
-  private ReflectNormalSystem reflectNormalSystem = null;
 
   private String datasetId;
   private String DATAMODEL_API_URL;
@@ -177,7 +176,9 @@ public class OneM2M extends AbstractBaseSource implements EventDrivenSource, Mqt
       log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
     }
 
-    log.info("templateItem:{} -- {}", topic, templateItem);
+    if (log.isDebugEnabled()) {
+      log.debug("templateItem:{} -- {}", topic, templateItem);
+    }
 
     ConfItem.put("MODEL_TEMPLATE",templateItem);
 
@@ -191,10 +192,11 @@ public class OneM2M extends AbstractBaseSource implements EventDrivenSource, Mqt
     log.debug("Source Topic: {}\tQoS: {}\tMessage: {}", topic, mqttMessage.getQos(), new String(mqttMessage.getPayload()));
 
     try {
-      if (reflectNormalSystem == null) {
-        reflectNormalSystem = ReflectNormalSystemManager.getInstance(invokeClass);
-        reflectNormalSystem.init(getChannelProcessor(), ConfItem);
-      }
+      ReflectNormalSystem reflectNormalSystem = ReflectNormalSystemManager.getInstance(invokeClass);
+      reflectNormalSystem.init(getChannelProcessor(), ConfItem);
+
+
+
       if (mqttMessage.getPayload() != null && reflectNormalSystem != null) {
         JsonUtil je = new JsonUtil(new String(mqttMessage.getPayload()));
         if (!"".equals(je.get("pc"))) {
