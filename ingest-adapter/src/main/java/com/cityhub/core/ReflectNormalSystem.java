@@ -33,6 +33,8 @@ public interface ReflectNormalSystem  {
 
   public String doit() ;
 
+  public String doit(byte[] t2);
+
   public void sendEvent(List<Map<String, Object>> bodyMap,String DATASET_ID) ;
 
   public void setup();

@@ -26,8 +26,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.cityhub.core.AbstractNormalSource;
 import com.cityhub.exception.CoreException;
-import com.cityhub.core.AbstractConvert;
 import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
@@ -40,7 +40,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ConvWeatherForecast extends AbstractConvert {
+public class ConvWeatherForecast extends AbstractNormalSource {
 
   @Override
   public String doit() {
@@ -145,6 +145,7 @@ public class ConvWeatherForecast extends AbstractConvert {
             rtnList.add(tMap);
             String str = objectMapper.writeValueAsString(tMap);
             toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+            toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
 
           } else {
             toLogger(SocketCode.DATA_CONVERT_FAIL, id);
@@ -153,8 +154,8 @@ public class ConvWeatherForecast extends AbstractConvert {
         } // if (!ju.has("response.body.items.item") == true)
       } // for (int i = 0; i < serviceList.length(); i++)
 
-      rtnStr = objectMapper.writeValueAsString(rtnList);
-      log.info("rtnStr:{}", rtnStr);
+      sendEvent(rtnList, ConfItem.getString("datasetId"));
+
     } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
         toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
@@ -164,7 +165,7 @@ public class ConvWeatherForecast extends AbstractConvert {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
-    return rtnStr;
+    return "Success";
   }
 
   public Map<String, Object> getBaseForeMap(List<String> fcstTimeList) {

@@ -644,13 +644,10 @@ public class AgentController {
             bodyInstance.put(vMp.get("item").toString(), vMp.get("value").toString());
           }
         }
+        bodyInstance.put("type", curMap.get("type"));
 
         if ("Y".equalsIgnoreCase(curMap.get("datamodel_conv_div").toString())) {
-          bodyInstance.put("type", curMap.get("type"));
           bodyInstance.put("INVOKE_CLASS", "com.cityhub.adapter.convex." + curMap.get("instance_id"));
-        } else {
-          String type = curMap.get("type").toString().replace("OpenApiSystem","OpenApiSource");
-          bodyInstance.put("type", type );
         }
 
 

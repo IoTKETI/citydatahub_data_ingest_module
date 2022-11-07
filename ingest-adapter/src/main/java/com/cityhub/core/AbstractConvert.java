@@ -16,17 +16,10 @@
  */
 package com.cityhub.core;
 
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.flume.Event;
 import org.apache.flume.channel.ChannelProcessor;
-import org.apache.flume.event.EventBuilder;
 import org.json.JSONObject;
 
 import com.cityhub.dto.LogVO;
@@ -132,17 +125,5 @@ public abstract class AbstractConvert implements ReflectExecuter {
   }
 
 
-
-  public void sendEventEx(List<Map<String, Object>> entities, String datasetId) {
-    try {
-      Map<String, Object> body = new LinkedHashMap<>();
-      body.put("entities", entities);
-      body.put("datasetId", datasetId);
-      Event event = EventBuilder.withBody(objectMapper.writeValueAsString(body).getBytes(Charset.forName("UTF-8")));
-      channelProcessor.processEvent(event);
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
-  }
 
 } // end of class

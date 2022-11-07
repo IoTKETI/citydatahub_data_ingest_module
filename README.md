@@ -510,12 +510,13 @@ try {
         rtnList.add(tMap);
         String str = objectMapper.writeValueAsString(tMap);
         toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+        toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
       } else {
         toLogger(SocketCode.DATA_CONVERT_FAIL, id);
       } // end if (arrList.length() > 0)
     } // if (!ju.has("response.body.items.item") )
   }  // for (int i = 0; i < svcList.length(); i++)
-  rtnStr = objectMapper.writeValueAsString(rtnList);
+  sendEvent(modelList, ConfItem.getString("datasetId"));
 } catch (CoreException e) {
   log.error("Exception : " + ExceptionUtils.getStackTrace(e));
   if ("!C0099".equals(e.getErrorCode())) {
@@ -526,7 +527,7 @@ try {
   log.error("Exception : " + ExceptionUtils.getStackTrace(e));
 }
 
-return rtnStr;
+return "Success";
 ```
 
 ## 4.2 Legacy System (RDBMS) 데이터 연계
@@ -846,6 +847,17 @@ return rtnStr;
           rtnList.add(tMap);
           String str = objectMapper.writeValueAsString(tMap);
           toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+          
+          toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
+
+          String[] ArrModel = StrUtil.strToArray(ConfItem.getString("modelId"), ",");
+          String[] ArrDatasetId = StrUtil.strToArray(ConfItem.getString("datasetId"), ",");
+          for (int i = 0; i < ArrModel.length; i++) {
+            if (ArrModel[i].equals(modelType)) {
+              sendEvent(rtnList, ArrDatasetId[i]);
+            }
+          }
+          
         } else {
           if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3])) {
             JsonUtil parkInfo = null;
@@ -889,11 +901,21 @@ return rtnStr;
             rtnList.add(tMap);
             String str = objectMapper.writeValueAsString(tMap);
             toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+            toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
+
+            String[] ArrModel = StrUtil.strToArray(ConfItem.getString("modelId"), ",");
+            String[] ArrDatasetId = StrUtil.strToArray(ConfItem.getString("datasetId"), ",");
+            for (int i = 0; i < ArrModel.length; i++) {
+              if (ArrModel[i].equals(modelType)) {
+                sendEvent(rtnList, ArrDatasetId[i]);
+              }
+            }
+            
+            
           } // if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3]) )
 
         } // if (Park.length == 4)
 
-        rtnStr = objectMapper.writeValueAsString(rtnList);
       } // if ( JsonUtil.has(msg, "pc.m2m:sgn.nev.rep.m2m:cin.con") == true)
 
     } catch (CoreException e) {
@@ -905,7 +927,7 @@ return rtnStr;
       toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
-    return rtnStr;
+    return "Success";
   }
 ```
 

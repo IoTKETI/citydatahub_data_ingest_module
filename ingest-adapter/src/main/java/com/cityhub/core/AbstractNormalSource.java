@@ -48,6 +48,7 @@ public abstract class AbstractNormalSource  implements ReflectNormalSystem {
   protected final static int bufferLength = 1000;
 
   protected int bufferCount = 0;
+  protected String id = "";
 
   @Override
   public void init(ChannelProcessor channelProcessor, JSONObject ConfItem) {
@@ -74,6 +75,10 @@ public abstract class AbstractNormalSource  implements ReflectNormalSystem {
 
   @Override
   public String doit(BasicDataSource ds) {
+    return null;
+  }
+  @Override
+  public String doit(byte[] t2)  {
     return null;
   }
 

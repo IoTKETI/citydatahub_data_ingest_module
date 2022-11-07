@@ -25,8 +25,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.cityhub.core.AbstractNormalSource;
 import com.cityhub.exception.CoreException;
-import com.cityhub.core.AbstractConvert;
 import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
@@ -39,7 +39,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ConvAirObserved extends AbstractConvert {
+public class ConvAirObserved extends AbstractNormalSource {
 
   @Override
   public String doit() {
@@ -172,6 +172,7 @@ public class ConvAirObserved extends AbstractConvert {
               rtnList.add(tMap);
               String str = objectMapper.writeValueAsString(tMap);
               toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+              toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
             } // for (Object jitem : jarr)
 
           } else {
@@ -179,9 +180,10 @@ public class ConvAirObserved extends AbstractConvert {
           } // if (jarr.length() > 0)
         } // if (!jsonData.has("list"))
       } // for (int i = 0 ; i < svcList.length(); i++)
-      rtnStr = objectMapper.writeValueAsString(rtnList);
-    } catch (CoreException e) {
 
+      sendEvent(rtnList, ConfItem.getString("datasetId"));
+
+    } catch (CoreException e) {
       if ("!C0099".equals(e.getErrorCode())) {
         toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
@@ -190,7 +192,7 @@ public class ConvAirObserved extends AbstractConvert {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
-    return rtnStr;
+    return "Success";
   }
 
 } // end of class

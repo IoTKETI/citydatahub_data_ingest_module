@@ -27,20 +27,21 @@ import org.apache.http.HttpHeaders;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.cityhub.core.AbstractNormalSource;
 import com.cityhub.exception.CoreException;
-import com.cityhub.core.AbstractConvert;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DataType;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
 import com.cityhub.utils.OkUrlUtil;
+import com.cityhub.utils.StrUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ConvParkingOneM2M extends AbstractConvert {
+public class ConvParkingOneM2M extends AbstractNormalSource {
 
   @Override
   public void setup() {
@@ -82,7 +83,6 @@ public class ConvParkingOneM2M extends AbstractConvert {
   @Override
   public String doit(byte[] message) {
     List<Map<String, Object>> rtnList = new LinkedList<>();
-    String rtnStr = "";
     String modelType = "";
     try {
       String msg = new String(message);
@@ -146,6 +146,17 @@ public class ConvParkingOneM2M extends AbstractConvert {
           rtnList.add(tMap);
           String str = objectMapper.writeValueAsString(tMap);
           toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+
+          toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
+
+          String[] ArrModel = StrUtil.strToArray(ConfItem.getString("modelId"), ",");
+          String[] ArrDatasetId = StrUtil.strToArray(ConfItem.getString("datasetId"), ",");
+          for (int i = 0; i < ArrModel.length; i++) {
+            if (ArrModel[i].equals(modelType)) {
+              sendEvent(rtnList, ArrDatasetId[i]);
+            }
+          }
+
         } else {
           if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3])) {
             JsonUtil parkInfo = null;
@@ -189,11 +200,20 @@ public class ConvParkingOneM2M extends AbstractConvert {
             rtnList.add(tMap);
             String str = objectMapper.writeValueAsString(tMap);
             toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+            toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
+
+            String[] ArrModel = StrUtil.strToArray(ConfItem.getString("modelId"), ",");
+            String[] ArrDatasetId = StrUtil.strToArray(ConfItem.getString("datasetId"), ",");
+            for (int i = 0; i < ArrModel.length; i++) {
+              if (ArrModel[i].equals(modelType)) {
+                sendEvent(rtnList, ArrDatasetId[i]);
+              }
+            }
+
           } // if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3]) )
 
         } // if (Park.length == 4)
 
-        rtnStr = objectMapper.writeValueAsString(rtnList);
       } // if ( JsonUtil.has(msg, "pc.m2m:sgn.nev.rep.m2m:cin.con") == true)
 
     } catch (CoreException e) {
@@ -205,7 +225,7 @@ public class ConvParkingOneM2M extends AbstractConvert {
       toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
-    return rtnStr;
+    return "Success";
   }
 
 } // end of class
