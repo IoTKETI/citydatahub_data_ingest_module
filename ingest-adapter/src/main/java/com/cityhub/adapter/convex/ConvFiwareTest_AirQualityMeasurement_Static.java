@@ -29,7 +29,7 @@ import org.json.JSONObject;
 import org.json.XML;
 
 import com.cityhub.exception.CoreException;
-import com.cityhub.source.core.AbstractConvert;
+import com.cityhub.core.AbstractConvert;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.OkUrlUtil;

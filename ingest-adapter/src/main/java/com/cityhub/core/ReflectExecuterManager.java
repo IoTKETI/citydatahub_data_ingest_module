@@ -14,22 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cityhub.source.core;
 
+package com.cityhub.core;
 
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.flume.channel.ChannelProcessor;
+import org.json.JSONObject;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ReflectNormalSystemManager {
-  public static ReflectNormalSystem getInstance(String invokeClass )  {
-    ReflectNormalSystem reflectExecuter = null;
+public class ReflectExecuterManager {
+  public static ReflectExecuter getInstance(String invokeClass, ChannelProcessor channelProcessor ,JSONObject ConfItem, JSONObject templateItem ) {
+    ReflectExecuter reflectExecuter = null;
+
     try {
       Class<?> clz = Class.forName(invokeClass);
-      reflectExecuter  = (ReflectNormalSystem)clz.getDeclaredConstructor().newInstance();
+      reflectExecuter  = (ReflectExecuter)clz.getDeclaredConstructor().newInstance();
+      reflectExecuter.init(channelProcessor, ConfItem, templateItem);
     } catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException  | SecurityException | ClassNotFoundException e) {
       log.error("Exception : "+ExceptionUtils.getStackTrace(e));
     }

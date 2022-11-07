@@ -26,7 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cityhub.exception.CoreException;
-import com.cityhub.source.core.AbstractConvert;
+import com.cityhub.core.AbstractConvert;
 import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;

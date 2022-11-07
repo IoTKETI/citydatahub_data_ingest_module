@@ -36,8 +36,6 @@ import org.springframework.http.HttpStatus;
 import com.cityhub.environment.Constants;
 import com.cityhub.utils.DataCoreCode.ResponseCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -870,19 +868,6 @@ public class JsonUtil {
       }
     });
     _jsonObject = result;
-    return this;
-  }
-
-  public static void prettyPrinting(JSONObject obj) {
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    String json = gson.toJson(obj.toMap());
-    log.debug(json);
-  }
-
-  public JsonUtil prettyPrinting() {
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    String json = gson.toJson(_jsonObject.toMap());
-    log.debug(json);
     return this;
   }
 

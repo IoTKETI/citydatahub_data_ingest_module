@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package com.cityhub.environment;
+package com.cityhub.core;
 
-import org.apache.flume.channel.ChannelProcessor;
-import org.json.JSONObject;
+import java.util.Map;
 
-public interface ReflectExecuter {
+import com.cityhub.exception.CoreException;
 
-  public void init(ChannelProcessor channelProcessor, JSONObject ConfItem, JSONObject templateItem);
+public interface ReflectExecuterEx<T1, T2> {
 
-  public String doit(byte[] t2) ;
+  public void setInitial(T1 t1);
 
-  public String doit() ;
+  public void setConfig(T2 t2);
 
-  public void setup();
+  public Map<String,Object> doit() throws CoreException;
 
 } // end of class

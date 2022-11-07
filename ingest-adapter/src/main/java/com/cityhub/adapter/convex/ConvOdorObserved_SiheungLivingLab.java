@@ -31,7 +31,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.cityhub.source.core.AbstractConvert;
+import com.cityhub.core.AbstractConvert;
 import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;

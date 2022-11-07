@@ -1,3 +1,5 @@
+package com.cityhub.core;
+
 /**
  *
  * Copyright 2021 PINE C&I CO., LTD
@@ -15,18 +17,24 @@
  * limitations under the License.
  */
 
-package com.cityhub.environment;
 
+import java.util.List;
 import java.util.Map;
 
-import com.cityhub.exception.CoreException;
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.flume.channel.ChannelProcessor;
+import org.json.JSONObject;
 
-public interface ReflectExecuterEx<T1, T2> {
+public interface ReflectNormalSystem  {
 
-  public void setInitial(T1 t1);
+  public void init(ChannelProcessor channelProcessor , JSONObject configEnv);
 
-  public void setConfig(T2 t2);
+  public String doit(BasicDataSource ds) ;
 
-  public Map<String,Object> doit() throws CoreException;
+  public String doit() ;
+
+  public void sendEvent(List<Map<String, Object>> bodyMap,String DATASET_ID) ;
+
+  public void setup();
 
 } // end of class

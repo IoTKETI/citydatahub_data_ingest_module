@@ -27,7 +27,7 @@ import java.util.Map;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.cityhub.source.core.AbstractNormalSource;
+import com.cityhub.core.AbstractNormalSource;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;

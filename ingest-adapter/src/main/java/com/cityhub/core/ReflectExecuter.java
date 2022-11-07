@@ -1,5 +1,3 @@
-package com.cityhub.source.core;
-
 /**
  *
  * Copyright 2021 PINE C&I CO., LTD
@@ -17,23 +15,18 @@ package com.cityhub.source.core;
  * limitations under the License.
  */
 
+package com.cityhub.core;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.flume.channel.ChannelProcessor;
 import org.json.JSONObject;
 
-public interface ReflectNormalSystem  {
+public interface ReflectExecuter {
 
-  public void init(ChannelProcessor channelProcessor , JSONObject configEnv);
+  public void init(ChannelProcessor channelProcessor, JSONObject ConfItem, JSONObject templateItem);
 
-  public String doit(BasicDataSource ds) ;
+  public String doit(byte[] t2) ;
 
   public String doit() ;
-
-  public void sendEvent(List<Map<String, Object>> bodyMap,String DATASET_ID) ;
 
   public void setup();
 
