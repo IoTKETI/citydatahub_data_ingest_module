@@ -35,10 +35,10 @@ import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.json.JSONObject;
 
 import com.cityhub.core.AbstractBaseSource;
+import com.cityhub.core.ReflectNormalSystem;
+import com.cityhub.core.ReflectNormalSystemManager;
 import com.cityhub.environment.Constants;
 import com.cityhub.environment.DefaultConstants;
-import com.cityhub.environment.ReflectExecuter;
-import com.cityhub.environment.ReflectExecuterManager;
 import com.cityhub.model.DataModelEx;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
@@ -70,7 +70,6 @@ public class OneM2M extends AbstractBaseSource implements EventDrivenSource, Mqt
 
   private JSONObject ConfItem;
   private JSONObject templateItem;
-  private ReflectExecuter reflectExecuter = null;
 
   private String datasetId;
   private String DATAMODEL_API_URL;
@@ -95,7 +94,7 @@ public class OneM2M extends AbstractBaseSource implements EventDrivenSource, Mqt
     metaInfo = context.getString("META_INFO", "");
     reqTopic = context.getString("REQ_PREFIX", "") + topic;
     respTopic = context.getString("RESP_PREFIX", "") + topic;
-    setInvokeClass(context.getString(DefaultConstants.INVOKE_CLASS, ""));
+    invokeClass = context.getString(DefaultConstants.INVOKE_CLASS, "");
     modelId = context.getString("MODEL_ID", "");
     ArrModel = StrUtil.strToArray(modelId, ",");
 
@@ -112,7 +111,7 @@ public class OneM2M extends AbstractBaseSource implements EventDrivenSource, Mqt
     ConfItem.put("metaInfo", metaInfo);
     ConfItem.put("sourceName", this.getName());
     ConfItem.put("adapterType", adapterType);
-    ConfItem.put("invokeClass", getInvokeClass() );
+    ConfItem.put("invokeClass", invokeClass );
     ConfItem.put("datasetId", datasetId);
 
     mqttOptions = new MqttConnectOptions();
@@ -178,14 +177,11 @@ public class OneM2M extends AbstractBaseSource implements EventDrivenSource, Mqt
     }
 
     if (log.isDebugEnabled()) {
-      // log.debug("ConfItem:{} -- {}", topic, ConfItem);
       log.debug("templateItem:{} -- {}", topic, templateItem);
     }
-    try {
-      reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(),getChannelProcessor(), ConfItem, templateItem);
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
+
+    ConfItem.put("MODEL_TEMPLATE",templateItem);
+
   }
 
   @Override
@@ -196,15 +192,17 @@ public class OneM2M extends AbstractBaseSource implements EventDrivenSource, Mqt
     log.debug("Source Topic: {}\tQoS: {}\tMessage: {}", topic, mqttMessage.getQos(), new String(mqttMessage.getPayload()));
 
     try {
-      if (reflectExecuter == null) {
-        reflectExecuter = ReflectExecuterManager.getInstance(getInvokeClass(),getChannelProcessor(), ConfItem, templateItem);
-      }
-      if (mqttMessage.getPayload() != null && reflectExecuter != null) {
+      ReflectNormalSystem reflectNormalSystem = ReflectNormalSystemManager.getInstance(invokeClass);
+      reflectNormalSystem.init(getChannelProcessor(), ConfItem);
+
+
+
+      if (mqttMessage.getPayload() != null && reflectNormalSystem != null) {
         JsonUtil je = new JsonUtil(new String(mqttMessage.getPayload()));
         if (!"".equals(je.get("pc"))) {
           callback(mqttMessage.getPayload());
 
-          String sb = reflectExecuter.doit(mqttMessage.getPayload());
+          String sb = reflectNormalSystem.doit(mqttMessage.getPayload());
 
         }
       }
@@ -289,12 +287,5 @@ public class OneM2M extends AbstractBaseSource implements EventDrivenSource, Mqt
     }
   }
 
-  public String getInvokeClass() {
-    return invokeClass;
-  }
-
-  public void setInvokeClass(String invokeClass) {
-    this.invokeClass = invokeClass;
-  }
 
 } // end class

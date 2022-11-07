@@ -30,8 +30,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
 
+import com.cityhub.core.AbstractNormalSource;
 import com.cityhub.exception.CoreException;
-import com.cityhub.source.core.AbstractConvert;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.OkUrlUtil;
@@ -40,7 +40,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ConvSandbox extends AbstractConvert {
+public class ConvSandbox extends AbstractNormalSource {
 
   @Override
   public String doit() {
@@ -90,6 +90,7 @@ public class ConvSandbox extends AbstractConvert {
 
               String str = objectMapper.writeValueAsString(tMap);
               toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+              toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
             } else {
               toLogger(SocketCode.DATA_CONVERT_FAIL, id);
             } // end if (arrList.length() > 0)
@@ -97,7 +98,7 @@ public class ConvSandbox extends AbstractConvert {
         }
 
       } // end for
-      rtnStr = objectMapper.writeValueAsString(rtnList);
+      sendEvent(rtnList, ConfItem.getString("datasetId"));
     } catch (CoreException e) {
 
       if ("!C0099".equals(e.getErrorCode())) {
@@ -107,7 +108,7 @@ public class ConvSandbox extends AbstractConvert {
       toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
-    return rtnStr;
+    return "Success";
   }
 
   public static Object getData(String url) throws Exception {

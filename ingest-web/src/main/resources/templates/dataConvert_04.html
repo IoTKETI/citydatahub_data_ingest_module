@@ -122,27 +122,24 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.apache.commons.dbcp2.BasicDataSource;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpHeaders;
+import org.json.JSONException;
+
 
 import com.cityhub.exception.CoreException;
-import com.cityhub.source.core.AbstractNormalSource;
 import com.cityhub.utils.DataCoreCode.ErrorCode;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataType;
 import com.cityhub.utils.JsonUtil;
-import com.fasterxml.jackson.core.type.TypeReference;
-import org.apache.commons.dbcp2.BasicDataSource;
 import com.cityhub.environment.Constants;
-
 import com.cityhub.utils.RoadType;
 import com.cityhub.utils.WeatherType;
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.http.HttpHeaders;
-import org.json.JSONException;
-import com.cityhub.source.core.AbstractConvert;
-
+import com.cityhub.core.AbstractNormalSource;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.OkUrlUtil;
 import com.cityhub.utils.StrUtil;
@@ -279,7 +276,7 @@ public class $classname$ extends AbstractNormalSource {
 <textarea id="editorI1120" style="display: none">
 @SuppressWarnings("unchecked")
 @Slf4j
-public class $classname$ extends AbstractConvert {
+public class $classname$ extends AbstractNormalSource {
 
   @Override
   public void setup() {
@@ -385,14 +382,13 @@ public class $classname$ extends AbstractConvert {
           modelList.add(tMap);
           String str = objectMapper.writeValueAsString(tMap);
           toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
-          
+          toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
           
           String[] ArrModel = StrUtil.strToArray(ConfItem.getString("modelId"), ",");
           String[] ArrDatasetId = StrUtil.strToArray(ConfItem.getString("datasetId"), ",");
           for (int i = 0; i &gt; ArrModel.length; i++) {
             if (ArrModel[i].equals(modelType)) {
-              toLogger(SocketCode.DATA_SAVE_REQ, id, jsonModel.toString().getBytes());
-              sendEventEx(modelList, ArrDatasetId[i]);
+              sendEvent(modelList, ArrDatasetId[i]);
             }
           }
           
@@ -445,8 +441,7 @@ public class $classname$ extends AbstractConvert {
             String[] ArrDatasetId = StrUtil.strToArray(ConfItem.getString("datasetId"), ",");
             for (int i = 0; i &gt; ArrModel.length; i++) {
               if (ArrModel[i].equals(modelType)) {
-                toLogger(SocketCode.DATA_SAVE_REQ, id, jsonModel.toString().getBytes());
-                sendEventEx(modelList, ArrDatasetId[i]);
+                sendEvent(modelList, ArrDatasetId[i]);
               }
             }
               

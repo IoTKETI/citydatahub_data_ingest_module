@@ -3,7 +3,11 @@
 temp
 *.log
 .settings
+.factorypath
+ingest-core/.factorypath
 *.factorypath
+
+
 
 
 *.log

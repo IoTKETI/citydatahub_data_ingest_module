@@ -25,8 +25,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.cityhub.core.AbstractNormalSource;
 import com.cityhub.exception.CoreException;
-import com.cityhub.source.core.AbstractConvert;
 import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
@@ -37,7 +37,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ConvWeatherObserved_PublicDataPortal extends AbstractConvert {
+public class ConvWeatherObserved_PublicDataPortal extends AbstractNormalSource {
 
   @Override
   public String doit() {
@@ -123,12 +123,12 @@ public class ConvWeatherObserved_PublicDataPortal extends AbstractConvert {
           rtnList.add(tMap);
           String str = objectMapper.writeValueAsString(tMap);
           toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+          toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
         }
 
       } // end for
-      rtnStr = objectMapper.writeValueAsString(rtnList);
+      sendEvent(rtnList, ConfItem.getString("datasetId"));
     } catch (CoreException e) {
-
       if ("!C0099".equals(e.getErrorCode())) {
         toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       }
@@ -136,7 +136,7 @@ public class ConvWeatherObserved_PublicDataPortal extends AbstractConvert {
       toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
-    return rtnStr;
+    return "Success";
   }
 
   Map<String, Object> Find_wMap(Map<String, Object> tMap, String Name) {

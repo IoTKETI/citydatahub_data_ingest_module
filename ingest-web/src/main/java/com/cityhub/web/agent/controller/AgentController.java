@@ -589,9 +589,6 @@ public class AgentController {
           JSONObject bodyAgentTop = new JSONObject();
           JSONObject bodyAgentChannel = new JSONObject();
           JSONObject bodyAgentSink = new JSONObject();
-          JSONObject bodyAgentKafkaSink = new JSONObject();
-          JSONObject bodyAgenthdfsCh = new JSONObject();
-          JSONObject bodyAgenthdfsSink = new JSONObject();
 
           tmp.put("id", adapter_id);
           tmp.put("type", "agent");
@@ -647,13 +644,10 @@ public class AgentController {
             bodyInstance.put(vMp.get("item").toString(), vMp.get("value").toString());
           }
         }
+        bodyInstance.put("type", curMap.get("type"));
 
         if ("Y".equalsIgnoreCase(curMap.get("datamodel_conv_div").toString())) {
-          bodyInstance.put("type", curMap.get("type"));
           bodyInstance.put("INVOKE_CLASS", "com.cityhub.adapter.convex." + curMap.get("instance_id"));
-        } else {
-          String type = curMap.get("type").toString().replace("OpenApiSystem","OpenApiSource");
-          bodyInstance.put("type", type );
         }
 
 
@@ -661,7 +655,6 @@ public class AgentController {
         body.put((String) curMap.get("instance_id"), bodyInstance);
 
         JSONObject adtConf = new JSONObject();
-        JSONObject insBody = new JSONObject();
         JSONObject insServiceList = new JSONObject();
 
         JSONArray jsonarr = new JSONArray();

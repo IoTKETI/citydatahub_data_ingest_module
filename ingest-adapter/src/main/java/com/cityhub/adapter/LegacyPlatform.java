@@ -26,10 +26,10 @@ import org.apache.flume.conf.Configurable;
 import org.apache.flume.source.AbstractSource;
 import org.json.JSONObject;
 
+import com.cityhub.core.ReflectNormalSystem;
+import com.cityhub.core.ReflectNormalSystemManager;
 import com.cityhub.environment.DefaultConstants;
 import com.cityhub.model.DataModelEx;
-import com.cityhub.source.core.ReflectNormalSystem;
-import com.cityhub.source.core.ReflectNormalSystemManager;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;

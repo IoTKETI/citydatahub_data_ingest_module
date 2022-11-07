@@ -31,18 +31,17 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.cityhub.source.core.AbstractConvert;
+import com.cityhub.core.AbstractNormalSource;
 import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.DateUtil;
 import com.cityhub.utils.JsonUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ConvAirObserved_SiheungLivingLab extends AbstractConvert {
+public class ConvAirObserved_SiheungLivingLab extends AbstractNormalSource {
   private String gettime;
 
   @Override
@@ -166,25 +165,21 @@ public class ConvAirObserved_SiheungLivingLab extends AbstractConvert {
                   rtnList.add(tMap);
                   String str = objectMapper.writeValueAsString(tMap);
                   toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+                  toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
                 }
 
               }
             }
           }
-
         }
 
+        sendEvent(rtnList, ConfItem.getString("datasetId"));
       } catch (Exception e) {
         log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       }
 
     }
-    try {
-      rtnStr = objectMapper.writeValueAsString(rtnList);
-    } catch (JsonProcessingException e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
-    return rtnStr;
+    return "Success";
 
   }
 

@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -11,12 +10,12 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  
+
   <groupId>com.cityhub.adapter</groupId>
   <artifactId>ingest-adapter</artifactId>
   <name>ingest-adapter</name>
   <packaging>jar</packaging>
-  <version>0.9.1</version>
+  <version>1.0.0</version>
 
 
   <properties>
@@ -28,22 +27,30 @@
     <maven.jar.skip>true</maven.jar.skip>
     <gpg.skip>true</gpg.skip>
     <checkstyle.skip>true</checkstyle.skip>
+    <m2e.apt.activation>disabled</m2e.apt.activation>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
-    <m2e.apt.activation>disabled</m2e.apt.activation>
-    <springboot.version>2.1.7.RELEASE</springboot.version>
-    <log4j2.version>2.17.1</log4j2.version>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <springboot.version>2.2.1.RELEASE</springboot.version>
+    <log4j2.version>2.19.0</log4j2.version>
   </properties>
 
 
   <dependencies>
+    <dependency>
+      <groupId>com.cityhub.core</groupId>
+      <artifactId>ingest-core</artifactId>
+      <version>1.0.0</version>
+    </dependency>
 
 
+    <!-- https://mvnrepository.com/artifact/org.apache.flume/flume-ng-core -->
     <dependency>
       <groupId>org.apache.flume</groupId>
       <artifactId>flume-ng-core</artifactId>
-      <version>1.9.0</version>
+      <version>1.11.0</version>
     </dependency>
 
 
@@ -54,10 +61,21 @@
       <scope>provided</scope>
     </dependency>
 
+
     <dependency>
-      <groupId>com.cityhub.core</groupId>
-      <artifactId>ingest-core</artifactId>
-      <version>0.9.1</version>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4j2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${log4j2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>${log4j2.version}</version>
     </dependency>
 
 
@@ -151,10 +169,14 @@
       <version>1.2.5</version>
     </dependency>
 
-
+    <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>4.0.1</version>
+    </dependency>
 
   </dependencies>
-
 
 
   <build>
@@ -192,7 +214,6 @@
 
     </plugins>
   </build>
-
 
 
 </project>
