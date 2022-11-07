@@ -177,20 +177,10 @@ public class OneM2M extends AbstractBaseSource implements EventDrivenSource, Mqt
       log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
     }
 
-    if (log.isDebugEnabled()) {
-      log.debug("templateItem:{} -- {}", topic, templateItem);
-    }
+    log.info("templateItem:{} -- {}", topic, templateItem);
 
     ConfItem.put("MODEL_TEMPLATE",templateItem);
 
-    try {
-      log.info("@@@@@@@@{}",invokeClass);
-      reflectNormalSystem = ReflectNormalSystemManager.getInstance(invokeClass);
-
-      reflectNormalSystem.init(getChannelProcessor(), ConfItem);
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    }
   }
 
   @Override
