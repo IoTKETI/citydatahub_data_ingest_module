@@ -38,15 +38,15 @@ centos7 기준으로 설치를 진행합니다.
 
 ### 구동환경
 
-- openjdk 11
+- openjdk 1.8
 - git
 - docker
 - maven
 
 ```bash
-# openjdk 11 , git download
+# openjdk 1.8 , git download
 sudo yum update
-sudo yum install -y java-11-openjdk.x86_64 java-11-openjdk-devel.x86_64
+sudo yum install -y java-1.8-openjdk.x86_64 java-1.8-openjdk-devel.x86_64
 sudo yum install -y git
 
 # 기존 자바 버전 변경(update-alternatives)

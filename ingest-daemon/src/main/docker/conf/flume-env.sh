@@ -22,7 +22,7 @@
 # export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 
 # Give Flume more memory and pre-allocate, enable remote monitoring via JMX
-export JAVA_OPTS="--add-opens=java.base/sun.nio.ch=ALL-UNNAMED "
+export JAVA_OPTS=""
 
 # Let Flume write raw event data and configuration information to its log files for debugging
 # purposes. Enabling these flags is not recommended in production,
