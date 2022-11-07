@@ -143,6 +143,7 @@ mvn clean install
 
 # 빌드 후에 생성된 파일을 카피
 yes | cp -f ingest-adapter/target/ingest-adapter-0.9.1.jar ingest-daemon/src/main/docker/agent/lib/
+yes | cp -f ingest-core/target/ingest-core-0.9.1.jar ingest-daemon/src/main/docker/agent/lib/
 ```
 
 ### 2.2.3 docker image 만들기
