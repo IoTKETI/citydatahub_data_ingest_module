@@ -101,7 +101,6 @@
 
           <td><span style="display: none" id="AdapterId_"></span>
           <button id="startDaemon_" class="button__outline w-68" type="button" style="display: none;cursor:pointer">시작</button>
-            <!-- <button id="restartDaemon_" class="button__outline w-68" type="button" style="display: none;cursor:pointer">재시작</button>  -->
             <button id="stopDaemon_" class="button__outline w-68" type="button" style="display: none;cursor:pointer">종료</button></td>
           <td><span id="instCnt_"></span></td>
           <td><span id="Status_"></span></td>
@@ -183,7 +182,6 @@
 
         rowData.setChangeId(idx, "startDaemon_");
         rowData.setChangeId(idx, "stopDaemon_");
-        //rowData.setChangeId(idx, "restartDaemon_");
 
         $('#Feedback > tbody:last').append(rowData.toObject());
       }
@@ -197,7 +195,6 @@
         cmUtl.exeAjax("POST", "/agent/status", JSON.stringify(param), "_cbAfterStatus");
       }
     }
-
     getStatus();
   }
 
@@ -213,18 +210,14 @@
 
       $("#startDaemon_" + data.row).attr("onclick", "startDaemon('" + data.id + "', '" + data.row + "')");
       $("#stopDaemon_" + data.row).attr("onclick", "stopDaemon('" + data.id + "', '" + data.row + "')");
-      //$("#restartDaemon_" + data.row).attr("onclick", "restartDaemon('" + data.id + "', '" + data.row + "')");
-
     }
 
     if (result.status == "stop") {
       $("#startDaemon_" + data.row).show();
       $("#stopDaemon_" + data.row).hide();
-      //$("#restartDaemon_" + data.row).hide();
     } else if (result.status == "running") {
       $("#startDaemon_" + data.row).hide();
       $("#stopDaemon_" + data.row).show();
-      //$("#restartDaemon_" + data.row).show();
     }
     $('#loading').hide();
   }
@@ -270,34 +263,10 @@
     }
   }
 
-  function restartDaemon(id, row) {
-    if (confirm("재시작하시겠습니까?")) {
-      $('#loading').show();
-      var form = {
-        "id" : id,
-        "row" : row
-      };
-      cmUtl.exeAjax("POST", "/agent/restart", JSON.stringify(form), "_cbAfterDaemonStatus");
-    }
-  }
 
   function _cbAfterDaemonStatus(data) {
     getStatus();
-    /*
-    if (data.hasOwnProperty("result")) {
-      var result = JSON.parse(data.result);
-      $("#Status_" + data.row).html(result.status);
-      if (result.status == "stop") {
-        $("#startDaemon_" + data.row).show();
-        $("#stopDaemon_" + data.row).hide();
-        $("#restartDaemon_" + data.row).hide();
-      } else if (result.status == "running") {
-        $("#startDaemon_" + data.row).hide();
-        $("#stopDaemon_" + data.row).show();
-        $("#restartDaemon_" + data.row).show();
-      }
-    }
-    */
+
     $('#loading').hide();
   }
 </script>

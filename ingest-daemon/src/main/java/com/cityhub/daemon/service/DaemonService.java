@@ -186,20 +186,18 @@ public class DaemonService {
    * @return
    */
   public LoggerObject tail(Map param) {
-
-    RandomAccessFile file = null;
     StringBuilder logsb = new StringBuilder();
     long startPoint = 0;
     long endPoint = 0;
     String payload = "";
-    try {
+    try (RandomAccessFile file = new RandomAccessFile(flumeLogPath + "flume.log", "r");){
       String sourceName = param.get("sourceName") + "";
       long preEndPoint = param.get("preEndPoint") == null ? 0 : Long.parseLong(param.get("preEndPoint") + "");
 
       String patternstr = "^[0-9]{4}\\-[0-9]{2}\\-[0-9]{2}\\s[0-9]{2}\\:[0-9]{2}\\:[0-9]{2}\\,[0-9]{0,3} [a-zA-Z]{0,5}\\s{1,2}-\\s\\`" + sourceName;
       Pattern p = Pattern.compile(patternstr);
 
-      file = new RandomAccessFile(flumeLogPath + "flume.log", "r");
+
       endPoint = file.length();
 
       startPoint = preEndPoint > 0 ? preEndPoint : endPoint < 20000 ? 0 : endPoint - 20000;
@@ -220,19 +218,13 @@ public class DaemonService {
 
       payload = URLEncoder.encode(logsb.toString(), "utf-8").replaceAll("\\+", "%20");
     } catch (FileNotFoundException e) {
-      logsb.append("File does not exist.");
-      log.error("Exception : Not Found log file");
+      logsb = new StringBuilder("Not Found log file");
+      payload = logsb.toString();
+      //log.error("Exception : Not Found log file");
     } catch (Exception e) {
-      logsb.append("Sorry. An error has occurred.");
+      logsb.append("Sorry. An error has occurred." + e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    } finally {
-      try {
-        file.close();
-      } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      }
     }
-
     return new LoggerObject(endPoint, payload);
   }
 
@@ -254,7 +246,7 @@ public class DaemonService {
         // 시작
         if (getStatus(filename) == null) {
           cmd = flumeHomePath + "/bin/flume-ng agent -n " + id + " --conf " + flumeConfPath + " -f " + flumeConfPath + filename;
-          log.info("cmd::::::::::::::::::::::::::" + cmd);
+          //log.info("cmd::::::::::::::::::::::::::" + cmd);
           String[] command = cmd.split(" ", -1);
           exec(command);
           rtn = status;
@@ -442,16 +434,19 @@ public class DaemonService {
     String result = null;
     try {
       String[] cmd2 = { "/bin/sh", "-c", "ps -ef | grep '" + filename + "' | grep -v grep | awk '{print $1}' " };
-      //log.info("status:{}", Arrays.toString(cmd2));
       String pid = null;
       ProcessBuilder builder = new ProcessBuilder(cmd2);
       Process process = builder.start();
       BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
       while ((pid = input.readLine()) != null) {
         result = pid;
-        log.debug("process ID : {}", pid);
       }
-      log.info("result:{},{}", filename , result);
+      if (result == null) {
+        log.info("agent info:{}, process-id:{}", filename , "NOT RUN YET!");
+      } else {
+        log.info("agent info:{}, process-id:{}", filename , result);
+      }
+
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
@@ -476,7 +471,8 @@ public class DaemonService {
       while ((str = input.readLine()) != null) {
         result = str;
       }
-      log.info("pid info: {},{}", filename, result);
+
+      //log.info("process-id:{}", filename , result);
 
       boolean isNumeric = result.matches("[+-]?\\d*(\\.\\d+)?");
       String pid = "";
@@ -487,7 +483,6 @@ public class DaemonService {
       }
 
       String[] cmd2 = { "/bin/sh", "-c", "ps -ef | grep '" + filename + "' | grep -v grep | awk '{print " + pid + "}' | xargs kill -9" };
-      log.info("kill:{},{}", filename, pid);
 
       builder = new ProcessBuilder(cmd2);
       process = builder.start();
@@ -496,7 +491,7 @@ public class DaemonService {
       while ((str = input.readLine()) != null) {
         result = str;
       }
-      log.info("kill result:{},{},{}", filename, pid, result);
+      log.info("kill agent:{}, process-id:{}, result:{}", filename, pid, result);
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
@@ -529,14 +524,14 @@ public class DaemonService {
     String result = null;
     try {
       String body = (String) param.get("sourceCode");
-      log.debug("body : {}", body);
+      //log.debug("body : {}", body);
       String agentLib = flumeHomePath + "/plugins.d/agent/lib/";
       String flumeLib = flumeHomePath + "/lib/";
       String agentLibext = flumeHomePath + "/plugins.d/agent/libext/";
 
-      log.debug("agentLib : {}", agentLib);
-      log.debug("flumeLib : {}", flumeLib);
-      log.debug("agentLibext : {}", agentLibext);
+      //log.debug("agentLib : {}", agentLib);
+      //log.debug("flumeLib : {}", flumeLib);
+      //log.debug("agentLibext : {}", agentLibext);
 
       FileUtil fu = new FileUtil();
       fu.setPath(agentLib);
@@ -546,8 +541,8 @@ public class DaemonService {
       fu.flush();
       fu.close();
 
-      log.debug("javac" + " -d " + agentLib + " " + agentLib + param.get("instance_id") + ".java");
-      log.debug("process: {}", agentLib + "compile.sh", param.get("instance_id") + ".java");
+      //log.debug("javac" + " -d " + agentLib + " " + agentLib + param.get("instance_id") + ".java");
+      //log.debug("process: {}", agentLib + "compile.sh", param.get("instance_id") + ".java");
       Process process = new ProcessBuilder(agentLib + "compile.sh", param.get("instance_id") + ".java").start();
 
       BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -556,11 +551,11 @@ public class DaemonService {
       String msg = null;
       while ((msg = input.readLine()) != null) {
         result += msg + "\n";
-        log.debug("process Message  : {}", msg);
+        log.info("process Message  : {}", msg);
       }
       while ((msg = input2.readLine()) != null) {
         result += msg + "\n";
-        log.debug("Error Message : {}", msg);
+        log.info("Error Message : {}", msg);
       }
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -617,9 +612,7 @@ public class DaemonService {
           classPath = classPath.replaceAll("\\.", "/").substring(0, classPath.length() - 1);
           classFile = agentLib + classPath + "/" + instanceId + ".class";
           result = isExistFile(classFile);
-          if (log.isDebugEnabled()) {
-            log.debug("instanceId : {}, {}", instanceId, classFile);
-          }
+          log.info("instanceId : {}, {}", instanceId, classFile);
           break;
         }
       }
@@ -627,9 +620,7 @@ public class DaemonService {
       if (result == false && str.toString().contains("package") == false) {
         classFile = agentLib + instanceId + ".class";
         result = isExistFile(classFile);
-        if (log.isDebugEnabled()) {
-          log.debug("instanceId : {}, {}", instanceId, classFile);
-        }
+        log.info("instanceId : {}, {}", instanceId, classFile);
       }
 
     } catch (FileNotFoundException e) {

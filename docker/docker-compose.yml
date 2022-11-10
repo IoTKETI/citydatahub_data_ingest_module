@@ -7,9 +7,11 @@ services:
     hostname: ingest-db
     environment:
       - TZ=Asia/Seoul
-      - POSTGRES_DBNAME=postgres
+      - LC_COLLATE=C
+      - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=pine1234
+    user: 999:999
     ports:
       - 5432:5432
     volumes:
@@ -34,9 +36,9 @@ services:
       - DATASOURCE_URL=jdbc:postgresql://ingest-db:5432/postgres
       - DATASOURCE_ID=postgres
       - DATASOURCE_PW=pine1234      
-      - DATAMODEL_API_URL=http://10.0.0.36:8080/datamodels
-      - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
-      - LOG_LEVEL=debug
+      - DATAMODEL_API_URL=http://10.0.0.124:8080/datamodels
+      - INGEST_INTERFACE_API_URL=http://10.0.0.124:8081/entityOperations/upsert?options=update
+      - LOG_LEVEL=info
     depends_on:
       ingest-db:
         condition: service_healthy
@@ -56,9 +58,9 @@ services:
       - DATASOURCE_ID=postgres
       - DATASOURCE_PW=pine1234
       - DAEMON_URL=http://ingest-daemon:8888
-      - DATAMODEL_API_URL=http://10.0.0.36:8080/datamodels
+      - DATAMODEL_API_URL=http://10.0.0.124:8080/datamodels
       - INGEST_INTERFACE_API_USE_YN=Y
-      - INGEST_INTERFACE_API_URL=http://10.0.0.25:8080/entityOperations/upsert?options=update
+      - INGEST_INTERFACE_API_URL=http://10.0.0.124:8081/entityOperations/upsert?options=update
       - AUTH_YN=N
       - AUTH_EXTERNAL_URL=http://203.253.128.181:30084
       - AUTH_INTERNAL_URL=http://10.0.0.237:30000
@@ -67,7 +69,7 @@ services:
       - AUTH_REDIRECT_URL=http://localhost:8080/accesstoken
       - EUREKA_ENABLED=false
       - EUREKA_EUREKA_DEFAULT_ZONE=http://10.0.0.144:8888/eureka
-      - LOG_LEVEL=debug
+      - LOG_LEVEL=info
     depends_on:
       ingest-db:
         condition: service_healthy

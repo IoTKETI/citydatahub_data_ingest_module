@@ -190,13 +190,16 @@ services:
     hostname: ingest-db
     environment:
       - TZ=Asia/Seoul
-      - POSTGRES_DBNAME=postgres
+      - LC_COLLATE=C
+      - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=pine1234
     ports:
       - 5432:5432
     volumes:
+      - ~/db-data:/var/lib/postgresql/data:Z
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: postgres -c 'max_connections=300'
     restart: on-failure
     healthcheck:
       test: "exit 0"
@@ -208,7 +211,7 @@ services:
     ports:
       - 8888:8888
     volumes:
-      -  log-data:/opt/logs  
+      - ~/log-data:/opt/logs:Z 
     environment:
       - TZ=Asia/Seoul
       - DATASOURCE_DRIVER=org.postgresql.Driver
@@ -229,7 +232,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      -  log-data:/opt/logs        
+      - ~/log-data:/opt/logs:Z       
     environment:
       - TZ=Asia/Seoul
       - DATASOURCE_DRIVER=org.postgresql.Driver
@@ -255,14 +258,13 @@ services:
       ingest-daemon:
         condition: service_started
 
-volumes:
-  db-data:
-  log-data:
+
 ```
 
 **docker-compose.yml 변수 설명**
 
-- TZ : 타임존 설정
+- TZ : 타임존 설정 Asia/Seoul
+- LC_COLLATE : postgres 에서 한글정렬을 위해 세팅 
 - DATASOURCE_DRIVER : Database 에 접속하기 위한 driver 를 설정합니다.
 - DATASOURCE_URL : Database 에 접속하기 위한 jdbc URL 를 설정합니다.
 - DATASOURCE_ID : Database 에 접속하기 위한 ID 를 설정합니다.
@@ -359,7 +361,7 @@ Agent설정 목록 화면에서 ![신규추가버튼](./images/신규추가버�
    ![인스턴스_등록예시_변환](./images/인스턴스_등록예시_변환.png)
 
 - *인스턴스명* : '**성남시 기상관측**' 을 입력합니다.
-- *데이터모델 변환* : '**미변환**' 선택합니다. 미변환은 기 제공된 Java Class 를 이용합니다. '**변환**'을 선택할 경우 인스턴스가 저장된 후에 데이터 변환관리가 가능합니다. '![000_데이터변환관리](./images/000_데이터변환관리.png)' 를 클릭하여 변환클래스를 직접 작성할 수 있습니다.
+- *데이터모델 변환* : '**미변환**' 선택합니다. 미변환은 기 제공된 Java Class 를 이용합니다. '**변환**'을 선택할 경우 인스턴스가 저장된 후에 데이터 변환관리가 가능합니다. '![000_데이터변환관리](./images/000_데이터변환관리.png)' 를 클릭하여 변환클래스를 직접 작성할 수 있습니다. 데이터 변환관리는 [4.1.2 데이터변환 관리]절을 참고하여 작성합니다.
 - *Adpator 유형* : '**성남시 기상관측**' 을 선택합니다. 메뉴 **Adaptor 유형 관리**에서 등록 된 유형을 선택할 수 있습니다. 유형을 선택하면 인스턴스 상세 항목이 표시됩니다.
 - *사용여부* : '**사용**' 을 선택합니다.
 - 작성 완료 후 저장 버튼을 클릭합니다.
@@ -388,11 +390,11 @@ Agent설정 목록 화면에서 ![신규추가버튼](./images/신규추가버�
 - *location* : '**[127.14858, 37.4557691]**' 를 입력합니다. WeatherObserved 모델의 구성 요소입니다.
 - **인스턴스 정보** 및  **데이터 메타정보** 의 항목을 작성한 후 저장버튼을 클릭합니다.
 
-8. 성남시기상관측 인스턴스를 저장합니다. 저장된 instance 목록에서 Instance ID인  **pocWeatherObserved_001**를 클릭하시면 나오는 화면에서 반드시 ![설정적용](./images/전송.png) 클릭하면 **설정이 적용되었습니다** 라고 뜹니다. 버튼을 클릭해 주셔야 아답터의 시작/중지 및 모니터링이 가능합니다.
+8. 성남시기상관측 인스턴스를 저장합니다. 저장된 instance 목록에서 Instance ID인  **pocWeatherObserved_001**를 클릭하시면 나오는 화면에서 반드시 ![설정적용](./images/전송.png) 클릭하면 '**설정이 적용되었습니다**' 라고 뜹니다. 버튼을 클릭해 주셔야 아답터의 시작/중지 및 모니터링이 가능합니다.
    ![인스턴스저장후화면](./images/인스턴스저장후화면2.png)
 9. 메뉴 **Agent관리** > **Agent 운영** 에서 **Agent ID** -> **M000000001** 을 클릭합니다.
    ![성남시_기상관측_모니터링](./images/성남시_기상관측_모니터링.png)
-   '**성남시 기상관측**' 어댑터에서 **시작/중지** , **모니터링**이 가능합니다, 모니터링 클릭하면 **모니터링 로그팝업** 이 뜹니다.
+   '**성남시 기상관측**' 어댑터에서 **시작/중지** , **모니터링**이 가능합니다, 모니터링 클릭하면 **모니터링 로그팝업** 이 뜹니다. 아답터의 status 가 '**Not exist config file**' 일 경우 위의 **8**번항에서  ![설정적용](./images/전송.png) 을 클릭해 주셔야 합니다.  
   ![성남시기상관측_로그모니터링](./images/성남시기상관측_로그모니터링.png)
 
 ### 4.1.1 어댑터유형관리
@@ -407,7 +409,7 @@ Agent설정 목록 화면에서 ![신규추가버튼](./images/신규추가버�
 *사용여부* : 콤보박스에서 **사용** 을 선택합니다.
 </br>
 
-어댑터 유형을 저장 후에 **어댑터 유형ID** ** 'A000000007' 을 클릭하면 아답터 유형의 상세 항목을 등록할 수 있습니다.
+어댑터 유형을 저장 후에 **어댑터 유형ID** -> 'A000000007' 을 클릭하면 아답터 유형의 상세 항목을 등록할 수 있습니다.
 ![어댑터유형-성남시기상관측등록예제](./images/어댑터유형-성남시기상관측등록예제2.png)</br>
 화면은  **아답터 파라미터 관리** , **[성남시기상관측] 세부항목** 으로 두 부분으로 나누어져 있으며, 어댑터 파라미터 관리에서는 아답터가 작동하기 위한 필수 항목들입니다. 반드시 등록해야합니다. **[성남시기상관측] 세부항목** 은 공공데이터포털에서 데이터를 가지고 오기 위한 파라미터를 설정하는 곳입니다.
 

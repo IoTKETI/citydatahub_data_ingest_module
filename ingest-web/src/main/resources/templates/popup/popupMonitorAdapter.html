@@ -26,12 +26,13 @@
         <!-- 내용  -->
         <div class="section__header">
           <h4 class="section__title">
-            [ <span id="select_adapter_id"></span> ]&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;<span id="console" style="color: red"></span>
+            [ <span id="select_adapter_id"></span> ]&nbsp;<span id="console" style="color: red"></span>&nbsp;&nbsp;-&nbsp;&nbsp;
+            <span id="log_status" style="color: red">로그 파일의 내용을 읽고 있습니다.</span>
           </h4>
+          
           <div class="button__group">
-            <button id="startDaemon" class="button__outline w-94" type="button">어댑터 시작</button>
-            <button id="stopDaemon" class="button__outline w-94" type="button">어댑터 종료</button>
-            <button id="restartDaemon" class="button__outline w-94" type="button">어댑터 재시작</button>
+            <button id="startDaemon" class="button__outline w-94" type="button">아답터 시작</button>
+            <button id="stopDaemon" class="button__outline w-94" type="button">아답터 종료</button>
 
 
             <button id="startTail" class="button__outline w-94" type="button">로그 시작</button>
@@ -86,6 +87,7 @@
     if (data.hasOwnProperty("status")) {
       $('#console').html(data.status);
     }
+    $('#loading').hide();
   }
 
   function resizeContents() {
@@ -122,51 +124,49 @@
     if (select_status == "stop") {
       $("#startDaemon").show();
       $("#stopDaemon").hide();
-      $("#restartDaemon").hide();
     } else if (select_status == "running") {
       $("#startDaemon").hide();
       $("#stopDaemon").show();
-      $("#restartDaemon").show();
     }
 
     $('#startDaemon').on('click', function() {
-      var form = {
-        "id" : select_adapter_id
-      };
-      cmUtl.exeAjax("POST", "/agent/start", JSON.stringify(form), "_cbPopAfterStatus");
-      $("#startDaemon").hide();
-      $("#stopDaemon").show();
-      $("#restartDaemon").show();
+      if (confirm("시작하시겠습니까?")) {
+        $('#loading').show();
+        var form = {
+          "id" : select_adapter_id
+        };
+        cmUtl.exeAjax("POST", "/agent/start", JSON.stringify(form), "_cbPopAfterStatus");
+        $("#startDaemon").hide();
+        $("#stopDaemon").show();
+      }
     });
     $('#stopDaemon').on('click', function() {
-      var form = {
-        "id" : select_adapter_id
-      };
-      cmUtl.exeAjax("POST", "/agent/stop", JSON.stringify(form), "_cbPopAfterStatus");
+      if (confirm("중지하시겠습니까?")) {
+        $('#loading').show();
+        var form = {
+            "id" : select_adapter_id
+          };
+          cmUtl.exeAjax("POST", "/agent/stop", JSON.stringify(form), "_cbPopAfterStatus");
 
-      $("#startDaemon").show();
-      $("#stopDaemon").hide();
-      $("#restartDaemon").hide();
+          $("#startDaemon").show();
+          $("#stopDaemon").hide();  
+      }
+      
     });
 
-    $('#restartDaemon').on('click', function() {
-      var form = {
-        "id" : select_adapter_id
-      };
-      cmUtl.exeAjax("POST", "/agent/restart", JSON.stringify(form), "_cbPopAfterStatus");
-    });
+
 
     $('#startTail').on('click', function() {
-      tailFlag = true;
-      startTail();
-      $('#startTail').hide();
-      $('#stopTail').show();
+        tailFlag = true;
+        startTail();
+        $('#startTail').hide();
+        $('#stopTail').show();  
     });
     $('#stopTail').on('click', function() {
-      tailFlag = false;
-
-      $('#startTail').show();
-      $('#stopTail').hide();
+        clearTimeout(logtimer); 
+        tailFlag = false;
+        $('#startTail').show();
+        $('#stopTail').hide();
     });
     $('#clearTail').on('click', function() {
       tailConsoleLog.val("");
@@ -186,11 +186,28 @@
       cmUtl.exeAjax("POST", "/agents/" + select_adapter_id + "/adaptors/" + select_adapter_id + "/logs", JSON.stringify(form), "_cbPopAfterTail");
     }
   }
-
+  
   function _cbPopAfterTail(data) {
-    endPoint = data.endPoint == false ? 0 : data.endPoint;
     logdata = decodeURIComponent(data.log);
-    tailConsoleLog.val(tailConsoleLog.val() + logdata);
+    if (logdata == "Not Found log file") {
+      var msg = "";
+      if (select_status == "stop" || $("#console").text() == "stop") {
+        msg = "아답터가 실행전입니다. 아답터를 시작해 주세요.";  
+      } else {
+        msg = "아답터가 실행 중입니다. 잠시만 기다려 주세요. 데이터를 읽어오고 있습니다.";
+      }
+      
+      $('#log_status').html(msg);
+    } else {
+      if (endPoint == data.endPoint) {
+        $('#log_status').html("더이상 읽어올 데이터가 없습니다.");  
+      } else {
+        $('#log_status').html("데이터를 읽어오고 있습니다. 잠시만 기다려 주세요.");
+        endPoint = data.endPoint == false ? 0 : data.endPoint;
+        tailConsoleLog.val(tailConsoleLog.val() + logdata);
+      }
+    }
+    
     tailConsoleLog.scrollTop(tailConsoleLog.prop('scrollHeight'));
     logtimer = setTimeout(startTail, 2500);
   }

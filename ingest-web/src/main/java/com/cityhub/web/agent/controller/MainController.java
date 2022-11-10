@@ -76,6 +76,8 @@ public class MainController {
   public ResponseEntity<String> tail(@RequestBody Map param) {
 
     HttpResponse resp = null;
+    String payload = "";
+
     try {
       JSONObject body = new JSONObject();
       body.put("sourceName", param.get("sourceName"));
@@ -83,7 +85,6 @@ public class MainController {
 
       Header[] headers = new Header[] { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json") };
       resp = UrlUtil.post(configEnv.getLogUrl() + "", headers, body.toString());
-
     } catch (Exception e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }

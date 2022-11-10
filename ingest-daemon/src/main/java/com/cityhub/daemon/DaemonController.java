@@ -159,7 +159,7 @@ public class DaemonController {
       if (!f.exists()) {
         json.put("responseCode", "9999");
         json.put("responseDescription", "agent does not exist");
-        json.put("status", "agent does not exist");
+        json.put("status", "Not exist config file");
       } else {
         String result = svc.manageAgent(status, param);
         json.put("responseCode", "2000");

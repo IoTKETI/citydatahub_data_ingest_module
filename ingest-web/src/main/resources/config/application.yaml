@@ -31,7 +31,7 @@ server:
 
 logging:
   level: 
-    root: debug
+    root: info
   config: classpath:config/log4j2.xml
 
 # mybatis info

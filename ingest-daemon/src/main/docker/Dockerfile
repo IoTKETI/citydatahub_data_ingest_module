@@ -34,7 +34,10 @@ COPY ./conf/ conf/
 ADD ./config/application.yaml /opt/daemon/config/application.yaml
 ADD ./config/log4j2.xml /opt/daemon/config/log4j2.xml
 
-RUN  chmod 755 plugins.d/agent/lib/compile.sh 
+RUN sed -i 's/\r$//' conf/log4j2.xml \
+  && sed -i 's/\r$//' conf/flume-env.sh \
+  && sed -i 's/\r$//' plugins.d/agent/lib/compile.sh \
+  && chmod 755 plugins.d/agent/lib/compile.sh 
 
 
 COPY ingest-daemon-1.0.0.jar /opt/daemon/app.jar
