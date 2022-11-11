@@ -25,8 +25,6 @@ services:
     container_name: ingest-daemon
     image: pinecni/ingest-daemon:latest
     hostname: ingest-daemon
-    user: $U_ID:$G_ID
-    command: /bin/sh
     ports:
       - 8888:8888
     volumes:
@@ -48,8 +46,6 @@ services:
     container_name: ingest-web
     image: pinecni/ingest-web:latest 
     hostname: ingest-web
-    user: $U_ID:$G_ID
-    command: /bin/sh
     ports:
       - 8080:8080
     volumes:

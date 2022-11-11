@@ -53,5 +53,5 @@ RUN set -eux; \
 RUN chown -R $USER:$USER daemon && chown -R $USER:$USER logs && chown -R $USER:$USER flume
 
 WORKDIR /opt/daemon
-
+USER $USER
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-Dspring.profiles.active=dev","-jar","app.jar"]

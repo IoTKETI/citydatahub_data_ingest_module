@@ -42,6 +42,6 @@ RUN set -eux; \
 RUN chown -R $USER:$USER web && chown -R $USER:$USER logs
 
 WORKDIR /opt/web
-
+USER $USER
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-jar","app.jar"]
 
