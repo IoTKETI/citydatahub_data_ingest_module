@@ -123,18 +123,16 @@
 
       <plugin>
         <groupId>com.spotify</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <version>1.2.2</version>
+        <artifactId>dockerfile-maven-plugin</artifactId>
+        <version>1.4.13</version>
         <configuration>
-          <imageName>pinecni/${project.name}</imageName>
-          <dockerDirectory>src/main/docker</dockerDirectory>
-          <resources>
-            <resource>
-              <targetPath>/</targetPath>
-              <directory>${project.build.directory}</directory>
-              <include>${project.build.finalName}.jar</include>
-            </resource>
-          </resources>
+          <repository>pinecni/${project.name}</repository>
+          <buildArgs>
+            <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+            <U_ID>${U_ID}</U_ID>
+            <G_ID>${G_ID}</G_ID>
+            <USER>${USER}</USER>
+          </buildArgs>
         </configuration>
       </plugin>
 
