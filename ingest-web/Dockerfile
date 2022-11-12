@@ -5,18 +5,23 @@ LABEL email="neoshaby@gmail.com"
 COPY src/main/docker/apk/sgerrand.rsa.pub /etc/apk/keys/sgerrand.rsa.pub
 COPY src/main/docker/apk/ /
 
-RUN apk --no-cache add ca-certificates tzdata curl 
-
-# RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-RUN apk add glibc-bin-2.35-r0.apk glibc-i18n-2.35-r0.apk glibc-2.35-r0.apk && \
+RUN apk --no-cache add ca-certificates tzdata curl && \
+    apk add glibc-bin-2.35-r0.apk glibc-i18n-2.35-r0.apk glibc-2.35-r0.apk && \
     /usr/glibc-compat/bin/localedef -i ko_KR -f UTF-8 ko_KR.UTF-8 && \
     /usr/glibc-compat/bin/localedef -i ko_KR -f EUC-KR ko_KR.EUC-KR && \
     echo "export LC_ALL='C.UTF-8'" >> /etc/profile && \
     echo "export LANG='C.UTF-8'" >> /etc/profile && \
     echo "export LANGUAGE='C.UTF-8'" >> /etc/profile && \
     rm -rf glibc-bin-2.35-r0.apk glibc-i18n-2.35-r0.apk glibc-2.35-r0.apk
- 
+
+ARG TZ
+ARG U_ID
+ARG G_ID
+ARG USER
+ARG JAR_FILE
+
+RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 ENV LC_ALL=C.UTF-8
 
 EXPOSE 8080
@@ -27,11 +32,7 @@ WORKDIR /opt
 
 COPY src/main/docker/config/ web/config/
   
-ADD target/ingest-web-1.0.0.jar web/app.jar
-
-ARG U_ID
-ARG G_ID
-ARG USER
+ADD target/${JAR_FILE} web/app.jar
 
 RUN set -eux; \
 	addgroup -g $G_ID -S $USER; \

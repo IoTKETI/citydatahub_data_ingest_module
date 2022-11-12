@@ -132,6 +132,7 @@
             <U_ID>${U_ID}</U_ID>
             <G_ID>${G_ID}</G_ID>
             <USER>${USER}</USER>
+            <TZ>${TZ}</TZ>
           </buildArgs>
         </configuration>
       </plugin>

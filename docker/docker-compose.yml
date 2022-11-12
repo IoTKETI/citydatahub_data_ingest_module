@@ -5,6 +5,7 @@ services:
     container_name: ingest-db
     image: postgres:14.5-bullseye
     hostname: ingest-db
+    user: "${U_ID}:${G_ID}"
     environment:
       - TZ=Asia/Seoul
       - LC_COLLATE=C
