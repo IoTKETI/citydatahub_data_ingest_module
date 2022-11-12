@@ -141,16 +141,42 @@ git clone https://github.com/IoTKETI/citydatahub_data_ingest_module.git ingest
 
 다운로드 한 수집모듈의 디렉토리(ingest) 로 이동하여 빌드합니다.
 
+#### 컨테이너와 호스트간의 공유할 디렉토리 생성
+```bash
+# 로그 디렉토리 생성 (docker-compose 에서 공유할 호스트 로그 디렉토리)
+mkdir ~/log-data
+
+# DB 데이터 백업 디렉토리 생성(docker-compose 에서 공유할 호스트 백업 디렉토리)
+mkdir ~/db-data
+```
+
+#### postgres의 컨테이너 생성 시 호스트의 계정으로 설정하는 방법
+```bash
+# postgres 컨테이너 생성시에 db-data 의 권한이 polkitd 로 생기는 문제 처리
+# ~/.bashrc 의 마지막 줄에 다음을 등록합니다. 저장 후 source ~/.bashrc 를 합니다.
+
+export U_ID=$(id -u)
+export G_ID=$(id -g)
+```
+
+```bash
+# .bashrc 에 위 두 줄을 등록 저장합니다. 저장 후 다음을 실행합니다.
+source ~/.bashrc 
+```
+
+#### maven build
+
 ```bash
 # 디렉토리 이동
 cd ~/ingest
 
-# build 
+# maven build 
 mvn clean install
 
 # 빌드 후에 생성된 파일을 카피
 yes | cp -f ingest-adapter/target/ingest-adapter-1.0.0.jar ingest-daemon/src/main/docker/agent/lib/
 yes | cp -f ingest-core/target/ingest-core-1.0.0.jar ingest-daemon/src/main/docker/agent/lib/
+
 ```
 
 ### 2.2.3 docker image 만들기
@@ -159,18 +185,26 @@ yes | cp -f ingest-core/target/ingest-core-1.0.0.jar ingest-daemon/src/main/dock
 
 ```bash
 # 디렉토리 이동
+cd ~/ingest
+
+# docker build 스크립트 실행 권한 부여
+chmod +x ingest-daemon/build.sh
+chmod +x ingest-web/build.sh
+
+# 디렉토리 이동
 cd ~/ingest/ingest-daemon
 
-# 데몬 이미지 만들기
-mvn package docker:build
+# ingest-daemon 이미지 만들기
+./build.sh
 
 # 디렉토리 이동
 cd ~/ingest/ingest-web
-# 웹UI 이미지 만들기
-mvn package docker:build
+
+# ingest-web 이미지 만들기
+./build.sh
 ```
   
-![도커이미지](./images/도커_images.png)
+![도커이미지](./images/도커_images.png)  
 *도커 빌드 후 이미지 리스트*
 
 # 3 DOCKER CONTAINER 생성
@@ -188,6 +222,7 @@ services:
     container_name: ingest-db
     image: postgis/postgis:11-2.5-alpine
     hostname: ingest-db
+    user: "${U_ID}:${G_ID}"
     environment:
       - TZ=Asia/Seoul
       - LC_COLLATE=C
@@ -257,8 +292,6 @@ services:
         condition: service_healthy
       ingest-daemon:
         condition: service_started
-
-
 ```
 
 **docker-compose.yml 변수 설명**
@@ -280,12 +313,12 @@ services:
 - AUTH_CLIENT_SECRET : City Data Hub 시스템의 인증서버에서 등록한 클라이언트 시크릿키 설정합니다.
 - AUTH_REDIRECT_URL : City Data Hub 시스템의 인증서버에서 로그인 한 후에 리다이렉트되는 주소 설정 (예: http://localhost:8080/accesstoken)
 - EUREKA_ENABLED : City Data Hub 시스템의 EUREKA 서버의 사용여부를 설정합니다.(true, false)
-- EUREKA_EUREKA_DEFAULT_ZONE : City Data Hub 시스템의 EUREKA 서버의 URL 설정합니다.
+- EUREKA_EUREKA_DEFAULT_ZONE : City Data Hub 시스템의 EUREKA 서버의 URL 설정합니다. (예: http://10.0.0.144:8888/eureka)
 - LOG_LEVEL : 로그의 적재 level 설정합니다. debug, info , warn 설정가능합니다.
 
 ### 3.2. docker-compose 실행
 
-![도커 컴포즈 실행](./images/도커_compose.png)
+![도커 컴포즈 실행](./images/도커_compose.png)  
 *도커 컴포즈 실행*
 
 ```bash
@@ -296,7 +329,7 @@ cd ~/ingest/docker
 docker compose up -d 
 ```
 
-![도커 컨테이너 리스트](./images/도커_ps.png)
+![도커 컨테이너 리스트](./images/도커_ps.png)  
 *도커 컴포즈 후 생성된 컨테이너 리스트*
 
 ```bash
@@ -335,14 +368,15 @@ docker logs ingest-web
 3. '**기상청_단기예보 ((구)_동네예보) 조회서비스**' 활용 신청 후 (초단기실황조회, 초단기예보조회, 단기예보조회, 예보버전조회) 가 마이페이지에서 서비스 가능합니다.
 ![기상청_단기예보_활용신청후_서비스목록](./images/기상청_단기예보_활용신청후_서비스목록.png)
 4. 각 서비스에서 <img src="./images/초단기실황조회_확인버튼.png" alt="초단기실황조회_확인버튼" height="30"/> 을 클릭하면 간단하게 서비스를 테스트 할 수 있습니다.
-  ![초단기실황조회_확인클릭_화면](./images/초단기실황조회_확인클릭_화면.png)
+  ![초단기실황조회_확인클릭_화면](./images/초단기실황조회_확인클릭_화면.png)    
   **초단기실황조회 확인 결과 화면**
-  ![초단기실황조회_미리보기결과](./images/초단기실황조회_미리보기결과.png)
+  ![초단기실황조회_미리보기결과](./images/초단기실황조회_미리보기결과.png)  
   **발급받은 키를 인증키에 넣고 미리보기 결과 화면**
 5. 수집관리UI(<http://localhost:8080/>) 을 접속합니다.  
- ![수집관리UI-에이전트설정](./images/수집관리UI-에이전트설정.png)  **Agent 관리** > **Agent 설정** 메뉴를 클릭합니다.
+ ![수집관리UI-에이전트설정](./images/수집관리UI-에이전트설정.png)  
+ **Agent 관리** > **Agent 설정** 메뉴를 클릭합니다.  
 Agent설정 목록 화면에서 ![신규추가버튼](./images/신규추가버튼.png) 을 클릭하여 내용을 작성합니다. 작성 예시는 다음과 같습니다. 저장 후에는 작성한 **성남시 기상관측** 의 내용을 변경할 수 있습니다.
-  ![성남시_기상관측_입력예시](./images/성남시_기상관측_입력예시.png)
+  ![성남시_기상관측_입력예시](./images/성남시_기상관측_입력예시.png)  
 
 - *Agent ID* : '**M000000001**' 을 입력합니다.(10자내 입력) , 10자 내외의 중복되지 않는 영문자, 숫자로 이루어진 ID를 입력하시면 됩니다.
 - *Agent 명* : '**성남시 기상관측**' 을 입력합니다. 영문자,한글, 숫자가 가능하면 간단하게 설명할 내용을 입력하시면 됩니다.
@@ -350,7 +384,7 @@ Agent설정 목록 화면에서 ![신규추가버튼](./images/신규추가버�
 - 각 항목을 입력 후 저장버튼을 클릭합니다.
 
 6. 5번에서 저장 후의 화면에서 '**성남시 기상관측**' 을 클릭합니다. 나오는 화면에서 ![신규추가버튼2](./images/신규추가버튼2.png) 을 클릭합니다. 아답터를 동록하는 화면이며 등록 예시는 다음과 같습니다. 작성완료 후 저장 버튼을 클릭합니다. 작성완료 후에는 수정/삭제가 가능합니다.
-![아답터_등록예시화면](./images/아답터_등록예시화면.png)
+![아답터_등록예시화면](./images/아답터_등록예시화면.png)  
    - *Adaptor ID* : '**pocWeatherObserved**' 를 입력합니다.
    - *Adaptor 명* : '**성남시 기상관측**' 을 입력합니다.
    - *Platform 유형* : '**Open API**' 선택합니다. (Open API, OneM2M Platform, RDBMS, U-City Platform, FIWARE Platform, 기타)

@@ -2,14 +2,12 @@ FROM eclipse-temurin:8-jdk-alpine
 LABEL name="Yonghak.An"
 LABEL email="neoshaby@gmail.com"
 
-ENV TZ=Asia/Seoul
-
 COPY src/main/docker/apk/sgerrand.rsa.pub /etc/apk/keys/sgerrand.rsa.pub
 COPY src/main/docker/apk/ /
 
-RUN apk --no-cache add ca-certificates tzdata curl && \
-    cp /usr/share/zoneinfo/$TZ /etc/localtime && \
-    echo $TZ > /etc/timezone
+RUN apk --no-cache add ca-certificates tzdata curl 
+
+# RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apk add glibc-bin-2.35-r0.apk glibc-i18n-2.35-r0.apk glibc-2.35-r0.apk && \
     /usr/glibc-compat/bin/localedef -i ko_KR -f UTF-8 ko_KR.UTF-8 && \
