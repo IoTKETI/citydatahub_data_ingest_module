@@ -298,6 +298,7 @@ services:
 
 - TZ : 타임존 설정 Asia/Seoul
 - LC_COLLATE : postgres 에서 한글정렬을 위해 세팅 
+- user: "${U_ID}:${G_ID}" <- 2.2.2 의 .bashrc를 반드시 적용하셔야 합니다.
 - DATASOURCE_DRIVER : Database 에 접속하기 위한 driver 를 설정합니다.
 - DATASOURCE_URL : Database 에 접속하기 위한 jdbc URL 를 설정합니다.
 - DATASOURCE_ID : Database 에 접속하기 위한 ID 를 설정합니다.
@@ -395,7 +396,7 @@ Agent설정 목록 화면에서 ![신규추가버튼](./images/신규추가버�
    ![인스턴스_등록예시_변환](./images/인스턴스_등록예시_변환.png)
 
 - *인스턴스명* : '**성남시 기상관측**' 을 입력합니다.
-- *데이터모델 변환* : '**미변환**' 선택합니다. 미변환은 기 제공된 Java Class 를 이용합니다. '**변환**'을 선택할 경우 인스턴스가 저장된 후에 데이터 변환관리가 가능합니다. '![000_데이터변환관리](./images/000_데이터변환관리.png)' 를 클릭하여 변환클래스를 직접 작성할 수 있습니다. 데이터 변환관리는 [4.1.2 데이터변환 관리]절을 참고하여 작성합니다.
+- *데이터모델 변환* : '**미변환**' 선택합니다. 미변환은 기 제공된 Java Class 를 이용합니다. '**변환**'을 선택할 경우 인스턴스가 저장된 후에 데이터 변환관리가 가능합니다. '![000_데이터변환관리](./images/000_데이터변환관리.png)' 를 클릭하여 변환클래스를 직접 작성할 수 있습니다. 데이터 변환관리는 [4.1.2 데이터변환 관리]을 참고하여 작성합니다.
 - *Adpator 유형* : '**성남시 기상관측**' 을 선택합니다. 메뉴 **Adaptor 유형 관리**에서 등록 된 유형을 선택할 수 있습니다. 유형을 선택하면 인스턴스 상세 항목이 표시됩니다.
 - *사용여부* : '**사용**' 을 선택합니다.
 - 작성 완료 후 저장 버튼을 클릭합니다.
@@ -469,101 +470,99 @@ Agent설정 목록 화면에서 ![신규추가버튼](./images/신규추가버�
 </br>
 
 ### 4.1.2 데이터변환 관리
+- 4.1의 7절에서 **데이터모델 변환**를 변환을 선택하고 저장 후 인스턴스 목록에서 '**pocWeatherObserved_001**' 을 선택하면 다음과 같이 ![000_데이터변환관리](./images/000_데이터변환관리.png) 이 보입니다. 
+![성남시_기상관측_데이터변환관리](./images/성남시_기상관측_데이터변환관리.png)  
+위의 '**데이터모델 변환 관리**'를 클릭하시면 데이터 변환 관리 화면으로 이동합니다.
 
 - **데이터변환관리화면**
 ![데이터변환관리_전체](./images/데이터변환관리_전체.png)
 데이터 변환관리 화면입니다. **변환클래스 작성** 탭에서 원천데이터를 표준모델에 맞게 변환클래스를 작성합니다.
-![컴파일확인](./images/컴파일확인.png) 은 작성 중인 파일의 유효성을 체크합니다. 컴파일 오류가 없으면 하단의 회색구역에 **컴파일에 성공했습니다.** 라고 메세지를 출력합니다. 오류가 있을 경우 해당 오류를 회색구역에 출력합니다.
+![컴파일확인](./images/컴파일확인.png) 은 작성 중인 파일의 유효성을 체크합니다. 컴파일 오류가 없으면 하단의 회색구역에 **컴파일에 성공했습니다.** 라고 메세지를 출력합니다. 오류가 있을 경우 해당 오류를 회색구역에 출력합니다. 컴파일에 성공했을 경우 **닫기** 버튼을 누르신 후 반드시 ![설정적용](./images/전송.png) 을 클릭해 주셔야 ingest-daemon 서버에 적용이 됩니다. 
 
 ![데이터변환관리_코딩부분](./images/데이터변환관리_코딩부분.png)
 변환클래스의 코딩 부분이며 주석 부분인 **소스코드 첨부부분** 의 시작에서 종료 사이에 변환 부분을 작성합니다.
 아래 성남시 기상관측 변환 예제 전문입니다.
 
 ```java
-List<Map<String,Object>> rtnList = new LinkedList<>();
-String rtnStr = "";
-try {
-  JSONArray svcList = ConfItem.getJSONArray("serviceList");
-  for (int i = 0; i < svcList.length(); i++) {
-    JSONObject iSvc = svcList.getJSONObject(i);
-    id = iSvc.getString("gs1Code");
+  @Override
+  public String doit()  {
+    List<Map<String,Object>> modelList = new LinkedList<>();
+    String id = "";
+    try {
+      // 표준모델 가져오기
+      JSONObject modelTemplate = templateItem.getJSONObject(ConfItem.getString("modelId"));
+            
+      JSONArray svcList = ConfItem.getJSONArray("serviceList");
+      for (int i = 0; i < svcList.length(); i++) {
+        JSONObject iSvc = svcList.getJSONObject(i);
+        id = iSvc.getString("gs1Code");
+        JsonUtil jsonModel = new JsonUtil(modelTemplate.toString());
+        
+        // 원시 모델 가져오기
+        JsonUtil ju = new JsonUtil((JSONObject) CommonUtil.getData(iSvc));
+        
+        // 원시 데이터를 파싱해서 표준모델에 맞게 변환 하는 부분 - 시작
+        // 예제 부분이며 '시작-종료' 까지 내용을 제거 한 후 표준 모델에 맞게 구현
+        JSONArray arrList = ju.getArray("response.body.items.item");
+        toLogger(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
 
-    JsonUtil ju = new JsonUtil((JSONObject) CommonUtil.getData(iSvc));
-    log.info("jujuju: {}",ju);
-    if (!ju.has("response.body.items.item") ) {
-      throw new CoreException(ErrorCode.NORMAL_ERROR);
-    } else {
-      toLogger(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
-      JSONArray arrList = ju.getArray("response.body.items.item");
-      Map<String,Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String,Object>>(){});
-
-      Map<String,Object> wMap = new LinkedHashMap<>();
-      if (arrList.length() > 0) {
+        Map<String,Object> wMap = new LinkedHashMap<>();
         for (Object obj : arrList) {
           JSONObject item = (JSONObject) obj;
           if ("PTY".equals(item.getString("category"))) {
             wMap.put("rainType", WeatherType.findBy(item.getInt("obsrValue")).getEngNm());
           }
           if ("T1H".equals(item.getString("category"))) {
-            wMap.put("temperature", JsonUtil.nvl(item.get("obsrValue") , DataType.FLOAT));
+            wMap.put("temperature", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
           }
           if ("RN1".equals(item.getString("category"))) {
-            wMap.put("rainfall", JsonUtil.nvl(item.get("obsrValue") , DataType.FLOAT));
-            wMap.put("hourlyRainfall", JsonUtil.nvl(item.get("obsrValue") , DataType.INTEGER));
+            wMap.put("rainfall", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
+            wMap.put("hourlyRainfall", JsonUtil.nvl(item.get("obsrValue"), DataType.INTEGER));
           }
           if ("WSD".equals(item.getString("category"))) {
-            wMap.put("windSpeed", JsonUtil.nvl(item.get("obsrValue") , DataType.FLOAT));
+            wMap.put("windSpeed", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
           }
           if ("REH".equals(item.getString("category"))) {
-            wMap.put("humidity", JsonUtil.nvl(item.get("obsrValue") , DataType.FLOAT));
+            wMap.put("humidity", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
           }
           if ("S06".equals(item.getString("category"))) {
-            wMap.put("snowfall", JsonUtil.nvl(item.get("obsrValue") , DataType.FLOAT));
+            wMap.put("snowfall", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
           }
         } // end for
+  
+  
+        jsonModel.put("id", iSvc.getString("gs1Code"));
+        jsonModel.put("address.value.addressCountry", JsonUtil.nvl(iSvc.getString("addressCountry")) );
+        jsonModel.put("address.value.addressRegion", JsonUtil.nvl(iSvc.getString("addressRegion")) );
+        jsonModel.put("address.value.addressLocality", JsonUtil.nvl(iSvc.getString("addressLocality")) );
+        jsonModel.put("address.value.addressTown", JsonUtil.nvl(iSvc.getString("addressTown")) );
+        jsonModel.put("address.value.streetAddress", JsonUtil.nvl(iSvc.getString("streetAddress")) );
+        
+        jsonModel.put("weatherObservation.value", wMap);
+        jsonModel.put("weatherObservation.observedAt", DateUtil.getTime());
+        
+        jsonModel.put("location.observedAt", DateUtil.getTime());
+        jsonModel.put("location.value.coordinates", iSvc.getJSONArray("location").toList());
 
-        Map<String,Object> addrValue = (Map)((Map)tMap.get("address")).get("value");
-        addrValue.put("addressCountry", JsonUtil.nvl(iSvc.getString("addressCountry")) );
-        addrValue.put("addressRegion", JsonUtil.nvl(iSvc.getString("addressRegion")) );
-        addrValue.put("addressLocality", JsonUtil.nvl(iSvc.getString("addressLocality")) );
-        addrValue.put("addressTown", JsonUtil.nvl(iSvc.getString("addressTown")) );
-        addrValue.put("streetAddress", JsonUtil.nvl(iSvc.getString("streetAddress")) );
-
-        Map<String,Object> locMap = (Map)tMap.get("location");
-        locMap.put("observedAt",DateUtil.getTime());
-        Map<String,Object> locValueMap  = (Map)locMap.get("value");
-        locValueMap.put("coordinates", iSvc.getJSONArray("location").toList());
-
-        tMap.put("id", iSvc.getString("gs1Code"));
-        Map<String,Object> weatherObservation = new LinkedHashMap<>();
-        weatherObservation.put("type","Property");
-        weatherObservation.put("observedAt",DateUtil.getTime());
-        weatherObservation.put("value",wMap);
-        tMap.put("weatherObservation", weatherObservation);
-
-        tMap.remove("airQualityIndexObservation");
-        log.info("tMap:{}", tMap);
-        rtnList.add(tMap);
-        String str = objectMapper.writeValueAsString(tMap);
-        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
-        toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
-      } else {
-        toLogger(SocketCode.DATA_CONVERT_FAIL, id);
-      } // end if (arrList.length() > 0)
-    } // if (!ju.has("response.body.items.item") )
-  }  // for (int i = 0; i < svcList.length(); i++)
-  sendEvent(modelList, ConfItem.getString("datasetId"));
-} catch (CoreException e) {
-  log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-  if ("!C0099".equals(e.getErrorCode())) {
-    toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-  }
-} catch (Exception e) {
-  toLogger(SocketCode.DATA_CONVERT_FAIL,  id, e.getMessage() );
-  log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-}
-
-return "Success";
+        // 원시 데이터를 파싱해서 표준모델에 맞게 변환 하는 부분 - 종료
+        
+        
+        toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, jsonModel.toString().getBytes());
+        toLogger(SocketCode.DATA_SAVE_REQ, id, jsonModel.toString().getBytes());
+        modelList.add(jsonModel.toMap());
+        
+      } // for (int i = 0; i < svcList.length(); i++)
+      
+      // 데이터허브에 전송
+      sendEvent(modelList, ConfItem.getString("datasetId"));
+      
+    } catch (Exception e) {
+      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+    }
+    return "Success";    
+    
+  } // end of doit
 ```
 
 ## 4.2 Legacy System (RDBMS) 데이터 연계
@@ -585,15 +584,15 @@ return "Success";
 - *Adaptor 명* : '**레가시 테스트**' 을 입력합니다.
 - *Platform 유형* : '**Legacy Platform**' 선택합니다. (Open API, OneM2M, Legacy Platform, 도시통합 Platform, smartcity Platform, 기타, FIWARE)
 - 각 항목을 작성한 후 저장버튼을 클릭합니다.
-![아답터_등록후화면](./images/아답터_등록후화면.png)
+![아답터_레가시_등록후화면](./images/아답터_레가시_등록후화면.png)
 **아답터_등록 후 화면** 목록에서 **Adaptor ID** 인 **pocLegacyWeather** 를 클릭 하면 **Instance 관리** 화면으로 이동합니다.
 
 3. **Instance 관리** 화면에서 ![신규추가버튼2](./images/신규추가버튼2.png) 클릭합니다.
-   ![인스턴스-등록-레가시](./images/인스턴스-등록-레가시.png)
+   ![인스턴스-등록-레가시예시](./images/인스턴스-등록-레가시예시.png)
 
 - *인스턴스명* : '**레가시 테스트**' 을 입력합니다.
 - *데이터모델 변환* : '**변환**' 선택합니다. 변환은 Web 에서 직접 코딩을 하여 데이터를 컨버팅 합니다. 미변환은 기 제공된 Java Class 를 이용합니다.
-- *Adpator 유형* : '**레가시 테스트**' 을 선택합니다. 메뉴 **Adaptor 유형 관리**에서 등록 된 유형을 선택할 수 있습니다. 유형을 선택하면 인스턴스 상세 항목이 표시됩니다.
+- *Adpator 유형* : '**성남시 레가시 기상 테스트**' 을 선택합니다. 메뉴 **Adaptor 유형 관리**에서 등록 된 유형을 선택할 수 있습니다. 유형을 선택하면 인스턴스 상세 항목이 표시됩니다.
 - *사용여부* : '**사용**' 을 선택합니다.
 - 각 항목을 작성한 후 저장버튼을 클릭합니다.
 
@@ -605,7 +604,7 @@ return "Success";
 - *INVOKE_CLASS* : '**com.cityhub.adapter.convex.ConvLegacyWeather**' 를 입력합니다. 기 제공된 클래스 파일이며 여기서는 **데이터모델 변환관리**를 이용합니다.
 - *CONN_TERM* : '**3600**' 를 입력합니다. 초단위이며 1시간(60*60) 단위로 데이터를 가져옵니다.
 - *DB_DRIVER_CLASS_NAME* : **org.postgresql.Driver** 를 입력합니다.,  DATABASE JDBC Driver 입니다. 여기서는 postgresql을 예시롤 사용했습니다. 각 DB 벤더에 맞게 입력하시면 다양한 DB의 데이터를 가지고 올 수 있습니다.
-- *DB_JDBC_URL* : **jdbc:postgresql://localhost:5430/postgres**, JDBC 연결 문자열 입니다. 여기서는 postgresql jdbc 연결문자열을 예시로 사용했습니다.
+- *DB_JDBC_URL* : **jdbc:postgresql://localhost:5432/postgres**, JDBC 연결 문자열 입니다. 여기서는 postgresql jdbc 연결문자열을 예시로 사용했습니다.
 - *DB_USERNAME* : **postgres**, 연결하고자 하는 디비의 아이디를 입력합니다.
 - *DB_PASSWORD* : **pine1234** , 연결하고자 하는 디비의 패스워드를 입력합니다.
 
@@ -613,15 +612,23 @@ return "Success";
 **인스턴스 데이터 메타정보**
 ![인스턴스-레가시-메타정보](./images/인스턴스-레가시-메타정보.png)
 
-- *query* : '**select adapter_id, adapter_nm......where last_update_dt between now()- interval '1 hour' and now()**' 를 입력합니다. City Data Hub 시스템에 적재할 원천데이터를 가지고 오기 위한 쿼리를 작성하여 데이터를 가져옵니다. 
+- *query* : 
+   ```sql 
+  select adapter_id, step, data_id,id, length,adapter_type 
+  from public.connectivity_log 
+  where first_create_dt between now() - interval '1 hour' and now()
+  ``` 
+  를 입력합니다. City Data Hub 시스템에 적재할 원천데이터를 가지고 오기 위한 쿼리를 작성하여 데이터를 가져옵니다. 
   등록된 쿼리는 예시이며 갱신주기가 한시간이기 때문에 현시간으로부터 1시간 이전 데이터를 가지고 오게끔 쿼리를 작성하였습니다. 
   ![어댑터유형-레가시-쿼리](./images/어댑터유형-레가시-쿼리.png)
   **쿼리예시 화면**
-- *id* : '**urn:datahub:legacyWeather:4798273**' 를 입력합니다. 예시로 입력한 아이디이며 실 모델에 맞게 작성하시면 됩니다.
+- *id* : '**urn:datahub:legacyWeather:4798273**' 를 입력합니다. 예시로 입력한 식별키이며 실 표준모델의 식별키 규칙에 맞게 작성하시면 됩니다.
 
-4. **레가시 테스트** 인스턴스를 저장합니다. ![전송](./images/전송.png) 클릭하여 설정을 적용합니다.
-   ![인스턴스-레가시-저장후화면](./images/인스턴스-레가시-저장후화면.png)
- 인스턴스를 저장 후에 **데이터모델 변환관리** 클릭하여 데이터 모델을 직접 작성합니다.
+4. **레가시 테스트** 인스턴스를 저장합니다. 
+ ![인스턴스-레가시-저장후화면2](./images/인스턴스-레가시-저장후화면2.png)  
+ 인스턴스를 저장 후에 **데이터모델 변환관리** 클릭하여 데이터 모델을 직접 작성합니다.  
+ 데이터변환모델을 작성 한 후 **컴파일 확인**까지 정상 처리 되었으면 **닫기**을  클릭하여 변환관리 화면을 빠져 나옵니다.  
+ 인스턴스 ID 인 '**poclegacyWeather_001**' 을 클릭하여 ![전송](./images/전송.png) 클릭하여 설정을 적용합니다.   
  ![데이터변환관리_전체](./images/데이터변환관리_전체.png)
 
 레가시 데이터 샘플 예제 전문입니다.
@@ -629,98 +636,56 @@ return "Success";
 ```java
 @Override
   public String doit(BasicDataSource datasource)  {
-    List<Map<String, Object>> rtnList = new LinkedList<>();
-    String rtnStr = "";
-    JSONObject location = ConfItem.getJSONObject("location");
-    String id = "";
+    List<Map<String, Object>> modelList = new LinkedList<>();
+    
+    JSONObject modelTemplate = templateItem.getJSONObject(ConfItem.getString("modelId"));
+    String id = ConfItem.getString("id");
     String sql = ConfItem.getString("query");
     try (PreparedStatement pstmt = datasource.getConnection().prepareStatement(sql);
+        ResultSet rs = pstmt.executeQuery();
         ){
-      pstmt.setInt(1, ConfItem.getInt("limitNum"));
-      pstmt.setInt(2, ConfItem.getInt("offsetNum"));
-      try (ResultSet rs = pstmt.executeQuery()){
         while (rs.next()) {
-          Map<String, Object> tMap = objectMapper.readValue(templateItem.getJSONObject(ConfItem.getString("modelId")).toString(), new TypeReference<Map<String, Object>>() {
-          });
-          Map<String, Object> wMap = new LinkedHashMap<>();
+          // 표준모델 JsonUtil , JSON 항목에 접근을 쉽게 하기 위한 유틸리티
+          JsonUtil jsonModel = new JsonUtil(modelTemplate.toString());  
+          
+          //소스코드 첨가부분 - 시작
+          // 예제 부분이며 시작-종료 까지 내용을 제거 한 후 표준 모델에 맞게 구현 
+          jsonModel.put("id", id);
+          jsonModel.put("eventType.value", rs.getString("EVT_ID"));
+          jsonModel.put("eventName.value", rs.getString("EVT_DTL"));
+          
+          //소스코드 첨가부분 - 종료
 
-          int read_meter_date = rs.getInt("read_meter_date");
 
-          Find_wMap(tMap, "gauge").put("value", rs.getDouble("gauge"));
-          Find_wMap(tMap, "household").put("value", rs.getInt("household"));
-          if (rs.getString("sewer").equals("X"))
-            Find_wMap(tMap, "sewer").put("value", "FALSE");
-          else if (rs.getString("sewer").equals("O"))
-            Find_wMap(tMap, "sewer").put("value", "TRUE");
-          Find_wMap(tMap, "usage").put("value", rs.getDouble("usage"));
-          Find_wMap(tMap, "fee").put("value", rs.getDouble("fee"));
-          Find_wMap(tMap, "meterNumber").put("value", rs.getString("meter_number"));
-
-          String addressTown = rs.getString("address");
-
-          id = refineId(rs.getString("id")) + "_" + rs.getString("yearmonth") + read_meter_date;
-
-          wMap = (Map) tMap.get("dataProvider");
-          wMap.put("value", ConfItem.getString("dataProvider"));
-
-          wMap = (Map) tMap.get("globalLocationNumber");
-          wMap.put("value", id);
-
-          Map<String, Object> addrValue = (Map) ((Map) tMap.get("address")).get("value");
-          addrValue.put("addressCountry", ConfItem.getString("addressCountry"));
-          addrValue.put("addressRegion", ConfItem.getString("addressRegion"));
-          addrValue.put("addressLocality", ConfItem.getString("addressLocality"));
-          addrValue.put("addressTown", addressTown);
-          addrValue.put("streetAddress", "");
-
-          Map<String, Object> locMap = (Map) tMap.get("location");
-          locMap.put("observedAt", DateUtil.getTime());
-          Map<String, Object> locValueMap = (Map) locMap.get("value");
-          locValueMap.put("coordinates", location.get(addressTown));
-
-          tMap.put("id", id);
-
-          rtnList.add(tMap);
-          String str = objectMapper.writeValueAsString(tMap);
-          toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
+          modelList.add(jsonModel.toMap());
+          bufferCount++;
+          // 레가시 같은 경우 대량 처리가 많아서 버퍼를 이용해서 처리, bufferLength 의 크기는 1000 
+          if (bufferCount == bufferLength) {
+            // 데이터허브에 전송
+            sendEvent(modelList, ConfItem.getString("datasetId"));
+            bufferCount = 0;
+            // 초기화
+            modelList = new LinkedList<>();
+          }
         }
-        sendEvent(rtnList, ConfItem.getString("datasetId"));
-      } catch (SQLException e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      }
+
+        // 처리되지 않은 나머지 부분 처리
+        if (modelList.size() < bufferLength) {
+          // 데이터허브에 전송
+          sendEvent(modelList, ConfItem.getString("datasetId"));
+        }
 
     } catch (SQLException e) {
+      toLogger(SocketCode.DATA_CONVERT_FAIL, ConfItem.getString("id_prefix"), e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    } catch (CoreException e) {
-      if ("!C0099".equals(e.getErrorCode())) {
-        toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
-      }
     } catch (Exception e) {
-      toLogger(SocketCode.DATA_CONVERT_FAIL, id, e.getMessage());
+      toLogger(SocketCode.DATA_CONVERT_FAIL, ConfItem.getString("id_prefix"), e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
 
     return "Success";
   } // end of doit
 
-  Map<String, Object> Find_wMap(Map<String, Object> tMap, String Name) {
-    Map<String, Object> ValueMap = (Map) tMap.get(Name);
-    ValueMap.put("observedAt", DateUtil.getTime());
-    return ValueMap;
-  }
-
-  private String refineId(String id) {
-
-    while (id.length() < 12) {
-      id = "0" + id;
-    }
-    StringBuffer idBuffer = new StringBuffer(id);
-    idBuffer.insert(10, "_");
-    idBuffer.insert(6, "_");
-    idBuffer.insert(3, "_");
-    id = ConfItem.getString("id_prefix") + idBuffer.toString();
-    return id;
-  }
 ```
 
 변환 클래스 부분에서 위에 해당하는 영역에 DB에서 읽어온 데이터를 표준 모델에 맞게 코딩을 합니다. 작성 완료 후 **컴파일 확인** 을 클릭하여 컴파일 결과를 하단 회색 박스에서 확인합니다.
@@ -752,10 +717,10 @@ return "Success";
 **아답터_등록 후 화면** 목록에서 **Adaptor ID** 인 **pocOffStreetParking** 를 클릭 하면 **Instance 관리** 화면으로 이동합니다.
 
 3. **Instance 관리** 화면에서 ![신규추가버튼2](./images/신규추가버튼2.png) 클릭합니다.
-   ![인스턴스-onem2m-주차장예시](./images/인스턴스-onem2m-주차장예시.png)
+   ![인스턴스-onem2m-주차장예시](./images/인스턴스-onem2m-주차장예시2.png)
 
 - *인스턴스명* : '**oneM2M 성남시 주차장예시**' 을 입력합니다.
-- *데이터모델 변환* : '**변환**' 선택합니다. 변환은 Web 에서 직접 코딩을 하여 데이터를 컨버팅 합니다. 미변환은 기 제공된 Java Class 를 이용합니다.
+- *데이터모델 변환* : '**변환**' 선택합니다. 변환은 Web 에서 직접 코딩을 하여 데이터를 컨버팅 합니다. 미변환은 기 제공된 Java Class 를 이용합니다. 등록 예시는 [4절] 에 있습니다.
 - *Adpator 유형* : '**성남시 주차장**' 을 선택합니다. 메뉴 **Adaptor 유형 관리**에서 등록 된 유형을 선택할 수 있습니다. 유형을 선택하면 인스턴스 상세 항목이 표시됩니다.
 - *사용여부* : '**사용**' 을 선택합니다.
 - 각 항목을 작성한 후 저장버튼을 클릭합니다.
@@ -766,7 +731,6 @@ return "Success";
 - *DATASET_ID* : '**pocOffStreetParking,pocParkingSpot**' 를 입력합니다. City Data Hub 시스템에서 정의한 데이터셋 아이디를 입력합니다. 성남시 주차장의 경우 주차장(OffStreetParking),주차면(ParkingSpot) 정보가 넘어옵니다. 해서 콤마(,)를 기준으로 복수의 데이터셋을 등록합니다.
 - *MODEL_ID* : '**OffStreetParking,ParkingSpot**' 를 입력합니다. City Data Hub 시스템에서 정의한 모델 아이디를 입력합니다. 성남시 주차장의 경우 주차장(OffStreetParking),주차면(ParkingSpot) 정보가 넘어옵니다. 해서 콤마(,)를 기준으로 복수의 모델ID을 등록합니다.
 - *INVOKE_CLASS* : '**com.cityhub.adapter.convex.ConvParkingOneM2M**' 를 입력합니다. 기 제공된 클래스 파일이며 여기서는 **데이터모델 변환관리**를 이용합니다.
-- *CONN_TERM* : '**3600**' 를 입력합니다. 초단위이며 1시간(60*60) 단위로 데이터를 가져옵니다. 
 - *URL_ADDR* : **tcp://203.253.128.164:1883** 를 입력합니다. mqtt프로토콜의 연결주소입니다.
 - *REQ_PREFIX* : **/oneM2M/req/Mobius2/** 를 입력합니다. 성남시 주차장의 mqtt프로토콜의 요청접두사입니다.
 - *RESP_PREFIX* : **/oneM2M/resp/Mobius2/**를 입력합니다. 성남시 주차장의 mqtt프로토콜의 응답접두사입니다.
@@ -774,10 +738,13 @@ return "Success";
 - *META_INFO* : **http://203.253.128.164:7579/Mobius/sync_parking_raw** 입력합니다. 성남시 주차장의 메타정보 확인을 위한 주소입니다.
 
 
-4. **oneM2M 성남시 주차장예시** 인스턴스를 저장합니다. ![전송](./images/전송.png) 클릭하여 설정을 적용합니다.
-   ![인스턴스-onem2m-저장후화면](./images/인스턴스-onem2m-저장후화면.png)
- 인스턴스를 저장 후에 **데이터모델 변환관리** 클릭하여 데이터 모델을 직접 작성합니다.
- ![데이터변환관리_전체](./images/데이터변환관리_전체.png)
+4. **oneM2M 성남시 주차장예시** 인스턴스를 저장합니다. 
+   ![인스턴스-onem2m-저장후화면](./images/인스턴스-onem2m-저장후화면2.png)
+ 인스턴스를 저장 후에 **데이터모델 변환관리** 클릭하여 데이터 모델을 직접 작성합니다.  
+ 데이터변환모델을 작성 한 후 **컴파일 확인**까지 정상 처리 되었으면 **닫기**을  클릭하여 변환관리 화면을 빠져 나옵니다.  
+ 인스턴스 ID 인 '**pocOffStreetParking_001**' 을 클릭하여 ![전송](./images/전송.png) 클릭하여 설정을 적용합니다.   
+
+ ![OneM2M_데이터변환관리_전체](./images/OneM2M_데이터변환관리_전체.png)
 성남시 주차장 샘플 전문입니다.
 ```java
   @Override
@@ -823,6 +790,8 @@ return "Success";
     String modelType = "";
     try {
       String msg = new String(message);
+      // 소스코드 첨가부분 - 시작
+      // 예제 부분이며 시작-종료 까지 내용을 제거 한 후 표준 모델에 맞게 구현 
 
       if (JsonUtil.has(msg, "pc.m2m:sgn.nev.rep.m2m:cin.con") == true) {
         String sur = JsonUtil.get(msg, "pc.m2m:sgn.sur");
@@ -886,14 +855,6 @@ return "Success";
           
           toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
 
-          String[] ArrModel = StrUtil.strToArray(ConfItem.getString("modelId"), ",");
-          String[] ArrDatasetId = StrUtil.strToArray(ConfItem.getString("datasetId"), ",");
-          for (int i = 0; i < ArrModel.length; i++) {
-            if (ArrModel[i].equals(modelType)) {
-              sendEvent(rtnList, ArrDatasetId[i]);
-            }
-          }
-          
         } else {
           if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3])) {
             JsonUtil parkInfo = null;
@@ -939,20 +900,21 @@ return "Success";
             toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
             toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
 
-            String[] ArrModel = StrUtil.strToArray(ConfItem.getString("modelId"), ",");
-            String[] ArrDatasetId = StrUtil.strToArray(ConfItem.getString("datasetId"), ",");
-            for (int i = 0; i < ArrModel.length; i++) {
-              if (ArrModel[i].equals(modelType)) {
-                sendEvent(rtnList, ArrDatasetId[i]);
-              }
-            }
-            
-            
           } // if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3]) )
 
         } // if (Park.length == 4)
 
+        // 변환 완료된 데이터 주차면 모델 전송
+        String[] ArrModel = StrUtil.strToArray(ConfItem.getString("modelId"), ",");
+        String[] ArrDatasetId = StrUtil.strToArray(ConfItem.getString("datasetId"), ",");
+        for (int i = 0; i &gt; ArrModel.length; i++) {
+          if (ArrModel[i].equals(modelType)) {
+            sendEvent(modelList, ArrDatasetId[i]);
+          }
+        }
+
       } // if ( JsonUtil.has(msg, "pc.m2m:sgn.nev.rep.m2m:cin.con") == true)
+      // 소스코드 첨가부분 - 종료
 
     } catch (CoreException e) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));

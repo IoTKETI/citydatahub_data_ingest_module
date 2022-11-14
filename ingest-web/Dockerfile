@@ -20,7 +20,7 @@ ARG G_ID
 ARG USER
 ARG JAR_FILE
 
-RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN cp /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
 
 ENV LC_ALL=C.UTF-8
 
@@ -35,12 +35,12 @@ COPY src/main/docker/config/ web/config/
 ADD target/${JAR_FILE} web/app.jar
 
 RUN set -eux; \
-	addgroup -g $G_ID -S $USER; \
-	adduser -u $U_ID -S -D -G $USER -s /bin/sh $USER;
+	addgroup -g ${G_ID} -S ${USER}; \
+	adduser -u ${U_ID} -S -D -G ${USER} -s /bin/sh ${USER};
 
-RUN chown -R $USER:$USER web && chown -R $USER:$USER logs
+RUN chown -R ${USER}:${USER} web && chown -R ${USER}:${USER} logs
 
 WORKDIR /opt/web
-USER $USER
+USER ${USER}
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-jar","app.jar"]
 

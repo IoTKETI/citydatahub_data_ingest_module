@@ -19,7 +19,7 @@ ARG G_ID
 ARG USER
 ARG JAR_FILE
 
-RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN cp /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
   
 RUN mkdir -p /opt/logs \
   && mkdir -p /opt/daemon/config \
@@ -46,11 +46,11 @@ RUN sed -i 's/\r$//' flume/conf/log4j2.xml \
 COPY target/${JAR_FILE} daemon/app.jar
 
 RUN set -eux; \
-    addgroup -g $G_ID -S $USER; \
-    adduser -u $U_ID -S -D -G $USER -s /bin/sh $USER;
+    addgroup -g ${G_ID} -S ${USER}; \
+    adduser -u ${U_ID} -S -D -G ${USER} -s /bin/sh ${USER};
 
-RUN chown -R $USER:$USER daemon && chown -R $USER:$USER logs && chown -R $USER:$USER flume
+RUN chown -R ${USER}:${USER} daemon && chown -R ${USER}:${USER} logs && chown -R ${USER}:${USER} flume
 
 WORKDIR /opt/daemon
-USER $USER
+USER ${USER}
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-Dspring.profiles.active=dev","-jar","app.jar"]

@@ -42,6 +42,7 @@
             </table>
           </div>
           <div class="button__group">
+            <button class="button__outline w-150" type="button" id="btn-init" onfocus="this.blur()">초기화</button>
             <button class="button__outline w-94" type="button" onclick="fn_compile(this)" id="btn-compile" onfocus="this.blur()">컴파일 확인</button>
 
             <button class="button__outline w-150" type="button" onclick="fn_moveTrance();">닫기</button>
@@ -146,7 +147,7 @@ import com.cityhub.utils.StrUtil;
 
 </textarea>
 
-
+<!-- OPEN API -->
 <textarea id="editorMid" style="display: none">
 @SuppressWarnings("unchecked")
 @Slf4j
@@ -161,22 +162,58 @@ public class $classname$ extends AbstractNormalSource {
             
       JSONArray svcList = ConfItem.getJSONArray("serviceList");
       for (int i = 0; i < svcList.length(); i++) {
-        JSONObject svcItem = svcList.getJSONObject(i);
-        
-        id = svcItem.getString("gs1Code");
-        
+        JSONObject iSvc = svcList.getJSONObject(i);
+        id = iSvc.getString("gs1Code");
         JsonUtil jsonModel = new JsonUtil(modelTemplate.toString());
-         
-        // 원시데이터 가져오기
-        JsonUtil reqDataList = new JsonUtil((JSONObject) CommonUtil.getData(svcItem));
-        toLogger(SocketCode.DATA_RECEIVE, id, reqDataList.toString().getBytes());
         
+        // 원시 모델 가져오기
+        JsonUtil ju = new JsonUtil((JSONObject) CommonUtil.getData(iSvc));
         
-        //소스코드 첨가부분 - 시작
+        // 원시 데이터를 파싱해서 표준모델에 맞게 변환 하는 부분 - 시작
+        // 예제 부분이며 '시작-종료' 까지 내용을 제거 한 후 표준 모델에 맞게 구현
+        JSONArray arrList = ju.getArray("response.body.items.item");
+        toLogger(SocketCode.DATA_RECEIVE, id, ju.toString().getBytes());
+
+        Map&lt;String,Object&gt; wMap = new LinkedHashMap&lt;&gt;();
+        for (Object obj : arrList) {
+          JSONObject item = (JSONObject) obj;
+          if ("PTY".equals(item.getString("category"))) {
+            wMap.put("rainType", WeatherType.findBy(item.getInt("obsrValue")).getEngNm());
+          }
+          if ("T1H".equals(item.getString("category"))) {
+            wMap.put("temperature", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
+          }
+          if ("RN1".equals(item.getString("category"))) {
+            wMap.put("rainfall", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
+            wMap.put("hourlyRainfall", JsonUtil.nvl(item.get("obsrValue"), DataType.INTEGER));
+          }
+          if ("WSD".equals(item.getString("category"))) {
+            wMap.put("windSpeed", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
+          }
+          if ("REH".equals(item.getString("category"))) {
+            wMap.put("humidity", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
+          }
+          if ("S06".equals(item.getString("category"))) {
+            wMap.put("snowfall", JsonUtil.nvl(item.get("obsrValue"), DataType.FLOAT));
+          }
+        } // end for
+  
+  
+        jsonModel.put("id", iSvc.getString("gs1Code"));
+        jsonModel.put("address.value.addressCountry", JsonUtil.nvl(iSvc.getString("addressCountry")) );
+        jsonModel.put("address.value.addressRegion", JsonUtil.nvl(iSvc.getString("addressRegion")) );
+        jsonModel.put("address.value.addressLocality", JsonUtil.nvl(iSvc.getString("addressLocality")) );
+        jsonModel.put("address.value.addressTown", JsonUtil.nvl(iSvc.getString("addressTown")) );
+        jsonModel.put("address.value.streetAddress", JsonUtil.nvl(iSvc.getString("streetAddress")) );
         
-        jsonModel.put("category.value", reqDataList.getString("category"));
+        jsonModel.put("weatherObservation.value", wMap);
+        jsonModel.put("weatherObservation.observedAt", DateUtil.getTime());
         
-        //소스코드 첨가부분 - 종료
+        jsonModel.put("location.observedAt", DateUtil.getTime());
+        jsonModel.put("location.value.coordinates", iSvc.getJSONArray("location").toList());
+        
+        // 원시 데이터를 파싱해서 표준모델에 맞게 변환 하는 부분 - 종료
+        
         
         toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, jsonModel.toString().getBytes());
         toLogger(SocketCode.DATA_SAVE_REQ, id, jsonModel.toString().getBytes());
@@ -198,35 +235,33 @@ public class $classname$ extends AbstractNormalSource {
 } // end of class
 </textarea>
 
-
+<!-- 레가시 -->
 <textarea id="editorI1140" style="display: none">
 @SuppressWarnings("unchecked")
 @Slf4j
 public class $classname$ extends AbstractNormalSource {
   @Override
-  public String doit(HikariDataSource datasource)  {
+  public String doit(BasicDataSource datasource)  {
     List&lt;Map&lt;String,Object&gt;&gt; modelList = new LinkedList&lt;&gt;();
     
     // 표준 모델 가져오기
     JSONObject modelTemplate = templateItem.getJSONObject(ConfItem.getString("modelId"));
-    
+    String id = ConfItem.getString("id");
+        
     // 원시 데이터를 가져오기 위한  쿼리
     String sql = ConfItem.getString("query");
-    try (PreparedStatement pstmt = datasource.getConnection().prepareStatement(sql)
+    try (PreparedStatement pstmt = datasource.getConnection().prepareStatement(sql);
+        ResultSet rs = pstmt.executeQuery();
         ){
-      pstmt.setString("id","변수값");
-      
-      try(ResultSet rs = pstmt.executeQuery()) {
-        String id = ConfItem.getString("id_prefix");
         while (rs.next()) {
           toLogger(SocketCode.DATA_RECEIVE, id, id.getBytes());
-          
           // 표준모델 JsonUtil , JSON 항목에 접근을 쉽게 하기 위한 유틸리티
-          JsonUtil jsonModel = new JsonUtil(modelTemplate.toString());    
-  
+          JsonUtil jsonModel = new JsonUtil(modelTemplate.toString());  
+          
   
           //소스코드 첨가부분 - 시작
-          // 예제
+          // 예제 부분이며 시작-종료 까지 내용을 제거 한 후 표준 모델에 맞게 구현 
+          jsonModel.put("id", id);
           jsonModel.put("eventType.value", rs.getString("EVT_ID"));
           jsonModel.put("eventName.value", rs.getString("EVT_DTL"));
           
@@ -254,11 +289,7 @@ public class $classname$ extends AbstractNormalSource {
           // 데이터허브에 전송
           sendEvent(modelList, ConfItem.getString("datasetId"));
         }
-      
-      } catch (SQLException e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-      }
-    
+
     } catch (SQLException e) {
       toLogger(SocketCode.DATA_CONVERT_FAIL, ConfItem.getString("id_prefix"), e.getMessage());
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
@@ -272,7 +303,7 @@ public class $classname$ extends AbstractNormalSource {
 } // end of class
 </textarea>
 
-
+<!-- OneM2M -->
 <textarea id="editorI1120" style="display: none">
 @SuppressWarnings("unchecked")
 @Slf4j
@@ -321,6 +352,8 @@ public class $classname$ extends AbstractNormalSource {
     try {
       String msg = new String(message);
       // 소스코드 첨가부분 - 시작
+      // 예제 부분이며 시작-종료 까지 내용을 제거 한 후 표준 모델에 맞게 구현 
+      
       if (JsonUtil.has(msg, "pc.m2m:sgn.nev.rep.m2m:cin.con") == true) {
         String sur = JsonUtil.get(msg, "pc.m2m:sgn.sur");
         String contents = JsonUtil.get(msg, "pc.m2m:sgn.nev.rep.m2m:cin.con");
@@ -384,14 +417,6 @@ public class $classname$ extends AbstractNormalSource {
           toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
           toLogger(SocketCode.DATA_SAVE_REQ, id, str.getBytes());
           
-          String[] ArrModel = StrUtil.strToArray(ConfItem.getString("modelId"), ",");
-          String[] ArrDatasetId = StrUtil.strToArray(ConfItem.getString("datasetId"), ",");
-          for (int i = 0; i &gt; ArrModel.length; i++) {
-            if (ArrModel[i].equals(modelType)) {
-              sendEvent(modelList, ArrDatasetId[i]);
-            }
-          }
-          
         } else {
          // 주차면 ParkingSpot
           if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3])) {
@@ -437,19 +462,20 @@ public class $classname$ extends AbstractNormalSource {
             String str = objectMapper.writeValueAsString(tMap);
             toLogger(SocketCode.DATA_CONVERT_SUCCESS, id, str.getBytes());
             
-            String[] ArrModel = StrUtil.strToArray(ConfItem.getString("modelId"), ",");
-            String[] ArrDatasetId = StrUtil.strToArray(ConfItem.getString("datasetId"), ",");
-            for (int i = 0; i &gt; ArrModel.length; i++) {
-              if (ArrModel[i].equals(modelType)) {
-                sendEvent(modelList, ArrDatasetId[i]);
-              }
-            }
+            
               
           } // if (!"meta".equals(Park[3]) && !"keepalive".equals(Park[3]) )
 
         } // if (Park.length == 4)
 
-        
+        // 변환 완료된 데이터 주차면 모델 전송
+        String[] ArrModel = StrUtil.strToArray(ConfItem.getString("modelId"), ",");
+        String[] ArrDatasetId = StrUtil.strToArray(ConfItem.getString("datasetId"), ",");
+        for (int i = 0; i &gt; ArrModel.length; i++) {
+          if (ArrModel[i].equals(modelType)) {
+            sendEvent(modelList, ArrDatasetId[i]);
+          }
+        }
         
       } // if ( JsonUtil.has(msg, "pc.m2m:sgn.nev.rep.m2m:cin.con") == true)
       
@@ -465,8 +491,6 @@ public class $classname$ extends AbstractNormalSource {
 
 } // end of class
 </textarea>
-
-
 
 
 <script type="text/javascript" th:inline="javascript">
@@ -494,9 +518,11 @@ public class $classname$ extends AbstractNormalSource {
 
     }
     editor.setValue(tempStr);
+    $('#loading').hide();
   }
 
   $(document).ready(function() {
+    $('#loading').show();
     dataModel_info();
   });
 
@@ -546,6 +572,8 @@ public class $classname$ extends AbstractNormalSource {
   }
 
   function _cbAfterfile_info(rtn) {
+    
+    setEditorTemp();
     if (rtn.body != null) {
       if ($.trim(rtn.body) != "") {
         if (rtn.body != "File Not Found!!") {
@@ -559,8 +587,17 @@ public class $classname$ extends AbstractNormalSource {
     } else {
       setEditorTemp();
     }
+    $('#loading').hide();
   }
 
+  $("#btn-init").click(function(event) {
+    if (confirm("초기화 하시겠습니까?")) {
+      $('#loading').show();
+      event.preventDefault();
+      setEditorTemp();
+    }
+  });
+  
   $('#editor').resize(function(e) {
     editor = ace.edit("editor");
     editor.setTheme("ace/theme/monokai");
