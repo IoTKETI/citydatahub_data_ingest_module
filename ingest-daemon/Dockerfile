@@ -1,9 +1,17 @@
-FROM eclipse-temurin:8-jdk-alpine  
+FROM openjdk:8-alpine 
 LABEL name="Yonghak.An"
 LABEL email="neoshaby@gmail.com"
 
 COPY src/main/docker/apk/sgerrand.rsa.pub /etc/apk/keys/sgerrand.rsa.pub
 COPY src/main/docker/apk/ /
+
+
+ARG TZ
+ARG U_ID
+ARG G_ID
+ARG USER
+ARG JAR_FILE
+
 
 RUN apk --no-cache add ca-certificates tzdata curl && \
     apk add glibc-bin-2.35-r0.apk glibc-i18n-2.35-r0.apk glibc-2.35-r0.apk && \
@@ -12,12 +20,6 @@ RUN apk --no-cache add ca-certificates tzdata curl && \
     echo "export LC_ALL='C.UTF-8'" >> /etc/profile && \
     echo "export LANG='C.UTF-8'" >> /etc/profile && \
     echo "export LANGUAGE='C.UTF-8'" >> /etc/profile
-
-ARG TZ
-ARG U_ID
-ARG G_ID
-ARG USER
-ARG JAR_FILE
 
 RUN cp /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
   
