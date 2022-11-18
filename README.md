@@ -134,6 +134,16 @@ newgrp docker
 CityDataHub-Ingest모듈을 github에서 다운받을 수 있습니다. 아래 명령어를 통해 파일을 다운로드 합니다.
 
 ```bash
+# git 초기 설정 
+
+## linux 시스템에서\r\n 문제 부분처리
+git config core.autocrlf input
+
+## git에서 파일 모드 변경 추적 제외하기
+git config core.filemode false
+```
+
+```bash
 git clone https://github.com/IoTKETI/citydatahub_data_ingest_module.git ingest
 ```
 

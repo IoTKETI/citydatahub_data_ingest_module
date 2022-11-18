@@ -18,6 +18,7 @@ package com.cityhub.web.agent.mapper;
 
 import java.util.List;
 import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
 
 @SuppressWarnings("rawtypes")
@@ -38,6 +39,5 @@ public interface AdapterMapper {
   int deleteAdtItem3(String id);
   int adtItemInsert(Map param);
   List<Map> type_search();
-  List<Map> type_search_gs1();
   void deleteAdtTypeInfo(String id);
 }

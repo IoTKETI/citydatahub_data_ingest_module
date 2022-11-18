@@ -81,8 +81,6 @@ public class AdapterController {
     ModelAndView modelAndView = new ModelAndView();
     try {
       List<Map> combo = as.type_search();
-      List<Map> gs1combo = as.type_search_gs1();
-      modelAndView.addObject("gs1combo", gs1combo);
       modelAndView.addObject("combo", combo);
       modelAndView.setViewName("adapterDetail");
 

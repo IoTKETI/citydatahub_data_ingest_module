@@ -143,10 +143,6 @@
     ORDER BY code_id
   </select>
 
-  <select id="type_search_gs1" resultType="map">
-    select * from gs1_code_mapping
-  </select>
-
   <select id="isExistAdapterType" resultType="boolean">
     SELECT CASE WHEN COUNT(1) > 0 THEN TRUE ELSE FALSE END
     FROM adapter_type_info

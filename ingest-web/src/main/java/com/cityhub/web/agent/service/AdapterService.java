@@ -142,10 +142,6 @@ public class AdapterService {
     return mapper.type_search();
   }
 
-  public List<Map> type_search_gs1() throws Exception {
-    return mapper.type_search_gs1();
-  }
-
   @Transactional
   public void restApiInsertAdaptorType(Map param) throws Exception {
     mapper.insertAdaptorType(param);

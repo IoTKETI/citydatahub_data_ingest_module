@@ -323,72 +323,6 @@ COMMENT ON COLUMN "public"."ob_datamodel_conf"."first_create_id" IS '최초_생�
 COMMENT ON COLUMN "public"."ob_datamodel_conf"."last_update_dt" IS '최종_수정일시';
 COMMENT ON COLUMN "public"."ob_datamodel_conf"."last_update_id" IS '최종_수정자ID';
 
-CREATE TABLE "public"."parking_info"  ( 
-  "parking_num"     varchar(10) NULL,
-  "parking_con"     varchar(5) NULL,
-  "last_update_dt"  timestamp NULL 
-  );
-
-
--- parking_info --
-INSERT INTO public.parking_info(parking_num, parking_con, last_update_dt)
-  VALUES('parking01', '8', '2019-09-24 15:33:00.837');
-INSERT INTO public.parking_info(parking_num, parking_con, last_update_dt)
-  VALUES('parking02', '67', '2019-09-24 15:33:03.877');
-INSERT INTO public.parking_info(parking_num, parking_con, last_update_dt)
-  VALUES('parking03', '8', '2019-09-24 15:33:05.905');
-  
-  
-  -- 2022-08-22
-  
-CREATE TABLE public.adapter_log (
-  log_dt varchar(17) NOT NULL,
-  connectivity_type varchar(10) NULL,
-  data_total_count int4 NULL,
-  data_success_count int4 NULL,
-  data_error_count int4 NULL,
-  CONSTRAINT adapter_log_key PRIMARY KEY (log_dt)
-);
-
-CREATE TABLE public.adapter_log_error_detail (
-  log_dt varchar(17) NULL,
-  connectivity_type varchar(10) NULL,
-  data_error_desc varchar(4000) NULL
-);
-
-CREATE TABLE public.gs1_code (
-  g_code varchar(50) NULL,
-  g_code_nm varchar(250) NULL,
-  gs_code varchar(25) NULL,
-  use_yn varchar(1) NULL,
-  modified_id varchar(25) NULL,
-  modified_time timestamptz NULL,
-  creation_id varchar(25) NULL,
-  creation_time timestamptz NULL
-);
-
-CREATE TABLE public.gs1_code_mapping (
-  urn varchar(50) NULL,
-  country varchar(3) NULL,
-  municipality varchar(6) NULL,
-  code varchar(1) NULL,
-  m_category varchar(1) NULL,
-  c_category varchar(2) NULL,
-  s_category varchar(3) NULL,
-  city_assets varchar(50) NULL,
-  c_platform varchar(300) NULL,
-  source_id varchar(200) NULL,
-  data_set varchar(200) NULL,
-  data_model varchar(200) NULL,
-  data_version varchar(10) NULL,
-  use_yn varchar(25) NULL,
-  gs1_code varchar(100) NULL,
-  "move" varchar(1) NULL,
-  modified_id varchar(25) NULL,
-  modified_time timestamptz NULL,
-  creation_id varchar(25) NULL,
-  creation_time timestamptz NULL
-);
 
 CREATE TABLE public.lang_data (
   lang_id serial4 NOT NULL,
@@ -1040,79 +974,6 @@ INSERT INTO public.lang_data (lang_code,lang_key,lang_value,first_create_dt,firs
    ('KR','popupDashLog_0004','OpenAPI',NULL,NULL,NULL,NULL),
    ('KR','popupDashLog_0005','OneM2M',NULL,NULL,NULL,NULL);
 
-
-INSERT INTO public.gs1_code (g_code,g_code_nm,gs_code,use_yn,modified_id,modified_time,creation_id,creation_time) VALUES
-   ('880','대한민국','GS102','Y',NULL,'2021-06-10 14:17:13.381582+09',NULL,'2021-06-10 14:17:13.381582+09'),
-   ('969104','시흥시','GS103','Y',NULL,'2021-06-10 14:17:13.38808+09',NULL,'2021-06-10 14:17:13.38808+09'),
-   ('1','SoC','GS104','Y',NULL,'2021-06-10 14:17:13.393779+09',NULL,'2021-06-10 14:17:13.393779+09'),
-   ('1','운송교통','GS105','Y',NULL,'2021-06-10 14:17:13.399366+09',NULL,'2021-06-10 14:17:13.399366+09'),
-   ('2','공급유통','GS105','Y',NULL,'2021-06-10 14:17:13.404505+09',NULL,'2021-06-10 14:17:13.404505+09'),
-   ('3','환경','GS105','Y',NULL,'2021-06-10 14:17:13.411384+09',NULL,'2021-06-10 14:17:13.411384+09'),
-   ('4','대규모시설','GS105','Y',NULL,'2021-06-10 14:17:13.418624+09',NULL,'2021-06-10 14:17:13.418624+09'),
-   ('10','도로','GS106','Y',NULL,'2021-06-10 14:17:13.425943+09',NULL,'2021-06-10 14:17:13.425943+09'),
-   ('11','철로','GS106','Y',NULL,'2021-06-10 14:17:13.431036+09',NULL,'2021-06-10 14:17:13.431036+09'),
-   ('12','해운','GS106','Y',NULL,'2021-06-10 14:17:13.438418+09',NULL,'2021-06-10 14:17:13.438418+09');
-INSERT INTO public.gs1_code (g_code,g_code_nm,gs_code,use_yn,modified_id,modified_time,creation_id,creation_time) VALUES
-   ('13','항공','GS106','Y',NULL,'2021-06-10 14:17:13.445642+09',NULL,'2021-06-10 14:17:13.445642+09'),
-   ('14','교량','GS106','Y',NULL,'2021-06-10 14:17:13.452464+09',NULL,'2021-06-10 14:17:13.452464+09'),
-   ('15','터널','GS106','Y',NULL,'2021-06-10 14:17:13.459193+09',NULL,'2021-06-10 14:17:13.459193+09'),
-   ('20','수자원','GS106','Y',NULL,'2021-06-10 14:17:13.464346+09',NULL,'2021-06-10 14:17:13.464346+09'),
-   ('21','석유가스','GS106','Y',NULL,'2021-06-10 14:17:13.471168+09',NULL,'2021-06-10 14:17:13.471168+09'),
-   ('22','에너지','GS106','Y',NULL,'2021-06-10 14:17:13.502299+09',NULL,'2021-06-10 14:17:13.502299+09'),
-   ('30','하수처리시설','GS106','Y',NULL,'2021-06-10 14:17:13.510846+09',NULL,'2021-06-10 14:17:13.510846+09'),
-   ('31','분뇨처리시설','GS106','Y',NULL,'2021-06-10 14:17:13.519181+09',NULL,'2021-06-10 14:17:13.519181+09'),
-   ('32','산업폐수처리시설','GS106','Y',NULL,'2021-06-10 14:17:13.524356+09',NULL,'2021-06-10 14:17:13.524356+09'),
-   ('33','생활폐기물','GS106','Y',NULL,'2021-06-10 14:17:13.529979+09',NULL,'2021-06-10 14:17:13.529979+09');
-INSERT INTO public.gs1_code (g_code,g_code_nm,gs_code,use_yn,modified_id,modified_time,creation_id,creation_time) VALUES
-   ('34','사업장폐기물','GS106','Y',NULL,'2021-06-10 14:17:13.535804+09',NULL,'2021-06-10 14:17:13.535804+09'),
-   ('35','대기','GS106','Y',NULL,'2021-06-10 14:17:13.541452+09',NULL,'2021-06-10 14:17:13.541452+09'),
-   ('40','공공청사','GS106','Y',NULL,'2021-06-10 14:17:13.548323+09',NULL,'2021-06-10 14:17:13.548323+09'),
-   ('41','교육시설','GS106','Y',NULL,'2021-06-10 14:17:13.555907+09',NULL,'2021-06-10 14:17:13.555907+09'),
-   ('42','의료시설','GS106','Y',NULL,'2021-06-10 14:17:13.560601+09',NULL,'2021-06-10 14:17:13.560601+09'),
-   ('43','복지시설','GS106','Y',NULL,'2021-06-10 14:17:13.567406+09',NULL,'2021-06-10 14:17:13.567406+09'),
-   ('44','문화시설','GS106','Y',NULL,'2021-06-10 14:17:13.574334+09',NULL,'2021-06-10 14:17:13.574334+09'),
-   ('45','치안시설','GS106','Y',NULL,'2021-06-10 14:17:13.581153+09',NULL,'2021-06-10 14:17:13.581153+09'),
-   ('urn:epc:id:giai:','urn:epc:id:giai:','GS101','Y',NULL,'2021-07-01 12:54:34.888016+09',NULL,'2021-06-10 14:17:13.679576+09'),
-   ('urn:epc:id:sgln:','urn:epc:id:sgln:','GS101','Y',NULL,'2021-07-01 12:54:34.888016+09',NULL,'2021-07-01 12:54:34.888016+09');
-INSERT INTO public.gs1_code (g_code,g_code_nm,gs_code,use_yn,modified_id,modified_time,creation_id,creation_time) VALUES
-   ('10000','가로등','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-06-10 14:17:13.587921+09'),
-   ('10001','신호등','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-06-10 14:17:13.595282+09'),
-   ('20000','수도미터','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-06-10 14:17:13.602437+09'),
-   ('20001','급배수펌프','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-06-10 14:17:13.609663+09'),
-   ('21000','가스미터','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-06-10 14:17:13.615333+09'),
-   ('22000','건물BEMS','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-06-10 14:17:13.620487+09'),
-   ('22001','공장FEMS','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-06-10 14:17:13.63128+09'),
-   ('22002','아파트EMS','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-06-10 14:17:13.636809+09'),
-   ('22003','전력량계','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-06-10 14:17:13.641625+09'),
-   ('35000','고정형측정기S','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-06-10 14:17:13.646737+09');
-INSERT INTO public.gs1_code (g_code,g_code_nm,gs_code,use_yn,modified_id,modified_time,creation_id,creation_time) VALUES
-   ('35001','이동형측정기M','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-06-10 14:17:13.653579+09'),
-   ('35002','휴대형측정기P','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-06-10 14:17:13.658738+09'),
-   ('43000','독거노인 건강측정','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-06-10 14:17:13.665566+09'),
-   ('43001','크라우드소싱','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-06-10 14:17:13.672826+09'),
-   ('41000','스마트어린이집','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-10-18 15:29:44.185751+09'),
-   ('44000','빅데이터예술AI','GS107','Y',NULL,'2021-10-18 15:29:56.253248+09',NULL,'2021-10-18 15:29:56.253248+09');
-
-
-INSERT INTO public.gs1_code_mapping (urn,country,municipality,code,m_category,c_category,s_category,city_assets,c_platform,source_id,data_set,data_model,data_version,use_yn,gs1_code,"move",modified_id,modified_time,creation_id,creation_time) VALUES
-   ('urn:epc:id:giai:','880','969104','1','3','5','000','','3-1 환경 플랫폼','DS_AirQualityMeasurement_Static_LivingLab_Siheung','경기도 시흥시 리빙랩 고정형 대기질 측정 데이터셋','미세먼지 측정','1.0','N','urn:epc:id:giai:880969104.135000','N','admin','2021-10-22 09:19:38.889379+09','admin','2021-10-22 09:19:38.889379+09'),
-   ('urn:epc:id:giai:','880','969104','1','3','5','001','','3-1 환경 플랫폼','DS_AirQualityMeasurement_Move_LivingLab_Siheung','경기도 시흥시 리빙랩 이동형 대기질 측정 데이터셋','미세먼지 측정','1.0','N','urn:epc:id:giai:880969104.135001','Y','admin','2021-10-22 09:20:38.831024+09','admin','2021-10-22 09:20:38.831024+09'),
-   ('urn:epc:id:giai:','880','969104','1','3','5','002','','3-1 환경 플랫폼','DS_AirQualityMeasurement_Portable_LivingLab_Siheung','경기도 시흥시 리빙랩 휴대형 대기질 측정 데이터셋','미세먼지 측정','1.0','N','urn:epc:id:giai:880969104.135002','Y','admin','2021-10-22 09:21:27.153847+09','admin','2021-10-22 09:21:27.153847+09'),
-   ('urn:epc:id:giai:','880','969104','1','2','2','000','','3-2 에너지 플랫폼','DS_BuildingEnergyUsage_LivingLab_Siheung','경기도 시흥시 리빙랩 빌딩 에너지 사용량 데이터셋','건물 에너지 사용량','1.0','N','urn:epc:id:giai:880969104.122000','N','admin','2021-10-22 09:24:11.144557+09','admin','2021-10-22 09:24:11.144557+09'),
-   ('urn:epc:id:giai:','880','969104','1','2','2','001','','3-2 에너지 플랫폼','DS_FactoryEnergyUsage_LivingLab_Siheung','경기도 시흥시 리빙랩 공장 에너지 사용량 데이터셋','공장 에너지 사용량','1.0','N','urn:epc:id:giai:880969104.122001','N','admin','2021-10-22 09:24:56.510161+09','admin','2021-10-22 09:24:56.510161+09'),
-   ('urn:epc:id:giai:','880','969104','1','2','2','002','','3-2 에너지 플랫폼','DS_HomeEnergyUsage_LivingLab_Siheung','경기도 시흥시 리빙랩 주택 에너지 사용량 데이터셋','주택 에너지 사용량','1.0','N','urn:epc:id:giai:880969104.122002','N','admin','2021-10-22 09:25:27.125383+09','admin','2021-10-22 09:25:27.125383+09'),
-   ('urn:epc:id:giai:','880','969104','1','4','3','000','','3-3 생활복지(노인) 플랫폼','DS_HealthMeasurement_LivingLab_Siheung','경기도 시흥시 리빙랩 건강 측정 데이터셋','건강 측정','1.0','N','urn:epc:id:giai:880969104.143000','N','admin','2021-10-22 09:26:40.994531+09','admin','2021-10-22 09:26:40.994531+09'),
-   ('urn:epc:id:giai:','880','969104','1','4','3','001','','3-3 생활복지(장애인이동) 플랫폼','DS_CrowdSourcingReport_LivingLab_Siheung','경기도 시흥시 리빙랩 크라우드소싱 신고 데이터셋','크라우드소싱 신고','1.0','N','urn:epc:id:giai:880969104.143001','N','admin','2021-10-22 09:27:27.724734+09','admin','2021-10-22 09:27:27.724734+09'),
-   ('urn:epc:id:giai:','880','969104','1','1','0','000','','경기교통정보','DS_RoadLinkTraffic_Usecase_SweetK','경기도 시흥시 도로교통정보 스위트케이 유즈케이스 데이터셋','도로교통정보','1.0','N','urn:epc:id:giai:880969104.110000','N','admin','2021-10-22 09:28:44.924635+09','admin','2021-10-22 09:28:44.924635+09'),
-   ('urn:epc:id:giai:','880','969104','1','1','0','001','','-','-','-','운송교통 신호등','-','N','urn:epc:id:giai:880969104.110001','N','admin','2021-10-22 09:32:37.417208+09','admin','2021-10-22 09:32:37.417208+09');
-INSERT INTO public.gs1_code_mapping (urn,country,municipality,code,m_category,c_category,s_category,city_assets,c_platform,source_id,data_set,data_model,data_version,use_yn,gs1_code,"move",modified_id,modified_time,creation_id,creation_time) VALUES
-   ('urn:epc:id:giai:','880','969104','1','2','0','000','','-','-','-','공급유통 수도미터','-','N','urn:epc:id:giai:880969104.120000','N','admin','2021-10-22 09:33:07.064929+09','admin','2021-10-22 09:33:07.064929+09'),
-   ('urn:epc:id:giai:','880','969104','1','2','0','001','','-','-','-','공급유통 급배수펌프','-','N','urn:epc:id:giai:880969104.120001','N','admin','2021-10-22 09:33:35.490835+09','admin','2021-10-22 09:33:35.490835+09'),
-   ('urn:epc:id:giai:','880','969104','1','2','1','000','','-','-','-','석유가스 가스미터','-','N','urn:epc:id:giai:880969104.121000','N','admin','2021-10-22 09:33:55.707932+09','admin','2021-10-22 09:33:55.707932+09'),
-   ('urn:epc:id:giai:','880','969104','1','2','2','003','','-','-','-','공급유통 전력량계','-','N','urn:epc:id:giai:880969104.122003','N','admin','2021-10-22 09:34:16.301721+09','admin','2021-10-22 09:34:16.301721+09'),
-   ('urn:epc:id:giai:','880','969104','1','4','1','000','','-','-','-','대규모시설 스마트어린이집','-','N','urn:epc:id:giai:880969104.141000','N','admin','2021-10-22 09:34:45.445722+09','admin','2021-10-22 09:34:45.445722+09'),
-   ('urn:epc:id:giai:','880','969104','1','4','4','000','','-','-','-','대규모시설 빅데이터예술AI','-','N','urn:epc:id:giai:880969104.144000','N','admin','2021-10-22 09:35:09.164294+09','admin','2021-10-22 09:35:09.164294+09');
-
   
 INSERT INTO public.comm_code (code_type_id,code_id,code_nm,use_yn,first_create_dt,first_create_id,last_update_dt,last_update_id) VALUES
    ('I07','I0701','string','Y','2019-08-05 00:45:59.836','system','2019-08-05 00:45:59.836','system'),
@@ -1200,14 +1061,8 @@ INSERT INTO public.comm_code (code_type_id,code_id,code_nm,use_yn,first_create_d
    ('I01','I0103','연결용 Agent','Y','2021-02-09 17:09:20.877546',NULL,'2021-02-09 17:09:20.877546',NULL);
 
 INSERT INTO public.comm_code (code_type_id,code_id,code_nm,use_yn,first_create_dt,first_create_id,last_update_dt,last_update_id) VALUES
-   ('GS1','GS101','URN포맷','Y','2021-06-10 14:17:13.693596',NULL,'2021-06-10 14:17:13.693596',NULL),
-   ('GS1','GS102','국가코드','Y','2021-06-10 14:17:13.700865',NULL,'2021-06-10 14:17:13.700865',NULL),
-   ('GS1','GS103','부처/지자체 코드','Y','2021-06-10 14:17:13.706274',NULL,'2021-06-10 14:17:13.706274',NULL),
-   ('GS1','GS104','코드','Y','2021-06-10 14:17:13.713013',NULL,'2021-06-10 14:17:13.713013',NULL),
-   ('GS1','GS105','대분류','Y','2021-06-10 14:17:13.719692',NULL,'2021-06-10 14:17:13.719692',NULL),
-   ('GS1','GS106','중분류','Y','2021-06-10 14:17:13.726514',NULL,'2021-06-10 14:17:13.726514',NULL),
-   ('GS1','GS107','소분류','Y','2021-06-10 14:17:13.731191',NULL,'2021-06-10 14:17:13.731191',NULL),
    ('S01','S0101','환경:S1','Y','2019-08-05 00:46:01','system','2019-08-05 00:46:01','system');
+   
 INSERT INTO public.comm_code (code_type_id,code_id,code_nm,use_yn,first_create_dt,first_create_id,last_update_dt,last_update_id) VALUES
    ('S01','S0102','에너지:S2','Y','2019-08-05 00:46:01','system','2019-08-05 00:46:01','system'),
    ('S01','S0103','생활:S3','Y','2019-08-05 00:46:01','system','2019-08-05 00:46:01','system'),
@@ -1234,7 +1089,6 @@ INSERT INTO public.comm_type (code_type_id,code_type_nm,use_yn,first_create_dt,f
    ('I13','사용용도','Y','2019-08-26 12:21:43.89',NULL,'2021-02-10 16:28:08.339166',NULL);
    
 INSERT INTO public.comm_type (code_type_id,code_type_nm,use_yn,first_create_dt,first_create_id,last_update_dt,last_update_id) VALUES
-   ('GS1','GS1 코드관리','Y','2021-06-10 14:17:13.68638',NULL,'2021-06-10 14:17:13.68638',NULL),
    ('S02','교통','Y','2021-06-10 14:17:13','SYSTEM','2021-06-10 14:17:13','SYSTEM'),
    ('S03','안전','Y','2021-06-10 14:17:13','SYSTEM','2021-06-10 14:17:13','SYSTEM'),
    ('S04','환경','Y','2021-06-10 14:17:13','SYSTEM','2021-06-10 14:17:13','SYSTEM'),
