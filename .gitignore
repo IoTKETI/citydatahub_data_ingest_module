@@ -5,7 +5,9 @@ temp
 .settings
 .factorypath
 ingest-core/.factorypath
-*.factorypath
+**/.factorypath
+**/ingest-adapter-1.0.0.jar
+**/ingest-core-1.0.0.jar
 
 
 
