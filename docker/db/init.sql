@@ -1072,7 +1072,6 @@ INSERT INTO public.comm_code (code_type_id,code_id,code_nm,use_yn,first_create_d
    ('I11','I1160','Fiware','Y','2021-10-13 11:08:03.038959',NULL,'2021-10-13 11:08:03.038959',NULL);
 
 INSERT INTO public.comm_type (code_type_id,code_type_nm,use_yn,first_create_dt,first_create_id,last_update_dt,last_update_id) VALUES
-   ('123','321','N','2021-02-09 17:24:38.547073',NULL,'2021-02-10 16:28:08.339166',NULL),
    ('I01','Agent구분','Y','2019-08-21 16:06:42.959',NULL,'2021-02-10 16:28:08.339166',NULL),
    ('I02','입출력구분','Y','2019-08-21 16:07:11.412',NULL,'2021-02-10 16:28:08.339166',NULL),
    ('I03','데이터모델변환구분','Y','2019-08-21 16:07:32.779',NULL,'2021-02-10 16:28:08.339166',NULL),
