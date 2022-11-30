@@ -79,8 +79,12 @@
   </select>
 
   <select id="itemSelect2" resultType="map">
-    select a.adapter_type_id, b.item, b.value, 'Y' AS essential_yn, b.item_described, b.value_type, b.display_seq, b.setup_method, b.change_able_yn,
-    b.use_purpose, 'N' AS keyword_yn, adapter_type_nm AS adapter_type_nm
+    select b.adapter_type_id, b.item, b.value, 'Y' as essential_yn, b.item_described, 0 AS display_seq
+        , b.value_type
+        , b.setup_method
+        , b.change_able_yn
+        , b.use_purpose
+        , 'N' AS keyword_yn, '' AS adapter_type_nm  
     from adapter_type_info a
     inner join adapter_type_detail_conf b on a.adapter_type_id = b.adapter_type_id and sector = 'a'
     where
@@ -89,9 +93,12 @@
   </select>
 
   <select id="itemSelect3" resultType="map">
-    SELECT a.adapter_type_id, b.item, c.value, 'Y' AS essential_yn, c.item_described, c.value_type, 0 AS display_seq, c.setup_method, c.change_able_yn,
-    c.use_purpose, 'Y' AS keyword_yn, adapter_type_nm AS
-    adapter_type_nm
+    SELECT a.adapter_type_id, b.item, c.value, 'Y' AS essential_yn, c.item_described, 0 AS display_seq
+      , coalesce(c.value_type , 'I0701') as value_type
+      , coalesce(c.setup_method , 'I1201') as setup_method
+      , coalesce(c.change_able_yn , 'Y') as change_able_yn
+      , coalesce(c.use_purpose , 'I1301') as use_purpose
+      , 'Y' AS keyword_yn, adapter_type_nm as adapter_type_nm 
     FROM adapter_type_info a
     INNER JOIN keyword_info b ON a.adapter_type_div = b.relation_code_id
     LEFT OUTER JOIN
@@ -100,8 +107,12 @@
 
     union all
 
-    select b.adapter_type_id, b.item, b.value, 'Y' AS
-    essential_yn, b.item_described, b.value_type, 0 AS display_seq, b.setup_method, b.change_able_yn, b.use_purpose, 'N' AS keyword_yn, '' AS adapter_type_nm
+    select b.adapter_type_id, b.item, b.value, 'Y' as essential_yn, b.item_described, 0 AS display_seq
+        , b.value_type
+        , b.setup_method
+        , b.change_able_yn
+        , b.use_purpose
+        , 'N' AS keyword_yn, '' AS adapter_type_nm 
     from adapter_type_detail_conf b
     where
     b.adapter_type_id = #{adapter_type_id} and sector = 'b'
