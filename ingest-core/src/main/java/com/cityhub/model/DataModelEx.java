@@ -17,10 +17,6 @@
 package com.cityhub.model;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -116,7 +112,7 @@ public class DataModelEx {
     boolean bl = false;
     for (Object models : schema) {
       JSONObject model = (JSONObject) models;
-      if (modelId.equals(model.get("type"))) {
+      if (modelId.equals(model.get("id"))) {
         bl = true;
         break;
       }
@@ -128,7 +124,7 @@ public class DataModelEx {
     JSONObject tm = new JSONObject();
     for (Object models : schema) {
       JSONObject model = (JSONObject) models;
-      if (modelId.equals(model.get("type"))) {
+      if (modelId.equals(model.get("id"))) {
         tm = model;
         schemaModel = model;
         break;
@@ -191,21 +187,6 @@ public class DataModelEx {
       }
     }
     return bl;
-  }
-
-  public List<Map<String, String>> listOfModel() {
-    List<Map<String, String>> list = new LinkedList<>();
-    for (Object models : schema) {
-      JSONObject model = (JSONObject) models;
-      Map<String, String> item = new HashMap<>();
-      item.put("modelId", model.getString("type"));
-
-      if (model.has("id")) {
-        item.put("id", model.getString("id"));
-      }
-      list.add(item);
-    }
-    return list;
   }
 
   public JSONObject createModel(String modelId) {
