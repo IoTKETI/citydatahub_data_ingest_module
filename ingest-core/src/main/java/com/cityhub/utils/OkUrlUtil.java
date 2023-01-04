@@ -63,7 +63,7 @@ public class OkUrlUtil {
             response = chain.proceed(request);
             break;
           } catch (Exception e) {
-            log.error("tryCount: {}, msg: {}", tryCount, ExceptionUtils.getStackTrace(e));
+            log.error("tryCount: {}, msg: {}", tryCount, e.getMessage());
             if ("Canceled".equalsIgnoreCase(e.getMessage())) {
               // Request canceled, do not retry
               throw e;
@@ -132,7 +132,7 @@ public class OkUrlUtil {
               response = chain.proceed(request);
               break;
             } catch (Exception e) {
-              log.error("tryCount: {}, msg: {}", tryCount, ExceptionUtils.getStackTrace(e));
+              log.error("tryCount: {}, msg: {}", tryCount, e.getMessage());
               if ("Canceled".equalsIgnoreCase(e.getMessage())) {
                 // Request canceled, do not retry
                 throw e;
@@ -200,7 +200,6 @@ public class OkUrlUtil {
       }
       return new HttpResponse(msg, response.code(), HttpStatus.valueOf(response.code()).getReasonPhrase());
     } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       return new HttpResponse(urladdr, 9999, e.getMessage());
     }
   }
@@ -224,7 +223,6 @@ public class OkUrlUtil {
       }
       return new HttpResponse(msg, response.code(), HttpStatus.valueOf(response.code()).getReasonPhrase());
     } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       return new HttpResponse(urladdr, 9999, e.getMessage());
     }
   }
@@ -247,7 +245,6 @@ public class OkUrlUtil {
     try {
       body = RequestBody.create(JSON, strJsonBody);
     } catch (NullPointerException npe) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(npe));
       return new HttpResponse("{\"resultCode\":4105, \"resultMsg\":\"UNSUPPORTED MEDIA TYPE\"}", 4105, npe.getMessage());
     }
 
@@ -262,7 +259,6 @@ public class OkUrlUtil {
         }
         return new HttpResponse(msg, response.code(), response.message());
       } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
         return new HttpResponse(null, 9999, e.getMessage());
       }
     } else {
@@ -302,7 +298,6 @@ public class OkUrlUtil {
         }
         return new HttpResponse(msg, response.code(), response.message());
       } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
         return new HttpResponse(null, 9999, e.getMessage());
       }
     } else {
@@ -342,7 +337,6 @@ public class OkUrlUtil {
         }
         return new HttpResponse(msg, response.code(), response.message());
       } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
         return new HttpResponse(null, 9999, e.getMessage());
       }
     } else {
@@ -382,7 +376,6 @@ public class OkUrlUtil {
         }
         return new HttpResponse(msg, response.code(), response.message());
       } catch (Exception e) {
-        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
         return new HttpResponse(null, 9999, e.getMessage());
       }
     } else {
@@ -411,7 +404,6 @@ public class OkUrlUtil {
       }
       return new HttpResponse(msg, response.code(), response.message());
     } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
       return new HttpResponse(null, 9999, e.getMessage());
     }
   }
