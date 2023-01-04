@@ -84,14 +84,14 @@ public class UrbanintegrationPlatform extends AbstractPollSource {
     if (ArrModel != null) {
       for (String model : ArrModel) {
         HttpResponse resp = OkUrlUtil.get(ConfItem.getString("DATAMODEL_API_URL") + "?id=" + model, "Accept", "application/json");
-        log.info("DATAMODEL_API_URL info: {},{},{}", model, resp.getStatusCode(), ConfItem.getString("DATAMODEL_API_URL") + "?id=" + model);
+        log.info("DATAMODEL API CONNECT INFO: {},{},{}",  resp.getStatusCode(), model , ConfItem.getString("DATAMODEL_API_URL") + "?id=" + model);
         if (resp.getStatusCode() == 200) {
           DataModelEx dm = new DataModelEx(resp.getPayload());
           if (dm.hasModelId(model)) {
             templateItem.put(model, dm.createModel(model));
             log.info("MODEL INFO: {},{}", model, templateItem);
           } else {
-            log.info("HAS NOT MODEL : {}", model);
+            log.info("NOT FOUND MODEL : {}", model);
             if (exists(model)) {
               templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
             } else {
