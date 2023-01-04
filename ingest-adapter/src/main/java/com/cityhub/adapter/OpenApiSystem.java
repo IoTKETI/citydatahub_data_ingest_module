@@ -16,6 +16,8 @@
  */
 package com.cityhub.adapter;
 
+import java.io.File;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flume.Context;
 import org.apache.flume.CounterGroup;
@@ -28,6 +30,7 @@ import org.json.JSONObject;
 import com.cityhub.core.ReflectNormalSystem;
 import com.cityhub.environment.DefaultConstants;
 import com.cityhub.model.DataModelEx;
+import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
@@ -67,8 +70,8 @@ public class OpenApiSystem extends AbstractSource implements PollableSource, Con
 
     modelId = context.getString("MODEL_ID", "");
     ArrModel = StrUtil.strToArray(modelId, ",");
-
     connTerm = context.getInteger(DefaultConstants.CONN_TERM, 600);
+    invokeClass = context.getString("INVOKE_CLASS", "");
 
     configInfo.put("DATAMODEL_API_URL", context.getString("DATAMODEL_API_URL", ""));
     configInfo.put("modelId", context.getString("MODEL_ID", ""));
@@ -92,12 +95,21 @@ public class OpenApiSystem extends AbstractSource implements PollableSource, Con
           DataModelEx dm = new DataModelEx(resp.getPayload());
           if (dm.hasModelId(model)) {
             templateItem.put(model, dm.createModel(model));
-            log.info("DATAMODEL_API_URL server: {},{}", model, templateItem);
+            log.info("MODEL INFO: {},{}", model, templateItem);
           } else {
-            templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+            log.info("HAS NOT MODEL : {}", model);
+            if (exists(model)) {
+              templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+            } else {
+              log.info("NOT FOUND TEPLATE FILE: {},{}", model);
+            }
           }
         } else {
-          templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+          if (exists(model)) {
+            templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+          } else {
+            log.info("NOT FOUND TEPLATE FILE: {},{}", model);
+          }
         }
       }
 
@@ -105,22 +117,38 @@ public class OpenApiSystem extends AbstractSource implements PollableSource, Con
     } else {
       log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,invokeClass);
     }
+  }
 
+  private boolean exists(String model) {
+    String templatePath = new CommonUtil().getJarPath();
+    File file = new File(templatePath + "openapi/" + model + ".template");
+    return file.exists();
+  }
+  private boolean hasModel() {
+    boolean hasModel = false;
+    for (String model : ArrModel) {
+      JSONObject templateItem = configInfo.getJSONObject("MODEL_TEMPLATE");
+      if (templateItem.has(model)) {
+        hasModel = true;
+      }
+    }
+    return hasModel;
   }
 
   public void processing() {
     log.info("Processing - {},{}", this.getName(), modelId);
     try {
-      if (ArrModel != null) {
-        ReflectNormalSystem reflectExecuter = null;
-        try {
-          Class<?> clz = Class.forName(configInfo.get("invokeClass").toString());
-          reflectExecuter  = (ReflectNormalSystem)clz.getDeclaredConstructor().newInstance();
-          reflectExecuter.init(getChannelProcessor(), configInfo);
-          reflectExecuter.doit();
-        } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
-          log.error("Exception : "+ExceptionUtils.getStackTrace(e));
-        }
+      if (ArrModel != null && hasModel()) {
+
+          ReflectNormalSystem reflectExecuter = null;
+          try {
+            Class<?> clz = Class.forName(configInfo.get("invokeClass").toString());
+            reflectExecuter  = (ReflectNormalSystem)clz.getDeclaredConstructor().newInstance();
+            reflectExecuter.init(getChannelProcessor(), configInfo);
+            reflectExecuter.doit();
+          } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+            log.error("Exception : "+ExceptionUtils.getStackTrace(e));
+          }
       } else {
         log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,invokeClass);
       }

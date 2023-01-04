@@ -16,6 +16,7 @@
  */
 package com.cityhub.adapter;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.TimeZone;
@@ -40,6 +41,7 @@ import com.cityhub.core.ReflectNormalSystemManager;
 import com.cityhub.environment.Constants;
 import com.cityhub.environment.DefaultConstants;
 import com.cityhub.model.DataModelEx;
+import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
@@ -164,26 +166,45 @@ public class OneM2M extends AbstractBaseSource implements EventDrivenSource, Mqt
           DataModelEx dm = new DataModelEx(resp.getPayload());
           if (dm.hasModelId(model)) {
             templateItem.put(model, dm.createModel(model));
-            log.info("DATAMODEL_API_URL server: {},{}", model, templateItem);
+            log.info("MODEL INFO: {},{}", model, templateItem);
           } else {
-            templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+            log.info("HAS NOT MODEL : {}", model);
+            if (exists(model)) {
+              templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+            } else {
+              log.info("NOT FOUND TEPLATE FILE: {},{}", model);
+            }
           }
         } else {
-          templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+          if (exists(model)) {
+            templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+          } else {
+            log.info("NOT FOUND TEPLATE FILE: {},{}", model);
+          }
         }
       }
     } else {
       log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
     }
 
-    if (log.isDebugEnabled()) {
-      log.debug("templateItem:{} -- {}", topic, templateItem);
-    }
-
     ConfItem.put("MODEL_TEMPLATE",templateItem);
 
   }
-
+  private boolean exists(String model) {
+    String templatePath = new CommonUtil().getJarPath();
+    File file = new File(templatePath + "openapi/" + model + ".template");
+    return file.exists();
+  }
+  private boolean hasModel() {
+    boolean hasModel = false;
+    for (String model : ArrModel) {
+      JSONObject templateItem = ConfItem.getJSONObject("MODEL_TEMPLATE");
+      if (templateItem.has(model)) {
+        hasModel = true;
+      }
+    }
+    return hasModel;
+  }
   @Override
   public void messageArrived(String topic, MqttMessage mqttMessage) {
     long eventCounter = counterGroup.get("events.success");
@@ -192,20 +213,23 @@ public class OneM2M extends AbstractBaseSource implements EventDrivenSource, Mqt
     log.debug("Source Topic: {}\tQoS: {}\tMessage: {}", topic, mqttMessage.getQos(), new String(mqttMessage.getPayload()));
 
     try {
-      ReflectNormalSystem reflectNormalSystem = ReflectNormalSystemManager.getInstance(invokeClass);
-      reflectNormalSystem.init(getChannelProcessor(), ConfItem);
+      if (hasModel() ) {
+        ReflectNormalSystem reflectNormalSystem = ReflectNormalSystemManager.getInstance(invokeClass);
+        reflectNormalSystem.init(getChannelProcessor(), ConfItem);
 
-
-
-      if (mqttMessage.getPayload() != null && reflectNormalSystem != null) {
-        JsonUtil je = new JsonUtil(new String(mqttMessage.getPayload()));
-        if (!"".equals(je.get("pc"))) {
+        if (mqttMessage.getPayload() != null && reflectNormalSystem != null) {
+          JsonUtil je = new JsonUtil(new String(mqttMessage.getPayload()));
+          if (!"".equals(je.get("pc"))) {
+            String sb = reflectNormalSystem.doit(mqttMessage.getPayload());
+          }
           callback(mqttMessage.getPayload());
-
-          String sb = reflectNormalSystem.doit(mqttMessage.getPayload());
-
+        }
+      } else {
+        if (mqttMessage.getPayload()  != null ) {
+          callback(mqttMessage.getPayload());
         }
       }
+
     } catch (NullPointerException npe) {
       log.error("Exception : " + ExceptionUtils.getStackTrace(npe));
       log.error("NullPointerException", npe);

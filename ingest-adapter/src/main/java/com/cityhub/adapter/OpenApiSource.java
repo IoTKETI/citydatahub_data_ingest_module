@@ -16,6 +16,7 @@
  */
 package com.cityhub.adapter;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
@@ -27,6 +28,7 @@ import com.cityhub.core.ReflectNormalSystem;
 import com.cityhub.core.ReflectNormalSystemManager;
 import com.cityhub.environment.Constants;
 import com.cityhub.model.DataModelEx;
+import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
@@ -48,6 +50,7 @@ public class OpenApiSource extends AbstractPollSource {
   private String[] ArrModel = null;
   private String adapterType;
   private ObjectMapper objectMapper;
+  private String invokeClass;
 
   @Override
   public void setup(Context context) {
@@ -67,6 +70,7 @@ public class OpenApiSource extends AbstractPollSource {
     modelId = context.getString("MODEL_ID", "");
     ArrModel = StrUtil.strToArray(modelId, ",");
     datasetId = context.getString("DATASET_ID", "");
+    invokeClass = context.getString("INVOKE_CLASS", "");
 
     ConfItem.put("modelId", modelId);
     ConfItem.put("datasetId", datasetId);
@@ -92,34 +96,52 @@ public class OpenApiSource extends AbstractPollSource {
           DataModelEx dm = new DataModelEx(resp.getPayload());
           if (dm.hasModelId(model)) {
             templateItem.put(model, dm.createModel(model));
-            log.info("DATAMODEL_API_URL server: {},{}", model, templateItem);
+            log.info("MODEL INFO: {},{}", model, templateItem);
           } else {
-            templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+            log.info("HAS NOT MODEL : {}", model);
+            if (exists(model)) {
+              templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+            } else {
+              log.info("NOT FOUND TEPLATE FILE: {},{}", model);
+            }
           }
         } else {
-          templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+          if (exists(model)) {
+            templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+          } else {
+            log.info("NOT FOUND TEPLATE FILE: {},{}", model);
+          }
         }
       }
     } else {
       log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
     }
 
-    if (log.isDebugEnabled()) {
-      log.debug("Template : {},{}", modelId, templateItem);
-    }
     ConfItem.put("MODEL_TEMPLATE",templateItem);
   }
-
+  private boolean exists(String model) {
+    String templatePath = new CommonUtil().getJarPath();
+    File file = new File(templatePath + "openapi/" + model + ".template");
+    return file.exists();
+  }
+  private boolean hasModel() {
+    boolean hasModel = false;
+    for (String model : ArrModel) {
+      JSONObject templateItem = ConfItem.getJSONObject("MODEL_TEMPLATE");
+      if (templateItem.has(model)) {
+        hasModel = true;
+      }
+    }
+    return hasModel;
+  }
   @Override
   public void processing() {
     log.info("Processing - {},{}", this.getName(), modelId);
     try {
-      if (ArrModel != null) {
-
+      if (ArrModel != null && hasModel()) {
         ReflectNormalSystem reflectNormalSystem = ReflectNormalSystemManager.getInstance(getInvokeClass());
         reflectNormalSystem.init(getChannelProcessor(), ConfItem);
         String sb = reflectNormalSystem.doit();
-
       } else {
         log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,ConfItem.getString("invokeClass"));
       }

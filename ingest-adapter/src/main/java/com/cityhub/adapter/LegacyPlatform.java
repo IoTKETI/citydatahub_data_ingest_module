@@ -16,6 +16,8 @@
  */
 package com.cityhub.adapter;
 
+import java.io.File;
+
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flume.Context;
@@ -30,6 +32,7 @@ import com.cityhub.core.ReflectNormalSystem;
 import com.cityhub.core.ReflectNormalSystemManager;
 import com.cityhub.environment.DefaultConstants;
 import com.cityhub.model.DataModelEx;
+import com.cityhub.utils.CommonUtil;
 import com.cityhub.utils.DataCoreCode.SocketCode;
 import com.cityhub.utils.HttpResponse;
 import com.cityhub.utils.JsonUtil;
@@ -49,6 +52,7 @@ public class LegacyPlatform extends AbstractSource implements PollableSource , C
 
   private String[] ArrModel = null;
   private String adapterType;
+  private String invokeClass;
 
   @Override
   public void configure(Context context) {
@@ -70,7 +74,7 @@ public class LegacyPlatform extends AbstractSource implements PollableSource , C
     modelId = context.getString("MODEL_ID", "");
     ArrModel = StrUtil.strToArray(modelId, ",");
     connTerm = context.getInteger(DefaultConstants.CONN_TERM, 600);
-
+    invokeClass = context.getString("INVOKE_CLASS", "");
 
     ConfItem.put("DATAMODEL_API_URL", context.getString("DATAMODEL_API_URL", ""));
     ConfItem.put("username", context.getString("DB_USERNAME", ""));
@@ -100,16 +104,25 @@ public class LegacyPlatform extends AbstractSource implements PollableSource , C
             DataModelEx dm = new DataModelEx(resp.getPayload());
             if (dm.hasModelId(model)) {
               templateItem.put(model, dm.createModel(model));
-              log.info("DATAMODEL_API_URL server: {},{}", model, templateItem);
+              log.info("MODEL INFO: {},{}", model, templateItem);
             } else {
-              templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+              log.info("HAS NOT MODEL : {}", model);
+              if (exists(model)) {
+                templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+              } else {
+                log.info("NOT FOUND TEPLATE FILE: {},{}", model);
+              }
             }
           } else {
-            templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+            if (exists(model)) {
+              templateItem.put(model, new JsonUtil().getFileJsonObject("openapi/" + model + ".template"));
+            } else {
+              log.info("NOT FOUND TEPLATE FILE: {},{}", model);
+            }
           }
         }
       } else {
-        log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType);
+        log.error("`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,invokeClass);
       }
 
       ConfItem.put("MODEL_TEMPLATE",templateItem);
@@ -118,24 +131,41 @@ public class LegacyPlatform extends AbstractSource implements PollableSource , C
       log.error("Exception : " + ExceptionUtils.getStackTrace(e));
     }
   }
-
+  private boolean exists(String model) {
+    String templatePath = new CommonUtil().getJarPath();
+    File file = new File(templatePath + "openapi/" + model + ".template");
+    return file.exists();
+  }
+  private boolean hasModel() {
+    boolean hasModel = false;
+    for (String model : ArrModel) {
+      JSONObject templateItem = ConfItem.getJSONObject("MODEL_TEMPLATE");
+      if (templateItem.has(model)) {
+        hasModel = true;
+      }
+    }
+    return hasModel;
+  }
 
   public void processing() {
     log.info("::::::::::::::::::{} - Processing :::::::::::::::::", this.getName());
+    if (ArrModel != null && hasModel()) {
+      try (BasicDataSource dataSource = new BasicDataSource();){
+        dataSource.setDriverClassName(ConfItem.getString("driverClassName"));
+        dataSource.setUrl(ConfItem.getString("jdbcUrl"));
+        dataSource.setUsername(ConfItem.getString("username"));
+        dataSource.setPassword(ConfItem.getString("password"));
 
-    try (BasicDataSource dataSource = new BasicDataSource();){
-      dataSource.setDriverClassName(ConfItem.getString("driverClassName"));
-      dataSource.setUrl(ConfItem.getString("jdbcUrl"));
-      dataSource.setUsername(ConfItem.getString("username"));
-      dataSource.setPassword(ConfItem.getString("password"));
-
-      ReflectNormalSystem reflectExecuter = ReflectNormalSystemManager.getInstance(ConfItem.getString("invokeClass"));
-      reflectExecuter.init(getChannelProcessor(), ConfItem);
-      String sb = reflectExecuter.doit(dataSource);
-    } catch (NullPointerException e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
-    } catch (Exception e) {
-      log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+        ReflectNormalSystem reflectExecuter = ReflectNormalSystemManager.getInstance(ConfItem.getString("invokeClass"));
+        reflectExecuter.init(getChannelProcessor(), ConfItem);
+        reflectExecuter.doit(dataSource);
+      } catch (NullPointerException e) {
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      } catch (Exception e) {
+        log.error("Exception : " + ExceptionUtils.getStackTrace(e));
+      }
+    } else {
+      log.error("`{}`{}`{}`{}`{}`{}`{}", this.getName(), modelId, SocketCode.DATA_NOT_EXIST_MODEL.toMessage(), "", 0, adapterType,invokeClass);
     }
   }
 
